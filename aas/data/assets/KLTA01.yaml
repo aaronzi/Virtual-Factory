@@ -1,0 +1,23 @@
+_extends: common/machine_klt_instance.yaml
+tag: KLTA01
+idShort: KLTA01_GoodParts
+displayName: {en: "KLT A (KLTA01, good parts)", de: "KLT A (KLTA01, Gutteile)"}
+description:
+  en: Blue output container for good parts (label "A i.O."); the robot RB01 places cylinders that passed the colour inspection here.
+  de: Blauer Ausgangsbehälter für Gutteile (Etikett "A i.O."); der Roboter RB01 legt hier die Zylinder ab, die die Farbprüfung bestanden haben.
+locationDescription: "LINE01 robot cell RB01, output position KLT A (good parts), 0.5 m downstream of the robot base"
+specificAssetIds: {serialNumber: KLT6428-2025-0101, manufacturerPartId: KLT-6428-S550}
+submodels:
+  - template: Nameplate-3.0
+    values:
+      SerialNumber: KLT6428-2025-0101
+      DateOfManufacture: "2025-06-16"
+      AssetSpecificProperties:
+        ArbitraryProperty:
+          - {_idShort: ContainerColour, value: "blue RAL 5015"}
+          - {_idShort: ContainerLabel, value: "A i.O."}
+  - template: CapabilityDescription-1.0
+    values:
+      CapabilitySet:
+        CapabilityContainer:
+          CapabilityComment: {en: "Stores up to 12 good parts (OP90, sorting result OK)", de: "Nimmt bis zu 12 Gutteile auf (OP90, Sortierergebnis i.O.)"}

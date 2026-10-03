@@ -1,0 +1,14 @@
+X-MAINTENANCE - iCalendar extension property (RFC 5545, section 3.8.8.2 "Non-Standard Properties")
+Production calendar of LINE01, VF Pneumatics GmbH, Plant 01 (IDTA 02067 Production Calendar)
+
+Purpose:     Marks a VEVENT as a time slot reserved for planned maintenance or repair of the asset.
+Value type:  BOOLEAN (TRUE / FALSE); default FALSE if the property is absent.
+Used in:     VEVENT (monthly preventive maintenance, first Saturday of the month 06:00-10:00).
+Example:     X-MAINTENANCE:TRUE
+
+Interpretation:
+- The asset is not available for production during a maintenance slot; overlapping production slots are reduced
+  accordingly (planned down time, ISO 22400-2).
+- The maintenance content is defined in the MaintenanceInstructions submodels of the line's assets
+  (e.g. RB01/UR5e: MI-UR5E-01 monthly safety check).
+- CATEGORIES:MAINTENANCE is set in addition for clients that ignore non-standard properties.

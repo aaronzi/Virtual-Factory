@@ -1,0 +1,23 @@
+title: "QS-100 colour inspection station"
+subtitle: "Data sheet"
+organization: VF Automation Systems GmbH
+version: "1.0"
+date: "2025-08-01"
+sections:
+  - heading: Description
+    text: >-
+      Inspection station for the colour of part surfaces on conveyors. A true-colour sensor (Lumetra CX30) mounted at
+      an angle measures in CIELAB and compares the colour with up to eight taught references (ΔE*ab, CIE76). A white
+      LED ring light is switched on during the measurement only. The space above the part stays free for a gripper.
+  - heading: Measurement
+    rows: [[Colour space, "CIELAB (D65, 10°)"], [Colour distance, "ΔE*ab (CIE76)"], [Working distance, "150 mm ± 20 mm"],
+           [Light spot, "Ø 6 mm"], [Sensor inclination, "53° to the vertical"], [Integration time, "150 ms"],
+           [Repeatability, "ΔE ≤ 0.5"], [Tolerance setting, "ΔE 0.5 ... 50"]]
+  - heading: Electrical data
+    rows: [[Supply voltage, "24 V DC (PELV), -15/+20 %"], [Power sensor, "2.5 W"], [Power ring light, "4 W (on during measurement)"],
+           [Switching output, "PNP OK/NOK, 100 mA"]]
+  - heading: Interfaces
+    rows: [[Sensor, "IO-Link 1.1, COM3"], [Process data, "L*, a*, b*, ΔE, result"], [Line, "MQTT (UNS) via LC-10"]]
+  - heading: Mechanical data and environment
+    rows: [[Mass, "2.4 kg incl. bracket"], [Protection, "IP65 (sensor, ring light)"], [Ambient temperature, "+5 ... +45 °C"],
+           [Ambient light immunity, "5000 lx"], [MTTF, "45 years (SN 29500, 40 °C)"]]

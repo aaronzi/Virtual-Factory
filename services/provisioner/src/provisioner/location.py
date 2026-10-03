@@ -18,7 +18,9 @@ def godot_to_lcs(p: list[float]) -> tuple[float, float, float]:
     return float(p[0]), float(-p[2]), float(p[1])
 
 
-def location_values(tag: str, position: list[float] | None, description: str) -> dict:
+def location_values(tag: str, position: list[float] | None, description: str | dict,
+                    time: str | None = None) -> dict:
+    """description: plain text (en) or {en: ..., de: ...}; time: ISO 8601 time of the location record."""
     values = {"Addresses": [ADDRESS], "CoordinateSystems": [HALL_LCS],
               "AssetLocatingInformation": {"Localizable": False}}
     if position is not None:
@@ -26,8 +28,8 @@ def location_values(tag: str, position: list[float] | None, description: str) ->
         values["AssetTraces"] = {"LocationRecords": [{
             "CoordinateSystemReference": {"ref": f"sm:{tag}/AssetLocation#CoordinateSystems.0"},
             "Position": {"X": round(x, 3), "Y": round(y, 3), "Z": round(z, 3)},
-            "Time": dt.datetime(2026, 10, 1, 8, 0, tzinfo=dt.timezone.utc).isoformat(),
-            "LocationDescription": {"en": description}}]}
+            "Time": time or dt.datetime(2025, 9, 15, 8, 0, tzinfo=dt.timezone.utc).isoformat(),
+            "LocationDescription": description if isinstance(description, dict) else {"en": description}}]}
     return values
 
 

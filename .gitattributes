@@ -1,5 +1,6 @@
 # Normalize line endings for text files
 * text=auto eol=lf
+*.ics text eol=crlf
 
 # --- Git LFS: binary assets ---
 # Blender / 3D
@@ -12,6 +13,7 @@
 
 # Textures / images
 *.png  filter=lfs diff=lfs merge=lfs -text
+*.pdf  filter=lfs diff=lfs merge=lfs -text
 *.jpg  filter=lfs diff=lfs merge=lfs -text
 *.jpeg filter=lfs diff=lfs merge=lfs -text
 *.webp filter=lfs diff=lfs merge=lfs -text

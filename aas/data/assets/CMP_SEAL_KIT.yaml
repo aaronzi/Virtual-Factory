@@ -1,0 +1,54 @@
+# BoM component of PC-32-80-DA-M: seal kit (purchased; also sold as spare part SK-PC32).
+# Content (8 seals): 2 piston seals, 1 rod seal, 1 wiper (TPU); 2 cushioning seals, 2 barrel O-rings (NBR).
+tag: CMP_SEAL_KIT
+idShort: PC32_SealKit
+kind: Type
+assetType: https://virtual-factory.example/ids/assettype/CylinderComponent
+displayName: {en: "Seal kit SK-PC32 (component type)", de: "Dichtungssatz SK-PC32 (Bauteiltyp)"}
+description:
+  en: "Complete seal kit of the cylinder PC-32-80-DA-M (piston, rod, wiper and cushioning seals, O-rings) with assembly grease; supplied by Dichtungstechnik Süd GmbH."
+  de: "Vollständiger Dichtungssatz des Zylinders PC-32-80-DA-M (Kolben-, Stangen-, Abstreif- und Dämpfungsdichtungen, O-Ringe) mit Montagefett; Lieferant Dichtungstechnik Süd GmbH."
+specificAssetIds: {manufacturerPartId: DTS-SK-PC32, customerPartId: "5032-1006"}
+location: false
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: Dichtungstechnik Süd GmbH, de: Dichtungstechnik Süd GmbH}
+      ManufacturerProductDesignation: {en: "Seal kit for ISO 15552 cylinder Ø32, TPU/NBR, 8 parts", de: "Dichtungssatz für ISO-15552-Zylinder Ø32, TPU/NBR, 8-teilig"}
+      ManufacturerProductRoot: {en: Seals, de: Dichtungen}
+      ManufacturerProductFamily: {en: Pneumatic seal kits, de: Pneumatik-Dichtungssätze}
+      ManufacturerProductType: DTS-SK-PC32
+      OrderCodeOfManufacturer: DTS-SK-PC32
+      ProductArticleNumberOfManufacturer: "SK-203217"
+      URIOfTheProduct: https://virtual-factory.example/dichtungstechnik-sued/products/DTS-SK-PC32
+      CountryOfOrigin: DE
+      AddressInformation: {$include: common/product_address_supplier_dichtungstechnik.yaml}
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: Dichtungstechnik Süd GmbH
+        ManufacturerProductDesignation: {en: "Seal kit for ISO 15552 cylinder Ø32", de: "Dichtungssatz für ISO-15552-Zylinder Ø32"}
+        ManufacturerArticleNumber: "SK-203217"
+        ManufacturerOrderCode: DTS-SK-PC32
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          "+Content": {value: "2 piston seals, 1 rod seal, 1 wiper (TPU); 2 cushioning seals, 2 O-rings (NBR)", description: {en: "Content of the kit", de: "Inhalt des Satzes"}}
+          "+NumberOfSeals": {valueType: xs:unsignedInt, value: 8, description: {en: "Number of seals and O-rings [pcs]", de: "Anzahl Dichtungen und O-Ringe [Stk]"}}
+          "+HardnessTPU": {valueType: xs:double, value: 93, description: {en: "Hardness of the TPU seals [Shore A]", de: "Härte der TPU-Dichtungen [Shore A]"}}
+          "+HardnessNBR": {valueType: xs:double, value: 70, description: {en: "Hardness of the NBR seals [Shore A]", de: "Härte der NBR-Dichtungen [Shore A]"}}
+          "+TemperatureMin": {valueType: xs:double, value: -20, description: {en: "Minimum operating temperature [°C]", de: "Minimale Einsatztemperatur [°C]"}}
+          "+TemperatureMax": {valueType: xs:double, value: 80, description: {en: "Maximum operating temperature [°C]", de: "Maximale Einsatztemperatur [°C]"}}
+          "+PressureMax": {valueType: xs:double, value: 10, description: {en: "Maximum operating pressure [bar]", de: "Maximaler Betriebsdruck [bar]"}}
+          "+Mass": {valueType: xs:double, value: 0.011, description: {en: "Mass of the seals [kg]", de: "Masse der Dichtungen [kg]"}}
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - {PcfCalculationMethods: [{value: "ISO 14067"}], PcfCO2eq: 0.06, ReferenceImpactUnitForCalculation: piece, QuantityOfMeasureForCalculation: 1, LifeCyclePhases: [{value: "A1-A3"}], PublicationDate: "2025-05-15T00:00:00+00:00"}
+  - template: ProductMaterialComposition-1.0
+    values:
+      TotalMass: 0.011
+      Materials:
+        - {MaterialLocation: {ComponentName: "Piston seals, rod seal, wiper", ComponentId: "5032-1006"}, MaterialIdentifier: "TPU (ISO 18064), 93 Shore A", MaterialName: "Thermoplastic polyurethane", MaterialMass: 0.007, IsCriticalRawMaterial: false, RecyclabilityClass: EnergyRecovery}
+        - {MaterialLocation: {ComponentName: "Cushioning seals, O-rings", ComponentId: "5032-1006"}, MaterialIdentifier: "NBR (ISO 1629), 70 Shore A", MaterialName: "Acrylonitrile butadiene rubber", MaterialMass: 0.004, IsCriticalRawMaterial: false, RecyclabilityClass: EnergyRecovery}
+      HazardousSubstances: []
+      DeclarationDate: "2025-05-15"

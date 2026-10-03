@@ -1,0 +1,18 @@
+title: "CX30 true-colour sensor"
+subtitle: "Data sheet"
+organization: Lumetra Sensortechnik GmbH
+version: "1.3"
+date: "2025-02-15"
+sections:
+  - heading: Description
+    text: >-
+      Compact true-colour sensor with tristimulus filters matched to the CIE 1931 standard observer, white LED
+      transmitter, CIELAB evaluation with up to eight reference colours and IO-Link 1.1 interface.
+  - heading: Optical data
+    rows: [[Working distance, "150 mm ± 20 mm"], [Light spot, "Ø 6 mm at 150 mm"], [Light source, "White LED, 5600 K"],
+           [Colour space, "CIELAB, ΔE*ab"], [Integration time, "1 ... 500 ms (150 ms set)"], [Repeatability, "ΔE ≤ 0.5"]]
+  - heading: Electrical data
+    rows: [[Supply voltage, "18 ... 30 V DC"], [Power consumption, "2.5 W"], [Interface, "IO-Link 1.1, COM3"],
+           [Switching output, "PNP, 100 mA"], [Connection, "M12, 5-pin, A-coded"]]
+  - heading: Mechanical data
+    rows: [[Housing, "Die-cast zinc, glass window"], [Protection, "IP65"], [Weight, "180 g"], [Ambient temperature, "-10 ... +55 °C"]]

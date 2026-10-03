@@ -1,0 +1,26 @@
+title: UR5e carbon footprint
+subtitle: Explanatory statement - operator estimate (cradle-to-gate, A1-A3)
+organization: VF Pneumatics GmbH
+version: '1.0'
+date: '2025-09-15'
+sections:
+- heading: Status of the value
+  text: >-
+    The value of 900 kg CO2e per robot is an estimate of the plant operator VF Pneumatics GmbH for its own carbon
+    accounting. No product carbon footprint declared by the manufacturer was available to the operator at the time
+    of calculation. The value must be replaced as soon as a manufacturer PCF is available.
+- heading: Method and assumptions
+  rows:
+  - [Standard orientation, 'ISO 14067 (simplified, screening level)']
+  - [System boundary, cradle-to-gate (A1-A3)]
+  - [Declared unit, '1 robot: arm (20.6 kg) incl. control box and teach']
+  - ['', pendant]
+  - [Materials, 'aluminium, steel, copper, plastics, electronics:']
+  - ['', mass-based emission factors (generic databases)]
+  - [Electronics share, control box and joint electronics estimated separately]
+  - ['', (largest contribution)]
+  - [Not included, 'transport to site (A4), use phase, end of life']
+  - [Uncertainty, approx. ± 30 %]
+- heading: Result
+  rows:
+  - [PCF (A1-A3), approx. 900 kg CO2e per robot incl. control box]

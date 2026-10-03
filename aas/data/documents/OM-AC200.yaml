@@ -1,0 +1,29 @@
+title: "AC-200 operating instructions"
+subtitle: "Safety, operation, fault clearance, maintenance"
+organization: VF Automation Systems GmbH
+version: "1.1"
+date: "2025-08-15"
+sections:
+  - heading: Intended use
+    text: >-
+      The AC-200 assembles and tests ISO 15552 profile cylinders of the variant configured by the tooling. Any other
+      use is not intended. The cell may only be operated with all guards closed and the safety functions working.
+  - heading: Safety
+    text: >-
+      The guard doors are monitored by type 4 interlocking devices with guard locking; opening a door is only possible
+      after the cell has stopped. The emergency stop buttons on the HMI and on the operator side stop the cell in stop
+      category 0. Both safety functions achieve PL d, category 3, according to EN ISO 13849-1. Compressed air is
+      vented automatically when the emergency stop is actuated.
+  - heading: Operating modes
+    text: >-
+      Automatic: the cell starts a cycle when the line controller sets ENABLE and releases the finished cylinder only
+      when INFEED_FREE is set; otherwise the cell reports BLOCKED. Setup: jog mode with reduced speed at the HMI with
+      enabling device. The state (idle, assembling, blocked), the counters and the test results are published via
+      MQTT through the line controller.
+  - heading: Fault clearance
+    text: >-
+      Leak or stroke-time failures are not machine faults: the cylinder is released and marked by the test result.
+      For jams, open the guard door after the stop, remove the part and acknowledge the fault at the HMI.
+  - heading: Maintenance
+    rows: [[Daily, "Check guards, emergency stop, air pressure"], [Weekly, "Clean outlet tunnel and grippers"],
+           [Every 2000 h, "Check screwdriver torque calibration"], [Every 12 months, "Test of the safety functions"]]

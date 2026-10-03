@@ -41,8 +41,8 @@ flowchart LR
 | Block | Path | Responsibility |
 |---|---|---|
 | Godot simulation | `godot/` | 3D world, device models, virtual PLC, MQTT gateway, AAS inspector |
-| Edge/IT services | `services/` | `vf_common` (shared), provisioner, databridge, mes, ops_gateway *(planned)* |
-| AAS master data | `aas/` | Asset data YAML, concept dictionary, generated AASX *(planned)* |
+| Edge/IT services | `services/` | `vf_common` (shared: IDs, AAS template engine), `provisioner` (static AAS → AASX preload); databridge, mes, ops_gateway *(M4)* |
+| AAS master data | `aas/` | Vendored IDTA templates + CDs, custom templates (YAML DSL), asset data, capability dictionary, documents (PDF) |
 | 3D asset sources | `blender/` | .blend files and the generator scripts that produce them |
 | Infrastructure | `infra/` | docker compose: BaSyx Go, AAS Web UI, Postgres, Mosquitto |
 | Tooling | `tools/` | Architecture/complexity checks, test runners, screenshot helper |
@@ -75,7 +75,8 @@ Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 | db | `postgres:18` (tmpfs) | – |
 | basyx-config | `eclipsebasyx/basyxconfigurationservice-go:1.1.0` (one-shot) | – |
 | mqtt | `eclipse-mosquitto:2` | 1883, 9001 (ws) |
-| databridge, mes, ops-gateway | built from `services/` *(planned)* | 8095 (ops) |
+| provisioner | `vf-services:dev` (built from `services/Dockerfile`), one-shot before aas-env | – |
+| databridge, mes, ops-gateway | `vf-services:dev` *(M4)* | 8095 (ops) |
 
 The Godot application runs natively on the host and connects to `ws://localhost:9001` and `http://localhost:8091`.
 
@@ -90,7 +91,11 @@ The Godot application runs natively on the host and connects to `ws://localhost:
 - **Rendering/lighting**: Compatibility renderer, unbaked indoor lighting, draw-call budget ([ADR-0010](../adr/0010-compatibility-renderer-indoor-lighting.md))
 - **Physics/transport**: belt `constant_linear_velocity` (Jolt), rigid workpieces, kinematic attach on grasp
   ([ADR-0009](../adr/0009-physical-transport-and-items.md))
-- **UNS topics**, **AAS modelling**: *(planned, M3/M4)* see PLAN.md §3.9–3.12
+- **AAS modelling**: [interfaces/aas-model.md](../interfaces/aas-model.md). Template-based generation
+  ([ADR-0011](../adr/0011-template-based-aas-generation.md)), Control Components with PackML on the interface
+  ([ADR-0012](../adr/0012-control-component-packml-on-interface.md)), interfaces generated from FMI
+  ([ADR-0013](../adr/0013-aas-interfaces-generated-from-fmi.md))
+- **UNS topics**: `godot/config/uns.yaml` (single source for the Godot gateway, AID generation and the data bridge)
 
 ## 9. Architecture decisions
 See [adr/](../adr/README.md).

@@ -1,0 +1,26 @@
+title: "BC-3000 operating and maintenance instructions"
+subtitle: "Installation, operation, belt tracking, lubrication, belt replacement"
+organization: VF Automation Systems GmbH
+version: "1.3"
+date: "2025-06-01"
+sections:
+  - heading: Safety
+    text: >-
+      Pinch points at the drums are covered by fixed guards. Before any work on the conveyor, switch off and lock
+      out the main switch of the line. The conveyor is stopped by the line safety circuit via STO of the inverter.
+  - heading: Installation and operation
+    text: >-
+      Align the frame horizontally with the levelling feet and set the working height to the transfer height of the
+      upstream machine. Speed and direction are set by the line controller (run, reverse, speed setpoint).
+  - heading: Chapter 7 - Maintenance schedule
+    rows: [[Monthly, "Belt tracking and tension (CV01-M01)"], [Every 2000 h, "Re-grease drum bearings (CV01-M02)"],
+           [Every 20 000 h, "Replace the belt (CV01-M03)"]]
+  - heading: Belt tracking and tension
+    text: >-
+      The belt edge must run at least 5 mm from the frame on both sides; correct with the tracking screws of the
+      deflection drum in quarter turns. Set the belt elongation to 0.3 % (approx. 9 mm over 3 m) evenly on both sides.
+  - heading: Lubrication
+    text: >-
+      Re-grease the four drum bearings with 2 g of lithium soap grease NLGI 2 (KP2K-30) each. Remove escaping grease.
+  - heading: Chapter 8 - Belt replacement and spare parts
+    rows: [[Conveyor belt 6.1 m × 300 mm, "3000-9101"], [Drum bearing unit 6204-2Z, "3000-9205"], [Gear motor 0.18 kW, "3000-9310"]]

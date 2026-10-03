@@ -59,7 +59,7 @@ submodels:
     values:
       Documents:
         - DocumentIds: [{DocumentDomainId: Lumetra, DocumentIdentifier: DS-LX12R, DocumentIsPrimary: true}]
-          DocumentClassifications: [{ClassId: "03-02", ClassName: {en: Technical specification, de: Technische Spezifikation}, ClassificationSystem: VDI2770:2020}]
+          DocumentClassifications: [{ClassId: "02-01", ClassName: {en: Technical specification, de: Technische Spezifikation}, ClassificationSystem: VDI2770:2020}]
           DocumentVersions:
             - Language: [{value: en}]
               Version: "2.1"
@@ -71,7 +71,7 @@ submodels:
               OrganizationOfficialName: Lumetra Sensortechnik GmbH
               DigitalFiles: [{value: repo:aas/files/docs/DS-LX12R.pdf}]
         - DocumentIds: [{DocumentDomainId: Lumetra, DocumentIdentifier: OM-LX12R, DocumentIsPrimary: true}]
-          DocumentClassifications: [{ClassId: "03-04", ClassName: {en: "Operation (manual)", de: Bedienung}, ClassificationSystem: VDI2770:2020}]
+          DocumentClassifications: [{ClassId: "03-02", ClassName: {en: Operation, de: Bedienung}, ClassificationSystem: VDI2770:2020}]
           DocumentVersions:
             - Language: [{value: en}]
               Version: "1.4"
@@ -94,7 +94,7 @@ submodels:
   - template: Reliability-1.0
     values:
       NumberOfReliabilitySets: 1
-      ReliabilityCharacteristics: [{_idShort: ReliabilityAt40C, MTTF: [{value: 1500000}]}]
+      ReliabilityCharacteristics: [{_idShort: ReliabilityAt40C, MTTF: [{value: 171}]}]  # years (= 1.5 million h, SN 29500)
       OperatingConditionsOfReliabilityCharacteristics:
         - _idShort: Conditions40C
           TypeOfVoltage: [{value: DC}]

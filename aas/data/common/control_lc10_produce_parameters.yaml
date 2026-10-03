@@ -1,0 +1,44 @@
+# ControlComponent (IDTA 2.0) parameters of the skill "Produce" of the SortingLine PLC program (FMI parameters of
+# godot/control/sorting_line/modelDescription.xml); shared by LC10_TYPE/ControlComponentType and PLC01/ControlComponentInstance.
+Parameter:
+  - _idShort: belt_speed
+    _description: {en: "Conveyor speed setpoint (recipe value) [m/s]", de: "Sollgeschwindigkeit des Förderbands (Rezeptwert) [m/s]"}
+    Direction: In
+    Type: xs:double
+    Values:
+      "+Min": {valueType: xs:double, value: 0.05}
+      "+Max": {valueType: xs:double, value: 0.5}
+      "+Default": {valueType: xs:double, value: 0.25}
+      "+Unit": {value: m/s}
+  - _idShort: klt_capacity
+    _description: {en: "Parts per small load carrier before it is exchanged", de: "Teile je Kleinladungsträger bis zum Wechsel"}
+    Direction: In
+    Type: xs:int
+    Values:
+      "+Min": {valueType: xs:int, value: 1}
+      "+Max": {valueType: xs:int, value: 12}
+      "+Default": {valueType: xs:int, value: 12}
+  - _idShort: auto_exchange
+    _description: {en: "Exchange full KLTs automatically (demo/agent mode); otherwise the line suspends until the operator exchanges the KLT", de: "Volle KLT automatisch wechseln (Demo-/Agentenbetrieb); sonst pausiert die Linie bis zum Wechsel durch den Bediener"}
+    Direction: In
+    Type: xs:boolean
+    Values:
+      "+Default": {valueType: xs:boolean, value: true}
+  - _idShort: parts_total
+    _description: {en: "Inspected parts since reset", de: "Geprüfte Teile seit Reset"}
+    Direction: Out
+    Type: xs:int
+    Values:
+      "+Min": {valueType: xs:int, value: 0}
+  - _idShort: parts_ok
+    _description: {en: "Good parts since reset (placed into KLT A)", de: "Gutteile seit Reset (in KLT A abgelegt)"}
+    Direction: Out
+    Type: xs:int
+    Values:
+      "+Min": {valueType: xs:int, value: 0}
+  - _idShort: parts_nok
+    _description: {en: "Rejected parts since reset (placed into KLT B)", de: "Ausschussteile seit Reset (in KLT B abgelegt)"}
+    Direction: Out
+    Type: xs:int
+    Values:
+      "+Min": {valueType: xs:int, value: 0}

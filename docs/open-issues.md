@@ -3,8 +3,8 @@
 | ID | Type | Description | Mitigation / next step | Status |
 |---|---|---|---|---|
 | R1 | Risk | BaSyx Go MQTT eventing is experimental and works at submodel granularity | Godot polls at 1 Hz; eventing is an optional switch later | open |
-| R2 | Risk | basyx-python-sdk 2.2 vs BaSyx Go metamodel V3.2 | **Basic round-trip verified in M0** (`tools/tests/test_basyx_smoke.py`). Full template check in M3 | mitigated (basic) |
-| R3 | Gap | No IDTA templates for energy consumption, quality inspection, recipe or production log | Custom submodels with their own semantic IDs and CDs, documented as deviations | open |
+| R2 | Risk | basyx-python-sdk 2.2 vs BaSyx Go metamodel V3.2 | Round trip verified (M0); M3: V3.0 AASX strictly validated and imported by BaSyx Go 1.1.0 (warnings only for V3.1+ idShort rules in IDTA templates) | mitigated |
+| R3 | Gap | No IDTA templates for energy consumption, quality inspection, recipe; DBP material/circularity are battery-specific | Custom templates EnergyConsumption, OperationalData, QualityInspection, ManufacturingRecipe, ProductMaterialComposition, ProductCircularity with IEC 61360 CDs (ADR-0011); production log uses IDTA ExecutedProcesses | mitigated |
 | R4 | Risk | Physics instability of workpieces on the belt | **M1: stable in a 600 s run** (no tipping; stop accuracy ±10 mm). `can_sleep=false` needed ([ADR-0009](adr/0009-physical-transport-and-items.md)) | mitigated |
 | R5 | Risk | REST write load from telemetry and workpieces | Throttling and deadband in the bridge, ephemeral sessions | open |
 | R6 | Constraint | Godot MCP has no screenshot or script-editing tools | Direct file authoring, `tools/screenshot.sh` | mitigated |
@@ -22,3 +22,9 @@
 | O8 | Issue | Godot extracts embedded glTF decal textures next to each .glb (duplicate PNGs) | Acceptable (small, LFS). Could switch the import setting to keep textures embedded | open |
 | O9 | Limitation | NFR-01 not yet verified on a real Iris Xe-class iGPU (FPS on the dev machine is display-capped) | Measure on target hardware in M6; draw-call/primitive budgets are hardware-independent | open |
 | O10 | Limitation | Safety fence and door are static props; the door switch is not wired yet | M5 training scenario: fence door as a device (protective stop) | open |
+| O11 | Upstream | IDTA template quirks: AID SML without `valueTypeListElement`, CapabilityDescription duplicate qualifiers, MaintenanceInstructions malformed element, qualifier spellings (Cardinality/Multiplicity/"ZerotoMany"), AssetLocation idShorts `X`/`Y`/`Z` (invalid from V3.1), MaintenanceInstructions `BasicMaintenanceInformation` semanticId is an Identifiable ModelReference, MaintenanceSparePart semanticId typo `htthttps://`, ProcessParameters semanticId typo `admin-shell-io`, ExecutedProcesses times typed `xs:string`, CapabilityDescription PropertyRange typed `xs:string` | Handled in the engine (normalisation, list fix-up, pruning) or overridden in the data (`_semanticId`); typos kept verbatim to stay template-conformant; report upstream | open |
+| O12 | Gap | No ECLASS product classifications (TechnicalData.ProductClassifications) | Add verified ECLASS classes; not guessed | open |
+| O13 | Scope | PowerDriveTrainSizing (216+ elements) not used for the conveyor drive | Optional extension | open |
+| O14 | Limitation | AID payload description uses object properties `Value`/`Timestamp` with `key` v/ts (idShort ≥ 2 characters) | Matches the UNS payload; data bridge must read the `key` | open |
+| O15 | Upstream | basyx-python-sdk 2.2 serialises Entities with `"specificAssetIds": []` (violates the V3.0 JSON schema, minItems 1) | `aasx._strip_empty_specific_asset_ids` post-processes the package; remove when fixed upstream | open |
+| O16 | Upstream | `AASXWriter.write_aas()` only follows ModelReference semanticIds, so packages built from IDTA templates (GlobalReferences) contain no concept descriptions | Explicit object set via `write_all_aas_objects` | mitigated |

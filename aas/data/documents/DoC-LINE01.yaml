@@ -1,0 +1,41 @@
+title: EU-Konformitätserklärung
+subtitle: EU declaration of conformity - assembly of machines LINE01
+organization: VF Automation Systems GmbH
+version: '1.0'
+date: '2025-09-15'
+sections:
+- heading: Hersteller / Manufacturer
+  text: >-
+    VF Automation Systems GmbH, Fabrikstraße 3, 67655 Kaiserslautern, Deutschland / Germany. Bevollmächtigter für
+    die technischen Unterlagen / Person authorised to compile the technical file: Leitung Konstruktion / Head of
+    Engineering, same address.
+- heading: Maschine / Machinery
+  rows:
+  - [Bezeichnung / Designation, Prüf- und Sortierlinie / Inspection and sorting line ISL-1]
+  - [Seriennummer / Serial number, ISL-2025-001]
+  - [Baujahr / Year of construction, '2025']
+  - [Betreiber / Operator, 'VF Pneumatics GmbH, Werk / Plant 01, Kaiserslautern']
+  - [Bestandteile / Components, 'AC-200 (AC01), BC-3000 (CV01), QS-100 (QS01),']
+  - ['', 'robot cell with UR5e (RB01) and PG-85 (GR01),']
+  - ['', 'KLT stations (KLTA01, KLTB01), line controller LC-10']
+  - ['', (PLC01)]
+- heading: Richtlinien / Directives
+  text: >-
+    Die Gesamtheit von Maschinen entspricht allen einschlägigen Bestimmungen der Maschinenrichtlinie 2006/42/EG
+    sowie der EMV-Richtlinie 2014/30/EU. The assembly of machines fulfils all relevant provisions of the Machinery
+    Directive 2006/42/EC and of the EMC Directive 2014/30/EU. Die unvollständige Maschine UR5e wurde gemäß ihrer
+    Einbauerklärung eingebaut / The partly completed machinery UR5e was incorporated according to its declaration
+    of incorporation.
+- heading: Angewandte harmonisierte Normen / Harmonised standards applied
+  rows:
+  - ['EN ISO 12100:2010', risk assessment and risk reduction]
+  - ['EN ISO 13849-1:2015', safety-related parts of control systems]
+  - ['EN 60204-1:2018', electrical equipment of machines]
+  - ['EN ISO 10218-2:2011', robot systems and integration]
+  - ['EN ISO 14120:2015', guards]
+  - ['EN ISO 13857:2019', safety distances]
+  - ['EN IEC 61000-6-2:2019 / -6-4:2019', 'EMC immunity / emission, industrial environments']
+- heading: Ort, Datum, Unterschrift / Place, date, signature
+  text: >-
+    Kaiserslautern, 2025-09-15. Geschäftsführung / Managing Director, VF Automation Systems GmbH (fictional company,
+    training document).

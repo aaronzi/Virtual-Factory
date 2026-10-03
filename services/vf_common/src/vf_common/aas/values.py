@@ -32,6 +32,7 @@ def mlp_value(value: Any) -> list[dict]:
     if isinstance(value, list):
         return value
     if isinstance(value, dict):
+        value = {k: v for k, v in value.items() if not str(k).startswith("_")}  # _idShort etc. are overrides
         bad = [lang for lang in value if not LANG_TAG.match(str(lang))]
         if bad or any(text is None for text in value.values()):
             raise ValueError(f"invalid multi-language value {value!r} (quote texts containing ',' or ':')")

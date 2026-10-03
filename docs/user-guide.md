@@ -33,6 +33,19 @@ Open `godot/project.godot` in Godot 4.7 and press Play, or run:
 The line runs automatically (PackML auto-start). The overlay shows the line state, the inspection results, KLT fill
 levels, robot step and line power. Full KLTs are exchanged automatically after 4 s.
 
+## AAS model (provisioner)
+`docker compose up` runs the one-shot `provisioner` service, which generates one AASX per asset into
+`infra/basyx/preload` before BaSyx Go starts. Locally:
+```bash
+uv run -m provisioner check                  # build + validate, report MISSING/UNKNOWN values
+uv run -m provisioner build                  # write infra/basyx/preload/*.aasx (+ aas/build/environment.json)
+uv run -m provisioner upload                 # replace the AAS in a running BaSyx (no restart)
+uv run tools/check_aasx.py                   # IDTA aas-test-engines on all packages
+uv run tools/aas_template_tree.py Nameplate-3.0 3   # inspect a template
+uv run tools/fetch_idta_templates.py         # re-vendor IDTA templates and concept descriptions
+```
+See [interfaces/aas-model.md](interfaces/aas-model.md) for the model and the data format.
+
 ## Rebuilding 3D assets
 Blender 5.2 with the MCP add-on (or the Blender Python console):
 ```python

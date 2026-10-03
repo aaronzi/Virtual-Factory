@@ -1,0 +1,66 @@
+title: SortingLine PLC program description
+subtitle: Version 1.2.0 for line controller LC-10 (LINE01)
+organization: VF Automation Systems GmbH
+version: 1.2.0
+date: '2025-09-10'
+sections:
+- heading: 1 Function
+  text: >-
+    The program coordinates LINE01: infeed interlock and FIFO part tracking (serial numbers) from the release by
+    AC01 to the inspection position, belt stop with delay after LB02, settling and colour inspection by QS01, pick
+    job handshake with the robot RB01, slot management and exchange of the containers KLT A/B. Sequence steps: 0
+    wait part, 1 positioning, 2 settling, 3 inspecting, 4 wait robot, 5 picking. Cycle time 10 ms.
+- heading: 2 PackML state model (ISA-TR88.00.02)
+  rows:
+  - [States (packml_state), '1 Clearing, 2 Stopped, 3 Starting, 4 Idle,']
+  - ['', '5 Suspended, 6 Execute, 7 Stopping, 8 Aborting,']
+  - ['', '9 Aborted, 10 Holding, 11 Held, 12 Unholding,']
+  - ['', '13 Suspending, 14 Unsuspending, 15 Resetting,']
+  - ['', '16 Completing, 17 Complete']
+  - [Commands (packml_command), '1 Reset, 2 Start, 3 Stop, 4 Hold, 5 Unhold, 6 Suspend,']
+  - ['', '7 Unsuspend, 8 Abort, 9 Clear']
+  - [Command handling, 'edge-triggered on change of the value (MQTT, QoS 1)']
+  - [Auto start, 'auto_start = true: Reset and Start after power-up']
+  - [Suspended, target KLT full -> Suspend; automatic Unsuspend after]
+  - ['', exchange]
+  - [Stack light, green = Execute; amber = Idle/Suspended/Held/acting;]
+  - ['', red = Stopped/Aborted/robot fault]
+- heading: 3 Inputs
+  rows:
+  - [ac_release_count / ac_last_serial, 'AC01: released parts, serial of the last part']
+  - [lb01_signal, LB01 infeed light barrier]
+  - [lb02_signal, LB02 inspection-position light barrier]
+  - [qs_result_valid / qs_result_ok, QS01 result]
+  - [rb_busy / rb_job_done / rb_part_clear /, RB01 job handshake]
+  - [rb_fault, '']
+  - [klt_a_count / klt_b_count, measured fill count KLT A/B]
+  - [packml_command, PackML command (writable via MQTT)]
+- heading: 4 Outputs
+  rows:
+  - [ac_enable / ac_infeed_free, 'release enable for AC01, infeed free']
+  - [cv_run / cv_speed_setpoint, 'conveyor run, speed setpoint [m/s]']
+  - [qs_trigger, start colour measurement]
+  - [rb_job_start / rb_place_target /, robot job request]
+  - [rb_place_slot, '']
+  - [klt_a_exchange / klt_b_exchange, container exchange request]
+  - [packml_state, PackML state]
+  - [parts_total / parts_ok / parts_nok, counters since reset]
+  - [serial_at_qs / last_result, 'serial and result at QS01 (1 OK, 2 NOK)']
+  - [light_green / light_amber / light_red, stack light]
+  - [sequence_step / parts_on_belt /, diagnostics]
+  - [infeed_faults, '']
+- heading: 5 Parameters
+  rows:
+  - [belt_speed, 0.25 m/s (recipe)]
+  - [lb02_stop_delay, 0.165 s (LINE01 layout)]
+  - [settle_time, 0.35 s]
+  - [klt_capacity, '12']
+  - [auto_exchange, 'true']
+  - [exchange_delay, 4.0 s]
+  - [infeed_timeout, 8.0 s]
+  - [max_parts_on_belt, '3']
+- heading: 6 Error codes
+  rows:
+  - [PLC-001, infeed tracking timeout (counter infeed_faults)]
+  - [PLC-002, robot fault reported by RB01]
+  - [PLC-003, target container full -> Suspended]

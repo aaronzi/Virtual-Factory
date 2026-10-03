@@ -1,0 +1,279 @@
+tag: UR5E_TYPE
+idShort: UR5e_CollaborativeRobot
+kind: Type
+assetType: https://virtual-factory.example/ids/assettype/IndustrialRobot
+displayName: {en: "Universal Robots UR5e collaborative robot (type)", de: "Universal Robots UR5e kollaborierender Roboter (Typ)"}
+description:
+  en: >-
+    Product type of the 6-axis collaborative robot arm used for sorting and packing on LINE01. This AAS is maintained
+    by the plant operator VF Pneumatics GmbH together with the integrator VF Automation Systems GmbH; technical values
+    are taken nominatively from the public data sheet of Universal Robots A/S. It is not issued by the manufacturer.
+  de: >-
+    Produkttyp des 6-achsigen kollaborierenden Roboterarms für das Sortieren und Verpacken an LINE01. Diese VWS wird
+    vom Betreiber VF Pneumatics GmbH gemeinsam mit dem Integrator VF Automation Systems GmbH gepflegt; technische Werte
+    stammen aus dem öffentlichen Datenblatt der Universal Robots A/S. Sie wird nicht vom Hersteller herausgegeben.
+thumbnail: repo:docs/screenshots/assets/ur5e.png
+specificAssetIds: {manufacturerPartId: UR5e}
+model3d:
+  file: godot/devices/ur5e/view/ur5e.glb
+  preview: docs/screenshots/assets/ur5e.png
+  title: UR5e robot arm with PG-85 gripper (visualisation model)
+  objectType: Robot
+submodels:
+  - template: Nameplate-3.0
+    values: {$include: common/control_ur5e_nameplate.yaml}
+
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: Universal Robots A/S
+        ManufacturerProductDesignation: {en: "Collaborative robot arm UR5e", de: "Kollaborierender Roboterarm UR5e"}
+        ManufacturerArticleNumber: UR5e
+        ManufacturerOrderCode: UR5e
+        ProductImages: [{ImageFile: repo:docs/screenshots/assets/ur5e.png, ImageNote: {en: "UR5e on pedestal with PG-85 gripper (LINE01)", de: "UR5e auf Sockel mit Greifer PG-85 (LINE01)"}}]
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          Section:
+            - _idShort: Performance
+              "+Payload": {valueType: xs:double, value: 5, description: {en: "Rated payload [kg]", de: "Nenntraglast [kg]"}}
+              "+Reach": {valueType: xs:double, value: 850, description: {en: "Reach [mm]", de: "Reichweite [mm]"}}
+              "+DegreesOfFreedom": {valueType: xs:int, value: 6, description: {en: "Number of rotating joints", de: "Anzahl Drehgelenke"}}
+              "+PoseRepeatability": {valueType: xs:double, value: 0.03, description: {en: "Pose repeatability per ISO 9283, ± [mm]", de: "Posenwiederholgenauigkeit nach ISO 9283, ± [mm]"}}
+              "+TcpSpeedTypical": {valueType: xs:double, value: 1.0, description: {en: "Typical TCP speed [m/s]", de: "Typische TCP-Geschwindigkeit [m/s]"}}
+            - _idShort: Joints
+              "+JointWorkingRange": {valueType: xs:double, value: 360, description: {en: "Working range of all joints, ± [°]", de: "Arbeitsbereich aller Gelenke, ± [°]"}}
+              "+JointSpeedMax": {valueType: xs:double, value: 180, description: {en: "Maximum speed of all joints [°/s]", de: "Maximalgeschwindigkeit aller Gelenke [°/s]"}}
+            - _idShort: Physical
+              "+Mass": {valueType: xs:double, value: 20.6, description: {en: "Mass of the robot arm [kg]", de: "Masse des Roboterarms [kg]"}}
+              "+FootprintDiameter": {valueType: xs:double, value: 149, description: {en: "Footprint (base flange) diameter [mm]", de: "Durchmesser Standfläche (Fußflansch) [mm]"}}
+            - _idShort: Environment
+              "+DegreeOfProtection": {value: IP54, description: {en: "Degree of protection of the arm (IEC 60529)", de: "Schutzart des Arms (IEC 60529)"}}
+              "+AmbientTemperatureMin": {valueType: xs:double, value: 0, description: {en: "Minimum ambient temperature [°C]", de: "Minimale Umgebungstemperatur [°C]"}}
+              "+AmbientTemperatureMax": {valueType: xs:double, value: 50, description: {en: "Maximum ambient temperature [°C]", de: "Maximale Umgebungstemperatur [°C]"}}
+              "+NoiseLevel": {valueType: xs:double, value: 65, description: {en: "Sound pressure level, less than [dB(A)]", de: "Schalldruckpegel, kleiner als [dB(A)]"}}
+            - _idShort: Electrical
+              "+PowerConsumptionTypical": {valueType: xs:double, value: 200, description: {en: "Typical power consumption with a moderate operating program [W]", de: "Typische Leistungsaufnahme bei moderatem Programm [W]"}}
+              "+PowerConsumptionMax": {valueType: xs:double, value: 570, description: {en: "Maximum power consumption [W]", de: "Maximale Leistungsaufnahme [W]"}}
+              "+SupplyVoltage": {value: "100-240 V AC, 47-440 Hz (control box)", description: {en: "Mains supply of the control box", de: "Netzversorgung des Steuerschranks"}}
+            - _idShort: Safety
+              "+ConfigurableSafetyFunctions": {valueType: xs:int, value: 17, description: {en: "Number of configurable safety functions", de: "Anzahl konfigurierbarer Sicherheitsfunktionen"}}
+              "+PerformanceLevel": {value: "PL d, Category 3 (EN ISO 13849-1)", description: {en: "Performance level of the safety functions", de: "Performance Level der Sicherheitsfunktionen"}}
+      FurtherInformation:
+        TextStatement:
+          - en: "Values taken from the public UR5e data sheet of Universal Robots A/S and compiled by the plant operator; the manufacturer's current documentation prevails."
+            de: "Werte aus dem öffentlichen UR5e-Datenblatt der Universal Robots A/S, zusammengestellt vom Betreiber; maßgeblich ist die aktuelle Herstellerdokumentation."
+          - en: "Collaborative operation requires a risk assessment of the complete application (EN ISO 10218-2, ISO/TS 15066)."
+            de: "Kollaborierender Betrieb erfordert eine Risikobeurteilung der gesamten Applikation (EN ISO 10218-2, ISO/TS 15066)."
+        ValidDate: "2025-08-01"
+
+  - template: ContactInformations-1.0
+    values:
+      ContactInformation:
+        - _idShort: Manufacturer
+          RoleOfContactPerson: "0173-1#07-AAS928#001"
+          $include: common/address_universal_robots.yaml
+        - _idShort: IntegratorService
+          RoleOfContactPerson: "0173-1#07-AAS931#001"
+          $include: common/address_vf_automation.yaml
+          Department: {en: Robotics service, de: Robotik-Service}
+          FurtherDetailsOfContact: {en: "First-level support for the UR5e pick & place cells of VF Pneumatics (integrator)", de: "First-Level-Support für die UR5e-Pick-&-Place-Zellen der VF Pneumatics (Integrator)"}
+
+  - template: HandoverDocumentation-2.0
+    values:
+      Documents:
+        - DocumentIds: [{DocumentDomainId: VF Automation Systems, DocumentIdentifier: TD-UR5E, DocumentIsPrimary: true}]
+          DocumentClassifications: [{ClassId: "02-01", ClassName: {en: Technical specification, de: Technische Spezifikation}, ClassificationSystem: VDI2770:2020}]
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.0"
+              Title: {en: UR5e technical data summary, de: UR5e technische Daten (Zusammenfassung)}
+              Description: {en: "Summary of the public UR5e data sheet values compiled by the integrator for the plant documentation", de: "Zusammenfassung der öffentlichen UR5e-Datenblattwerte, vom Integrator für die Anlagendokumentation erstellt"}
+              StatusSetDate: "2025-08-01"
+              StatusValue: Released
+              OrganizationShortName: VF Automation
+              OrganizationOfficialName: VF Automation Systems GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/TD-UR5E.pdf}]
+        - DocumentIds: [{DocumentDomainId: VF Automation Systems, DocumentIdentifier: OI-UR5E-PP, DocumentIsPrimary: true}]
+          DocumentClassifications:
+            - {ClassId: "03-02", ClassName: {en: Operation, de: Bedienung}, ClassificationSystem: VDI2770:2020}
+            - {ClassId: "03-03", ClassName: {en: General safety, de: Allgemeine Sicherheit}, ClassificationSystem: VDI2770:2020}
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.1"
+              Title: {en: UR5e pick & place cell - safety and operating instructions, de: UR5e-Pick-&-Place-Zelle - Sicherheits- und Bedienhinweise}
+              Description: {en: "Integrator instructions for the robot cell: safeguarding, safety configuration, operating modes, job handshake with the line controller, recovery after stops", de: "Integratoranleitung für die Roboterzelle: Schutzeinrichtungen, Sicherheitskonfiguration, Betriebsarten, Job-Handshake mit der Liniensteuerung, Wiederanlauf nach Stopps"}
+              KeyWords: {en: "safety, protective stop, operating mode, handshake", de: "Sicherheit, Schutzstopp, Betriebsart, Handshake"}
+              StatusSetDate: "2025-09-10"
+              StatusValue: Released
+              OrganizationShortName: VF Automation
+              OrganizationOfficialName: VF Automation Systems GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/OI-UR5E-PP.pdf}]
+
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - PcfCalculationMethods: [{value: "ISO 14067"}]
+          PcfCO2eq: 900
+          ReferenceImpactUnitForCalculation: piece
+          QuantityOfMeasureForCalculation: 1
+          LifeCyclePhases: [{value: "A1-A3"}]
+          ExplanatoryStatement: repo:aas/files/docs/PCF-UR5E.pdf
+          PublicationDate: "2025-09-15T00:00:00+00:00"
+
+  - template: FunctionalSafety-1.0
+    values:
+      NumberOfFunctionalSafetySetsOfCharacteristics: 1
+      OperatingConditionsOfFunctionalSafetyCharacteristics:
+        - _idShort: OperatingConditions
+          TypeOfVoltage: AC
+          MinimumRatedVoltage: 100
+          MaximumRatedVoltage: 240
+          OtherOperatingConditions: "Ambient temperature 0-50 °C, IP54 (arm); safety configuration protected by password and checksum, set by the integrator"
+      SafetyDeviceTypes:
+        - _idShort: RobotSafetySystem
+          FunctionalSafetyDeviceType: "Robot safety control system with 17 configurable safety functions (joint, TCP, force, power, momentum, stopping time/distance and tool limits; emergency stop and safeguard stop inputs)"
+          SafetySubsystem:
+            SIL: "not declared (rated per EN ISO 13849-1)"
+            PL: d
+            Category: "3"
+          "+ConfigurableSafetyFunctions": {valueType: xs:int, value: 17, description: {en: Number of configurable safety functions, de: Anzahl konfigurierbarer Sicherheitsfunktionen}}
+          "+ApplicableStandards": {value: "EN ISO 13849-1, EN ISO 10218-1", description: {en: Standards of the declared safety rating, de: Normen der angegebenen Sicherheitseinstufung}}
+
+  - template: MaintenanceInstructions-1.0
+    values:
+      MaintenanceFreeAsset: false
+      MaintenanceInstructionsForSpecificInterval:
+        - _idShort: MonthlySafetyCheck
+          BasicMaintenanceInformation:
+            # upstream template defect: semanticId is a ModelReference with key type 'Identifiable' (rejected by the
+            # strict build); same IRI re-declared as ExternalReference
+            _semanticId: https://admin-shell.io/idta/maintenanceinstructions/basicmaintenanceinformation/1/0
+            MaintenanceID: MI-UR5E-01
+            NameOfMaintenance: {en: Monthly test of the safety functions, de: Monatliche Prüfung der Sicherheitsfunktionen}
+            SourceOfMaintenanceInstructions: {en: "Integrator maintenance plan (VF Automation Systems), based on the manufacturer's user manual", de: "Wartungsplan des Integrators (VF Automation Systems) auf Basis des Herstellerhandbuchs"}
+            IntervalSpecification: {MaintenanceIntervalValue: 1, MaintenanceIntervalUnit: month}
+            AlarmValues:
+              Alarm:
+                - {AlarmName: {en: Safety check due, de: Sicherheitsprüfung fällig}, WarningLimitRelativeValue: 90, WarningLimitSeverity: warning}
+            RelatedStandardsLawsRegulations:
+              - {en: "EN ISO 10218-2 (robot systems and integration)", de: "EN ISO 10218-2 (Robotersysteme und Integration)"}
+              - {en: "Ordinance on Industrial Safety and Health (BetrSichV)", de: "Betriebssicherheitsverordnung (BetrSichV)"}
+            SafetyRegulationsToBeObserved:
+              - {en: "Only instructed persons; the robot cell must be empty during the test of the fence door switch.", de: "Nur unterwiesene Personen; die Roboterzelle muss bei der Prüfung des Türschalters leer sein."}
+          MaintenanceTechnicians:
+            NumberOfRequiredTechnicians: 1
+            RequiredQualification: [{en: "Operator instructed per OI-UR5E-PP", de: "Bediener, unterwiesen nach OI-UR5E-PP"}]
+            EstimatedTotalWorkingTime: {ValueTotalEstimatedWorkingTime: 0.25, UnitValueTotalEstimatedWorkingTime: hours}
+          ListMaintenanceSteps:
+            MaintenanceStep:
+              - _idShort: EmergencyStopTest
+                MaintenanceStepID: "10"
+                MaintenanceStepName: {en: Test emergency stop, de: Not-Halt prüfen}
+                LocalizationDescription: {en: "Teach pendant and HMI stand", de: "Programmierhandgerät und HMI-Säule"}
+                InstructionMaintenanceStep: {en: "Press the emergency stop on the teach pendant while the robot moves at reduced speed; the robot must stop. Release, reset and repeat at the HMI stand.", de: "Not-Halt am Programmierhandgerät bei langsamer Roboterbewegung betätigen; der Roboter muss stoppen. Entriegeln, quittieren und an der HMI-Säule wiederholen."}
+                DocumentationSignatureMandatory: true
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 5, UnitEstimatedDurationTimeMaintenanceStep: minutes}
+              - _idShort: ProtectiveStopTest
+                MaintenanceStepID: "20"
+                MaintenanceStepName: {en: Test fence door switch (protective stop), de: Türschalter prüfen (Schutzstopp)}
+                InstructionMaintenanceStep: {en: "Open the fence door during automatic operation; the robot must perform a protective stop (RB-002) and the line controller must stop feeding.", de: "Schutztür im Automatikbetrieb öffnen; der Roboter muss einen Schutzstopp ausführen (RB-002) und die Liniensteuerung die Zuführung stoppen."}
+                DocumentationSignatureMandatory: true
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 5, UnitEstimatedDurationTimeMaintenanceStep: minutes}
+                EndOfMaintenance: true
+        - _idShort: AnnualInspection
+          BasicMaintenanceInformation:
+            # upstream template defect: semanticId is a ModelReference with key type 'Identifiable' (rejected by the
+            # strict build); same IRI re-declared as ExternalReference
+            _semanticId: https://admin-shell.io/idta/maintenanceinstructions/basicmaintenanceinformation/1/0
+            MaintenanceID: MI-UR5E-02
+            NameOfMaintenance: {en: Annual inspection of robot arm and cell, de: Jährliche Inspektion von Roboterarm und Zelle}
+            SourceOfMaintenanceInstructions: {en: "Integrator maintenance plan (VF Automation Systems), based on the manufacturer's service manual", de: "Wartungsplan des Integrators (VF Automation Systems) auf Basis des Hersteller-Servicehandbuchs"}
+            IntervalSpecification: {MaintenanceIntervalValue: 12, MaintenanceIntervalUnit: months}
+            SafetyRegulationsToBeObserved:
+              - {en: "Switch off and lock out the control box before working on cables and mounting.", de: "Vor Arbeiten an Kabeln und Befestigung den Steuerschrank ausschalten und gegen Wiedereinschalten sichern."}
+          MaintenanceTechnicians:
+            NumberOfRequiredTechnicians: 1
+            RequiredQualification: [{en: "Robot service technician trained on UR e-Series", de: "Roboter-Servicetechniker mit Schulung UR e-Series"}]
+            EstimatedTotalWorkingTime: {ValueTotalEstimatedWorkingTime: 2, UnitValueTotalEstimatedWorkingTime: hours}
+          ListMaintenanceSteps:
+            MaintenanceStep:
+              - _idShort: VisualInspection
+                MaintenanceStepID: "10"
+                MaintenanceStepName: {en: Visual inspection, de: Sichtprüfung}
+                InstructionMaintenanceStep: {en: "Inspect joints, covers, tool flange, robot cable and teach pendant cable for damage and wear.", de: "Gelenke, Abdeckungen, Werkzeugflansch, Roboterkabel und Kabel des Programmierhandgeräts auf Schäden und Verschleiß prüfen."}
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 30, UnitEstimatedDurationTimeMaintenanceStep: minutes}
+              - _idShort: MountingCheck
+                MaintenanceStepID: "20"
+                MaintenanceStepName: {en: Check mounting on the pedestal, de: Befestigung auf dem Sockel prüfen}
+                InstructionMaintenanceStep: {en: "Check the base mounting bolts and the pedestal anchors for tightness with a torque wrench (values per installation drawing).", de: "Befestigungsschrauben des Fußes und Sockelanker mit Drehmomentschlüssel auf festen Sitz prüfen (Werte laut Aufstellzeichnung)."}
+                ToolsForMaintenanceStep: [{ref: "sm:UR5E_TYPE/MaintenanceInstructions#MaintenanceToolList.0"}]
+                QuantityOfToolsForMaintenanceStep: 1
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 30, UnitEstimatedDurationTimeMaintenanceStep: minutes}
+              - _idShort: BrakeAndSafetyCheck
+                MaintenanceStepID: "30"
+                MaintenanceStepName: {en: Check joint brakes and safety configuration, de: Gelenkbremsen und Sicherheitskonfiguration prüfen}
+                InstructionMaintenanceStep: {en: "Test the joint brakes per service manual and compare the safety configuration checksum with the commissioning record.", de: "Gelenkbremsen nach Servicehandbuch prüfen und Prüfsumme der Sicherheitskonfiguration mit dem Inbetriebnahmeprotokoll vergleichen."}
+                DocumentationSignatureMandatory: true
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 60, UnitEstimatedDurationTimeMaintenanceStep: minutes}
+                EndOfMaintenance: true
+      MaintenanceToolList:
+        - ToolID: TOOL-TW-25
+          ToolName: {en: Torque wrench 5-25 Nm, de: Drehmomentschlüssel 5-25 Nm}
+          ToolDescription: [{en: "Click-type torque wrench, 3/8 inch drive, with hex bit set", de: "Auslösender Drehmomentschlüssel, 3/8 Zoll, mit Innensechskant-Bitsatz"}]
+
+  - template: ControlComponentType-2.0
+    values:
+      Skills:
+        Skill:
+          - _idShort: PickAndPlace
+            _description: {en: "Pick the part at the taught pick position (inspection station) and place it into a slot of the target container", de: "Teil an der geteachten Greifposition (Prüfstation) aufnehmen und in ein Fach des Zielbehälters ablegen"}
+            Disabled: false
+            Modes:
+              Mode: [{_idShort: Auto, value: AUTO}, {_idShort: Simulate, value: SIMULATE}]
+            Parameters: {$include: common/control_ur5e_pickandplace_parameters.yaml}
+            Errors:
+              ErrorReference:
+                - {ref: "sm:UR5E_TYPE/ControlComponentType#Errors.TargetUnreachable"}
+                - {ref: "sm:UR5E_TYPE/ControlComponentType#Errors.ProtectiveStop"}
+            Uses:
+              SkillReference: [{ref: "sm:UR5E_TYPE/ControlComponentType#Skills.MoveHome"}]
+          - _idShort: MoveHome
+            _description: {en: "Move to the taught home pose above the inspection station (linear retract, then joint move)", de: "In die geteachte Grundstellung über der Prüfstation fahren (lineares Zurückziehen, dann Achsbewegung)"}
+            Disabled: false
+            Modes:
+              Mode: [{_idShort: Auto, value: AUTO}, {_idShort: Manual, value: MANUAL}, {_idShort: Simulate, value: SIMULATE}]
+            Parameters:
+              Parameter:
+                - _idShort: speed_override
+                  _description: {en: "Speed slider applied to the motion", de: "Geschwindigkeitsoverride der Bewegung"}
+                  Direction: In
+                  Type: xs:double
+                  Values:
+                    "+Min": {valueType: xs:double, value: 0.0}
+                    "+Max": {valueType: xs:double, value: 1.0}
+                    "+Default": {valueType: xs:double, value: 1.0}
+            Errors:
+              ErrorReference: [{ref: "sm:UR5E_TYPE/ControlComponentType#Errors.ProtectiveStop"}]
+      Interfaces:
+        Interface:
+          - _idShort: JobHandshake
+            _description: {en: "Robot program interface of the pick & place application (VF Automation Systems)", de: "Programmschnittstelle der Pick-&-Place-Applikation (VF Automation Systems)"}
+            InterfaceProfile: VF-MQTT-JobHandshake/1.0
+            InterfaceProfileSupplement: >-
+              Job handshake between line controller and robot program. Inputs (set by the line controller): place_target,
+              place_slot, speed_override, then job_start = true (rising edge, held until job_done). Outputs (published via
+              MQTT/UNS, see AssetInterfacesDescription of the instance): busy while the job runs; part_clear = true as soon as
+              the part is lifted off the conveyor (line may index); job_done = true after placing, stays true until job_start
+              is reset (acknowledge). fault (RB-001) and protective_stopped (RB-002) abort the job.
+      Errors:
+        Error:
+          - _idShort: TargetUnreachable
+            ErrorCode: RB-001
+            "+Description": {modelType: MultiLanguageProperty, value: {en: "Target pose unreachable: inverse kinematics found no solution within the joint limits (output fault = true)", de: "Zielpose nicht erreichbar: inverse Kinematik ohne Lösung innerhalb der Gelenkgrenzen (Ausgang fault = true)"}}
+            "+Remedy": {modelType: MultiLanguageProperty, value: {en: "Check the taught positions and the container placement; re-teach and restart the job", de: "Geteachte Positionen und Behälterlage prüfen; neu teachen und Job neu starten"}}
+            "+Severity": {value: Error}
+          - _idShort: ProtectiveStop
+            ErrorCode: RB-002
+            "+Description": {modelType: MultiLanguageProperty, value: {en: "Protective stop: safety input active (e.g. fence door opened) or safety limit violated (output protective_stopped = true)", de: "Schutzstopp: Sicherheitseingang aktiv (z. B. Schutztür geöffnet) oder Sicherheitsgrenze verletzt (Ausgang protective_stopped = true)"}}
+            "+Remedy": {modelType: MultiLanguageProperty, value: {en: "Remove the cause, close the fence door, acknowledge on the teach pendant and resume the program", de: "Ursache beseitigen, Schutztür schließen, am Programmierhandgerät quittieren und Programm fortsetzen"}}
+            "+Severity": {value: Warning}

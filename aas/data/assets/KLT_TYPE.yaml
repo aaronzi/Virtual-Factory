@@ -1,0 +1,85 @@
+tag: KLT_TYPE
+idShort: KLT6428_SmallLoadCarrier
+kind: Type
+assetType: https://virtual-factory.example/ids/assettype/SmallLoadCarrier
+displayName: {en: "Small load carrier KLT 6428 on stand (type)", de: "Kleinladungsträger KLT 6428 auf Gestell (Typ)"}
+description:
+  en: >-
+    Product type of the output containers of LINE01: VDA 4500 small load carrier KLT 6428 with a 4 × 3 slot insert for
+    12 upright cylinders on a powder-coated stand with fill-level detection. Colour variants blue (good parts) and red
+    (rejects).
+  de: >-
+    Produkttyp der Ausgangsbehälter von LINE01: Kleinladungsträger KLT 6428 nach VDA 4500 mit 4 × 3-Facheinsatz für
+    12 stehende Zylinder auf einem pulverbeschichteten Gestell mit Füllstandserkennung. Farbvarianten blau (Gutteile)
+    und rot (Ausschuss).
+thumbnail: repo:docs/screenshots/assets/klt_container.png
+specificAssetIds: {manufacturerPartId: KLT-6428-S550}
+model3d:
+  file: godot/devices/klt_container/view/klt_container.glb
+  preview: docs/screenshots/assets/klt_container.png
+  title: KLT 6428 on stand with slot insert and label holder
+  objectType: Container
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+      ManufacturerProductDesignation: {en: "Small load carrier KLT 6428 (VDA 4500) with 12-slot insert on stand, height 550 mm", de: "Kleinladungsträger KLT 6428 (VDA 4500) mit 12-Fach-Einsatz auf Gestell, Höhe 550 mm"}
+      ManufacturerProductRoot: {en: Material flow equipment, de: Materialflusstechnik}
+      ManufacturerProductFamily: {en: KLT stations, de: KLT-Stationen}
+      ManufacturerProductType: KLT-6428-S550
+      OrderCodeOfManufacturer: KLT-6428-S550
+      ProductArticleNumberOfManufacturer: "6000-6428"
+      URIOfTheProduct: https://virtual-factory.example/vf-automation/products/KLT-6428-S550
+      CountryOfOrigin: DE
+      HardwareVersion: "A"
+      AddressInformation: {$include: common/address_vf_automation.yaml}
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: VF Automation Systems GmbH
+        ManufacturerProductDesignation: {en: "KLT 6428 on stand with 12-slot insert", de: "KLT 6428 auf Gestell mit 12-Fach-Einsatz"}
+        ManufacturerArticleNumber: "6000-6428"
+        ManufacturerOrderCode: KLT-6428-S550
+        ProductImages: [{ImageFile: repo:docs/screenshots/assets/klt_container.png, ImageNote: {en: "KLT A (blue) and KLT B (red) on their stands", de: "KLT A (blau) und KLT B (rot) auf ihren Gestellen"}}]
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          Section:
+            - _idShort: Container
+              "+ContainerStandard": {value: "VDA 4500, KLT 6428", description: {en: Container standard and size, de: Behälternorm und Baugröße}}
+              "+OuterLength": {valueType: xs:double, value: 600, description: {en: "Outer length (nominal) [mm]", de: "Außenlänge (nominal) [mm]"}}
+              "+OuterWidth": {valueType: xs:double, value: 400, description: {en: "Outer width (nominal) [mm]", de: "Außenbreite (nominal) [mm]"}}
+              "+OuterHeight": {valueType: xs:double, value: 280, description: {en: "Outer height [mm]", de: "Außenhöhe [mm]"}}
+              "+InnerLength": {valueType: xs:double, value: 544, description: {en: "Inner length [mm]", de: "Innenlänge [mm]"}}
+              "+InnerWidth": {valueType: xs:double, value: 346, description: {en: "Inner width [mm]", de: "Innenbreite [mm]"}}
+              "+InnerHeight": {valueType: xs:double, value: 255, description: {en: "Inner height [mm]", de: "Innenhöhe [mm]"}}
+              "+ContainerMaterial": {value: "PP (polypropylene), recyclable", description: {en: Container material, de: Behälterwerkstoff}}
+              "+ContainerMass": {valueType: xs:double, value: 3.1, description: {en: "Mass of the empty container incl. insert [kg]", de: "Masse des leeren Behälters inkl. Einsatz [kg]"}}
+              "+ContainerLoadMax": {valueType: xs:double, value: 50, description: {en: "Maximum load of the container [kg]", de: "Maximale Zuladung des Behälters [kg]"}}
+              "+ColourVariants": {value: "blue RAL 5015 (good parts), red RAL 3020 (rejects)", description: {en: Colour variants, de: Farbvarianten}}
+            - _idShort: SlotInsert
+              "+Capacity": {valueType: xs:int, value: 12, description: {en: "Capacity [cylinders, upright]", de: "Kapazität [Zylinder, stehend]"}}
+              "+SlotRows": {valueType: xs:int, value: 4, description: {en: "Number of slot rows (long side)", de: "Anzahl der Fachreihen (Längsseite)"}}
+              "+SlotColumns": {valueType: xs:int, value: 3, description: {en: "Number of slot columns (short side)", de: "Anzahl der Fachspalten (Schmalseite)"}}
+              "+SlotPitchLength": {valueType: xs:double, value: 120, description: {en: "Slot pitch along the long side [mm]", de: "Fachteilung entlang der Längsseite [mm]"}}
+              "+SlotPitchWidth": {valueType: xs:double, value: 100, description: {en: "Slot pitch along the short side [mm]", de: "Fachteilung entlang der Schmalseite [mm]"}}
+              "+InsertMaterial": {value: "PE foam, antistatic, die-cut", description: {en: Insert material, de: Werkstoff des Einsatzes}}
+              "+PartType": {value: "ISO 15552 cylinders Ø32, stroke up to 100 mm, standing on the end cap", description: {en: Suitable parts, de: Geeignete Teile}}
+            - _idShort: Stand
+              "+StandHeight": {valueType: xs:double, value: 550, description: {en: "Height of the container support above floor [mm]", de: "Höhe der Behälterauflage über Boden [mm]"}}
+              "+StandMaterial": {value: "Steel tube 40 × 40 mm, powder-coated RAL 7016", description: {en: Stand material, de: Werkstoff des Gestells}}
+              "+StandMass": {valueType: xs:double, value: 14, description: {en: "Mass of the stand [kg]", de: "Masse des Gestells [kg]"}}
+              "+FillLevelDetection": {value: "Part presence detection in the container area, evaluated by the line controller", description: {en: Fill-level detection, de: Füllstandserkennung}}
+              "+ContainerExchange": {value: "Manual exchange from the operator side; full container is reported to the line controller", description: {en: Container exchange, de: Behälterwechsel}}
+      FurtherInformation:
+        TextStatement:
+          - {en: "The container itself is a standardised VDA 4500 returnable packaging item; VF Automation Systems supplies the stand, the slot insert and the labelling.", de: "Der Behälter selbst ist ein genormtes Mehrwegverpackungsteil nach VDA 4500; VF Automation Systems liefert Gestell, Facheinsatz und Kennzeichnung."}
+        ValidDate: "2025-06-01"
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - PcfCalculationMethods: [{value: "ISO 14067"}, {value: "GHG Protocol"}]
+          PcfCO2eq: 42
+          ReferenceImpactUnitForCalculation: piece
+          QuantityOfMeasureForCalculation: 1
+          LifeCyclePhases: [{value: "A1-A3"}]
+          PublicationDate: "2025-06-01T00:00:00+00:00"

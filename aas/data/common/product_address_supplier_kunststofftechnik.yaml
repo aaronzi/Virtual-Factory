@@ -1,0 +1,9 @@
+# ContactInformation structure (IDTA 02002) of the injection-moulding supplier of the protective caps (fictional company)
+Company: {en: Kunststofftechnik Westrich GmbH, de: Kunststofftechnik Westrich GmbH}
+Street: {de: Am Spritzguss 3}
+Zipcode: {de: "66482"}
+CityTown: {en: Zweibrücken, de: Zweibrücken}
+NationalCode: {en: DE}
+Phone: {TelephoneNumber: {en: "+49 6332 000000-0"}}
+Email: {EmailAddress: kontakt@kt-westrich.example}
+AddressOfAdditionalLink: https://virtual-factory.example/kunststofftechnik-westrich

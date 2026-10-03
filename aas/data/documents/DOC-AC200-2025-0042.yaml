@@ -1,0 +1,24 @@
+title: "EU declaration of conformity"
+subtitle: "AC-200 assembly and test cell, serial number AC200-2025-0042"
+organization: VF Automation Systems GmbH
+version: "1.0"
+date: "2025-08-29"
+sections:
+  - heading: Manufacturer
+    text: >-
+      VF Automation Systems GmbH, Fabrikstraße 3, 67655 Kaiserslautern, Germany. This declaration of conformity is
+      issued under the sole responsibility of the manufacturer.
+  - heading: Machine
+    rows: [[Designation, "Assembly and test cell"], [Type, "AC-200"], [Order code, "AC-200-PC32-3P400"],
+           [Serial number, "AC200-2025-0042"], [Year of construction, "2025"]]
+  - heading: Union harmonisation legislation
+    rows: [["Directive 2006/42/EC", "Machinery"], ["Directive 2014/30/EU", "Electromagnetic compatibility"]]
+  - heading: Harmonised standards applied
+    rows: [["EN ISO 12100:2010", "Risk assessment"], ["EN ISO 13849-1:2023", "Safety-related control parts"],
+           ["EN ISO 14119:2013", "Interlocking devices"], ["EN ISO 13850:2015", "Emergency stop"],
+           ["EN 60204-1:2018", "Electrical equipment"], ["EN ISO 4414:2010", "Pneumatics"],
+           ["EN IEC 61000-6-2 / -6-4", "EMC immunity / emission"]]
+  - heading: Signature
+    text: >-
+      Authorised to compile the technical documentation: VF Automation Systems GmbH, Engineering. Kaiserslautern,
+      29 August 2025, Managing Director (fictional, training document).

@@ -1,0 +1,348 @@
+# Blueprint of ONE workpiece instance AAS as created and filled by the MES at runtime (M4), shown for serial
+# PC3280-2026-000123 (part no. 123 of the shift starting 2026-10-01 06:00 UTC, takt 12 s). Validated with
+# `uv run -m provisioner check --only PC3280_TYPE,WP_PC3280_2026_000123 --blueprints`; never preloaded.
+# The MES replaces serial, timestamps, measured values, lots and destination per part; the structure is fixed.
+tag: WP_PC3280_2026_000123
+idShort: PC3280_2026_000123
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/PneumaticCylinder
+derivedFrom: PC3280_TYPE
+displayName: {en: "Profile cylinder PC-32-80-DA-M, serial PC3280-2026-000123", de: "Profilzylinder PC-32-80-DA-M, Seriennummer PC3280-2026-000123"}
+description:
+  en: "Product instance (workpiece) assembled, tested, inspected and packed on LINE01 on 2026-10-01; result: good part, packed in KLT A01."
+  de: "Produktinstanz (Werkstück), am 2026-10-01 auf LINE01 montiert, geprüft, inspiziert und verpackt; Ergebnis: Gutteil, verpackt in KLT A01."
+thumbnail: repo:docs/screenshots/assets/cylinder.png
+specificAssetIds: {serialNumber: PC3280-2026-000123, manufacturerPartId: PC-32-80-DA-M}
+location: [0.75, 0.6, -0.55]
+locationDescription: "KLT A01, slot 6"
+submodels:
+  - template: Nameplate-3.0
+    values:
+      $include: common/product_nameplate_pc3280.yaml
+      SerialNumber: PC3280-2026-000123
+      DateOfManufacture: "2026-10-01"
+      YearOfConstruction: "2026"
+      UniqueFacilityIdentifier: "gln:4099999000029"
+
+  - template: DppMetadata-1.0
+    values:
+      contentSpecificationIds:
+        - https://admin-shell.io/idta/nameplate/3/0/Nameplate
+        - https://admin-shell.io/idta/CarbonFootprint/CarbonFootprint/1/0
+        - https://admin-shell.io/idta/ExecutedProcesses/1/0
+        - https://virtual-factory.example/ids/smt/QualityInspection/1/0/Submodel
+      digitalProductPassportId: https://virtual-factory.example/dpp/item/PC3280-2026-000123
+      dppSchemaVersion: "IDTA-DPP4.0:1.0"
+      dppStatus: Active
+      economicOperatorId: "gln:4099999000012"
+      facilityId: "gln:4099999000029"
+      granularity: Item
+      lastUpdate: "2026-10-01T06:25:07Z"
+      uniqueProductIdentifier: https://virtual-factory.example/01/04099999032808/21/PC3280-2026-000123
+
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - PcfCalculationMethods: [{value: "ISO 14067"}]
+          PcfCO2eq: 4.21
+          ReferenceImpactUnitForCalculation: piece
+          QuantityOfMeasureForCalculation: 1
+          LifeCyclePhases: [{value: "A1-A3"}]
+          GoodsHandoverAddress: {$include: common/address_vf_pneumatics.yaml}
+          PublicationDate: "2026-10-01T06:25:07+00:00"
+
+  # One Run with all processes of the master recipe MR-PC3280. Measured values are recorded as resource
+  # parameters (values reported by the executing resource); component lots in the process BoM.
+  - template: ExecutedProcesses-1.0
+    values:
+      Run:
+        - _idShort: Run01
+          RunResult: Completed
+          Process:
+            - _idShort: OP10
+              ProcessId: OP10
+              ProcessName: Pre-assemble piston and rod
+              ProcessDescription: {en: "Screw the piston with magnet ring onto the piston rod and tighten.", de: "Kolben mit Magnetring auf die Kolbenstange schrauben und anziehen."}
+              PlannedProcessTime: PT2S
+              ProductParameters:
+                "+SerialNumber": {value: PC3280-2026-000123, description: {en: "Serial number assigned at process start", de: "Bei Prozessstart vergebene Seriennummer"}}
+              ProcessParameters:
+                "+TighteningTorque": {valueType: xs:double, value: 8.06, description: {en: "Final tightening torque [N·m]", de: "Endanzugsmoment [N·m]"}}
+                "+FinalAngle": {valueType: xs:double, value: 42, description: {en: "Rotation angle after threshold torque [°]", de: "Drehwinkel nach Schwellmoment [°]"}}
+              ResourceParameters:
+                "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
+              ProcessBoM:
+                "+PistonRodLot": {value: L2609-0412, description: {en: "Lot of piston rod 5032-1004", de: "Los der Kolbenstange 5032-1004"}}
+                "+PistonLot": {value: L2609-0388, description: {en: "Lot of piston 5032-1005", de: "Los des Kolbens 5032-1005"}}
+              ProcessStatus: Completed
+              ProcessResult: OK
+              ProcessStartTime: "2026-10-01T06:24:36.000Z"
+              ProcessEndTime: "2026-10-01T06:24:38.050Z"
+              ProcessStages: {}
+              ProcessErrors: {}
+            - _idShort: OP20
+              ProcessId: OP20
+              ProcessName: Insert seals
+              ProcessDescription: {en: "Fit the seals and O-rings of the seal kit with assembly grease.", de: "Dichtungen und O-Ringe des Dichtungssatzes mit Montagefett einsetzen."}
+              PlannedProcessTime: PT1.5S
+              ProductParameters: {}
+              ProcessParameters:
+                "+GreaseQuantity": {valueType: xs:double, value: 0.15, description: {en: "Dispensed grease quantity [g]", de: "Dosierte Fettmenge [g]"}}
+                "+SealsFitted": {valueType: xs:unsignedInt, value: 8, description: {en: "Seals and O-rings fitted [pcs]", de: "Eingesetzte Dichtungen und O-Ringe [Stk]"}}
+              ResourceParameters:
+                "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
+              ProcessBoM:
+                "+SealKitLot": {value: DTS-2608-1173, description: {en: "Supplier lot of seal kit 5032-1006", de: "Lieferantenlos des Dichtungssatzes 5032-1006"}}
+              ProcessStatus: Completed
+              ProcessResult: OK
+              ProcessStartTime: "2026-10-01T06:24:38.050Z"
+              ProcessEndTime: "2026-10-01T06:24:39.540Z"
+              ProcessStages: {}
+              ProcessErrors: {}
+            - _idShort: OP30
+              ProcessId: OP30
+              ProcessName: Insert piston assembly into barrel
+              ProcessDescription: {en: "Push the piston assembly into the barrel with force monitoring.", de: "Kolbenbaugruppe kraftüberwacht in das Rohr einschieben."}
+              PlannedProcessTime: PT1.5S
+              ProductParameters: {}
+              ProcessParameters:
+                "+InsertionForcePeak": {valueType: xs:double, value: 132, description: {en: "Peak insertion force [N]", de: "Maximale Einschubkraft [N]"}}
+              ResourceParameters:
+                "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
+              ProcessBoM:
+                "+BarrelLot": {value: L2609-0420, description: {en: "Lot of barrel 5032-1001", de: "Los des Zylinderrohrs 5032-1001"}}
+              ProcessStatus: Completed
+              ProcessResult: OK
+              ProcessStartTime: "2026-10-01T06:24:39.540Z"
+              ProcessEndTime: "2026-10-01T06:24:41.060Z"
+              ProcessStages: {}
+              ProcessErrors: {}
+            - _idShort: OP40
+              ProcessId: OP40
+              ProcessName: Mount end caps and tighten screws
+              ProcessDescription: {en: "Mount the end caps and tighten the eight M5 screws crosswise to 6 N·m.", de: "Deckel montieren und die acht M5-Schrauben über Kreuz mit 6 N·m anziehen."}
+              PlannedProcessTime: PT2.5S
+              ProductParameters: {}
+              ProcessParameters:
+                "+TighteningTorqueMin": {valueType: xs:double, value: 5.96, description: {en: "Lowest final torque of the 8 screws [N·m]", de: "Kleinstes Endanzugsmoment der 8 Schrauben [N·m]"}}
+                "+TighteningTorqueMax": {valueType: xs:double, value: 6.08, description: {en: "Highest final torque of the 8 screws [N·m]", de: "Größtes Endanzugsmoment der 8 Schrauben [N·m]"}}
+              ResourceParameters:
+                "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
+              ProcessBoM:
+                "+EndCapFrontLot": {value: DGP-260915-F, description: {en: "Supplier lot of front end cap 5032-1002", de: "Lieferantenlos des Vorderdeckels 5032-1002"}}
+                "+EndCapRearLot": {value: DGP-260915-R, description: {en: "Supplier lot of rear end cap 5032-1003", de: "Lieferantenlos des Hinterdeckels 5032-1003"}}
+                "+ScrewLot": {value: NRN-26-33871, description: {en: "Supplier lot of screws 9001-0516", de: "Lieferantenlos der Schrauben 9001-0516"}}
+                "+CushioningScrewLot": {value: L2609-0371, description: {en: "Lot of cushioning screws 5032-1008", de: "Los der Dämpfungsschrauben 5032-1008"}}
+              ProcessStatus: Completed
+              ProcessResult: OK
+              ProcessStartTime: "2026-10-01T06:24:41.060Z"
+              ProcessEndTime: "2026-10-01T06:24:43.610Z"
+              ProcessStages: {}
+              ProcessErrors: {}
+            - _idShort: OP50
+              ProcessId: OP50
+              ProcessName: Leak test
+              ProcessDescription: {en: "Pressure-decay leak test of both chambers at 6 bar.", de: "Druckabfall-Dichtheitsprüfung beider Kammern bei 6 bar."}
+              PlannedProcessTime: PT2S
+              ProductParameters: {}
+              ProcessParameters:
+                "+TestPressure": {valueType: xs:double, value: 6.02, description: {en: "Actual test pressure (gauge) [bar]", de: "Tatsächlicher Prüfdruck (Überdruck) [bar]"}}
+                "+PressureDecay": {valueType: xs:double, value: 5.1, description: {en: "Pressure decay during the measurement time [Pa]", de: "Druckabfall während der Messzeit [Pa]"}}
+              ResourceParameters:
+                "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
+                "+MeasuredLeakRate": {valueType: xs:double, value: 0.38, description: {en: "Measured leak rate [cm³/min] (limit 1.0)", de: "Gemessene Leckrate [cm³/min] (Grenzwert 1,0)"}}
+              ProcessBoM: {}
+              ProcessStatus: Completed
+              ProcessResult: OK
+              ProcessStartTime: "2026-10-01T06:24:43.610Z"
+              ProcessEndTime: "2026-10-01T06:24:45.630Z"
+              ProcessStages:
+                ProcessStage:
+                  - {_idShort: Fill, StageId: Fill, StartTime: "2026-10-01T06:24:43.610Z", EndTime: "2026-10-01T06:24:44.210Z", Result: OK}
+                  - {_idShort: Stabilise, StageId: Stabilise, StartTime: "2026-10-01T06:24:44.210Z", EndTime: "2026-10-01T06:24:44.810Z", Result: OK}
+                  - {_idShort: Measure, StageId: Measure, StartTime: "2026-10-01T06:24:44.810Z", EndTime: "2026-10-01T06:24:45.410Z", Result: OK}
+                  - {_idShort: Vent, StageId: Vent, StartTime: "2026-10-01T06:24:45.410Z", EndTime: "2026-10-01T06:24:45.630Z", Result: OK}
+              ProcessErrors: {}
+            - _idShort: OP60
+              ProcessId: OP60
+              ProcessName: Function test
+              ProcessDescription: {en: "Full stroke in both directions at 6 bar; stroke time measurement.", de: "Voller Hub in beide Richtungen bei 6 bar; Hubzeitmessung."}
+              PlannedProcessTime: PT1.5S
+              ProductParameters: {}
+              ProcessParameters:
+                "+SupplyPressure": {valueType: xs:double, value: 6.01, description: {en: "Actual supply pressure (gauge) [bar]", de: "Tatsächlicher Versorgungsdruck (Überdruck) [bar]"}}
+              ResourceParameters:
+                "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
+                "+MeasuredStrokeTimeAdvance": {valueType: xs:double, value: 0.321, description: {en: "Measured stroke time, advancing [s] (limits 0.28-0.36)", de: "Gemessene Hubzeit, Vorhub [s] (Grenzen 0,28-0,36)"}}
+                "+MeasuredStrokeTimeRetract": {valueType: xs:double, value: 0.302, description: {en: "Measured stroke time, retracting [s] (limits 0.28-0.36)", de: "Gemessene Hubzeit, Rückhub [s] (Grenzen 0,28-0,36)"}}
+              ProcessBoM: {}
+              ProcessStatus: Completed
+              ProcessResult: OK
+              ProcessStartTime: "2026-10-01T06:24:45.630Z"
+              ProcessEndTime: "2026-10-01T06:24:47.110Z"
+              ProcessStages:
+                ProcessStage:
+                  - {_idShort: Advance, StageId: Advance, StartTime: "2026-10-01T06:24:45.700Z", EndTime: "2026-10-01T06:24:46.021Z", Result: OK}
+                  - {_idShort: Retract, StageId: Retract, StartTime: "2026-10-01T06:24:46.300Z", EndTime: "2026-10-01T06:24:46.602Z", Result: OK}
+              ProcessErrors: {}
+            - _idShort: OP70
+              ProcessId: OP70
+              ProcessName: Fit protective cap
+              ProcessDescription: {en: "Press the red protective cap onto the front end.", de: "Rote Schutzkappe auf das vordere Ende aufdrücken."}
+              PlannedProcessTime: PT1S
+              ProductParameters:
+                "+CapVariant": {value: "red (RAL 3020)", description: {en: "Fitted cap variant", de: "Aufgesetzte Kappenvariante"}}
+              ProcessParameters:
+                "+PressOnForcePeak": {valueType: xs:double, value: 31, description: {en: "Peak press-on force [N]", de: "Maximale Aufdrückkraft [N]"}}
+              ResourceParameters:
+                "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
+              ProcessBoM:
+                "+ProtectiveCapLot": {value: KTW-26-0911, description: {en: "Supplier lot of protective cap 5032-1009", de: "Lieferantenlos der Schutzkappe 5032-1009"}}
+              ProcessStatus: Completed
+              ProcessResult: OK
+              ProcessStartTime: "2026-10-01T06:24:47.110Z"
+              ProcessEndTime: "2026-10-01T06:24:48.090Z"
+              ProcessStages: {}
+              ProcessErrors: {}
+            - _idShort: OP75
+              ProcessId: OP75
+              ProcessName: Transport to inspection
+              ProcessDescription: {en: "Belt transport from the cell outfeed to the inspection position.", de: "Bandtransport vom Zellenauslauf zur Prüfposition."}
+              PlannedProcessTime: PT11S
+              ProductParameters: {}
+              ProcessParameters:
+                "+BeltSpeed": {valueType: xs:double, value: 0.25, description: {en: "Actual belt speed [m/s]", de: "Tatsächliche Bandgeschwindigkeit [m/s]"}}
+              ResourceParameters:
+                "+Resource": {valueType: xs:anyURI, value: "${aas:CV01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
+              ProcessBoM: {}
+              ProcessStatus: Completed
+              ProcessResult: OK
+              ProcessStartTime: "2026-10-01T06:24:48.090Z"
+              ProcessEndTime: "2026-10-01T06:24:59.240Z"
+              ProcessStages: {}
+              ProcessErrors: {}
+            - _idShort: OP80
+              ProcessId: OP80
+              ProcessName: Colour inspection of the protective cap
+              ProcessDescription: {en: "Colour measurement of the cap against the reference (ΔE*ab CIE76 ≤ 25).", de: "Farbmessung der Kappe gegen die Referenz (ΔE*ab CIE76 ≤ 25)."}
+              PlannedProcessTime: PT0.5S
+              ProductParameters: {}
+              ProcessParameters:
+                "+DeltaE76Max": {valueType: xs:double, value: 25, description: {en: "Applied limit ΔE*ab (CIE76) [-]", de: "Angewandter Grenzwert ΔE*ab (CIE76) [-]"}}
+              ResourceParameters:
+                "+Resource": {valueType: xs:anyURI, value: "${aas:QS01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
+                "+MeasuredDeltaE76": {valueType: xs:double, value: 3.1, description: {en: "Measured colour difference ΔE*ab (CIE76) [-]", de: "Gemessener Farbabstand ΔE*ab (CIE76) [-]"}}
+                "+MeasuredColourLab": {value: "L* 43.9, a* 62.1, b* 45.2", description: {en: "Measured colour in CIELAB (D65/2°)", de: "Gemessene Farbe in CIELAB (D65/2°)"}}
+              ProcessBoM: {}
+              ProcessStatus: Completed
+              ProcessResult: OK
+              ProcessStartTime: "2026-10-01T06:24:59.240Z"
+              ProcessEndTime: "2026-10-01T06:24:59.730Z"
+              ProcessStages: {}
+              ProcessErrors: {}
+            - _idShort: OP90
+              ProcessId: OP90
+              ProcessName: Sort and pack
+              ProcessDescription: {en: "Pick the part and place it in KLT A (good part).", de: "Teil greifen und in KLT A ablegen (Gutteil)."}
+              PlannedProcessTime: PT7S
+              ProductParameters: {}
+              ProcessParameters:
+                "+Destination": {valueType: xs:anyURI, value: "${aas:KLTA01}", description: {en: "Destination container (AAS identifier)", de: "Zielbehälter (AAS-Kennung)"}}
+                "+Slot": {valueType: xs:unsignedInt, value: 6, description: {en: "Slot in the destination container [1..12]", de: "Fach im Zielbehälter [1..12]"}}
+              ResourceParameters:
+                "+Resource": {valueType: xs:anyURI, value: "${aas:RB01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
+                "+GripForce": {valueType: xs:double, value: 40, description: {en: "Applied gripping force [N]", de: "Angewandte Greifkraft [N]"}}
+              ProcessBoM: {}
+              ProcessStatus: Completed
+              ProcessResult: OK
+              ProcessStartTime: "2026-10-01T06:24:59.730Z"
+              ProcessEndTime: "2026-10-01T06:25:06.810Z"
+              ProcessStages:
+                ProcessStage:
+                  - {_idShort: Pick, StageId: Pick, StartTime: "2026-10-01T06:24:59.730Z", EndTime: "2026-10-01T06:25:02.400Z", Result: OK}
+                  - {_idShort: Place, StageId: Place, StartTime: "2026-10-01T06:25:02.400Z", EndTime: "2026-10-01T06:25:06.100Z", Result: OK}
+                  - {_idShort: Retreat, StageId: Retreat, StartTime: "2026-10-01T06:25:06.100Z", EndTime: "2026-10-01T06:25:06.810Z", Result: OK}
+              ProcessErrors: {}
+
+  - template: QualityInspection-1.0
+    values:
+      InspectionPlan:
+        PlanId: IP-PC3280
+        PlanVersion: "1.0"
+        PlanReference: {ref: "sm:PC3280_TYPE/ManufacturingRecipe#Formula.Parameters"}
+      OverallResult: Pass
+      Disposition: Accepted
+      DecisionTime: "2026-10-01T06:24:59.730Z"
+      Destination: {ref: "aas:KLTA01"}
+      Characteristics:
+        Characteristic:
+          - _idShort: LeakRate
+            CharacteristicId: QC-LEAK
+            CharacteristicName: {en: Leak rate at 6 bar, de: Leckrate bei 6 bar}
+            InspectionStation: {ref: "aas:AC01"}
+            Method: "pressure decay, both chambers, 6 bar (OP50)"
+            UpperLimit: 1.0
+            MeasuredValue: 0.38
+            Unit: "cm3/min"
+            Result: Pass
+            Timestamp: "2026-10-01T06:24:45.410Z"
+            MeasurementReference: {ref: "sm:WP_PC3280_2026_000123/MeasurementValue_LeakRate"}
+          - _idShort: StrokeTime
+            CharacteristicId: QC-STROKE
+            CharacteristicName: {en: Stroke time at 6 bar (advancing), de: Hubzeit bei 6 bar (Vorhub)}
+            InspectionStation: {ref: "aas:AC01"}
+            Method: "full stroke without load, 6 bar (OP60)"
+            NominalValue: 0.32
+            LowerLimit: 0.28
+            UpperLimit: 0.36
+            MeasuredValue: 0.321
+            Unit: s
+            Result: Pass
+            Timestamp: "2026-10-01T06:24:46.021Z"
+          - _idShort: CapColour
+            CharacteristicId: QC-COLOUR
+            CharacteristicName: {en: Colour of the protective cap, de: Farbe der Schutzkappe}
+            InspectionStation: {ref: "aas:QS01"}
+            Method: "CIELAB colour difference ΔE*ab (CIE76) to reference sRGB 0.78/0.08/0.10 (OP80)"
+            NominalValue: 0
+            UpperLimit: 25
+            MeasuredValue: 3.1
+            MeasuredValueText: "L* 43.9, a* 62.1, b* 45.2 (reference L* 42.3, a* 64.4, b* 46.6)"
+            Unit: "1"
+            Result: Pass
+            Timestamp: "2026-10-01T06:24:59.700Z"
+            MeasurementReference: {ref: "sm:WP_PC3280_2026_000123/MeasurementValue_CapColour"}
+
+  - template: MeasurementValue-1.0
+    idShort: MeasurementValue_LeakRate
+    values:
+      Concept:
+        Origin: "ISO 20484:2017 (leak testing vocabulary)"
+        Version: "2017"
+        Identifier: "urn:iso:std:iso:20484:ed-1"
+      MeasuredValue:
+        Value: 0.38
+        Unit: "cm3/min"
+        Kind: "leak rate, standard conditions (from pressure decay)"
+      MeasurementQualifier:
+        Quality: good
+        Range: {min: 0, max: 10}
+        Tag: AC01/OP50/LeakTester
+      MeasurementTimestamp: "2026-10-01T06:24:45.410Z"
+
+  - template: MeasurementValue-1.0
+    idShort: MeasurementValue_CapColour
+    values:
+      Concept:
+        Origin: "ISO/CIE 11664-4:2019 (CIE 1976 L*a*b* colour space)"
+        Version: "2019"
+        Identifier: "urn:iso:std:iso-cie:11664:-4:ed-2"
+      MeasuredValue:
+        Value: 3.1
+        Unit: "1"
+        Kind: "colour difference ΔE*ab (CIE76)"
+      MeasurementQualifier:
+        Quality: good
+        Range: {min: 0, max: 100}
+        Tag: QS01/CX30
+      MeasurementTimestamp: "2026-10-01T06:24:59.700Z"

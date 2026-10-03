@@ -1,0 +1,44 @@
+# Shared definition of the KLT 6428 output container instances (KLTA01, KLTB01); per-instance files set tag, serial,
+# colour, label and the role of the container (good parts / rejects).
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/SmallLoadCarrier
+derivedFrom: KLT_TYPE
+thumbnail: repo:docs/screenshots/assets/klt_container.png
+device:
+  modelDescription: godot/devices/klt_container/model/modelDescription.xml
+  state: {variable: full, map: {"true": Full, "false": Filling}, initial: "false"}
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+      ManufacturerProductDesignation: {en: "Small load carrier KLT 6428 (VDA 4500) with 12-slot insert on stand, height 550 mm", de: "Kleinladungsträger KLT 6428 (VDA 4500) mit 12-Fach-Einsatz auf Gestell, Höhe 550 mm"}
+      ManufacturerProductFamily: {en: KLT stations, de: KLT-Stationen}
+      ManufacturerProductType: KLT-6428-S550
+      OrderCodeOfManufacturer: KLT-6428-S550
+      URIOfTheProduct: https://virtual-factory.example/vf-automation/products/KLT-6428-S550
+      CountryOfOrigin: DE
+      HardwareVersion: "A"
+      YearOfConstruction: "2025"
+      AddressInformation: {$include: common/address_vf_automation.yaml}
+  - template: CapabilityDescription-1.0
+    values:
+      CapabilitySet:
+        _idShort: CapabilitySet
+        CapabilityContainer:
+          _idShort: StorePartsContainer
+          Capability: {_idShort: StoreParts, _semanticId: "https://virtual-factory.example/ids/capability/StoreParts"}
+          PropertySet:
+            _idShort: StorePartsProperties
+            PropertyContainer:
+              - _idShort: CapacityContainer
+                PropertyProperty: {_idShort: Capacity, value: "12"}
+                PropertyComment: {en: "Number of parts per container", de: "Anzahl Teile je Behälter"}
+              - _idShort: SlotGridContainer
+                PropertyProperty: {_idShort: SlotGrid, value: "4x3"}
+                PropertyComment: {en: "Slot grid rows × columns (pitch 120 mm × 100 mm)", de: "Fachraster Reihen × Spalten (Teilung 120 mm × 100 mm)"}
+              - _idShort: PartTypeContainer
+                PropertyProperty: {_idShort: PartType, value: "ISO 15552 cylinder Ø32, upright"}
+                PropertyComment: {en: Parts that can be stored, de: Aufnehmbare Teile}
+              - _idShort: LoadHeightContainer
+                PropertyProperty: {_idShort: LoadHeight, value: "0.55"}
+                PropertyComment: {en: "Height of the container bottom above floor (place height for the robot) [m]", de: "Höhe des Behälterbodens über Boden (Ablagehöhe für den Roboter) [m]"}

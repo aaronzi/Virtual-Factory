@@ -1,0 +1,276 @@
+tag: LINE01
+idShort: LINE01_InspectionSortingLine
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/ProductionLine
+displayName: {en: "LINE01 inspection & sorting line", de: "LINE01 Prüf- und Sortierlinie"}
+description:
+  en: >-
+    Final assembly line for ISO 15552 profile cylinders PC-32-80-DA-M in Hall 1 of Plant 01: assembly and test cell
+    AC01, belt conveyor CV01 with light barriers LB01/LB02, colour inspection station QS01, robot cell RB01 with gripper
+    GR01, output containers KLTA01 (good) and KLTB01 (reject), controlled by PLC01. Built and commissioned by
+    VF Automation Systems GmbH (2025-09-15) as an assembly of machines; takt 12 s. Dynamic values (KPI variables,
+    energy) are updated by the MES.
+  de: >-
+    Endmontagelinie für ISO-15552-Profilzylinder PC-32-80-DA-M in Halle 1 von Werk 01: Montage- und Prüfzelle AC01,
+    Gurtförderer CV01 mit Lichtschranken LB01/LB02, Farbprüfstation QS01, Roboterzelle RB01 mit Greifer GR01,
+    Ausgangsbehälter KLTA01 (Gut) und KLTB01 (Ausschuss), gesteuert von PLC01. Gebaut und in Betrieb genommen von
+    VF Automation Systems GmbH (15.09.2025) als Gesamtheit von Maschinen; Takt 12 s. Dynamische Werte
+    (KPI-Variablen, Energie) werden vom MES aktualisiert.
+thumbnail: repo:docs/screenshots/m2-line.png
+specificAssetIds: {serialNumber: ISL-2025-001}
+location: [-1.0, 0.0, -0.3]
+locationDescription: "Plant 01, Hall 1, area Final Assembly: centre of LINE01 (approx. 5.5 m x 2.5 m footprint)"
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+      ManufacturerProductDesignation: {en: "Inspection and sorting line for pneumatic cylinders (assembly of machines)", de: "Prüf- und Sortierlinie für Pneumatikzylinder (Gesamtheit von Maschinen)"}
+      ManufacturerProductRoot: {en: Assembly and test lines, de: Montage- und Prüflinien}
+      ManufacturerProductFamily: {en: VF FlexLine, de: VF FlexLine}
+      ManufacturerProductType: ISL-1
+      OrderCodeOfManufacturer: ISL-2025-VFP-01
+      URIOfTheProduct: https://virtual-factory.example/vf-automation/projects/ISL-2025-VFP-01
+      SerialNumber: ISL-2025-001
+      DateOfManufacture: "2025-08-29"
+      YearOfConstruction: "2025"
+      CountryOfOrigin: DE
+      UniqueFacilityIdentifier: VFP-KL-P01-H1-LINE01
+      AddressInformation: {$include: common/address_vf_automation.yaml}
+      Markings:
+        - $include: common/marking_ce.yaml
+          DesignationOfCertificateOrApproval: DoC-LINE01
+          IssueDate: "2025-09-15"
+      AssetSpecificProperties:
+        GuidelineSpecificProperties:
+          - GuidelineForConformityDeclaration: "2006/42/EC"
+          - GuidelineForConformityDeclaration: "2014/30/EU"
+
+  - template: HierarchicalStructures-1.1
+    values:
+      ArcheType: Full
+      EntryNode:
+        entityType: SelfManagedEntity
+        globalAssetId: ${asset:LINE01}
+        statements:
+          Node:
+            - _idShort: AC01
+              _description: {en: Assembly and test cell AC-200, de: Montage- und Prüfzelle AC-200}
+              entityType: SelfManagedEntity
+              globalAssetId: ${asset:AC01}
+            - _idShort: CV01
+              _description: {en: Belt conveyor BC-3000 with light barriers, de: Gurtförderer BC-3000 mit Lichtschranken}
+              entityType: SelfManagedEntity
+              globalAssetId: ${asset:CV01}
+              statements:
+                Node:
+                  - _idShort: LB01
+                    _description: {en: Light barrier at the conveyor infeed, de: Lichtschranke am Bandeinlauf}
+                    entityType: SelfManagedEntity
+                    globalAssetId: ${asset:LB01}
+                  - _idShort: LB02
+                    _description: {en: Light barrier at the inspection position, de: Lichtschranke an der Prüfposition}
+                    entityType: SelfManagedEntity
+                    globalAssetId: ${asset:LB02}
+                HasPart:
+                  - {_idShort: HasPart_LB01, first: "sm:LINE01/HierarchicalStructures#EntryNode.CV01", second: "sm:LINE01/HierarchicalStructures#EntryNode.CV01.LB01"}
+                  - {_idShort: HasPart_LB02, first: "sm:LINE01/HierarchicalStructures#EntryNode.CV01", second: "sm:LINE01/HierarchicalStructures#EntryNode.CV01.LB02"}
+            - _idShort: QS01
+              _description: {en: Colour inspection station QS-100, de: Farbprüfstation QS-100}
+              entityType: SelfManagedEntity
+              globalAssetId: ${asset:QS01}
+            - _idShort: RB01
+              _description: {en: Robot cell with UR5e and gripper, de: Roboterzelle mit UR5e und Greifer}
+              entityType: SelfManagedEntity
+              globalAssetId: ${asset:RB01}
+              statements:
+                Node:
+                  - _idShort: GR01
+                    _description: {en: 2-finger parallel gripper PG-85, de: 2-Finger-Parallelgreifer PG-85}
+                    entityType: SelfManagedEntity
+                    globalAssetId: ${asset:GR01}
+                HasPart:
+                  - {_idShort: HasPart_GR01, first: "sm:LINE01/HierarchicalStructures#EntryNode.RB01", second: "sm:LINE01/HierarchicalStructures#EntryNode.RB01.GR01"}
+                SameAs:
+                  - {_idShort: SameAs_RobotCell, first: "sm:LINE01/HierarchicalStructures#EntryNode.RB01", second: "sm:RB01/HierarchicalStructures#EntryNode"}
+            - _idShort: KLTA01
+              _description: {en: "Small load carrier station A (good parts)", de: "KLT-Station A (Gutteile)"}
+              entityType: SelfManagedEntity
+              globalAssetId: ${asset:KLTA01}
+            - _idShort: KLTB01
+              _description: {en: "Small load carrier station B (rejects)", de: "KLT-Station B (Ausschuss)"}
+              entityType: SelfManagedEntity
+              globalAssetId: ${asset:KLTB01}
+            - _idShort: PLC01
+              _description: {en: Line controller LC-10, de: Liniensteuerung LC-10}
+              entityType: SelfManagedEntity
+              globalAssetId: ${asset:PLC01}
+          HasPart:
+            - {_idShort: HasPart_AC01, first: "sm:LINE01/HierarchicalStructures#EntryNode", second: "sm:LINE01/HierarchicalStructures#EntryNode.AC01"}
+            - {_idShort: HasPart_CV01, first: "sm:LINE01/HierarchicalStructures#EntryNode", second: "sm:LINE01/HierarchicalStructures#EntryNode.CV01"}
+            - {_idShort: HasPart_QS01, first: "sm:LINE01/HierarchicalStructures#EntryNode", second: "sm:LINE01/HierarchicalStructures#EntryNode.QS01"}
+            - {_idShort: HasPart_RB01, first: "sm:LINE01/HierarchicalStructures#EntryNode", second: "sm:LINE01/HierarchicalStructures#EntryNode.RB01"}
+            - {_idShort: HasPart_KLTA01, first: "sm:LINE01/HierarchicalStructures#EntryNode", second: "sm:LINE01/HierarchicalStructures#EntryNode.KLTA01"}
+            - {_idShort: HasPart_KLTB01, first: "sm:LINE01/HierarchicalStructures#EntryNode", second: "sm:LINE01/HierarchicalStructures#EntryNode.KLTB01"}
+            - {_idShort: HasPart_PLC01, first: "sm:LINE01/HierarchicalStructures#EntryNode", second: "sm:LINE01/HierarchicalStructures#EntryNode.PLC01"}
+
+  - template: HandoverDocumentation-2.0
+    values:
+      Documents:
+        - DocumentIds: [{DocumentDomainId: VF Automation Systems, DocumentIdentifier: LP-LINE01, DocumentIsPrimary: true}]
+          DocumentClassifications:
+            - {ClassId: "02-02", ClassName: {en: "Drawings, plans", de: "Zeichnungen, Pläne"}, ClassificationSystem: VDI2770:2020}
+            - {ClassId: "02-01", ClassName: {en: Technical specification, de: Technische Spezifikation}, ClassificationSystem: VDI2770:2020}
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.0"
+              Title: {en: LINE01 line description and layout plan, de: LINE01 Linienbeschreibung und Aufstellungsplan}
+              Description: {en: "Purpose, process steps, layout positions, material flow, signal connections and utilities of LINE01", de: "Zweck, Prozessschritte, Aufstellpositionen, Materialfluss, Signalverbindungen und Medien von LINE01"}
+              StatusSetDate: "2025-09-15"
+              StatusValue: Released
+              OrganizationShortName: VF Automation
+              OrganizationOfficialName: VF Automation Systems GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/LP-LINE01.pdf}]
+              PreviewFile: repo:docs/screenshots/m2-line.png
+        - DocumentIds: [{DocumentDomainId: VF Automation Systems, DocumentIdentifier: DoC-LINE01, DocumentIsPrimary: true}]
+          DocumentClassifications:
+            - {ClassId: "02-04", ClassName: {en: "Certificates, declarations", de: "Zeugnisse, Zertifikate, Bescheinigungen"}, ClassificationSystem: VDI2770:2020}
+          DocumentVersions:
+            - Language: [{value: de}, {value: en}]
+              Version: "1.0"
+              Title: {en: EU declaration of conformity LINE01 (assembly of machines), de: EU-Konformitätserklärung LINE01 (Gesamtheit von Maschinen)}
+              Description: {en: "Declaration of conformity according to Machinery Directive 2006/42/EC Annex II 1.A and EMC Directive 2014/30/EU", de: "Konformitätserklärung nach Maschinenrichtlinie 2006/42/EG Anhang II 1.A und EMV-Richtlinie 2014/30/EU"}
+              StatusSetDate: "2025-09-15"
+              StatusValue: Released
+              OrganizationShortName: VF Automation
+              OrganizationOfficialName: VF Automation Systems GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/DoC-LINE01.pdf}]
+
+  - template: CapabilityDescription-1.0
+    values:
+      CapabilitySet:
+        - _idShort: LineCapabilities
+          CapabilityContainer:
+            - _idShort: SortContainer
+              Capability: {_idShort: Sort, _semanticId: "https://virtual-factory.example/ids/capability/Sort"}
+              CapabilityComment: {en: "Composite line capability (OP75-OP90): transport the assembled cylinder, inspect the colour of the protective cap and place it into KLT A (good) or KLT B (reject)", de: "Zusammengesetzte Linienfähigkeit (OP75-OP90): montierten Zylinder transportieren, Farbe der Schutzkappe prüfen und in KLT A (Gut) oder KLT B (Ausschuss) ablegen"}
+              PropertySet:
+                - _idShort: SortProperties
+                  PropertyContainer:
+                    - _idShort: Takt
+                      PropertyProperty: [{_idShort: PlannedTaktTime, valueType: xs:double, value: 12}]
+                      PropertyComment: {en: "Planned takt time of the line [s]", de: "Geplante Taktzeit der Linie [s]"}
+                    - _idShort: OutputClasses
+                      PropertyProperty: [{_idShort: NumberOfOutputClasses, valueType: xs:int, value: 2}]
+                      PropertyComment: {en: "Output classes: good (KLT A), reject (KLT B)", de: "Ausgangsklassen: Gut (KLT A), Ausschuss (KLT B)"}
+              CapabilityRelations:
+                CapabilityRealizedBy:
+                  - _idShort: RealizedByLineControl
+                    first: "sm:LINE01/CapabilityDescription#LineCapabilities.SortContainer.Sort"
+                    second: "sm:PLC01/ControlComponentInstance#Skills.Produce"
+                ComposedOfSet:
+                  ComposedOfContainer:
+                    - _idShort: TransportInspectPlace
+                      CapabilityComposedOf:
+                        - {_idShort: ComposedOfTransport, first: "sm:LINE01/CapabilityDescription#LineCapabilities.SortContainer.Sort", second: "sm:LINE01/CapabilityDescription#LineCapabilities.TransportContainer.Transport"}
+                        - {_idShort: ComposedOfInspectColour, first: "sm:LINE01/CapabilityDescription#LineCapabilities.SortContainer.Sort", second: "sm:LINE01/CapabilityDescription#LineCapabilities.InspectColourContainer.InspectColour"}
+                        - {_idShort: ComposedOfPickAndPlace, first: "sm:LINE01/CapabilityDescription#LineCapabilities.SortContainer.Sort", second: "sm:LINE01/CapabilityDescription#LineCapabilities.PickAndPlaceContainer.PickAndPlace"}
+                      ComposedOfComment: {en: "Sort = Transport (CV01) + InspectColour (QS01) + PickAndPlace (RB01), sequenced by PLC01", de: "Sortieren = Transportieren (CV01) + Farbe prüfen (QS01) + Greifen und Ablegen (RB01), vom PLC01 sequenziert"}
+            - _idShort: TransportContainer
+              Capability: {_idShort: Transport, _semanticId: "https://virtual-factory.example/ids/capability/Transport"}
+              CapabilityComment: {en: "Provided by the belt conveyor CV01 (OP75)", de: "Bereitgestellt durch den Gurtförderer CV01 (OP75)"}
+              PropertySet:
+                - _idShort: TransportProperties
+                  PropertyContainer:
+                    - _idShort: BeltSpeed
+                      PropertyProperty: [{_idShort: NominalBeltSpeed, valueType: xs:double, value: 0.25}]
+                      PropertyComment: {en: "Nominal belt speed (recipe value) [m/s]", de: "Nominelle Bandgeschwindigkeit (Rezeptwert) [m/s]"}
+            - _idShort: InspectColourContainer
+              Capability: {_idShort: InspectColour, _semanticId: "https://virtual-factory.example/ids/capability/InspectColour"}
+              CapabilityComment: {en: "Provided by the colour inspection station QS01 (OP80)", de: "Bereitgestellt durch die Farbprüfstation QS01 (OP80)"}
+              PropertySet:
+                - _idShort: InspectColourProperties
+                  PropertyContainer:
+                    - _idShort: ColourTolerance
+                      PropertyProperty: [{_idShort: MaxDeltaE76, valueType: xs:double, value: 25}]
+                      PropertyComment: {en: "Acceptance limit: CIE76 colour distance to the reference sRGB (0.78, 0.08, 0.10)", de: "Annahmegrenze: CIE76-Farbabstand zur Referenz sRGB (0,78; 0,08; 0,10)"}
+            - _idShort: PickAndPlaceContainer
+              Capability: {_idShort: PickAndPlace, _semanticId: "https://virtual-factory.example/ids/capability/PickAndPlace"}
+              CapabilityComment: {en: "Provided by the robot cell RB01 with gripper GR01 (OP90)", de: "Bereitgestellt durch die Roboterzelle RB01 mit Greifer GR01 (OP90)"}
+              PropertySet:
+                - _idShort: PickAndPlaceProperties
+                  PropertyContainer:
+                    - _idShort: Payload
+                      PropertyProperty: [{_idShort: MaxPayload, valueType: xs:double, value: 5}]
+                      PropertyComment: {en: "Maximum payload incl. gripper [kg]", de: "Maximale Traglast inkl. Greifer [kg]"}
+              CapabilityRelations:
+                CapabilityRealizedBy:
+                  - _idShort: RealizedByRobotSkill
+                    first: "sm:LINE01/CapabilityDescription#LineCapabilities.PickAndPlaceContainer.PickAndPlace"
+                    second: "sm:RB01/ControlComponentInstance#Skills.PickAndPlace"
+
+  - template: ProcessVariablesForManufacturingKPICalculation-1.0
+    values:
+      ActualOrderExecutionTime: {key: AOET, currentValue: PT0S, comment: {en: "Initialised; set by the MES at order completion", de: "Initialisiert; vom MES bei Auftragsende gesetzt"}}
+      ActualPersonnelAttendanceTime: {key: APAT, currentValue: PT0S, comment: {en: "Initialised; from shift logbook (MES)", de: "Initialisiert; aus dem Schichtbuch (MES)"}}
+      ActualPersonnelWorkTime: {key: APWT, currentValue: PT0S, comment: {en: "Initialised; from shift logbook (MES)", de: "Initialisiert; aus dem Schichtbuch (MES)"}}
+      ActualProductionTime: {key: APT, currentValue: PT0S, comment: {en: "Initialised; time in PackML state Execute (PLC01)", de: "Initialisiert; Zeit im PackML-Zustand Execute (PLC01)"}}
+      ActualQueuingTime: {key: AQT, currentValue: PT0S, comment: {en: "Initialised; parts waiting on the conveyor", de: "Initialisiert; Wartezeit der Teile auf dem Band"}}
+      ActualTransportTime: {key: ATT, currentValue: PT0S, comment: {en: "Initialised; conveyor transport OP75", de: "Initialisiert; Bandtransport OP75"}}
+      ActualUnitBusyTime: {key: AUBT, currentValue: PT0S, comment: {en: "Initialised; Execute + Suspended + Held (PLC01)", de: "Initialisiert; Execute + Suspended + Held (PLC01)"}}
+      ActualUnitDelayTime: {key: ADET, currentValue: PT0S, comment: {en: "Initialised; time in Suspended (e.g. PLC-003 container full)", de: "Initialisiert; Zeit in Suspended (z. B. PLC-003 Behälter voll)"}}
+      ActualUnitDownTime: {key: ADOT, currentValue: PT0S, comment: {en: "Initialised; time in Held, Stopped or Aborted during planned busy time", de: "Initialisiert; Zeit in Held, Stopped oder Aborted während der geplanten Belegungszeit"}}
+      ActualUnitProcessingTime: {key: AUPT, currentValue: PT0S, comment: {en: "Initialised; sum of the executed process step durations (OP10-OP90)", de: "Initialisiert; Summe der Dauern der ausgeführten Prozessschritte (OP10-OP90)"}}
+      ActualUnitSetupTime: {key: AUST, currentValue: PT0S, comment: {en: "Initialised; no product changeover planned (single-variant line)", de: "Initialisiert; kein Produktwechsel geplant (Einproduktlinie)"}}
+      GoodPart: {key: GP, currentValue: 0, comment: {en: "Initialised; parts placed into KLT A (PLC01 parts_ok)", de: "Initialisiert; in KLT A abgelegte Teile (PLC01 parts_ok)"}}
+      GoodQuantity: {key: GQ, currentValue: 0, comment: {en: "Initialised; good quantity of the current order [pieces]", de: "Initialisiert; Gutmenge des aktuellen Auftrags [Stück]"}}
+      InspectedPart: {key: IP, currentValue: 0, comment: {en: "Initialised; parts inspected by QS01 (PLC01 parts_total)", de: "Initialisiert; von QS01 geprüfte Teile (PLC01 parts_total)"}}
+      PlannedBusyTime: {key: PBT, currentValue: PT15H, comment: {en: "Per production day: two shifts 06:00-22:00 (16 h) minus two breaks of 30 min, see ProductionCalendar", de: "Je Produktionstag: zwei Schichten 06:00-22:00 (16 h) abzüglich zwei Pausen von 30 min, siehe ProductionCalendar"}}
+      PlannedRuntimePerItem: {key: PRI, currentValue: PT12S, comment: {en: "Planned takt time of PC-32-80-DA-M", de: "Geplante Taktzeit für PC-32-80-DA-M"}}
+      ProducedQuantity: {key: PQ, currentValue: 0, comment: {en: "Initialised; produced quantity of the current order [pieces]", de: "Initialisiert; produzierte Menge des aktuellen Auftrags [Stück]"}}
+      ReworkQuantity: {key: RQ, currentValue: 0, comment: {en: "Initialised; rejects in KLT B are reworked offline (cap replaced)", de: "Initialisiert; Ausschuss in KLT B wird offline nachgearbeitet (Kappe getauscht)"}}
+      ScrapQuantity: {key: SQ, currentValue: 0, comment: {en: "Initialised; parts scrapped after failed rework", de: "Initialisiert; nach erfolgloser Nacharbeit verschrottete Teile"}}
+
+  - template: ProductionCalendar-1.0
+    values:
+      calendar: repo:aas/files/calendar/LINE01.ics
+      specificationExtensionVariables:
+        - {variableName: X-PRODUCTION-DAY, variableSpecification: repo:aas/files/calendar/RFC5545-X-PRODUCTION-DAY.txt}
+        - {variableName: X-BREAK, variableSpecification: repo:aas/files/calendar/RFC5545-X-BREAK.txt}
+        - {variableName: X-MAINTENANCE, variableSpecification: repo:aas/files/calendar/RFC5545-X-MAINTENANCE.txt}
+
+  - template: DataRetentionPolicies-1.0
+    values:
+      Policies:
+        Policy:
+          - _idShort: ProductInstanceSessionData
+            _description: {en: "Process and quality records of product-instance AAS (workpieces PC3280-YYYY-NNNNNN created by the MES) are kept on the line's AAS server only for the current production session and archived by the MES afterwards", de: "Prozess- und Qualitätsdaten der Produktinstanz-VWS (vom MES erzeugte Werkstücke PC3280-YYYY-NNNNNN) werden auf dem AAS-Server der Linie nur für die aktuelle Produktionssitzung gehalten und danach vom MES archiviert"}
+            RetentionTime: PT24H
+            SemanticIds:
+              - {ref: "global:https://admin-shell.io/idta/ExecutedProcesses/1/0"}
+              - {ref: "global:https://virtual-factory.example/ids/smt/QualityInspection/1/0/Submodel"}
+              - {ref: "global:https://admin-shell.io/idta/SubmodelTemplate/measurementValue/1/0"}
+            Immutable: false
+            CreatedBy: VF Pneumatics GmbH
+            CreationTime: "2025-09-15T08:00:00+02:00"
+            Issuer: VF Pneumatics GmbH
+            Source:
+              Identifier: VFP-DRP-2025-03
+              Document: repo:aas/files/docs/DRP-LINE01.pdf
+            EffectiveFrom: "2025-09-15T00:00:00+02:00"
+            AuditLog:
+              - Timestamp: "2025-09-15T08:00:00+02:00"
+                Identity: {en: "VF Pneumatics GmbH, Production IT", de: "VF Pneumatics GmbH, Produktions-IT"}
+                Operation: {en: Policy created, de: Richtlinie angelegt}
+                Reason: {en: "Commissioning of LINE01; workpiece records are archived by the MES at the end of each session", de: "Inbetriebnahme von LINE01; Werkstückdaten werden vom MES am Ende jeder Sitzung archiviert"}
+                Signature: "sha256:74567dee57b42a640818e7f7d8f547d4d8f4c94b225c2d9c4973692fe4cc9d24"
+
+  - template: EnergyConsumption-1.0
+    values:
+      $include: common/energy_defaults.yaml
+      # static rating of the complete line (sum of the devices plus cabinet/HMI); dynamic values are updated by the MES
+      RatedPower: 2300
+      StandbyPower: 430
+      PowerSupply: {RatedVoltage: 400, Frequency: 50, NumberOfPhases: 3, RatedCurrent: 16}
+      ActualPower: 0
+      EnergyConsumed: 0
+      CompressedAir: {AirConsumed: 0, SpecificEnergy: 0.12}

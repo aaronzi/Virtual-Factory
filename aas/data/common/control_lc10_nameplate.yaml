@@ -1,0 +1,15 @@
+# Nameplate (IDTA 02006) values of the line controller LC-10 (fictional product of VF Automation Systems GmbH),
+# shared by LC10_TYPE and PLC01.
+ManufacturerName: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+ManufacturerProductDesignation: {en: "Line controller LC-10, fanless industrial PC with IEC 61131-3 soft-PLC, 24 V DC", de: "Liniensteuerung LC-10, lüfterloser Industrie-PC mit IEC-61131-3-Soft-SPS, 24 V DC"}
+ManufacturerProductRoot: {en: Controllers, de: Steuerungen}
+ManufacturerProductFamily: {en: LC line controllers, de: LC-Liniensteuerungen}
+ManufacturerProductType: LC-10
+OrderCodeOfManufacturer: LC-10-24DC-M
+ProductArticleNumberOfManufacturer: "3100-0010"
+URIOfTheProduct: https://virtual-factory.example/vf-automation/products/LC-10
+CountryOfOrigin: DE
+HardwareVersion: "1.2"
+FirmwareVersion: "4.2.0"
+AddressInformation: {$include: common/address_vf_automation.yaml}
+Markings: [{$include: common/marking_ce.yaml}]

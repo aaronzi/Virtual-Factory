@@ -1,0 +1,204 @@
+tag: QS01
+idShort: QS01_ColourInspection
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/ColourInspectionStation
+displayName: {en: "Colour inspection station QS01 (QS-100)", de: "Farbprüfstation QS01 (QS-100)"}
+description:
+  en: >-
+    Colour inspection station QS-100 above the conveyor outfeed with the true-colour sensor Lumetra CX30 and a white LED
+    ring light. Measures the colour of the protective cap in CIELAB and compares it with the taught red reference
+    (ΔE76 ≤ 25, OP80); the result decides whether the robot places the cylinder in KLT A (good) or KLT B (reject).
+  de: >-
+    Farbprüfstation QS-100 über dem Bandauslauf mit dem Echtfarbsensor Lumetra CX30 und einem weißen LED-Ringlicht.
+    Misst die Farbe der Schutzkappe im CIELAB-Farbraum und vergleicht sie mit der eingelernten roten Referenz
+    (ΔE76 ≤ 25, OP80); das Ergebnis entscheidet, ob der Roboter den Zylinder in KLT A (i.O.) oder KLT B (n.i.O.)
+    ablegt.
+thumbnail: repo:docs/screenshots/assets/qa_station.png
+specificAssetIds: {serialNumber: QS100-2025-0031, manufacturerPartId: QS-100-CX30-RL}
+locationDescription: "LINE01, conveyor CV01 outfeed (inspection and pick position of robot RB01), Hall 1 Final Assembly"
+model3d:
+  file: godot/devices/qa_station/view/qa_station.glb
+  preview: docs/screenshots/assets/qa_station.png
+  title: QS-100 colour inspection station (bracket, CX30 sensor, ring light, result lamp)
+  objectType: Machine
+device:
+  modelDescription: godot/devices/qa_station/model/modelDescription.xml
+  energy: {power: power, energy: energy}
+  operatingHours: operating_hours
+  state: {variable: light_on, map: {"true": Measuring, "false": Ready}, initial: "false"}
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+      ManufacturerProductDesignation: {en: "Colour inspection station with true-colour sensor and LED ring light", de: "Farbprüfstation mit Echtfarbsensor und LED-Ringlicht"}
+      ManufacturerProductRoot: {en: Inspection systems, de: Prüfsysteme}
+      ManufacturerProductFamily: {en: QS quality stations, de: QS-Qualitätsstationen}
+      ManufacturerProductType: QS-100
+      OrderCodeOfManufacturer: QS-100-CX30-RL
+      ProductArticleNumberOfManufacturer: "4000-0100"
+      URIOfTheProduct: https://virtual-factory.example/vf-automation/products/QS-100
+      SerialNumber: QS100-2025-0031
+      DateOfManufacture: "2025-08-04"
+      YearOfConstruction: "2025"
+      CountryOfOrigin: DE
+      HardwareVersion: "A"
+      FirmwareVersion: "2.1.0"
+      AddressInformation: {$include: common/address_vf_automation.yaml}
+      Markings:
+        - $include: common/marking_ce.yaml
+          MarkingAdditionalText:
+            - "EMC Directive 2014/30/EU"
+            - "RoHS Directive 2011/65/EU"
+      AssetSpecificProperties:
+        ArbitraryProperty:
+          - {_idShort: IntegratedSensor, value: "Lumetra Sensortechnik GmbH CX30 true-colour sensor, order code CX30-W150-IOL"}
+          - {_idShort: IntegratedSensorSerialNumber, value: "CX30-2507-04418"}
+        GuidelineSpecificProperties:
+          - GuidelineForConformityDeclaration: "Directive 2014/30/EU (electromagnetic compatibility)"
+          - GuidelineForConformityDeclaration: "Directive 2011/65/EU (RoHS)"
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: VF Automation Systems GmbH
+        ManufacturerProductDesignation: {en: "Colour inspection station QS-100", de: "Farbprüfstation QS-100"}
+        ManufacturerArticleNumber: "4000-0100"
+        ManufacturerOrderCode: QS-100-CX30-RL
+        ProductImages: [{ImageFile: repo:docs/screenshots/assets/qa_station.png, ImageNote: {en: "QS-100 with angled CX30 sensor and ring light above the conveyor", de: "QS-100 mit schräg montiertem Sensor CX30 und Ringlicht über dem Förderband"}}]
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          Section:
+            - _idShort: Measurement
+              "+MeasuringPrinciple": {modelType: MultiLanguageProperty, value: {en: "True-colour sensor, tristimulus filters matched to the CIE 1931 standard observer", de: "Echtfarbsensor, Dreibereichsfilter angepasst an den CIE-1931-Normalbeobachter"}, description: {en: Measuring principle, de: Messprinzip}}
+              "+ColourSpace": {value: "CIELAB (D65, 10°)", description: {en: Colour space of the measured values, de: Farbraum der Messwerte}}
+              "+ColourDistance": {value: "ΔE*ab (CIE76)", description: {en: Colour distance formula, de: Farbabstandsformel}}
+              "+WorkingDistance": {valueType: xs:double, value: 150, description: {en: "Working distance sensor to part surface [mm]", de: "Arbeitsabstand Sensor zur Teileoberfläche [mm]"}}
+              "+WorkingDistanceTolerance": {valueType: xs:double, value: 20, description: {en: "Permissible deviation of the working distance [± mm]", de: "Zulässige Abweichung des Arbeitsabstands [± mm]"}}
+              "+SpotDiameter": {valueType: xs:double, value: 6, description: {en: "Light spot diameter at the working distance [mm]", de: "Lichtfleckdurchmesser im Arbeitsabstand [mm]"}}
+              "+MountingAngle": {valueType: xs:double, value: 53, description: {en: "Sensor axis inclination to the vertical (keeps the gripper space free) [°]", de: "Neigung der Sensorachse zur Senkrechten (hält den Greiferraum frei) [°]"}}
+              "+IntegrationTime": {valueType: xs:double, value: 0.15, description: {en: "Integration time per measurement [s]", de: "Integrationszeit je Messung [s]"}}
+              "+Repeatability": {valueType: xs:double, value: 0.5, description: {en: "Repeatability (ΔE*ab, 1 sigma)", de: "Wiederholgenauigkeit (ΔE*ab, 1 Sigma)"}}
+              "+ToleranceMin": {valueType: xs:double, value: 0.5, description: {en: "Smallest settable colour tolerance (ΔE*ab)", de: "Kleinste einstellbare Farbtoleranz (ΔE*ab)"}}
+              "+ToleranceMax": {valueType: xs:double, value: 50, description: {en: "Largest settable colour tolerance (ΔE*ab)", de: "Größte einstellbare Farbtoleranz (ΔE*ab)"}}
+              "+ReferenceColours": {valueType: xs:int, value: 8, description: {en: Number of teachable reference colours, de: Anzahl einlernbarer Referenzfarben}}
+            - _idShort: Illumination
+              "+LightSource": {value: "White LED ring light, 5600 K, diffuse", description: {en: Light source, de: Lichtquelle}}
+              "+LightSwitching": {value: "Switched on during the measurement only (triggered by the line controller)", description: {en: Light control, de: Lichtsteuerung}}
+            - _idShort: Electrical
+              "+SupplyVoltage": {valueType: xs:double, value: 24, description: {en: "Supply voltage DC, PELV [V]", de: "Versorgungsspannung DC, PELV [V]"}}
+              "+SupplyVoltageTolerance": {value: "-15 % / +20 %", description: {en: Supply voltage tolerance, de: Toleranz der Versorgungsspannung}}
+              "+PowerSensor": {valueType: xs:double, value: 2.5, description: {en: "Power consumption of the sensor [W]", de: "Leistungsaufnahme des Sensors [W]"}}
+              "+PowerRingLight": {valueType: xs:double, value: 4, description: {en: "Power consumption of the ring light when on [W]", de: "Leistungsaufnahme des Ringlichts im eingeschalteten Zustand [W]"}}
+              "+Connection": {value: "M12, 5-pin, A-coded (sensor); M8, 4-pin (ring light)", description: {en: Electrical connection, de: Elektrischer Anschluss}}
+            - _idShort: Communication
+              "+SensorInterface": {value: "IO-Link 1.1, COM3 (230.4 kBaud), process data L*, a*, b*, ΔE, result", description: {en: Sensor interface to the line controller, de: Sensorschnittstelle zur Liniensteuerung}}
+              "+DataPublication": {value: "MQTT (UNS) via line controller LC-10", description: {en: Publication of the measured values, de: Veröffentlichung der Messwerte}}
+              "+DigitalOutput": {value: "PNP result output OK/NOK, 100 mA", description: {en: Switching output, de: Schaltausgang}}
+            - _idShort: MechanicalAndEnvironment
+              "+Mass": {valueType: xs:double, value: 2.4, description: {en: "Mass of the station incl. bracket [kg]", de: "Masse der Station inkl. Halter [kg]"}}
+              "+Bracket": {value: "Aluminium bracket on the conveyor profile, 3-axis adjustable", description: {en: Mounting, de: Befestigung}}
+              "+DegreeOfProtection": {value: IP65, description: {en: "Degree of protection of sensor and ring light (IEC 60529)", de: "Schutzart von Sensor und Ringlicht (IEC 60529)"}}
+              "+AmbientTemperatureMin": {valueType: xs:double, value: 5, description: {en: "Minimum ambient temperature [°C]", de: "Minimale Umgebungstemperatur [°C]"}}
+              "+AmbientTemperatureMax": {valueType: xs:double, value: 45, description: {en: "Maximum ambient temperature [°C]", de: "Maximale Umgebungstemperatur [°C]"}}
+              "+AmbientLightImmunity": {valueType: xs:double, value: 5000, description: {en: "Ambient light immunity [lx]", de: "Fremdlichtfestigkeit [lx]"}}
+      FurtherInformation:
+        TextStatement:
+          - {en: "The reference colour and the tolerance are process parameters of OP80 (taught sRGB 0.78/0.08/0.10, ΔE76 ≤ 25).", de: "Referenzfarbe und Toleranz sind Prozessparameter von OP80 (eingelernt sRGB 0,78/0,08/0,10, ΔE76 ≤ 25)."}
+          - {en: "Not a safety component.", de: "Kein Sicherheitsbauteil."}
+        ValidDate: "2025-08-01"
+  - template: HandoverDocumentation-2.0
+    values:
+      Documents:
+        - DocumentIds: [{DocumentDomainId: VFAutomation, DocumentIdentifier: DS-QS100, DocumentIsPrimary: true}]
+          DocumentClassifications: [{ClassId: "02-01", ClassName: {en: Technical specification, de: Technische Spezifikation}, ClassificationSystem: VDI2770:2020}]
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.0"
+              Title: {en: QS-100 colour inspection station data sheet, de: Datenblatt Farbprüfstation QS-100}
+              Description: {en: "Measurement, illumination, electrical data, interfaces", de: "Messtechnik, Beleuchtung, elektrische Daten, Schnittstellen"}
+              StatusSetDate: "2025-08-01"
+              StatusValue: Released
+              OrganizationShortName: VF Automation
+              OrganizationOfficialName: VF Automation Systems GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/DS-QS100.pdf}]
+        - DocumentIds: [{DocumentDomainId: VFAutomation, DocumentIdentifier: OM-QS100, DocumentIsPrimary: true}]
+          DocumentClassifications: [{ClassId: "03-02", ClassName: {en: Operation, de: Bedienung}, ClassificationSystem: VDI2770:2020}]
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.0"
+              Title: {en: QS-100 operating instructions, de: Betriebsanleitung QS-100}
+              Description: {en: "Mounting, alignment, teach-in of the reference colour, cleaning", de: "Montage, Ausrichtung, Einlernen der Referenzfarbe, Reinigung"}
+              StatusSetDate: "2025-08-01"
+              StatusValue: Released
+              OrganizationShortName: VF Automation
+              OrganizationOfficialName: VF Automation Systems GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/OM-QS100.pdf}]
+        - DocumentIds: [{DocumentDomainId: Lumetra, DocumentIdentifier: DS-CX30, DocumentIsPrimary: true}]
+          DocumentClassifications: [{ClassId: "02-01", ClassName: {en: Technical specification, de: Technische Spezifikation}, ClassificationSystem: VDI2770:2020}]
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.3"
+              Title: {en: CX30 true-colour sensor data sheet, de: Datenblatt Echtfarbsensor CX30}
+              Description: {en: "Supplier data sheet of the integrated sensor", de: "Lieferantendatenblatt des integrierten Sensors"}
+              StatusSetDate: "2025-02-15"
+              StatusValue: Released
+              OrganizationShortName: Lumetra
+              OrganizationOfficialName: Lumetra Sensortechnik GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/DS-CX30.pdf}]
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - PcfCalculationMethods: [{value: "ISO 14067"}, {value: "GHG Protocol"}]
+          PcfCO2eq: 38
+          ReferenceImpactUnitForCalculation: piece
+          QuantityOfMeasureForCalculation: 1
+          LifeCyclePhases: [{value: "A1-A3"}]
+          GoodsHandoverAddress: {$include: common/address_vf_automation.yaml}
+          PublicationDate: "2025-08-04T00:00:00+00:00"
+  - template: EnergyConsumption-1.0
+    values:
+      $include: common/energy_defaults.yaml
+      RatedPower: 6.5
+      StandbyPower: 2.5
+      PowerSupply: {RatedVoltage: 24, Frequency: 0, RatedCurrent: 0.27}
+  - template: Reliability-1.0
+    values:
+      NumberOfReliabilitySets: 1
+      ReliabilityCharacteristics: [{_idShort: ReliabilityAt40C, MTTF: [{_idShort: MTTF, value: 45}]}]
+      OperatingConditionsOfReliabilityCharacteristics:
+        - _idShort: Conditions40C
+          TypeOfVoltage: [{_idShort: TypeOfVoltage, value: DC}]
+          RatedVoltage: [{_idShort: RatedVoltage, value: 24}]
+          OtherOperatingConditions: [{_idShort: OtherOperatingConditions, value: "Ambient temperature 40 °C, continuous operation, ring light duty cycle 5 %; SN 29500; MTTF in years (approx. 394 000 h)"}]
+  - template: CapabilityDescription-1.0
+    values:
+      CapabilitySet:
+        _idShort: CapabilitySet
+        CapabilityContainer:
+          - _idShort: InspectColourContainer
+            Capability: {_idShort: InspectColour, _semanticId: "https://virtual-factory.example/ids/capability/InspectColour"}
+            CapabilityComment: {en: "Colour measurement of a part surface and comparison with a taught reference colour (OP80)", de: "Farbmessung einer Teileoberfläche und Vergleich mit einer eingelernten Referenzfarbe (OP80)"}
+            PropertySet:
+              - _idShort: InspectColourProperties
+                PropertyContainer:
+                  - _idShort: ColourSpaceContainer
+                    PropertyProperty: {_idShort: ColourSpace, value: "CIELAB"}
+                    PropertyComment: {en: "Colour space of the comparison (D65, 10°)", de: "Farbraum des Vergleichs (D65, 10°)"}
+                  - _idShort: ColourDistanceFormulaContainer
+                    PropertyProperty: {_idShort: ColourDistanceFormula, value: "CIE76"}
+                    PropertyComment: {en: "Colour distance formula ΔE*ab", de: "Farbabstandsformel ΔE*ab"}
+                  - _idShort: ToleranceContainer
+                    PropertyRange: {_idShort: Tolerance, min: 0.5, max: 50}
+                    PropertyComment: {en: "Settable colour tolerance (ΔE*ab)", de: "Einstellbare Farbtoleranz (ΔE*ab)"}
+                  - _idShort: MeasurementTimeContainer
+                    PropertyProperty: {_idShort: MeasurementTime, value: "0.15"}
+                    PropertyComment: {en: "Measurement time (integration) [s]", de: "Messzeit (Integration) [s]"}
+                    SameProperty:
+                      - _idShort: SameAsTechnicalDataIntegrationTime
+                        first: "sm:QS01/CapabilityDescription#CapabilitySet.InspectColourContainer.InspectColourProperties.MeasurementTimeContainer.MeasurementTime"
+                        second: "sm:QS01/TechnicalData#TechnicalPropertyAreas.0.Measurement.IntegrationTime"
+                  - _idShort: WorkingDistanceContainer
+                    PropertyRange: {_idShort: WorkingDistance, min: 130, max: 170}
+                    PropertyComment: {en: "Permissible distance to the inspected surface [mm]", de: "Zulässiger Abstand zur geprüften Oberfläche [mm]"}
+                  - _idShort: SpotDiameterContainer
+                    PropertyProperty: {_idShort: SpotDiameter, value: "6"}
+                    PropertyComment: {en: "Minimum size of the inspected surface (light spot) [mm]", de: "Mindestgröße der geprüften Fläche (Lichtfleck) [mm]"}

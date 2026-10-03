@@ -1,0 +1,23 @@
+_extends: common/machine_klt_instance.yaml
+tag: KLTB01
+idShort: KLTB01_Rejects
+displayName: {en: "KLT B (KLTB01, rejects)", de: "KLT B (KLTB01, Ausschuss)"}
+description:
+  en: Red output container for rejects (label "B n.i.O."); the robot RB01 places cylinders with a missing or wrong protective cap here.
+  de: Roter Ausgangsbehälter für Ausschuss (Etikett "B n.i.O."); der Roboter RB01 legt hier Zylinder mit fehlender oder falscher Schutzkappe ab.
+locationDescription: "LINE01 robot cell RB01, output position KLT B (rejects), 0.5 m upstream of the robot base"
+specificAssetIds: {serialNumber: KLT6428-2025-0102, manufacturerPartId: KLT-6428-S550}
+submodels:
+  - template: Nameplate-3.0
+    values:
+      SerialNumber: KLT6428-2025-0102
+      DateOfManufacture: "2025-06-16"
+      AssetSpecificProperties:
+        ArbitraryProperty:
+          - {_idShort: ContainerColour, value: "red RAL 3020"}
+          - {_idShort: ContainerLabel, value: "B n.i.O."}
+  - template: CapabilityDescription-1.0
+    values:
+      CapabilitySet:
+        CapabilityContainer:
+          CapabilityComment: {en: "Stores up to 12 rejected parts (OP90, sorting result NOK)", de: "Nimmt bis zu 12 Ausschussteile auf (OP90, Sortierergebnis n.i.O.)"}

@@ -1,0 +1,32 @@
+title: "PC-32-80-DA-M profile cylinder ISO 15552"
+subtitle: "Data sheet"
+organization: VF Pneumatics GmbH
+version: "1.1"
+date: "2025-09-01"
+sections:
+  - heading: Description
+    text: >-
+      Double-acting profile cylinder according to ISO 15552 with magnetic piston for position sensing, adjustable
+      pneumatic end-position cushioning at both ends and stainless-steel piston rod. Anodised aluminium profile
+      barrel with sensor slots, die-cast aluminium end caps. Supplied with red protective cap on the rod end.
+  - heading: General data
+    rows: [[Standard, ISO 15552], [Order code, PC-32-80-DA-M], [Article number, "5032-0080"],
+           [Design, "profile cylinder, double-acting"], [Piston bore, "32 mm"], [Stroke, "80 mm"],
+           [Piston rod, "Ø 12 mm, thread M10x1.25"], [Ports, "G1/8"], [Position sensing, "magnetic piston, T-slot sensors"],
+           [Mounting position, any]]
+  - heading: Pneumatic data
+    rows: [[Operating medium, "compressed air ISO 8573-1:2010 [7:4:4]"], [Operating pressure, "1 ... 10 bar"],
+           [Theoretical force at 6 bar, "advance 482 N, retract 414 N"], [Cushioning, "pneumatic, adjustable, both ends"],
+           [Cushioning length, "17 mm"], [Max. cushioning energy, "0.4 J"], [Max. piston speed, "1 m/s"],
+           [Lubrication, "lifetime-lubricated, oil-free air permitted"]]
+  - heading: Mechanical data
+    rows: [[Overall length L8, "174 mm (94 mm + stroke)"], [Piston rod extension WH, "26 mm"],
+           [Mounting thread, "M6, hole pattern TG 32.5 mm"], [Mass, "0.59 kg"], [Ambient temperature, "-20 ... +80 °C"]]
+  - heading: Materials
+    rows: [[Barrel, "EN AW-6063 T6, anodised"], [End caps, "EN AC-46000, die-cast"], [Piston rod, "1.4301 (X5CrNi18-10)"],
+           [Seals, "TPU, NBR"], [Cushioning screws, "brass CW614N"], [Protective cap, "PE-LD, red"]]
+  - heading: Conformity and environment
+    text: >-
+      No CE marking: ISO 15552 cylinders are not machinery under 2006/42/EC and are not pressure equipment in the
+      scope of 2014/68/EU. Declared product carbon footprint (A1-A3, ISO 14067): 4.2 kg CO2e per piece. The
+      cushioning screws contain lead (CAS 7439-92-1) above 0.1 % w/w (REACH Art. 33, SCIP notification).

@@ -1,0 +1,501 @@
+# Product type PC-32-80-DA-M (ISO 15552 profile cylinder Ø32 x 80, double-acting, magnetic piston).
+# Type AAS of the product manufactured on LINE01; the MES derives one workpiece instance AAS per part from it
+# (aas/data/blueprints/workpiece_instance.yaml). Process steps OP10-OP90: docs/interfaces/aas-model.md §4.
+# Mass budget (kg): barrel 0.200, front end cap 0.095, rear end cap 0.085, piston rod 0.128, piston 0.024,
+# seal kit 0.011, 8 screws 0.0296, 2 cushioning screws 0.003, protective cap 0.014 = 0.5896 ≈ 0.59.
+# PCF budget (kg CO2e, A1-A3): components 3.90 (see CMP_*.yaml) + assembly/test/plant overhead 0.30 = 4.20.
+tag: PC3280_TYPE
+idShort: PC3280_ProfileCylinder
+kind: Type
+assetType: https://virtual-factory.example/ids/assettype/PneumaticCylinder
+displayName: {en: "Profile cylinder PC-32-80-DA-M (type)", de: "Profilzylinder PC-32-80-DA-M (Typ)"}
+description:
+  en: "ISO 15552 profile cylinder, bore 32 mm, stroke 80 mm, double-acting with magnetic piston and adjustable cushioning; product of VF Pneumatics GmbH assembled and tested on LINE01."
+  de: "Profilzylinder nach ISO 15552, Kolben-Ø 32 mm, Hub 80 mm, doppeltwirkend mit Magnetkolben und einstellbarer Endlagendämpfung; Produkt der VF Pneumatics GmbH, montiert und geprüft auf LINE01."
+thumbnail: repo:docs/screenshots/assets/cylinder.png
+specificAssetIds: {manufacturerPartId: PC-32-80-DA-M, gtin: "04099999032808"}
+location: false
+model3d:
+  file: godot/products/cylinder/cylinder.glb
+  preview: docs/screenshots/assets/cylinder.png
+  title: PC-32-80-DA-M cylinder with red protective cap
+  objectType: Product
+  organization: VF Pneumatics GmbH
+submodels:
+  - template: Nameplate-3.0
+    values: {$include: common/product_nameplate_pc3280.yaml}
+
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: VF Pneumatics GmbH
+        ManufacturerProductDesignation:
+          en: "Profile cylinder ISO 15552 PC-32-80-DA-M"
+          de: "Profilzylinder ISO 15552 PC-32-80-DA-M"
+        ManufacturerArticleNumber: "5032-0080"
+        ManufacturerOrderCode: PC-32-80-DA-M
+        ProductImages:
+          - ImageFile: repo:docs/screenshots/assets/cylinder.png
+            ImageNote: {en: "Cylinder with red protective cap (left), without cap and with wrong (blue) cap", de: "Zylinder mit roter Schutzkappe (links), ohne Kappe und mit falscher (blauer) Kappe"}
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          Section:
+            - _idShort: General
+              "+Standard": {value: ISO 15552, description: {en: "Dimensional standard", de: "Maßnorm"}}
+              "+DesignType": {value: "profile cylinder, double-acting", description: {en: "Design type", de: "Bauart"}}
+              "+PistonBore": {valueType: xs:double, value: 32, description: {en: "Piston diameter [mm]", de: "Kolbendurchmesser [mm]"}}
+              "+Stroke": {valueType: xs:double, value: 80, description: {en: "Stroke [mm]", de: "Hub [mm]"}}
+              "+PistonRodDiameter": {valueType: xs:double, value: 12, description: {en: "Piston rod diameter [mm]", de: "Kolbenstangendurchmesser [mm]"}}
+              "+PistonRodThread": {value: M10x1.25, description: {en: "Piston rod thread (male)", de: "Kolbenstangengewinde (außen)"}}
+              "+PneumaticConnection": {value: G1/8, description: {en: "Pneumatic connection (ISO 228-1)", de: "Pneumatischer Anschluss (ISO 228-1)"}}
+              "+PositionSensing": {value: "magnetic piston for proximity sensors in T-slot", description: {en: "Position sensing", de: "Positionserfassung"}}
+              "+MountingPosition": {value: any, description: {en: "Mounting position", de: "Einbaulage"}}
+            - _idShort: Pneumatics
+              "+OperatingMedium": {value: "compressed air ISO 8573-1:2010 [7:4:4]", description: {en: "Operating medium", de: "Betriebsmedium"}}
+              "+OperatingPressureMin": {valueType: xs:double, value: 1, description: {en: "Minimum operating pressure [bar]", de: "Minimaler Betriebsdruck [bar]"}}
+              "+OperatingPressureMax": {valueType: xs:double, value: 10, description: {en: "Maximum operating pressure [bar]", de: "Maximaler Betriebsdruck [bar]"}}
+              "+TheoreticalForceAdvance": {valueType: xs:double, value: 482, description: {en: "Theoretical force at 6 bar, advancing stroke [N]", de: "Theoretische Kraft bei 6 bar, Vorhub [N]"}}
+              "+TheoreticalForceRetract": {valueType: xs:double, value: 414, description: {en: "Theoretical force at 6 bar, return stroke [N]", de: "Theoretische Kraft bei 6 bar, Rückhub [N]"}}
+              "+Cushioning": {value: "pneumatic, adjustable at both ends", description: {en: "End-position cushioning", de: "Endlagendämpfung"}}
+              "+CushioningLength": {valueType: xs:double, value: 17, description: {en: "Cushioning length [mm]", de: "Dämpfungslänge [mm]"}}
+              "+CushioningEnergyMax": {valueType: xs:double, value: 0.4, description: {en: "Maximum cushioning energy [J]", de: "Maximale Dämpfungsenergie [J]"}}
+              "+PistonSpeedMax": {valueType: xs:double, value: 1.0, description: {en: "Maximum piston speed [m/s]", de: "Maximale Kolbengeschwindigkeit [m/s]"}}
+              "+Lubrication": {value: "lifetime-lubricated; operation with oil-free air permitted", description: {en: "Lubrication", de: "Schmierung"}}
+            - _idShort: Mechanics
+              "+Mass": {valueType: xs:double, value: 0.59, description: {en: "Mass incl. protective cap [kg]", de: "Masse inkl. Schutzkappe [kg]"}}
+              "+OverallLengthL8": {valueType: xs:double, value: 174, description: {en: "Overall length L8 without piston rod (ISO 15552) [mm]", de: "Baulänge L8 ohne Kolbenstange (ISO 15552) [mm]"}}
+              "+PistonRodExtensionWH": {valueType: xs:double, value: 26, description: {en: "Piston rod extension WH (ISO 15552) [mm]", de: "Kolbenstangenüberstand WH (ISO 15552) [mm]"}}
+              "+MountingThread": {value: M6, description: {en: "Mounting thread in end caps", de: "Befestigungsgewinde in den Deckeln"}}
+              "+MountingHolePitchTG": {valueType: xs:double, value: 32.5, description: {en: "Mounting hole pitch TG (ISO 15552) [mm]", de: "Lochabstand TG (ISO 15552) [mm]"}}
+            - _idShort: Environment
+              "+AmbientTemperatureMin": {valueType: xs:double, value: -20, description: {en: "Minimum ambient and medium temperature [°C]", de: "Minimale Umgebungs- und Mediumstemperatur [°C]"}}
+              "+AmbientTemperatureMax": {valueType: xs:double, value: 80, description: {en: "Maximum ambient and medium temperature [°C]", de: "Maximale Umgebungs- und Mediumstemperatur [°C]"}}
+              "+PwisFree": {valueType: xs:boolean, value: true, description: {en: "Free of paint-wetting impairment substances (PWIS)", de: "Frei von lackbenetzungsstörenden Substanzen (LABS)"}}
+            - _idShort: Materials
+              "+MaterialBarrel": {value: "EN AW-6063 T6, anodised", description: {en: "Material of the barrel", de: "Werkstoff des Zylinderrohrs"}}
+              "+MaterialEndCaps": {value: "EN AC-46000, die-cast", description: {en: "Material of the end caps", de: "Werkstoff der Deckel"}}
+              "+MaterialPistonRod": {value: "1.4301 (X5CrNi18-10)", description: {en: "Material of the piston rod", de: "Werkstoff der Kolbenstange"}}
+              "+MaterialSeals": {value: "TPU, NBR", description: {en: "Material of the seals", de: "Werkstoff der Dichtungen"}}
+      FurtherInformation:
+        TextStatement:
+          - {en: "Theoretical forces are calculated from the piston areas at 6 bar; the effective force is reduced by friction.", de: "Die theoretischen Kräfte sind aus den Kolbenflächen bei 6 bar berechnet; die effektive Kraft ist um die Reibung geringer."}
+          - {en: "No CE marking: ISO 15552 cylinders are not machinery under 2006/42/EC and not pressure equipment in the scope of 2014/68/EU.", de: "Keine CE-Kennzeichnung: Zylinder nach ISO 15552 sind keine Maschinen im Sinne der 2006/42/EG und kein Druckgerät im Anwendungsbereich der 2014/68/EU."}
+        ValidDate: "2025-09-01"
+
+  - template: ContactInformations-1.0
+    values:
+      ContactInformation:
+        - _idShort: Sales
+          $include: common/address_vf_pneumatics.yaml
+          RoleOfContactPerson: "0173-1#07-AAS928#001"
+          Department: {en: Sales pneumatic drives, de: Vertrieb Pneumatikantriebe}
+          Email: {EmailAddress: sales@vf-pneumatics.example}
+        - _idShort: TechnicalSupport
+          $include: common/address_vf_pneumatics.yaml
+          RoleOfContactPerson: "0173-1#07-AAS931#001"
+          Department: {en: Technical support and repair service, de: Technischer Support und Reparaturservice}
+          Phone: {TelephoneNumber: {en: "+49 631 000000-250"}, AvailableTime: {en: "Mon-Fri 07:00-17:00 CET", de: "Mo-Fr 07:00-17:00 MEZ"}}
+          Email: {EmailAddress: support@vf-pneumatics.example}
+
+  - template: HandoverDocumentation-2.0
+    values:
+      Documents:
+        - DocumentIds: [{DocumentDomainId: VFPneumatics, DocumentIdentifier: DS-PC3280, DocumentIsPrimary: true}]
+          DocumentClassifications:
+            - {ClassId: "02-01", ClassName: {en: Technical specification, de: Technische Spezifikation}, ClassificationSystem: VDI2770:2020}
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.1"
+              Title: {en: PC-32-80-DA-M data sheet, de: Datenblatt PC-32-80-DA-M}
+              Description: {en: "Technical data, materials and conformity information", de: "Technische Daten, Werkstoffe und Konformitätsangaben"}
+              StatusSetDate: "2025-09-01"
+              StatusValue: Released
+              OrganizationShortName: VF Pneumatics
+              OrganizationOfficialName: VF Pneumatics GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/DS-PC3280.pdf}]
+        - DocumentIds: [{DocumentDomainId: VFPneumatics, DocumentIdentifier: OM-PC3280, DocumentIsPrimary: true}]
+          DocumentClassifications:
+            - {ClassId: "03-01", ClassName: {en: "Assembly, disassembly", de: "Montage, Demontage"}, ClassificationSystem: VDI2770:2020}
+            - {ClassId: "03-02", ClassName: {en: Operation, de: Bedienung}, ClassificationSystem: VDI2770:2020}
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.2"
+              Title: {en: PC-32-80-DA-M operating and assembly instructions, de: Betriebs- und Montageanleitung PC-32-80-DA-M}
+              Description: {en: "Intended use, safety, mounting, commissioning, cushioning adjustment and maintenance", de: "Bestimmungsgemäße Verwendung, Sicherheit, Montage, Inbetriebnahme, Dämpfungseinstellung und Wartung"}
+              StatusSetDate: "2025-09-01"
+              StatusValue: Released
+              OrganizationShortName: VF Pneumatics
+              OrganizationOfficialName: VF Pneumatics GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/OM-PC3280.pdf}]
+        - DocumentIds: [{DocumentDomainId: VFPneumatics, DocumentIdentifier: RI-PC3280, DocumentIsPrimary: true}]
+          DocumentClassifications:
+            - {ClassId: "03-05", ClassName: {en: Repair, de: Instandsetzung}, ClassificationSystem: VDI2770:2020}
+            - {ClassId: "03-06", ClassName: {en: Spare parts, de: Ersatzteile}, ClassificationSystem: VDI2770:2020}
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.0"
+              Title: {en: PC-32-80-DA-M repair instructions and spare parts, de: Reparaturanleitung und Ersatzteile PC-32-80-DA-M}
+              Description: {en: "Dismantling, seal replacement, spare parts list and end-of-life sorting", de: "Demontage, Dichtungswechsel, Ersatzteilliste und Sortierung am Lebensende"}
+              StatusSetDate: "2025-09-01"
+              StatusValue: Released
+              OrganizationShortName: VF Pneumatics
+              OrganizationOfficialName: VF Pneumatics GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/RI-PC3280.pdf}]
+
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - PcfCalculationMethods: [{value: "ISO 14067"}]
+          PcfCO2eq: 4.2
+          ReferenceImpactUnitForCalculation: piece
+          QuantityOfMeasureForCalculation: 1
+          LifeCyclePhases: [{value: "A1-A3"}]
+          GoodsHandoverAddress: {$include: common/address_vf_pneumatics.yaml}
+          PublicationDate: "2025-09-15T00:00:00+00:00"
+          ExpirationDate: "2028-09-14T23:59:59+00:00"
+
+  - template: HierarchicalStructures-1.1
+    values:
+      ArcheType: Full
+      EntryNode:
+        _idShort: EntryNode
+        entityType: SelfManagedEntity
+        globalAssetId: ${asset:PC3280_TYPE}
+        statements:
+          Node:
+            - {_idShort: Barrel, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_BARREL}", statements: {BulkCount: 1}}
+            - {_idShort: EndCapFront, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_ENDCAP_FRONT}", statements: {BulkCount: 1}}
+            - {_idShort: EndCapRear, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_ENDCAP_REAR}", statements: {BulkCount: 1}}
+            - {_idShort: PistonRod, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_PISTON_ROD}", statements: {BulkCount: 1}}
+            - {_idShort: Piston, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_PISTON}", statements: {BulkCount: 1}}
+            - {_idShort: SealKit, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_SEAL_KIT}", statements: {BulkCount: 1}}
+            - {_idShort: ScrewM5x16, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_SCREW_M5}", statements: {BulkCount: 8}}
+            - {_idShort: CushioningScrew, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_CUSHION_SCREW}", statements: {BulkCount: 2}}
+            - {_idShort: ProtectiveCap, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_PROTECTIVE_CAP}", statements: {BulkCount: 1}}
+          HasPart:
+            - {_idShort: HasPart_Barrel, first: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.Barrel"}
+            - {_idShort: HasPart_EndCapFront, first: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.EndCapFront"}
+            - {_idShort: HasPart_EndCapRear, first: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.EndCapRear"}
+            - {_idShort: HasPart_PistonRod, first: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.PistonRod"}
+            - {_idShort: HasPart_Piston, first: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.Piston"}
+            - {_idShort: HasPart_SealKit, first: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.SealKit"}
+            - {_idShort: HasPart_ScrewM5x16, first: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.ScrewM5x16"}
+            - {_idShort: HasPart_CushioningScrew, first: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.CushioningScrew"}
+            - {_idShort: HasPart_ProtectiveCap, first: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.ProtectiveCap"}
+
+  # IDTA 02031: one Process per operation (OP10-OP90); parameters are extra elements ("+Name") because the
+  # template leaves the content of the four parameter collections open. Units are given in the descriptions.
+  - template: ProcessParameters-1.0
+    values:
+      Processes:
+        Process:
+          - _idShort: OP10
+            ProcessId: OP10
+            ProcessName: Pre-assemble piston and rod
+            ProcessDescription: {en: "Screw the piston with magnet ring onto the piston rod spigot and tighten with thread locker.", de: "Kolben mit Magnetring auf den Kolbenstangenzapfen schrauben und mit Schraubensicherung anziehen."}
+            PlannedProcessTime: PT2S
+            ProductParameters:
+              "+PistonTighteningTorque": {valueType: xs:double, value: 8.0, description: {en: "Tightening torque piston on rod [N·m]", de: "Anzugsmoment Kolben auf Kolbenstange [N·m]"}}
+              "+ThreadLocking": {value: "anaerobic thread locker, medium strength", description: {en: "Thread locking of the piston thread", de: "Sicherung des Kolbengewindes"}}
+            ProcessParameters:
+              "+TorqueTolerance": {valueType: xs:double, value: 0.5, description: {en: "Permitted torque deviation (±) [N·m]", de: "Zulässige Drehmomentabweichung (±) [N·m]"}}
+              "+FinalAngleWindowMin": {valueType: xs:double, value: 10, description: {en: "Minimum final rotation angle after threshold torque [°]", de: "Minimaler Drehwinkel nach Schwellmoment [°]"}}
+              "+FinalAngleWindowMax": {valueType: xs:double, value: 90, description: {en: "Maximum final rotation angle after threshold torque [°]", de: "Maximaler Drehwinkel nach Schwellmoment [°]"}}
+            ResourceParameters:
+              "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/AssembleCylinder", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
+              "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
+              "+NutrunnerTorqueRangeMax": {valueType: xs:double, value: 12, description: {en: "Minimum required nutrunner capacity [N·m]", de: "Mindestens erforderlicher Schraubermessbereich [N·m]"}}
+            ProcessBoM:
+              "+PistonRod": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_PISTON_ROD}", specificAssetIds: [{name: customerPartId, value: "5032-1004"}], description: {en: Piston rod, de: Kolbenstange}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
+              "+Piston": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_PISTON}", specificAssetIds: [{name: customerPartId, value: "5032-1005"}], description: {en: Piston with magnet ring, de: Kolben mit Magnetring}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
+          - _idShort: OP20
+            ProcessId: OP20
+            ProcessName: Insert seals
+            ProcessDescription: {en: "Fit piston seals, rod seal, wiper, cushioning seals and O-rings of the seal kit with assembly grease.", de: "Kolbendichtungen, Stangendichtung, Abstreifer, Dämpfungsdichtungen und O-Ringe des Dichtungssatzes mit Montagefett einsetzen."}
+            PlannedProcessTime: PT1.5S
+            ProductParameters:
+              "+SealsToFit": {valueType: xs:unsignedInt, value: 8, description: {en: "Number of seals and O-rings to fit [pcs]", de: "Anzahl einzusetzender Dichtungen und O-Ringe [Stk]"}}
+              "+Grease": {value: "PWIS-free lithium-soap assembly grease", description: {en: "Assembly grease", de: "Montagefett"}}
+            ProcessParameters:
+              "+GreaseQuantity": {valueType: xs:double, value: 0.15, description: {en: "Grease quantity per cylinder [g]", de: "Fettmenge je Zylinder [g]"}}
+              "+SealInsertionForceMax": {valueType: xs:double, value: 150, description: {en: "Maximum seal insertion force [N]", de: "Maximale Einpresskraft der Dichtungen [N]"}}
+            ResourceParameters:
+              "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/AssembleCylinder", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
+              "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
+            ProcessBoM:
+              "+SealKit": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_SEAL_KIT}", specificAssetIds: [{name: customerPartId, value: "5032-1006"}], description: {en: Seal kit, de: Dichtungssatz}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
+          - _idShort: OP30
+            ProcessId: OP30
+            ProcessName: Insert piston assembly into barrel
+            ProcessDescription: {en: "Push the greased piston assembly into the barrel bore with controlled force.", de: "Gefettete Kolbenbaugruppe kraftüberwacht in die Rohrbohrung einschieben."}
+            PlannedProcessTime: PT1.5S
+            ProductParameters:
+              "+InsertionDepth": {valueType: xs:double, value: 105, description: {en: "Insertion depth of the piston measured from the rod-side barrel face [mm]", de: "Einschubtiefe des Kolbens ab stangenseitiger Rohrstirnfläche [mm]"}}
+            ProcessParameters:
+              "+InsertionForceMax": {valueType: xs:double, value: 200, description: {en: "Maximum insertion force [N]", de: "Maximale Einschubkraft [N]"}}
+              "+InsertionSpeed": {valueType: xs:double, value: 0.05, description: {en: "Insertion speed [m/s]", de: "Einschubgeschwindigkeit [m/s]"}}
+            ResourceParameters:
+              "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/AssembleCylinder", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
+              "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
+            ProcessBoM:
+              "+Barrel": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_BARREL}", specificAssetIds: [{name: customerPartId, value: "5032-1001"}], description: {en: Barrel, de: Zylinderrohr}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
+          - _idShort: OP40
+            ProcessId: OP40
+            ProcessName: Mount end caps and tighten screws
+            ProcessDescription: {en: "Mount front and rear end caps with preset cushioning screws and tighten the eight M5 screws crosswise to 6 N·m.", de: "Vorder- und Hinterdeckel mit voreingestellten Dämpfungsschrauben montieren und die acht M5-Schrauben über Kreuz mit 6 N·m anziehen."}
+            PlannedProcessTime: PT2.5S
+            ProductParameters:
+              "+TighteningTorque": {valueType: xs:double, value: 6.0, description: {en: "Tightening torque of the end-cap screws M5 [N·m]", de: "Anzugsmoment der Deckelschrauben M5 [N·m]"}}
+              "+CushioningScrewPreset": {valueType: xs:double, value: 1.0, description: {en: "Preset opening of the cushioning screws [turns]", de: "Voreingestellte Öffnung der Dämpfungsschrauben [Umdrehungen]"}}
+            ProcessParameters:
+              "+TorqueTolerance": {valueType: xs:double, value: 0.5, description: {en: "Permitted torque deviation (±) [N·m]", de: "Zulässige Drehmomentabweichung (±) [N·m]"}}
+              "+TighteningSequence": {value: "crosswise, two stages (3 N·m, 6 N·m)", description: {en: "Tightening sequence", de: "Anzugsreihenfolge"}}
+              "+ScrewCount": {valueType: xs:unsignedInt, value: 8, description: {en: "Number of screws [pcs]", de: "Anzahl Schrauben [Stk]"}}
+            ResourceParameters:
+              "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/AssembleCylinder", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
+              "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
+              "+SpindleCount": {valueType: xs:unsignedInt, value: 4, description: {en: "Number of nutrunner spindles (multi-spindle) [pcs]", de: "Anzahl Schraubspindeln (Mehrfachschrauber) [Stk]"}}
+            ProcessBoM:
+              "+EndCapFront": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_ENDCAP_FRONT}", specificAssetIds: [{name: customerPartId, value: "5032-1002"}], description: {en: Front end cap, de: Vorderdeckel}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
+              "+EndCapRear": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_ENDCAP_REAR}", specificAssetIds: [{name: customerPartId, value: "5032-1003"}], description: {en: Rear end cap, de: Hinterdeckel}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
+              "+ScrewM5x16": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_SCREW_M5}", specificAssetIds: [{name: customerPartId, value: "9001-0516"}], description: {en: "Socket head cap screw ISO 4762 M5x16", de: "Zylinderschraube ISO 4762 M5x16"}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "8"}]}
+              "+CushioningScrew": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_CUSHION_SCREW}", specificAssetIds: [{name: customerPartId, value: "5032-1008"}], description: {en: Cushioning screw, de: Dämpfungsschraube}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "2"}]}
+          - _idShort: OP50
+            ProcessId: OP50
+            ProcessName: Leak test
+            ProcessDescription: {en: "Pressure-decay leak test of both cylinder chambers at 6 bar.", de: "Druckabfall-Dichtheitsprüfung beider Zylinderkammern bei 6 bar."}
+            PlannedProcessTime: PT2S
+            ProductParameters:
+              "+LeakRateMax": {valueType: xs:double, value: 1.0, description: {en: "Maximum permitted leak rate [cm³/min] (standard conditions)", de: "Maximal zulässige Leckrate [cm³/min] (Normbedingungen)"}}
+            ProcessParameters:
+              "+TestPressure": {valueType: xs:double, value: 6.0, description: {en: "Test pressure (gauge) [bar]", de: "Prüfdruck (Überdruck) [bar]"}}
+              "+TestMethod": {value: "pressure decay, both chambers", description: {en: "Test method", de: "Prüfverfahren"}}
+              "+FillTime": {valueType: xs:double, value: 0.6, description: {en: "Fill time [s]", de: "Füllzeit [s]"}}
+              "+StabilisationTime": {valueType: xs:double, value: 0.6, description: {en: "Stabilisation time [s]", de: "Beruhigungszeit [s]"}}
+              "+MeasurementTime": {valueType: xs:double, value: 0.6, description: {en: "Measurement time [s]", de: "Messzeit [s]"}}
+              "+VentTime": {valueType: xs:double, value: 0.2, description: {en: "Vent time [s]", de: "Entlüftungszeit [s]"}}
+              "+TestMedium": {value: "dry compressed air ISO 8573-1:2010 [7:4:4]", description: {en: "Test medium", de: "Prüfmedium"}}
+            ResourceParameters:
+              "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/LeakTest", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
+              "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
+              "+LeakTesterResolution": {valueType: xs:double, value: 0.01, description: {en: "Required resolution of the leak tester [cm³/min]", de: "Erforderliche Auflösung des Dichtheitsprüfgeräts [cm³/min]"}}
+            ProcessBoM: {}
+          - _idShort: OP60
+            ProcessId: OP60
+            ProcessName: Function test
+            ProcessDescription: {en: "Full stroke in both directions at 6 bar without load; measure the stroke times and check the cushioning.", de: "Voller Hub in beide Richtungen bei 6 bar ohne Last; Hubzeiten messen und Dämpfung prüfen."}
+            PlannedProcessTime: PT1.5S
+            ProductParameters:
+              "+StrokeTimeMin": {valueType: xs:double, value: 0.28, description: {en: "Minimum permitted stroke time [s]", de: "Minimal zulässige Hubzeit [s]"}}
+              "+StrokeTimeMax": {valueType: xs:double, value: 0.36, description: {en: "Maximum permitted stroke time [s]", de: "Maximal zulässige Hubzeit [s]"}}
+            ProcessParameters:
+              "+SupplyPressure": {valueType: xs:double, value: 6.0, description: {en: "Supply pressure (gauge) [bar]", de: "Versorgungsdruck (Überdruck) [bar]"}}
+              "+Load": {valueType: xs:double, value: 0, description: {en: "External load [N]", de: "Externe Last [N]"}}
+              "+Directions": {value: "advance and retract", description: {en: "Tested stroke directions", de: "Geprüfte Hubrichtungen"}}
+            ResourceParameters:
+              "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/FunctionTest", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
+              "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
+              "+ValveFlowRate": {valueType: xs:double, value: 500, description: {en: "Standard nominal flow rate of the test valve [l/min]", de: "Normalnenndurchfluss des Prüfventils [l/min]"}}
+            ProcessBoM: {}
+          - _idShort: OP70
+            ProcessId: OP70
+            ProcessName: Fit protective cap
+            ProcessDescription: {en: "Press the red PE-LD protective cap onto the front end of the cylinder.", de: "Rote PE-LD-Schutzkappe auf das vordere Zylinderende aufdrücken."}
+            PlannedProcessTime: PT1S
+            ProductParameters:
+              "+CapColour": {value: "red, RAL 3020 traffic red", description: {en: "Colour of the protective cap", de: "Farbe der Schutzkappe"}}
+            ProcessParameters:
+              "+PressOnForceMax": {valueType: xs:double, value: 50, description: {en: "Maximum press-on force [N]", de: "Maximale Aufdrückkraft [N]"}}
+            ResourceParameters:
+              "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/FitProtectiveCap", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
+              "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
+            ProcessBoM:
+              "+ProtectiveCap": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_PROTECTIVE_CAP}", specificAssetIds: [{name: customerPartId, value: "5032-1009"}], description: {en: Protective cap, de: Schutzkappe}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
+          - _idShort: OP75
+            ProcessId: OP75
+            ProcessName: Transport to inspection
+            ProcessDescription: {en: "Transport the upright cylinder on the belt conveyor from the cell outfeed to the inspection position.", de: "Stehenden Zylinder auf dem Gurtförderer vom Zellenauslauf zur Prüfposition transportieren."}
+            PlannedProcessTime: PT11S
+            ProductParameters:
+              "+Orientation": {value: "upright, standing on the rear end cap", description: {en: "Orientation of the part on the belt", de: "Lage des Teils auf dem Gurt"}}
+            ProcessParameters:
+              "+BeltSpeed": {valueType: xs:double, value: 0.25, description: {en: "Belt speed [m/s]", de: "Bandgeschwindigkeit [m/s]"}}
+              "+TransportDistance": {valueType: xs:double, value: 2.75, description: {en: "Transport distance [m]", de: "Transportweg [m]"}}
+            ResourceParameters:
+              "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/Transport", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
+              "+Resource": {valueType: xs:anyURI, value: "${aas:CV01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
+            ProcessBoM: {}
+          - _idShort: OP80
+            ProcessId: OP80
+            ProcessName: Colour inspection of the protective cap
+            ProcessDescription: {en: "Measure the colour of the protective cap and compare it with the taught reference (CIE76 colour difference).", de: "Farbe der Schutzkappe messen und mit der eingelernten Referenz vergleichen (Farbabstand CIE76)."}
+            PlannedProcessTime: PT0.5S
+            ProductParameters:
+              "+ReferenceColourR": {valueType: xs:double, value: 0.78, description: {en: "Reference colour, sRGB red component [0..1]", de: "Referenzfarbe, sRGB-Rotanteil [0..1]"}}
+              "+ReferenceColourG": {valueType: xs:double, value: 0.08, description: {en: "Reference colour, sRGB green component [0..1]", de: "Referenzfarbe, sRGB-Grünanteil [0..1]"}}
+              "+ReferenceColourB": {valueType: xs:double, value: 0.10, description: {en: "Reference colour, sRGB blue component [0..1]", de: "Referenzfarbe, sRGB-Blauanteil [0..1]"}}
+              "+ReferenceColourLab": {value: "L* 42.3, a* 64.4, b* 46.6 (D65/2°)", description: {en: "Reference colour in CIELAB", de: "Referenzfarbe in CIELAB"}}
+            ProcessParameters:
+              "+DeltaE76Max": {valueType: xs:double, value: 25, description: {en: "Maximum colour difference ΔE*ab (CIE76) [-]", de: "Maximaler Farbabstand ΔE*ab (CIE76) [-]"}}
+              "+MeasurementZone": {value: "protective cap, 190-235 mm above belt", description: {en: "Measurement zone", de: "Messzone"}}
+            ResourceParameters:
+              "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/InspectColour", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
+              "+Resource": {valueType: xs:anyURI, value: "${aas:QS01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
+              "+Illumination": {value: "white LED ring light, D65-like", description: {en: "Illumination", de: "Beleuchtung"}}
+            ProcessBoM: {}
+          - _idShort: OP90
+            ProcessId: OP90
+            ProcessName: Sort and pack
+            ProcessDescription: {en: "Pick the inspected cylinder and place good parts in KLT A, rejects in KLT B (12 parts per KLT).", de: "Geprüften Zylinder greifen und Gutteile in KLT A, Schlechtteile in KLT B ablegen (12 Teile je KLT)."}
+            PlannedProcessTime: PT7S
+            ProductParameters:
+              "+GripPosition": {value: "barrel, 85 mm above the rear face", description: {en: "Grip position on the part", de: "Greifposition am Teil"}}
+              "+PartMass": {valueType: xs:double, value: 0.59, description: {en: "Part mass [kg]", de: "Teilemasse [kg]"}}
+            ProcessParameters:
+              "+KltCapacity": {valueType: xs:unsignedInt, value: 12, description: {en: "Parts per KLT [pcs]", de: "Teile je KLT [Stk]"}}
+              "+GoodDestination": {valueType: xs:anyURI, value: "${aas:KLTA01}", description: {en: "Destination of good parts (AAS identifier)", de: "Ziel der Gutteile (AAS-Kennung)"}}
+              "+RejectDestination": {valueType: xs:anyURI, value: "${aas:KLTB01}", description: {en: "Destination of rejected parts (AAS identifier)", de: "Ziel der Schlechtteile (AAS-Kennung)"}}
+            ResourceParameters:
+              "+RequiredCapabilities": {value: "https://virtual-factory.example/ids/capability/PickAndPlace https://virtual-factory.example/ids/capability/Sort", description: {en: "Required capabilities of the resource (space-separated IRIs)", de: "Benötigte Fähigkeiten der Ressource (leerzeichengetrennte IRIs)"}}
+              "+Resource": {valueType: xs:anyURI, value: "${aas:RB01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
+              "+GripWidth": {valueType: xs:double, value: 44, description: {en: "Gripper jaw opening at grip [mm]", de: "Backenöffnung beim Greifen [mm]"}}
+              "+GripForce": {valueType: xs:double, value: 40, description: {en: "Gripping force [N]", de: "Greifkraft [N]"}}
+            ProcessBoM: {}
+
+  - template: ManufacturingRecipe-1.0
+    values:
+      RecipeHeader:
+        RecipeId: MR-PC3280
+        RecipeVersion: "1.0"
+        RecipeName: {en: "Master recipe PC-32-80-DA-M, LINE01", de: "Grundrezept PC-32-80-DA-M, LINE01"}
+        RecipeType: MasterRecipe
+        ProductReference: {ref: "aas:PC3280_TYPE"}
+        LotSizeBasis: 1
+        ApprovalStatus: Released
+        ValidFrom: "2025-09-15"
+        Author: "VF Pneumatics GmbH, Manufacturing Engineering"
+        ChangeDescription: {en: "Initial release for the commissioning of LINE01.", de: "Erstfreigabe zur Inbetriebnahme von LINE01."}
+      Formula:
+        Parameters:
+          Parameter:
+            - {_idShort: TorquePiston, ParameterId: TorquePiston, ParameterName: {en: "Tightening torque piston on rod", de: "Anzugsmoment Kolben auf Stange"}, NominalValue: "8.0", LowerLimit: 7.5, UpperLimit: 8.5, Unit: "N.m"}
+            - {_idShort: GreaseQuantity, ParameterId: GreaseQuantity, ParameterName: {en: "Assembly grease quantity", de: "Montagefettmenge"}, NominalValue: "0.15", LowerLimit: 0.10, UpperLimit: 0.20, Unit: g}
+            - {_idShort: InsertionForceMax, ParameterId: InsertionForceMax, ParameterName: {en: "Maximum insertion force piston assembly", de: "Maximale Einschubkraft Kolbenbaugruppe"}, NominalValue: "200", UpperLimit: 200, Unit: N}
+            - {_idShort: TorqueEndCap, ParameterId: TorqueEndCap, ParameterName: {en: "Tightening torque end-cap screws M5", de: "Anzugsmoment Deckelschrauben M5"}, NominalValue: "6.0", LowerLimit: 5.5, UpperLimit: 6.5, Unit: "N.m"}
+            - {_idShort: TestPressure, ParameterId: TestPressure, ParameterName: {en: "Leak test pressure (gauge)", de: "Prüfdruck Dichtheitsprüfung (Überdruck)"}, NominalValue: "6.0", LowerLimit: 5.9, UpperLimit: 6.1, Unit: bar}
+            - {_idShort: LeakRateMax, ParameterId: LeakRateMax, ParameterName: {en: "Maximum leak rate", de: "Maximale Leckrate"}, NominalValue: "1.0", UpperLimit: 1.0, Unit: "cm3/min"}
+            - {_idShort: SupplyPressure, ParameterId: SupplyPressure, ParameterName: {en: "Function test supply pressure (gauge)", de: "Versorgungsdruck Funktionsprüfung (Überdruck)"}, NominalValue: "6.0", LowerLimit: 5.8, UpperLimit: 6.2, Unit: bar}
+            - {_idShort: StrokeTime, ParameterId: StrokeTime, ParameterName: {en: "Stroke time at 6 bar without load", de: "Hubzeit bei 6 bar ohne Last"}, NominalValue: "0.32", LowerLimit: 0.28, UpperLimit: 0.36, Unit: s}
+            - {_idShort: CapPressForceMax, ParameterId: CapPressForceMax, ParameterName: {en: "Maximum press-on force protective cap", de: "Maximale Aufdrückkraft Schutzkappe"}, NominalValue: "50", UpperLimit: 50, Unit: N}
+            - {_idShort: BeltSpeed, ParameterId: BeltSpeed, ParameterName: {en: "Conveyor belt speed", de: "Bandgeschwindigkeit"}, NominalValue: "0.25", LowerLimit: 0.20, UpperLimit: 0.30, Unit: "m/s"}
+            - {_idShort: ReferenceColour, ParameterId: ReferenceColour, ParameterName: {en: "Reference colour of the protective cap (sRGB)", de: "Referenzfarbe der Schutzkappe (sRGB)"}, NominalValue: "0.78 0.08 0.10", Unit: "1"}
+            - {_idShort: DeltaEMax, ParameterId: DeltaEMax, ParameterName: {en: "Maximum colour difference ΔE*ab (CIE76)", de: "Maximaler Farbabstand ΔE*ab (CIE76)"}, NominalValue: "25", LowerLimit: 0, UpperLimit: 25, Unit: "1"}
+            - {_idShort: KltCapacity, ParameterId: KltCapacity, ParameterName: {en: "Parts per KLT", de: "Teile je KLT"}, NominalValue: "12", Unit: "{pcs}"}
+        Inputs:
+          Input:
+            - {_idShort: Barrel, MaterialId: "5032-1001", Quantity: 1, Unit: "{pcs}", BomNode: {ref: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.Barrel"}}
+            - {_idShort: EndCapFront, MaterialId: "5032-1002", Quantity: 1, Unit: "{pcs}", BomNode: {ref: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.EndCapFront"}}
+            - {_idShort: EndCapRear, MaterialId: "5032-1003", Quantity: 1, Unit: "{pcs}", BomNode: {ref: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.EndCapRear"}}
+            - {_idShort: PistonRod, MaterialId: "5032-1004", Quantity: 1, Unit: "{pcs}", BomNode: {ref: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.PistonRod"}}
+            - {_idShort: Piston, MaterialId: "5032-1005", Quantity: 1, Unit: "{pcs}", BomNode: {ref: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.Piston"}}
+            - {_idShort: SealKit, MaterialId: "5032-1006", Quantity: 1, Unit: "{pcs}", BomNode: {ref: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.SealKit"}}
+            - {_idShort: ScrewM5x16, MaterialId: "9001-0516", Quantity: 8, Unit: "{pcs}", BomNode: {ref: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.ScrewM5x16"}}
+            - {_idShort: CushioningScrew, MaterialId: "5032-1008", Quantity: 2, Unit: "{pcs}", BomNode: {ref: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.CushioningScrew"}}
+            - {_idShort: ProtectiveCap, MaterialId: "5032-1009", Quantity: 1, Unit: "{pcs}", BomNode: {ref: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.ProtectiveCap"}}
+        Outputs:
+          Output:
+            - {_idShort: Cylinder, MaterialId: "5032-0080", Quantity: 1, Unit: "{pcs}"}
+      EquipmentRequirements:
+        Requirement:
+          - {_idShort: R_Assembly, RequirementId: R-ASSY, RequiredCapability: "https://virtual-factory.example/ids/capability/AssembleCylinder", Description: {en: "Join piston, rod, seals, barrel and end caps; multi-spindle nutrunner up to 12 N·m", de: "Kolben, Stange, Dichtungen, Rohr und Deckel fügen; Mehrfachschrauber bis 12 N·m"}, CandidateResource: {ref: "aas:AC01"}}
+          - {_idShort: R_LeakTest, RequirementId: R-LEAK, RequiredCapability: "https://virtual-factory.example/ids/capability/LeakTest", Description: {en: "Pressure-decay leak test at 6 bar, resolution 0.01 cm³/min", de: "Druckabfall-Dichtheitsprüfung bei 6 bar, Auflösung 0,01 cm³/min"}, CandidateResource: {ref: "aas:AC01"}}
+          - {_idShort: R_FunctionTest, RequirementId: R-FUNC, RequiredCapability: "https://virtual-factory.example/ids/capability/FunctionTest", Description: {en: "Stroke time measurement in both directions at 6 bar", de: "Hubzeitmessung in beide Richtungen bei 6 bar"}, CandidateResource: {ref: "aas:AC01"}}
+          - {_idShort: R_FitCap, RequirementId: R-CAP, RequiredCapability: "https://virtual-factory.example/ids/capability/FitProtectiveCap", Description: {en: "Press-fit of the protective cap, force-monitored", de: "Aufdrücken der Schutzkappe, kraftüberwacht"}, CandidateResource: {ref: "aas:AC01"}}
+          - {_idShort: R_Transport, RequirementId: R-TRANS, RequiredCapability: "https://virtual-factory.example/ids/capability/Transport", Description: {en: "Upright transport of parts up to 1 kg at 0.25 m/s", de: "Stehender Transport von Teilen bis 1 kg mit 0,25 m/s"}, CandidateResource: {ref: "aas:CV01"}}
+          - {_idShort: R_InspectColour, RequirementId: R-COLOUR, RequiredCapability: "https://virtual-factory.example/ids/capability/InspectColour", Description: {en: "CIELAB colour measurement with taught reference, ΔE*ab output", de: "CIELAB-Farbmessung mit eingelernter Referenz, Ausgabe ΔE*ab"}, CandidateResource: {ref: "aas:QS01"}}
+          - {_idShort: R_PickAndPlace, RequirementId: R-PICK, RequiredCapability: "https://virtual-factory.example/ids/capability/PickAndPlace", Description: {en: "Pick from the conveyor and place into KLT slots, payload ≥ 1 kg", de: "Vom Band greifen und in KLT-Fächer ablegen, Traglast ≥ 1 kg"}, CandidateResource: {ref: "aas:RB01"}}
+          - {_idShort: R_Sort, RequirementId: R-SORT, RequiredCapability: "https://virtual-factory.example/ids/capability/Sort", Description: {en: "Assign good parts to KLT A and rejects to KLT B", de: "Gutteile KLT A und Schlechtteile KLT B zuordnen"}, CandidateResource: {ref: "aas:RB01"}}
+      Procedure:
+        Step:
+          - {_idShort: OP10, StepId: OP10, StepName: {en: Pre-assemble piston and rod, de: Kolben und Kolbenstange vormontieren}, StepType: Operation, Sequence: 1, RequirementRef: R-ASSY, AssignedResource: {ref: "aas:AC01"}, ParameterRefs: TorquePiston, PlannedDuration: PT2S, QualityRelevant: true}
+          - {_idShort: OP20, StepId: OP20, StepName: {en: Insert seals, de: Dichtungen einsetzen}, StepType: Operation, Sequence: 2, Predecessors: OP10, RequirementRef: R-ASSY, AssignedResource: {ref: "aas:AC01"}, ParameterRefs: GreaseQuantity, PlannedDuration: PT1.5S, QualityRelevant: false}
+          - {_idShort: OP30, StepId: OP30, StepName: {en: Insert piston assembly into barrel, de: Kolbenbaugruppe in Rohr einsetzen}, StepType: Operation, Sequence: 3, Predecessors: OP20, RequirementRef: R-ASSY, AssignedResource: {ref: "aas:AC01"}, ParameterRefs: InsertionForceMax, PlannedDuration: PT1.5S, QualityRelevant: false}
+          - {_idShort: OP40, StepId: OP40, StepName: {en: Mount end caps and tighten screws, de: Deckel montieren und Schrauben anziehen}, StepType: Operation, Sequence: 4, Predecessors: OP30, RequirementRef: R-ASSY, AssignedResource: {ref: "aas:AC01"}, ParameterRefs: TorqueEndCap, PlannedDuration: PT2.5S, QualityRelevant: true}
+          - {_idShort: OP50, StepId: OP50, StepName: {en: Leak test, de: Dichtheitsprüfung}, StepType: Operation, Sequence: 5, Predecessors: OP40, RequirementRef: R-LEAK, AssignedResource: {ref: "aas:AC01"}, ParameterRefs: "TestPressure, LeakRateMax", PlannedDuration: PT2S, QualityRelevant: true}
+          - {_idShort: OP60, StepId: OP60, StepName: {en: Function test, de: Funktionsprüfung}, StepType: Operation, Sequence: 6, Predecessors: OP50, RequirementRef: R-FUNC, AssignedResource: {ref: "aas:AC01"}, ParameterRefs: "SupplyPressure, StrokeTime", PlannedDuration: PT1.5S, QualityRelevant: true}
+          - {_idShort: OP70, StepId: OP70, StepName: {en: Fit protective cap, de: Schutzkappe aufsetzen}, StepType: Operation, Sequence: 7, Predecessors: OP60, RequirementRef: R-CAP, AssignedResource: {ref: "aas:AC01"}, ParameterRefs: CapPressForceMax, PlannedDuration: PT1S, QualityRelevant: false}
+          - {_idShort: OP75, StepId: OP75, StepName: {en: Transport to inspection, de: Transport zur Prüfung}, StepType: Operation, Sequence: 8, Predecessors: OP70, RequirementRef: R-TRANS, AssignedResource: {ref: "aas:CV01"}, ParameterRefs: BeltSpeed, PlannedDuration: PT11S, QualityRelevant: false}
+          - {_idShort: OP80, StepId: OP80, StepName: {en: Colour inspection of the protective cap, de: Farbprüfung der Schutzkappe}, StepType: Operation, Sequence: 9, Predecessors: OP75, RequirementRef: R-COLOUR, AssignedResource: {ref: "aas:QS01"}, ParameterRefs: "ReferenceColour, DeltaEMax", PlannedDuration: PT0.5S, QualityRelevant: true}
+          - {_idShort: OP90, StepId: OP90, StepName: {en: Sort and pack, de: Sortieren und Verpacken}, StepType: Operation, Sequence: 10, Predecessors: OP80, RequirementRef: "R-PICK, R-SORT", AssignedResource: {ref: "aas:RB01"}, ParameterRefs: KltCapacity, PlannedDuration: PT7S, QualityRelevant: false}
+
+  - template: DppMetadata-1.0
+    values:
+      contentSpecificationIds:
+        - https://admin-shell.io/idta/nameplate/3/0/Nameplate
+        - "0173-1#01-AHX837#002"
+        - https://admin-shell.io/idta/CarbonFootprint/CarbonFootprint/1/0
+        - "0173-1#01-AHF578#003"
+        - https://virtual-factory.example/ids/smt/ProductMaterialComposition/1/0/Submodel
+        - https://virtual-factory.example/ids/smt/ProductCircularity/1/0/Submodel
+      digitalProductPassportId: https://virtual-factory.example/dpp/model/PC-32-80-DA-M
+      dppSchemaVersion: "IDTA-DPP4.0:1.0"
+      dppStatus: Active
+      economicOperatorId: "gln:4099999000012"
+      facilityId: "gln:4099999000029"
+      granularity: Model
+      lastUpdate: "2026-10-01T00:00:00Z"
+      uniqueProductIdentifier: https://virtual-factory.example/01/04099999032808
+
+  # Custom generalisation of the IDTA DBP Material Composition. IsCriticalRawMaterial refers to the EU list of
+  # critical raw materials (Regulation (EU) 2024/1252, Annex II): aluminium, copper (brass) and the light/heavy rare
+  # earths of the NdFeB magnet are listed; stainless steel (nickel only listed as battery grade), steel and polymers are not.
+  # ScipNumber: notification of the complex object (cylinder); the articles have their own SCIP numbers (CMP_*.yaml).
+  - template: ProductMaterialComposition-1.0
+    values:
+      TotalMass: 0.59
+      Materials:
+        - {MaterialLocation: {ComponentName: Barrel, ComponentId: "5032-1001"}, MaterialIdentifier: "EN AW-6063 T6 (EN 573-3), anodised", MaterialName: "Aluminium wrought alloy AlMg0.7Si", MaterialMass: 0.200, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+        - {MaterialLocation: {ComponentName: Front end cap, ComponentId: "5032-1002"}, MaterialIdentifier: "EN AC-46000 (EN 1706)", MaterialName: "Aluminium casting alloy AlSi9Cu3(Fe)", MaterialMass: 0.095, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+        - {MaterialLocation: {ComponentName: Rear end cap, ComponentId: "5032-1003"}, MaterialIdentifier: "EN AC-46000 (EN 1706)", MaterialName: "Aluminium casting alloy AlSi9Cu3(Fe)", MaterialMass: 0.085, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+        - {MaterialLocation: {ComponentName: Piston rod, ComponentId: "5032-1004"}, MaterialIdentifier: "1.4301 (EN 10088-3)", MaterialName: "Stainless steel X5CrNi18-10", MaterialMass: 0.128, IsCriticalRawMaterial: false, RecyclabilityClass: Recyclable}
+        - {MaterialLocation: {ComponentName: Piston, ComponentId: "5032-1005"}, MaterialIdentifier: "EN AW-6082 T6 (EN 573-3)", MaterialName: "Aluminium wrought alloy AlSi1MgMn", MaterialMass: 0.0215, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+        - {MaterialLocation: {ComponentName: Piston magnet ring, ComponentId: "5032-1005"}, MaterialIdentifier: "NdFeB, sintered, grade N35, Ni-Cu-Ni coated", MaterialName: "Neodymium iron boron permanent magnet (Nd, Pr, Dy)", MaterialMass: 0.0025, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+        - {MaterialLocation: {ComponentName: "Seal kit (piston, rod and wiper seals)", ComponentId: "5032-1006"}, MaterialIdentifier: "TPU (ISO 18064), 93 Shore A", MaterialName: "Thermoplastic polyurethane", MaterialMass: 0.007, IsCriticalRawMaterial: false, RecyclabilityClass: EnergyRecovery}
+        - {MaterialLocation: {ComponentName: "Seal kit (cushioning seals, O-rings)", ComponentId: "5032-1006"}, MaterialIdentifier: "NBR (ISO 1629), 70 Shore A", MaterialName: "Acrylonitrile butadiene rubber", MaterialMass: 0.004, IsCriticalRawMaterial: false, RecyclabilityClass: EnergyRecovery}
+        - {MaterialLocation: {ComponentName: "End-cap screws M5x16 (8 pcs)", ComponentId: "9001-0516"}, MaterialIdentifier: "Steel property class 8.8 (ISO 898-1), zinc plated (ISO 4042)", MaterialName: "Quenched and tempered boron steel 20MnB4 (1.5525)", MaterialMass: 0.0296, IsCriticalRawMaterial: false, RecyclabilityClass: Recyclable}
+        - {MaterialLocation: {ComponentName: "Cushioning screws (2 pcs)", ComponentId: "5032-1008"}, MaterialIdentifier: "CW614N (EN 12164)", MaterialName: "Free-cutting brass CuZn39Pb3", MaterialMass: 0.003, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+        - {MaterialLocation: {ComponentName: Protective cap, ComponentId: "5032-1009"}, MaterialIdentifier: "PE-LD (ISO 1043-1), red masterbatch", MaterialName: "Low-density polyethylene", MaterialMass: 0.014, IsCriticalRawMaterial: false, RecyclabilityClass: Recyclable}
+      HazardousSubstances:
+        - {HazardousSubstanceClass: "Repr. 1A (H360FD); Lact. (H362)", HazardousSubstanceName: Lead, HazardousSubstanceIdentifier: "CAS 7439-92-1 / EC 231-100-4", HazardousSubstanceConcentration: 3.0, HazardousSubstanceLocation: "Cushioning screws, brass CW614N (5032-1008)", ScipNumber: "6f1c2a9e-4b7d-4e2a-9d35-8c0b7e51a4f3"}
+        - {HazardousSubstanceClass: "Repr. 1A (H360FD); Lact. (H362)", HazardousSubstanceName: Lead, HazardousSubstanceIdentifier: "CAS 7439-92-1 / EC 231-100-4", HazardousSubstanceConcentration: 0.2, HazardousSubstanceLocation: "End caps, die-cast alloy EN AC-46000 (5032-1002, 5032-1003)", ScipNumber: "6f1c2a9e-4b7d-4e2a-9d35-8c0b7e51a4f3"}
+      DeclarationDate: "2025-09-01"
+
+  - template: ProductCircularity-1.0
+    values:
+      RecycledContentInformation:
+        - {RecycledMaterial: "Aluminium wrought alloy EN AW-6063 (barrel)", PreConsumerShare: 25, PostConsumerShare: 15}
+        - {RecycledMaterial: "Aluminium casting alloy EN AC-46000 (end caps)", PreConsumerShare: 30, PostConsumerShare: 55}
+        - {RecycledMaterial: "Stainless steel 1.4301 (piston rod)", PreConsumerShare: 25, PostConsumerShare: 40}
+        - {RecycledMaterial: "Brass CW614N (cushioning screws)", PreConsumerShare: 40, PostConsumerShare: 50}
+        - {RecycledMaterial: "Steel 20MnB4 (screws)", PreConsumerShare: 10, PostConsumerShare: 25}
+      RenewableContent: 0
+      Durability:
+        ExpectedLifetimeCycles: 31250000
+        ExpectedLifetimeDistance: 5000
+        ReferenceConditions:
+          en: "B10 value according to ISO 19973-3 at 6 bar, 20 °C, 0.5 m/s, no lateral load, compressed air ISO 8573-1:2010 [7:4:4]; 31.25 million double strokes correspond to 5000 km travel at 80 mm stroke"
+          de: "B10-Wert nach ISO 19973-3 bei 6 bar, 20 °C, 0,5 m/s, ohne Querkraft, Druckluft ISO 8573-1:2010 [7:4:4]; 31,25 Mio. Doppelhübe entsprechen 5000 km Laufleistung bei 80 mm Hub"
+        WarrantyPeriod: P2Y
+      Repairability:
+        RepairabilityScore: 7.5
+        SparePartsAvailability: P10Y
+        RepairInstructions: RI-PC3280
+      SparePartSources:
+        - NameOfSupplier: {en: VF Pneumatics GmbH, de: VF Pneumatics GmbH}
+          SupplierWebAddress: https://virtual-factory.example/vf-pneumatics/spare-parts
+          EmailAddressOfSupplier: support@vf-pneumatics.example
+          Components: "seal kit SK-PC32 (5032-1006), cushioning screw (5032-1008), end-cap screw M5x16 (9001-0516), protective cap (5032-1009), piston assembly (5032-1004, 5032-1005)"
+      DismantlingAndRemovalInformation: [RI-PC3280, OM-PC3280]
+      EndOfLifeInformation:
+        en: "Return to VF Pneumatics GmbH or a metal recycler. Dismantle as described in RI-PC3280 and separate aluminium, stainless steel, steel, brass (contains lead), the NdFeB magnet ring (rare earths, collect separately) and the polymer parts."
+        de: "Rückgabe an die VF Pneumatics GmbH oder einen Metallverwerter. Demontage nach RI-PC3280; Aluminium, Edelstahl, Stahl, Messing (bleihaltig), den NdFeB-Magnetring (Seltene Erden, getrennt sammeln) und die Kunststoffteile trennen."

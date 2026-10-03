@@ -1,0 +1,22 @@
+title: "EU declaration of conformity"
+subtitle: "BC-3000 belt conveyor, serial number BC3000-2025-0117"
+organization: VF Automation Systems GmbH
+version: "1.0"
+date: "2025-07-04"
+sections:
+  - heading: Manufacturer
+    text: >-
+      VF Automation Systems GmbH, Fabrikstraße 3, 67655 Kaiserslautern, Germany. This declaration of conformity is
+      issued under the sole responsibility of the manufacturer.
+  - heading: Machine
+    rows: [[Designation, "Belt conveyor"], [Type, "BC-3000"], [Order code, "BC-3000-300-G-018"],
+           [Serial number, "BC3000-2025-0117"], [Year of construction, "2025"]]
+  - heading: Union harmonisation legislation
+    rows: [["Directive 2006/42/EC", "Machinery"], ["Directive 2014/30/EU", "Electromagnetic compatibility"]]
+  - heading: Harmonised standards applied
+    rows: [["EN ISO 12100:2010", "Risk assessment"], ["EN 620:2002+A1:2010", "Belt conveyors"],
+           ["EN ISO 13857:2019", "Safety distances"], ["EN 60204-1:2018", "Electrical equipment"]]
+  - heading: Signature
+    text: >-
+      Authorised to compile the technical documentation: VF Automation Systems GmbH, Engineering. Kaiserslautern,
+      4 July 2025, Managing Director (fictional, training document).

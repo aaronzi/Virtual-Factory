@@ -4,9 +4,9 @@ Data is a nested dict keyed by idShort (see docs/interfaces/aas-model.md, "Asset
 
     Property                 scalar                       ManufacturerName: {en: ..., de: ...} (MLP)
     SubmodelElementCollection dict                        File: "path" or {value, contentType}
-    SubmodelElementList      list of item data            Range: {min, max}
+    SubmodelElementList      list of item data            Range: {min, max, valueType?}
     placeholder X__00__ / repeated ZeroToMany element: list -> X01, X02, ... (or "_idShort" per item)
-    ReferenceElement         {"ref": "<resolver key>"}    Entity: {entityType, globalAssetId, statements}
+    ReferenceElement         {"ref": "<resolver key>"}    Entity: {entityType, globalAssetId, specificAssetIds, statements}
     RelationshipElement      {"first": "<key>", "second": "<key>"}
     Capability               {} (only "_idShort"/"_description")
     Blob                     {"contentType": ..., "value": str | bytes | JSON object}
@@ -159,6 +159,8 @@ class _Ctx:
 
     def _fill_Range(self, el: dict, value: Any, path: str) -> None:
         value = value or {}
+        if value.get("valueType"):
+            el["valueType"] = value["valueType"]
         vt = el.get("valueType", "xs:double")
         for bound in ("min", "max"):
             if value.get(bound) is not None:
@@ -189,8 +191,11 @@ class _Ctx:
         for key in ("entityType", "globalAssetId"):
             if key in value:
                 el[key] = value[key]
+        if value.get("specificAssetIds"):
+            el["specificAssetIds"] = [{"name": k, "value": str(v)} for k, v in value["specificAssetIds"].items()]
         if el.get("entityType") == "CoManagedEntity":
             el.pop("globalAssetId", None)
+            el.pop("specificAssetIds", None)
         el["statements"] = self.fill_elements(el.get("statements", []), value.get("statements", {}), path)
 
     def _fill_SubmodelElementList(self, el: dict, value: Any, path: str) -> None:

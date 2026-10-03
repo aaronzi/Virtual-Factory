@@ -1,0 +1,21 @@
+title: LC-10 carbon footprint
+subtitle: Explanatory statement - cradle-to-gate (A1-A3)
+organization: VF Automation Systems GmbH
+version: '1.0'
+date: '2025-06-01'
+sections:
+- heading: Method
+  rows:
+  - [Standard, ISO 14067]
+  - [System boundary, cradle-to-gate (A1-A3)]
+  - [Declared unit, 1 LC-10 controller (0.9 kg) incl. packaging]
+  - [Data, bill of materials of hardware version 1.2; generic]
+  - ['', 'emission factors for printed circuit boards, ICs,']
+  - ['', aluminium housing]
+  - [Production, 'assembly and test in Kaiserslautern, German electricity']
+  - ['', mix]
+- heading: Result
+  rows:
+  - [PCF (A1-A3), 48 kg CO2e per piece]
+  - [Main contributors, 'electronics (approx. 80 %), aluminium housing (approx.']
+  - ['', 12 %)]

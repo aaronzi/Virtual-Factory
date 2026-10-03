@@ -15,3 +15,6 @@ Format: short [MADR](https://adr.github.io/madr/)-style records. New ADR = next 
 | [0008](0008-plc-program-as-fmu.md) | PLC program as an FMI co-simulation slave | accepted |
 | [0009](0009-physical-transport-and-items.md) | Physical transport with Jolt rigid bodies | accepted |
 | [0010](0010-compatibility-renderer-indoor-lighting.md) | Compatibility renderer as default; indoor lighting without baking | accepted |
+| [0011](0011-template-based-aas-generation.md) | Template-based AAS generation from vendored IDTA templates | accepted |
+| [0012](0012-control-component-packml-on-interface.md) | Control Components with PackML state on the asset interface | accepted |
+| [0013](0013-aas-interfaces-generated-from-fmi.md) | AAS interface descriptions generated from FMI model descriptions | accepted |

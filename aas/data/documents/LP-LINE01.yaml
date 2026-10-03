@@ -1,0 +1,41 @@
+title: LINE01 line description and layout plan
+subtitle: Inspection & sorting line for profile cylinders PC-32-80-DA-M
+organization: VF Automation Systems GmbH
+version: '1.0'
+date: '2025-09-15'
+sections:
+- heading: 1 Purpose
+  text: >-
+    LINE01 assembles, tests, inspects and sorts ISO 15552 profile cylinders PC-32-80-DA-M of VF Pneumatics GmbH
+    in Hall 1 (area Final Assembly) of Plant 01. Takt time 12 s (300 parts per hour). The line was built and commissioned
+    by VF Automation Systems GmbH on 2025-09-15 as an assembly of machines.
+- heading: 2 Process steps
+  rows:
+  - [OP10-OP70, 'assembly, leak test, function test, protective cap (AC01)']
+  - [OP75, 'transport to inspection (CV01, LB01/LB02)']
+  - [OP80, colour inspection of the protective cap (QS01)]
+  - [OP90, 'sort and pack: KLT A good, KLT B reject, 12 per KLT']
+  - ['', '(RB01, GR01)']
+- heading: 3 Layout (hall coordinates, metres; X = material flow)
+  rows:
+  - [AC01 assembly and test cell, 'x -3.40, y 0.00']
+  - [CV01 belt conveyor (centre), 'x -1.00, y 0.00, belt height 0.85']
+  - [LB01 infeed light barrier, x -2.10]
+  - [LB02 inspection light barrier, x 0.19]
+  - [QS01 colour inspection, x 0.25]
+  - [RB01 robot (pedestal), 'x 0.25, y 0.55']
+  - [KLTA01 / KLTB01, 'x 0.75 / -0.25, y 0.55']
+  - [Control cabinet with PLC01, 'x -1.90, y 1.30']
+  - [HMI stand, 'x -2.00, y -0.75']
+  - [Footprint, approx. 5.5 m x 2.5 m]
+- heading: 4 Control and communication
+  text: >-
+    The line controller PLC01 (LC-10, program SortingLine 1.2.0) coordinates all devices via direct signal connections
+    and publishes every process value in the Unified Namespace (MQTT, topic root vf/plant01/final-assembly/line01).
+    The PackML state can be commanded via MQTT.
+- heading: 5 Utilities
+  rows:
+  - [Electrical supply, '400 V 3~ 50 Hz, 16 A; rated power approx. 2.3 kW']
+  - [Compressed air, '6 bar, approx. 5 Nl per part (AC01)']
+  - [Safety, safety fence with interlocked door around the robot cell;]
+  - ['', emergency stop at HMI stand and teach pendant]

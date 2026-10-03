@@ -1,0 +1,340 @@
+tag: CV01
+idShort: CV01_BeltConveyor
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/BeltConveyor
+displayName: {en: "Belt conveyor CV01 (BC-3000)", de: "Gurtförderer CV01 (BC-3000)"}
+description:
+  en: >-
+    Flat belt conveyor BC-3000 (3.0 m, belt width 300 mm) with VFD-driven gear motor. Transports the finished cylinders
+    from the outlet of the assembly cell AC01 past light barrier LB01 to the inspection position of QS01 (OP75).
+  de: >-
+    Flachgurtförderer BC-3000 (3,0 m, Gurtbreite 300 mm) mit frequenzumrichtergespeistem Getriebemotor. Transportiert
+    die fertigen Zylinder vom Auslauf der Montagezelle AC01 an der Lichtschranke LB01 vorbei zur Prüfposition von
+    QS01 (OP75).
+thumbnail: repo:docs/screenshots/assets/conveyor.png
+specificAssetIds: {serialNumber: BC3000-2025-0117, manufacturerPartId: BC-3000-300-G-018}
+locationDescription: "LINE01 between assembly cell AC01 (infeed) and colour inspection QS01 / robot cell RB01 (outfeed), Hall 1 Final Assembly"
+model3d:
+  file: godot/devices/conveyor/view/conveyor_parts.glb
+  preview: docs/screenshots/assets/conveyor.png
+  title: BC-3000 belt conveyor (frame, belt, drums, side guides, gear motor)
+  objectType: Machine
+device:
+  modelDescription: godot/devices/conveyor/model/modelDescription.xml
+  energy: {power: power, energy: energy}
+  operatingHours: operating_hours
+  state: {variable: running, map: {"true": Running, "false": Stopped}, initial: "false"}
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+      ManufacturerProductDesignation: {en: "Flat belt conveyor, aluminium profile frame, 3000 mm, belt width 300 mm", de: "Flachgurtförderer, Aluminiumprofilgestell, 3000 mm, Gurtbreite 300 mm"}
+      ManufacturerProductRoot: {en: Conveyor systems, de: Fördertechnik}
+      ManufacturerProductFamily: {en: BC belt conveyors, de: BC-Gurtförderer}
+      ManufacturerProductType: BC-3000
+      OrderCodeOfManufacturer: BC-3000-300-G-018
+      ProductArticleNumberOfManufacturer: "3000-3003"
+      URIOfTheProduct: https://virtual-factory.example/vf-automation/products/BC-3000
+      SerialNumber: BC3000-2025-0117
+      DateOfManufacture: "2025-06-30"
+      YearOfConstruction: "2025"
+      CountryOfOrigin: DE
+      HardwareVersion: "A"
+      AddressInformation: {$include: common/address_vf_automation.yaml}
+      Markings:
+        - $include: common/marking_ce.yaml
+          MarkingAdditionalText:
+            - "Machinery Directive 2006/42/EC"
+            - "EMC Directive 2014/30/EU"
+      AssetSpecificProperties:
+        GuidelineSpecificProperties:
+          - GuidelineForConformityDeclaration: "Directive 2006/42/EC on machinery"
+          - GuidelineForConformityDeclaration: "Directive 2014/30/EU (electromagnetic compatibility)"
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: VF Automation Systems GmbH
+        ManufacturerProductDesignation: {en: "Belt conveyor BC-3000", de: "Gurtförderer BC-3000"}
+        ManufacturerArticleNumber: "3000-3003"
+        ManufacturerOrderCode: BC-3000-300-G-018
+        ProductImages: [{ImageFile: repo:docs/screenshots/assets/conveyor.png, ImageNote: {en: "BC-3000 with side guides and gear motor", de: "BC-3000 mit Seitenführungen und Getriebemotor"}}]
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          Section:
+            - _idShort: Mechanical
+              "+ConveyorLength": {valueType: xs:double, value: 3.0, description: {en: "Conveyor length, drum centre to drum centre [m]", de: "Förderlänge, Trommelmitte bis Trommelmitte [m]"}}
+              "+BeltWidth": {valueType: xs:double, value: 300, description: {en: "Belt width [mm]", de: "Gurtbreite [mm]"}}
+              "+WorkingHeight": {valueType: xs:double, value: 850, description: {en: "Working height floor to belt top, adjustable ±50 mm [mm]", de: "Arbeitshöhe Boden bis Gurtoberkante, einstellbar ±50 mm [mm]"}}
+              "+GuideGap": {valueType: xs:double, value: 80, description: {en: "Clear width between the side guides, adjustable [mm]", de: "Lichte Weite zwischen den Seitenführungen, einstellbar [mm]"}}
+              "+DrumDiameter": {valueType: xs:double, value: 50, description: {en: "Drive and deflection drum diameter [mm]", de: "Durchmesser Antriebs- und Umlenktrommel [mm]"}}
+              "+Frame": {modelType: MultiLanguageProperty, value: {en: "Anodised aluminium profile 40 × 80 mm, steel supports with levelling feet", de: "Eloxiertes Aluminiumprofil 40 × 80 mm, Stahlstützen mit Stellfüßen"}, description: {en: Frame, de: Gestell}}
+              "+Mass": {valueType: xs:double, value: 68, description: {en: "Net mass incl. drive [kg]", de: "Nettomasse inkl. Antrieb [kg]"}}
+            - _idShort: Belt
+              "+BeltMaterial": {modelType: MultiLanguageProperty, value: {en: "PVC, 2-ply polyester fabric, smooth top, green", de: "PVC, 2-lagiges Polyestergewebe, glatte Oberseite, grün"}, description: {en: Belt type, de: Gurttyp}}
+              "+BeltThickness": {valueType: xs:double, value: 2.0, description: {en: "Belt thickness [mm]", de: "Gurtdicke [mm]"}}
+              "+BeltJoint": {value: "Endless, finger splice (hot vulcanised)", description: {en: Belt joint, de: Gurtverbindung}}
+              "+BeltTensioning": {value: "Screw take-up at deflection drum, take-up travel 40 mm", description: {en: Belt tensioning, de: Gurtspannung}}
+            - _idShort: Performance
+              "+SpeedMin": {valueType: xs:double, value: 0.0, description: {en: "Minimum belt speed [m/s]", de: "Minimale Gurtgeschwindigkeit [m/s]"}}
+              "+SpeedMax": {valueType: xs:double, value: 0.5, description: {en: "Maximum belt speed [m/s]", de: "Maximale Gurtgeschwindigkeit [m/s]"}}
+              "+SpeedNominal": {valueType: xs:double, value: 0.25, description: {en: "Belt speed setpoint in LINE01 [m/s]", de: "Gurtgeschwindigkeitssollwert in LINE01 [m/s]"}}
+              "+Acceleration": {valueType: xs:double, value: 0.8, description: {en: "Acceleration/deceleration ramp of the VFD [m/s²]", de: "Beschleunigungs-/Verzögerungsrampe des Frequenzumrichters [m/s²]"}}
+              "+MaxLoadPerMetre": {valueType: xs:double, value: 10, description: {en: "Maximum distributed load [kg/m]", de: "Maximale Streckenlast [kg/m]"}}
+              "+MaxTotalLoad": {valueType: xs:double, value: 30, description: {en: "Maximum total load [kg]", de: "Maximale Gesamtlast [kg]"}}
+              "+Reversible": {valueType: xs:boolean, value: true, description: {en: Reversible direction of travel, de: Umkehrbare Förderrichtung}}
+            - _idShort: Drive
+              "+MotorType": {value: "Three-phase helical-worm gear motor, IE3", description: {en: Motor type, de: Motortyp}}
+              "+MotorRatedPower": {valueType: xs:double, value: 0.18, description: {en: "Motor rated power [kW]", de: "Motor-Bemessungsleistung [kW]"}}
+              "+MotorRatedVoltage": {valueType: xs:double, value: 400, description: {en: "Motor rated voltage, 3~ [V]", de: "Motor-Bemessungsspannung, 3~ [V]"}}
+              "+MotorRatedCurrent": {valueType: xs:double, value: 0.55, description: {en: "Motor rated current [A]", de: "Motor-Bemessungsstrom [A]"}}
+              "+GearRatio": {valueType: xs:double, value: 14.5, description: {en: Gear ratio, de: Getriebeübersetzung}}
+              "+FrequencyInverter": {value: "0.25 kW, 3 × 400 V, 0-87 Hz, integrated STO", description: {en: Variable frequency drive, de: Frequenzumrichter}}
+              "+StandbyPower": {valueType: xs:double, value: 8, description: {en: "Standby power of the VFD [W]", de: "Standby-Leistung des Frequenzumrichters [W]"}}
+              "+MotorDegreeOfProtection": {value: IP55, description: {en: "Degree of protection of the gear motor (IEC 60529)", de: "Schutzart des Getriebemotors (IEC 60529)"}}
+            - _idShort: Environment
+              "+AmbientTemperatureMin": {valueType: xs:double, value: 5, description: {en: "Minimum ambient temperature [°C]", de: "Minimale Umgebungstemperatur [°C]"}}
+              "+AmbientTemperatureMax": {valueType: xs:double, value: 40, description: {en: "Maximum ambient temperature [°C]", de: "Maximale Umgebungstemperatur [°C]"}}
+              "+EmissionSoundPressureLevel": {valueType: xs:double, value: 58, description: {en: "A-weighted emission sound pressure level at 1 m [dB(A)]", de: "A-bewerteter Emissionsschalldruckpegel in 1 m Abstand [dB(A)]"}}
+      FurtherInformation:
+        TextStatement:
+          - {en: "Pinch points at the drums are covered by fixed guards; the conveyor is stopped via STO of the VFD by the line safety circuit.", de: "Einzugsstellen an den Trommeln sind durch feste Schutzeinrichtungen abgedeckt; das Band wird über STO des Frequenzumrichters vom Sicherheitskreis der Linie stillgesetzt."}
+        ValidDate: "2025-06-01"
+  - template: HandoverDocumentation-2.0
+    values:
+      Documents:
+        - DocumentIds: [{DocumentDomainId: VFAutomation, DocumentIdentifier: DS-BC3000, DocumentIsPrimary: true}]
+          DocumentClassifications: [{ClassId: "02-01", ClassName: {en: Technical specification, de: Technische Spezifikation}, ClassificationSystem: VDI2770:2020}]
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "2.0"
+              Title: {en: BC-3000 belt conveyor data sheet, de: Datenblatt Gurtförderer BC-3000}
+              Description: {en: "Technical data: geometry, belt, drive, performance", de: "Technische Daten: Geometrie, Gurt, Antrieb, Leistung"}
+              StatusSetDate: "2025-06-01"
+              StatusValue: Released
+              OrganizationShortName: VF Automation
+              OrganizationOfficialName: VF Automation Systems GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/DS-BC3000.pdf}]
+        - DocumentIds: [{DocumentDomainId: VFAutomation, DocumentIdentifier: OM-BC3000, DocumentIsPrimary: true}]
+          DocumentClassifications:
+            - {ClassId: "03-02", ClassName: {en: Operation, de: Bedienung}, ClassificationSystem: VDI2770:2020}
+            - {ClassId: "03-04", ClassName: {en: "Inspection, maintenance, testing", de: "Inspektion, Wartung, Prüfung"}, ClassificationSystem: VDI2770:2020}
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.3"
+              Title: {en: BC-3000 operating and maintenance instructions, de: Betriebs- und Wartungsanleitung BC-3000}
+              Description: {en: "Installation, operation, belt tracking and tensioning, lubrication, belt replacement, spare parts", de: "Aufstellung, Betrieb, Gurtlauf und Gurtspannung, Schmierung, Gurtwechsel, Ersatzteile"}
+              StatusSetDate: "2025-06-01"
+              StatusValue: Released
+              OrganizationShortName: VF Automation
+              OrganizationOfficialName: VF Automation Systems GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/OM-BC3000.pdf}]
+        - DocumentIds: [{DocumentDomainId: VFAutomation, DocumentIdentifier: DOC-BC3000-2025-0117, DocumentIsPrimary: true}]
+          DocumentClassifications: [{ClassId: "02-04", ClassName: {en: "Certificates, declarations", de: "Zeugnisse, Zertifikate, Bescheinigungen"}, ClassificationSystem: VDI2770:2020}]
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.0"
+              Title: {en: EU declaration of conformity BC-3000, de: EU-Konformitätserklärung BC-3000}
+              Description: {en: "EU declaration of conformity for serial number BC3000-2025-0117", de: "EU-Konformitätserklärung für die Seriennummer BC3000-2025-0117"}
+              StatusSetDate: "2025-07-04"
+              StatusValue: Released
+              OrganizationShortName: VF Automation
+              OrganizationOfficialName: VF Automation Systems GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/DOC-BC3000-2025-0117.pdf}]
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - PcfCalculationMethods: [{value: "ISO 14067"}, {value: "GHG Protocol"}]
+          PcfCO2eq: 285
+          ReferenceImpactUnitForCalculation: piece
+          QuantityOfMeasureForCalculation: 1
+          LifeCyclePhases: [{value: "A1-A3"}]
+          GoodsHandoverAddress: {$include: common/address_vf_automation.yaml}
+          PublicationDate: "2025-07-04T00:00:00+00:00"
+  - template: EnergyConsumption-1.0
+    values:
+      $include: common/energy_defaults.yaml
+      RatedPower: 180
+      StandbyPower: 8
+      PowerSupply: {RatedVoltage: 400, Frequency: 50, NumberOfPhases: 3, RatedCurrent: 0.55}
+  - template: CapabilityDescription-1.0
+    values:
+      CapabilitySet:
+        _idShort: CapabilitySet
+        CapabilityContainer:
+          - _idShort: TransportContainer
+            Capability: {_idShort: Transport, _semanticId: "https://virtual-factory.example/ids/capability/Transport"}
+            CapabilityComment: {en: "Linear transport of upright cylinders from the AC01 outlet to the QS01 inspection position (OP75)", de: "Linearer Transport stehender Zylinder vom Auslauf AC01 zur Prüfposition QS01 (OP75)"}
+            PropertySet:
+              - _idShort: TransportProperties
+                PropertyContainer:
+                  - _idShort: SpeedContainer
+                    PropertyRange: {_idShort: Speed, min: 0.0, max: 0.5}
+                    PropertyComment: {en: "Adjustable belt speed [m/s]", de: "Einstellbare Gurtgeschwindigkeit [m/s]"}
+                  - _idShort: TransportLengthContainer
+                    PropertyProperty: {_idShort: TransportLength, value: "3.0"}
+                    PropertyComment: {en: "Transport length [m]", de: "Förderlänge [m]"}
+                    SameProperty:
+                      - _idShort: SameAsTechnicalDataConveyorLength
+                        first: "sm:CV01/CapabilityDescription#CapabilitySet.TransportContainer.TransportProperties.TransportLengthContainer.TransportLength"
+                        second: "sm:CV01/TechnicalData#TechnicalPropertyAreas.0.Mechanical.ConveyorLength"
+                  - _idShort: MaxLoadContainer
+                    PropertyProperty: {_idShort: MaxLoadPerMetre, value: "10"}
+                    PropertyComment: {en: "Maximum distributed load [kg/m]", de: "Maximale Streckenlast [kg/m]"}
+                  - _idShort: PartWidthContainer
+                    PropertyRange: {_idShort: PartWidth, min: 20, max: 80}
+                    PropertyComment: {en: "Width of the transported parts between the side guides [mm]", de: "Breite der Förderteile zwischen den Seitenführungen [mm]"}
+                  - _idShort: TransportTimeContainer
+                    PropertyProperty: {_idShort: TransportTime, value: "11"}
+                    PropertyComment: {en: "Transport time from the infeed to the inspection position at 0.25 m/s incl. accumulation [s]", de: "Transportzeit vom Einlauf zur Prüfposition bei 0,25 m/s inkl. Stau [s]"}
+  - template: MaintenanceInstructions-1.0
+    values:
+      MaintenanceFreeAsset: false
+      MaintenanceInstructionsForSpecificInterval:
+        - _idShort: BeltTrackingAndTension
+          BasicMaintenanceInformation:
+            # upstream template defect: semanticId is a ModelReference with key type 'Identifiable' (rejected by the
+            # strict build); re-declared here as ExternalReference/GlobalReference with the same IRI
+            _semanticId: https://admin-shell.io/idta/maintenanceinstructions/basicmaintenanceinformation/1/0
+            MaintenanceID: CV01-M01
+            NameOfMaintenance: {en: Belt tracking and tension check, de: Prüfung von Gurtlauf und Gurtspannung}
+            SourceOfMaintenanceInstructions: {en: "Machine manufacturer (OM-BC3000, chapter 7)", de: "Maschinenhersteller (OM-BC3000, Kapitel 7)"}
+            IntervalSpecification: {MaintenanceIntervalValue: 1, MaintenanceIntervalUnit: month}
+            RelatedStandardsLawsRegulations: [{en: "EN 620 (continuous handling equipment, belt conveyors)", de: "EN 620 (Stetigförderer, Gurtförderer)"}]
+            SafetyRegulationsToBeObserved:
+              - {en: "Switch off and lock out the main switch of LINE01 before opening the drum guards.", de: "Vor dem Öffnen der Trommelschutzabdeckungen den Hauptschalter von LINE01 ausschalten und sichern."}
+          MaintenanceTechnicians:
+            NumberOfRequiredTechnicians: 1
+            RequiredQualification: [{en: "Trained maintenance personnel (mechanics)", de: "Unterwiesenes Instandhaltungspersonal (Mechanik)"}]
+            EstimatedTotalWorkingTime: {ValueTotalEstimatedWorkingTime: 20, UnitValueTotalEstimatedWorkingTime: min}
+          ListMaintenanceSteps:
+            MaintenanceStep:
+              - _idShort: Step01
+                MaintenanceStepID: "10"
+                MaintenanceStepName: {en: Visual inspection, de: Sichtprüfung}
+                LocalizationDescription: {en: Belt top and edges over the full length, de: Gurtoberseite und Gurtkanten über die gesamte Länge}
+                InstructionMaintenanceStep: {en: "Run the belt in jog mode at 0.1 m/s and check the belt for cuts, frayed edges and contamination.", de: "Gurt im Tippbetrieb mit 0,1 m/s laufen lassen und auf Schnitte, ausgefranste Kanten und Verschmutzung prüfen."}
+                DocumentationSignatureMandatory: false
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 5, UnitEstimatedDurationTimeMaintenanceStep: min}
+              - _idShort: Step02
+                MaintenanceStepID: "20"
+                MaintenanceStepName: {en: Check and correct belt tracking, de: Gurtlauf prüfen und korrigieren}
+                LocalizationDescription: {en: Deflection drum (infeed side), de: Umlenktrommel (Einlaufseite)}
+                InstructionMaintenanceStep: {en: "The belt edge must run at least 5 mm from the frame on both sides. Correct with the tracking screws of the deflection drum in quarter turns.", de: "Die Gurtkante muss beidseitig mindestens 5 mm Abstand zum Gestell haben. Mit den Einstellschrauben der Umlenktrommel in Vierteldrehungen korrigieren."}
+                ToolsForMaintenanceStep: [{ref: "sm:CV01/MaintenanceInstructions#MaintenanceToolList.1"}]
+                QuantityOfToolsForMaintenanceStep: 1
+                DocumentationSignatureMandatory: false
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 10, UnitEstimatedDurationTimeMaintenanceStep: min}
+              - _idShort: Step03
+                MaintenanceStepID: "30"
+                MaintenanceStepName: {en: Check belt tension, de: Gurtspannung prüfen}
+                LocalizationDescription: {en: Belt return side at mid-length, de: Gurtrücklauf in der Mitte der Förderlänge}
+                InstructionMaintenanceStep: {en: "Measure the belt elongation with the tension gauge; set to 0.3 % (approx. 9 mm over 3 m) with both take-up screws evenly.", de: "Gurtdehnung mit dem Spannungsmessgerät messen; mit beiden Spannschrauben gleichmäßig auf 0,3 % (ca. 9 mm auf 3 m) einstellen."}
+                ToolsForMaintenanceStep: [{ref: "sm:CV01/MaintenanceInstructions#MaintenanceToolList.0"}]
+                QuantityOfToolsForMaintenanceStep: 1
+                DocumentationSignatureMandatory: true
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 5, UnitEstimatedDurationTimeMaintenanceStep: min}
+                EndOfMaintenance: true
+        - _idShort: DrumBearingLubrication
+          BasicMaintenanceInformation:
+            # upstream template defect: semanticId is a ModelReference with key type 'Identifiable' (rejected by the
+            # strict build); re-declared here as ExternalReference/GlobalReference with the same IRI
+            _semanticId: https://admin-shell.io/idta/maintenanceinstructions/basicmaintenanceinformation/1/0
+            MaintenanceID: CV01-M02
+            NameOfMaintenance: {en: Re-greasing of the drum bearings, de: Nachschmieren der Trommellager}
+            SourceOfMaintenanceInstructions: {en: "Machine manufacturer (OM-BC3000, chapter 7)", de: "Maschinenhersteller (OM-BC3000, Kapitel 7)"}
+            IntervalSpecification: {MaintenanceIntervalValue: 2000, MaintenanceIntervalUnit: h}
+            AlarmValues:
+              Alarm:
+                - _idShort: Alarm01
+                  AlarmName: {en: Drum bearing lubrication due, de: Schmierung Trommellager fällig}
+                  WarningLimitRelativeValue: 90
+                  WarningLimitSeverity: Warning
+            SafetyRegulationsToBeObserved:
+              - {en: "Switch off and lock out the main switch of LINE01 before opening the drum guards.", de: "Vor dem Öffnen der Trommelschutzabdeckungen den Hauptschalter von LINE01 ausschalten und sichern."}
+          MaintenanceTechnicians:
+            NumberOfRequiredTechnicians: 1
+            RequiredQualification: [{en: "Trained maintenance personnel (mechanics)", de: "Unterwiesenes Instandhaltungspersonal (Mechanik)"}]
+            EstimatedTotalWorkingTime: {ValueTotalEstimatedWorkingTime: 15, UnitValueTotalEstimatedWorkingTime: min}
+          ListMaintenanceSteps:
+            MaintenanceStep:
+              - _idShort: Step01
+                MaintenanceStepID: "10"
+                MaintenanceStepName: {en: Re-grease drum bearings, de: Trommellager nachschmieren}
+                LocalizationDescription: {en: "Grease nipples of the drive and deflection drum bearings (4 ×)", de: "Schmiernippel der Lager von Antriebs- und Umlenktrommel (4 ×)"}
+                InstructionMaintenanceStep: {en: "Clean the grease nipples and apply 2 g of grease per bearing with the grease gun. Run the belt for 1 min and remove escaping grease.", de: "Schmiernippel reinigen und je Lager 2 g Fett mit der Fettpresse einbringen. Band 1 min laufen lassen und austretendes Fett entfernen."}
+                ConsumablesForMaintenanceStep: [{ref: "sm:CV01/MaintenanceInstructions#MaintenanceConsumablesList.0"}]
+                QuantityOfConsumablesForMaintenanceStep: [8]
+                UnitForQuantityOfConsumablesForMaintenanceStep: g
+                ToolsForMaintenanceStep: [{ref: "sm:CV01/MaintenanceInstructions#MaintenanceToolList.2"}]
+                QuantityOfToolsForMaintenanceStep: 1
+                DocumentationSignatureMandatory: true
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 15, UnitEstimatedDurationTimeMaintenanceStep: min}
+                EndOfMaintenance: true
+        - _idShort: BeltReplacement
+          BasicMaintenanceInformation:
+            # upstream template defect: semanticId is a ModelReference with key type 'Identifiable' (rejected by the
+            # strict build); re-declared here as ExternalReference/GlobalReference with the same IRI
+            _semanticId: https://admin-shell.io/idta/maintenanceinstructions/basicmaintenanceinformation/1/0
+            MaintenanceID: CV01-M03
+            NameOfMaintenance: {en: Belt replacement, de: Gurtwechsel}
+            SourceOfMaintenanceInstructions: {en: "Machine manufacturer (OM-BC3000, chapter 8)", de: "Maschinenhersteller (OM-BC3000, Kapitel 8)"}
+            IntervalSpecification: {MaintenanceIntervalValue: 20000, MaintenanceIntervalUnit: h}
+            SafetyRegulationsToBeObserved:
+              - {en: "Switch off and lock out the main switch of LINE01; relieve the belt tension before removing the belt.", de: "Hauptschalter von LINE01 ausschalten und sichern; Gurtspannung vor dem Abnehmen des Gurts entlasten."}
+          MaintenanceTechnicians:
+            NumberOfRequiredTechnicians: 2
+            RequiredQualification: [{en: "Trained maintenance personnel (mechanics)", de: "Unterwiesenes Instandhaltungspersonal (Mechanik)"}]
+            EstimatedTotalWorkingTime: {ValueTotalEstimatedWorkingTime: 1.5, UnitValueTotalEstimatedWorkingTime: h}
+          ListMaintenanceSteps:
+            MaintenanceStep:
+              - _idShort: Step01
+                MaintenanceStepID: "10"
+                MaintenanceStepName: {en: Remove worn belt, de: Verschlissenen Gurt abnehmen}
+                LocalizationDescription: {en: "Side guides, drum guards, take-up screws", de: "Seitenführungen, Trommelschutz, Spannschrauben"}
+                InstructionMaintenanceStep: {en: "Remove the side guides and drum guards, release both take-up screws completely and pull the belt off the cantilevered frame side.", de: "Seitenführungen und Trommelschutz abbauen, beide Spannschrauben vollständig lösen und den Gurt zur freitragenden Gestellseite abziehen."}
+                DocumentationSignatureMandatory: false
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 30, UnitEstimatedDurationTimeMaintenanceStep: min}
+              - _idShort: Step02
+                MaintenanceStepID: "20"
+                MaintenanceStepName: {en: Fit new belt and adjust, de: Neuen Gurt auflegen und einstellen}
+                LocalizationDescription: {en: Whole conveyor, de: Gesamter Förderer}
+                InstructionMaintenanceStep: {en: "Fit the new endless belt observing the running direction arrow, set the tension to 0.3 % and adjust the tracking (see CV01-M01).", de: "Neuen Endlosgurt unter Beachtung des Laufrichtungspfeils auflegen, Spannung auf 0,3 % einstellen und Gurtlauf justieren (siehe CV01-M01)."}
+                SparePartForMaintenanceStep: [{ref: "sm:CV01/MaintenanceInstructions#MaintenanceSparePartList.0"}]
+                QuantityOfSparePartForMaintenanceStep: 1
+                ToolsForMaintenanceStep: [{ref: "sm:CV01/MaintenanceInstructions#MaintenanceToolList.0"}]
+                QuantityOfToolsForMaintenanceStep: 1
+                DocumentationSignatureMandatory: true
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 60, UnitEstimatedDurationTimeMaintenanceStep: min}
+                EndOfMaintenance: true
+      MaintenanceSparePartList:
+        - SparePartID: BC-SP-BELT-3000-300-G
+          SparePartName: {en: "Conveyor belt PVC green, endless, 6.1 m × 300 mm", de: "Fördergurt PVC grün, endlos, 6,1 m × 300 mm"}
+          CompanyNameSupplierSparePart: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+          OrderCodeSparePartOfManufacturer: "3000-9101"
+          SparePartDescription: [{en: "2-ply polyester fabric, PVC smooth top, 2.0 mm, finger splice", de: "2-lagiges Polyestergewebe, PVC glatt, 2,0 mm, Fingerverbindung"}]
+          DisposalInstructionsForSparePart: [{en: "Dispose of the worn belt as mixed plastic waste (PVC/PES).", de: "Verschlissenen Gurt als gemischten Kunststoffabfall (PVC/PES) entsorgen."}]
+        - SparePartID: BC-SP-BRG-6204
+          SparePartName: {en: "Deep groove ball bearing 6204-2Z with grease nipple housing", de: "Rillenkugellager 6204-2Z mit Schmiernippelgehäuse"}
+          CompanyNameSupplierSparePart: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+          OrderCodeSparePartOfManufacturer: "3000-9205"
+          SparePartDescription: [{en: "Drum bearing unit, 4 per conveyor; replace when running noise increases", de: "Trommellagereinheit, 4 je Förderer; bei erhöhtem Laufgeräusch tauschen"}]
+        - SparePartID: BC-SP-GM-018
+          SparePartName: {en: "Gear motor 0.18 kW, 400 V, i = 14.5", de: "Getriebemotor 0,18 kW, 400 V, i = 14,5"}
+          CompanyNameSupplierSparePart: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+          OrderCodeSparePartOfManufacturer: "3000-9310"
+          SparePartDescription: [{en: "Complete drive unit incl. hollow shaft adapter", de: "Komplette Antriebseinheit inkl. Hohlwellenadapter"}]
+      MaintenanceConsumablesList:
+        - ConsumableID: GREASE-LI-NLGI2
+          ConsumableName: {en: "Rolling bearing grease, lithium soap, NLGI 2", de: "Wälzlagerfett, Lithiumseife, NLGI 2"}
+          UnitMaxQuantityOfConsumable: g
+          ConsumableDescription: [{en: "Mineral oil based, KP2K-30 (DIN 51825)", de: "Mineralölbasis, KP2K-30 (DIN 51825)"}]
+          DisposalInstructionsForConsumable: [{en: "Dispose of grease-soaked cloths as hazardous waste (EWC 15 02 02*).", de: "Fettgetränkte Putztücher als gefährlichen Abfall entsorgen (AVV 15 02 02*)."}]
+      MaintenanceToolList:
+        - ToolID: TOOL-BELT-TENSION
+          ToolName: {en: Belt tension gauge, de: Gurtspannungsmessgerät}
+          ToolDescription: [{en: "Elongation measuring tape for flat belts, 0-1 %", de: "Dehnungsmessband für Flachgurte, 0-1 %"}]
+        - ToolID: TOOL-HEX-SET
+          ToolName: {en: "Hex key set 2.5-10 mm", de: "Innensechskantschlüsselsatz 2,5-10 mm"}
+        - ToolID: TOOL-GREASE-GUN
+          ToolName: {en: Grease gun, de: Fettpresse}
+          ToolDescription: [{en: "Hand lever grease gun with hydraulic coupler M10×1", de: "Handhebelfettpresse mit Hydraulikgreifkupplung M10×1"}]

@@ -29,3 +29,20 @@ submodels:
       RatedPower: 1.2
       StandbyPower: 1.2
       PowerSupply: {RatedVoltage: 24, Frequency: 0, RatedCurrent: 0.05}
+  - template: CapabilityDescription-1.0
+    values:
+      CapabilitySet:
+        _idShort: CapabilitySet
+        CapabilityContainer:
+          - _idShort: DetectPresenceContainer
+            Capability: {_idShort: DetectPresence, _semanticId: "https://virtual-factory.example/ids/capability/DetectPresence"}
+            CapabilityComment: {en: "Detects a workpiece interrupting the light beam across the conveyor", de: "Erkennt ein Werkstück, das den Lichtstrahl quer zum Förderband unterbricht"}
+            PropertySet:
+              - _idShort: DetectPresenceProperties
+                PropertyContainer:
+                  - _idShort: SensingRangeContainer
+                    PropertyRange: {_idShort: SensingRange, min: 0.05, max: 6.0}
+                    PropertyComment: {en: "Sensing range with reflector R50 [m]", de: "Tastweite mit Reflektor R50 [m]"}
+                  - _idShort: ResponseTimeContainer
+                    PropertyProperty: {_idShort: ResponseTime, value: "0.0005"}
+                    PropertyComment: {en: "Response time of the switching output [s]", de: "Ansprechzeit des Schaltausgangs [s]"}

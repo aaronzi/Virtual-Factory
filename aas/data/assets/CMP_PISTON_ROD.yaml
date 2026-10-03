@@ -1,0 +1,51 @@
+# BoM component of PC-32-80-DA-M: piston rod (in-house: turned, ground and polished from 1.4301 bar stock).
+tag: CMP_PISTON_ROD
+idShort: PC32_PistonRod
+kind: Type
+assetType: https://virtual-factory.example/ids/assettype/CylinderComponent
+displayName: {en: "Piston rod Ø12 x 146 mm (component type)", de: "Kolbenstange Ø12 x 146 mm (Bauteiltyp)"}
+description:
+  en: "Ground and polished stainless-steel piston rod with M10x1.25 male thread and M8 piston spigot for the cylinder PC-32-80-DA-M."
+  de: "Geschliffene und polierte Edelstahl-Kolbenstange mit Außengewinde M10x1,25 und Kolbenzapfen M8 für den Zylinder PC-32-80-DA-M."
+specificAssetIds: {manufacturerPartId: PR-12-0146}
+location: false
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: VF Pneumatics GmbH, de: VF Pneumatics GmbH}
+      ManufacturerProductDesignation: {en: "Piston rod Ø12 x 146 mm, 1.4301, thread M10x1.25", de: "Kolbenstange Ø12 x 146 mm, 1.4301, Gewinde M10x1,25"}
+      ManufacturerProductRoot: {en: Cylinder components, de: Zylinderbauteile}
+      ManufacturerProductFamily: {en: PC profile cylinders ISO 15552, de: PC-Profilzylinder ISO 15552}
+      ManufacturerProductType: PR-12
+      OrderCodeOfManufacturer: PR-12-0146
+      ProductArticleNumberOfManufacturer: "5032-1004"
+      URIOfTheProduct: https://virtual-factory.example/vf-pneumatics/components/PR-12-0146
+      CountryOfOrigin: DE
+      AddressInformation: {$include: common/address_vf_pneumatics.yaml}
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: VF Pneumatics GmbH
+        ManufacturerProductDesignation: {en: "Piston rod Ø12 x 146 mm", de: "Kolbenstange Ø12 x 146 mm"}
+        ManufacturerArticleNumber: "5032-1004"
+        ManufacturerOrderCode: PR-12-0146
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          "+Diameter": {value: "12 f7", description: {en: "Rod diameter with tolerance class [mm]", de: "Stangendurchmesser mit Toleranzklasse [mm]"}}
+          "+Length": {valueType: xs:double, value: 146, description: {en: "Overall length [mm]", de: "Gesamtlänge [mm]"}}
+          "+RodThread": {value: "M10x1.25, length 22 mm", description: {en: "Rod end thread (male)", de: "Stangenendgewinde (außen)"}}
+          "+PistonSpigotThread": {value: M8, description: {en: "Piston spigot thread", de: "Gewinde des Kolbenzapfens"}}
+          "+SurfaceRoughnessRa": {valueType: xs:double, value: 0.2, description: {en: "Maximum surface roughness Ra of the sealing surface [µm]", de: "Maximale Rauheit Ra der Dichtfläche [µm]"}}
+          "+Material": {value: "1.4301 (X5CrNi18-10), ground and polished", description: {en: Material, de: Werkstoff}}
+          "+Mass": {valueType: xs:double, value: 0.128, description: {en: "Mass [kg]", de: "Masse [kg]"}}
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - {PcfCalculationMethods: [{value: "ISO 14067"}], PcfCO2eq: 0.75, ReferenceImpactUnitForCalculation: piece, QuantityOfMeasureForCalculation: 1, LifeCyclePhases: [{value: "A1-A3"}], PublicationDate: "2025-09-15T00:00:00+00:00"}
+  - template: ProductMaterialComposition-1.0
+    values:
+      TotalMass: 0.128
+      Materials:
+        - {MaterialLocation: {ComponentName: Piston rod, ComponentId: "5032-1004"}, MaterialIdentifier: "1.4301 (EN 10088-3)", MaterialName: "Stainless steel X5CrNi18-10", MaterialMass: 0.128, IsCriticalRawMaterial: false, RecyclabilityClass: Recyclable}
+      HazardousSubstances: []
+      DeclarationDate: "2025-09-01"

@@ -1,0 +1,52 @@
+# BoM component of PC-32-80-DA-M: cushioning adjustment screw, brass CW614N (in-house turned part, 2 per cylinder).
+# All values per piece; 2 pieces: 0.003 kg, 0.010 kg CO2e. Contains lead > 0.1 % w/w (REACH SVHC, SCIP notified).
+tag: CMP_CUSHION_SCREW
+idShort: PC32_CushioningScrew
+kind: Type
+assetType: https://virtual-factory.example/ids/assettype/CylinderComponent
+displayName: {en: "Cushioning screw M5x0.5 brass (component type)", de: "Dämpfungsschraube M5x0,5 Messing (Bauteiltyp)"}
+description:
+  en: "Needle-type adjustment screw of the pneumatic end-position cushioning, brass CW614N with hexagon socket 2.5 mm; 2 per cylinder PC-32-80-DA-M."
+  de: "Nadelförmige Einstellschraube der pneumatischen Endlagendämpfung, Messing CW614N mit Innensechskant 2,5 mm; 2 je Zylinder PC-32-80-DA-M."
+specificAssetIds: {manufacturerPartId: CS-M5-MS}
+location: false
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: VF Pneumatics GmbH, de: VF Pneumatics GmbH}
+      ManufacturerProductDesignation: {en: "Cushioning screw M5x0.5, brass CW614N, hexagon socket 2.5 mm", de: "Dämpfungsschraube M5x0,5, Messing CW614N, Innensechskant 2,5 mm"}
+      ManufacturerProductRoot: {en: Cylinder components, de: Zylinderbauteile}
+      ManufacturerProductFamily: {en: PC profile cylinders ISO 15552, de: PC-Profilzylinder ISO 15552}
+      ManufacturerProductType: CS-M5
+      OrderCodeOfManufacturer: CS-M5-MS
+      ProductArticleNumberOfManufacturer: "5032-1008"
+      URIOfTheProduct: https://virtual-factory.example/vf-pneumatics/components/CS-M5-MS
+      CountryOfOrigin: DE
+      AddressInformation: {$include: common/address_vf_pneumatics.yaml}
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: VF Pneumatics GmbH
+        ManufacturerProductDesignation: {en: "Cushioning screw M5x0.5, brass", de: "Dämpfungsschraube M5x0,5, Messing"}
+        ManufacturerArticleNumber: "5032-1008"
+        ManufacturerOrderCode: CS-M5-MS
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          "+Thread": {value: M5x0.5, description: {en: Thread, de: Gewinde}}
+          "+Length": {valueType: xs:double, value: 14, description: {en: "Overall length [mm]", de: "Gesamtlänge [mm]"}}
+          "+DriveSize": {valueType: xs:double, value: 2.5, description: {en: "Hexagon socket size [mm]", de: "Schlüsselweite Innensechskant [mm]"}}
+          "+AdjustmentRange": {valueType: xs:double, value: 4, description: {en: "Adjustment range from closed to fully open [turns]", de: "Einstellbereich von geschlossen bis vollständig offen [Umdrehungen]"}}
+          "+Material": {value: "CW614N (CuZn39Pb3)", description: {en: Material, de: Werkstoff}}
+          "+Mass": {valueType: xs:double, value: 0.0015, description: {en: "Mass per piece [kg]", de: "Masse je Stück [kg]"}}
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - {PcfCalculationMethods: [{value: "ISO 14067"}], PcfCO2eq: 0.005, ReferenceImpactUnitForCalculation: piece, QuantityOfMeasureForCalculation: 1, LifeCyclePhases: [{value: "A1-A3"}], PublicationDate: "2025-09-15T00:00:00+00:00"}
+  - template: ProductMaterialComposition-1.0
+    values:
+      TotalMass: 0.0015
+      Materials:
+        - {MaterialLocation: {ComponentName: Cushioning screw, ComponentId: "5032-1008"}, MaterialIdentifier: "CW614N (EN 12164)", MaterialName: "Free-cutting brass CuZn39Pb3", MaterialMass: 0.0015, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+      HazardousSubstances:
+        - {HazardousSubstanceClass: "Repr. 1A (H360FD); Lact. (H362)", HazardousSubstanceName: Lead, HazardousSubstanceIdentifier: "CAS 7439-92-1 / EC 231-100-4", HazardousSubstanceConcentration: 3.0, HazardousSubstanceLocation: "Cushioning screw, brass CW614N (Pb 2.5-3.5 %)", ScipNumber: "e2d94b17-8c3a-4f60-b5e1-7a0c3d9f2b84"}
+      DeclarationDate: "2025-09-01"

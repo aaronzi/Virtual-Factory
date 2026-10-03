@@ -1,0 +1,33 @@
+title: "PC-32-80-DA-M repair instructions and spare parts"
+subtitle: "Dismantling, seal replacement, spare parts list, end of life"
+organization: VF Pneumatics GmbH
+version: "1.0"
+date: "2025-09-01"
+sections:
+  - heading: Before you start
+    text: >-
+      Repair work may only be carried out by qualified personnel. Exhaust and remove the cylinder. Required tools:
+      hexagon key 4 mm, hexagon key 2.5 mm, seal pick (non-metallic), assembly grease from the seal kit,
+      torque wrench 2 ... 10 Nm.
+  - heading: Dismantling
+    text: >-
+      Loosen the four screws of the front end cap crosswise and remove the end cap. Pull the piston assembly out
+      of the barrel. Remove the rear end cap in the same way. Do not damage the barrel bore or the rod surface.
+  - heading: Seal replacement
+    text: >-
+      Remove all seals and O-rings with the seal pick. Clean the parts, check the barrel bore and the piston rod
+      for scores. Grease the new seals of seal kit SK-PC32 lightly and fit them; mount the rod seal and wiper
+      with the sealing lip facing the pressure side.
+  - heading: Reassembly and test
+    text: >-
+      Insert the piston assembly, mount the end caps and tighten the eight M5 screws crosswise to 6 Nm. Check
+      tightness at 6 bar (leak rate <= 1.0 cm3/min) and readjust the cushioning (operating instructions OM-PC3280).
+  - heading: Spare parts (availability 10 years after end of production)
+    rows: [[Seal kit SK-PC32, "article 5032-1006"], [Cushioning screw, "article 5032-1008"],
+           [End-cap screw M5x16, "article 9001-0516"], [Protective cap, "article 5032-1009"],
+           [Piston assembly, "article 5032-1005 + 5032-1004"]]
+  - heading: End of life
+    text: >-
+      Dismantle as described above and sort the materials: aluminium (barrel, end caps, piston), stainless steel
+      (piston rod), steel (screws), brass (cushioning screws, contains lead), elastomers and PE-LD for energy
+      recovery or recycling. The NdFeB magnet ring of the piston should be collected separately (rare earths).

@@ -1,0 +1,15 @@
+X-PRODUCTION-DAY - iCalendar extension property (RFC 5545, section 3.8.8.2 "Non-Standard Properties")
+Production calendar of LINE01, VF Pneumatics GmbH, Plant 01 (IDTA 02067 Production Calendar)
+
+Purpose:     Marks a VEVENT as a production time slot in which the asset is planned to produce.
+Value type:  BOOLEAN (TRUE / FALSE); default FALSE if the property is absent.
+Used in:     VEVENT (recurring shift events, e.g. "Early shift" 06:00-14:00, "Late shift" 14:00-22:00, Mon-Fri).
+Example:     X-PRODUCTION-DAY:TRUE
+
+Interpretation:
+- The union of all VEVENT occurrences with X-PRODUCTION-DAY:TRUE is the planned operation time of the asset.
+- Occurrences with X-BREAK:TRUE or X-MAINTENANCE:TRUE that overlap a production slot are subtracted from it
+  (planned down time); the remainder is the planned busy time (ISO 22400-2, PBT).
+- EXDATE entries remove public holidays (Rhineland-Palatinate) from the recurring shifts.
+- Times are local time Europe/Berlin (VTIMEZONE in the calendar file).
+- CATEGORIES:PRODUCTION is set in addition for clients that ignore non-standard properties.

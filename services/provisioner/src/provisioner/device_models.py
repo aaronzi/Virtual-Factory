@@ -28,6 +28,8 @@ def process_value_cds(md: ModelDescription) -> list[dict]:
                    "dataType": DATA_TYPES.get(var.xsd_type, "STRING")}
         if var.unit:
             content["unit"] = var.unit
+        elif content["dataType"].endswith("_MEASURE"):  # AASc-3a-009: measures need a unit
+            content["dataType"] = content["dataType"].replace("_MEASURE", "_COUNT")
         if len(var.name) <= 18:  # IEC 61360 ShortNameTypeIEC61360
             content["shortName"] = [{"language": "en", "text": var.name}]
         cds.append({"modelType": "ConceptDescription", "id": process_value_cd_id(md, var), "idShort": var.name,

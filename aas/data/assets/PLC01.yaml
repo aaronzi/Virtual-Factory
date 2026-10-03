@@ -1,0 +1,152 @@
+tag: PLC01
+idShort: PLC01_LineController
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/LineController
+derivedFrom: LC10_TYPE
+displayName: {en: "Line controller PLC01 (LINE01)", de: "Liniensteuerung PLC01 (LINE01)"}
+description:
+  en: >-
+    LC-10 in the control cabinet of LINE01 running the SortingLine PLC program. Coordinates AC01, CV01, LB01/LB02, QS01,
+    RB01 and the KLT stations according to the PackML state model; state and command are exposed via MQTT (UNS).
+  de: >-
+    LC-10 im Schaltschrank von LINE01 mit dem SPS-Programm SortingLine. Koordiniert AC01, CV01, LB01/LB02, QS01, RB01
+    und die KLT-Stationen nach dem PackML-Zustandsmodell; Zustand und Befehl sind per MQTT (UNS) zugänglich.
+thumbnail: repo:docs/screenshots/assets/props.png
+specificAssetIds: {serialNumber: LC10-2508-00042, manufacturerPartId: LC-10-24DC-M}
+location: [-1.9, 0.0, -1.3]
+locationDescription: "LINE01, control cabinet at the rear side of the conveyor (DIN rail, top row)"
+device:
+  modelDescription: godot/control/sorting_line/modelDescription.xml
+  instance: PLC01
+  state:
+    variable: packml_state
+    map: {"1": Clearing, "2": Stopped, "3": Starting, "4": Idle, "5": Suspended, "6": Execute, "7": Stopping, "8": Aborting,
+          "9": Aborted, "10": Holding, "11": Held, "12": Unholding, "13": Suspending, "14": Unsuspending, "15": Resetting,
+          "16": Completing, "17": Complete}
+    initial: "2"
+submodels:
+  - template: Nameplate-3.0
+    values:
+      $include: common/control_lc10_nameplate.yaml
+      SerialNumber: LC10-2508-00042
+      DateOfManufacture: "2025-08-18"
+      YearOfConstruction: "2025"
+      SoftwareVersion: "SortingLine 1.2.0"
+
+  - template: EnergyConsumption-1.0
+    values:
+      $include: common/energy_defaults.yaml
+      RatedPower: 25
+      StandbyPower: 25
+      PowerSupply: {RatedVoltage: 24, Frequency: 0, RatedCurrent: 1.05}
+      # no live power measurement for the controller: constant rated consumption, energy updated by the MES (M4)
+      ActualPower: 25
+      EnergyConsumed: 0
+
+  - template: SoftwareNameplate-1.0
+    values:
+      SoftwareNameplateInstance:
+        InventoryTag: VFP-IT-2025-0815
+        InstanceName: PLC01 SortingLine
+        InstalledVersion: "1.2.0"
+        InstallationDate: "2025-09-15"
+        InstallationPath: file:///opt/vf/plc/projects/SortingLine
+        InstallationSource: https://virtual-factory.example/vf-automation/software/sortingline/1.2.0
+        InstalledOnArchitecture: x86-64
+        InstalledOnOS: "Real-time Linux (PREEMPT_RT), LC runtime firmware 4.2.0"
+        InstalledOnHost: plc01.line01.plant01.local
+        InstalledModules:
+          InstalledModule:
+            - {_idShort: SortingLineProgram, value: "SortingLineProgram (main sequence)"}
+            - {_idShort: PackMLStateMachine, value: "PackMLStateMachine (ISA-TR88.00.02)"}
+            - {_idShort: PartTracker, value: "PartTracker (infeed interlock, serial FIFO)"}
+            - {_idShort: RobotJobHandshake, value: "RobotJobHandshake (VF-MQTT-JobHandshake/1.0)"}
+            - {_idShort: KltSlotManager, value: "KltSlotManager (slot counter, exchange)"}
+        ConfigurationPaths:
+          ConfigurationPath:
+            - {_idShort: LineParameters, ConfigurationURI: file:///opt/vf/plc/projects/SortingLine/config/line01_parameters.json, ConfigurationType: 1}
+        SLAInformation: "Service contract VFA-SC-2025-117: response time 4 h during production hours (Mon-Fri 06:00-22:00)"
+        Contact:
+          - _idShort: Service
+            RoleOfContactPerson: "0173-1#07-AAS931#001"
+            $include: common/address_vf_automation.yaml
+
+  - template: ControlComponentInstance-2.0
+    values:
+      Type: {ref: "sm:LC10_TYPE/ControlComponentType"}
+      Endpoints:
+        Endpoint:
+          - _idShort: PackMLState
+            _description: {en: "Current PackML state (MQTT/UNS property, retained)", de: "Aktueller PackML-Zustand (MQTT/UNS-Property, retained)"}
+            InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.PackML"}
+            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.properties.packml_state"}
+          - _idShort: PackMLCommand
+            _description: {en: "PackML command input (MQTT/UNS action, QoS 1)", de: "PackML-Befehlseingang (MQTT/UNS-Action, QoS 1)"}
+            InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.PackML"}
+            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.actions.packml_command"}
+      Skills:
+        Skill:
+          - _idShort: Produce
+            _description: {en: "Run LINE01: transport, inspect and sort the cylinders into KLT A/B", de: "LINE01 betreiben: Zylinder transportieren, prüfen und in KLT A/B sortieren"}
+            Disabled: false
+            Modes:
+              Mode: [{_idShort: Production, value: Production}, {_idShort: Maintenance, value: Maintenance}, {_idShort: Manual, value: Manual}]
+            Parameters: {$include: common/control_lc10_produce_parameters.yaml}
+            Errors:
+              ErrorReference:
+                - {ref: "sm:LC10_TYPE/ControlComponentType#Errors.InfeedTrackingTimeout"}
+                - {ref: "sm:LC10_TYPE/ControlComponentType#Errors.RobotFault"}
+                - {ref: "sm:LC10_TYPE/ControlComponentType#Errors.ContainerFull"}
+            Uses:
+              SkillReference:
+                - {ref: "sm:PLC01/ControlComponentInstance#Skills.ExchangeContainer"}
+                - {ref: "sm:RB01/ControlComponentInstance#Skills.PickAndPlace"}
+          - _idShort: ExchangeContainer
+            _description: {en: "Exchange a full KLT at station KLTA01 or KLTB01", de: "Vollen KLT an Station KLTA01 oder KLTB01 wechseln"}
+            Disabled: false
+            Modes:
+              Mode: [{_idShort: Production, value: Production}, {_idShort: Maintenance, value: Maintenance}, {_idShort: Manual, value: Manual}]
+            Parameters:
+              Parameter:
+                - _idShort: container
+                  _description: {en: "Container to exchange: 1 = KLT A (KLTA01), 2 = KLT B (KLTB01)", de: "Zu wechselnder Behälter: 1 = KLT A (KLTA01), 2 = KLT B (KLTB01)"}
+                  Direction: In
+                  Type: xs:int
+                  Values:
+                    "+KLT_A": {valueType: xs:int, value: 1, description: {en: "KLTA01, good parts", de: "KLTA01, Gutteile"}}
+                    "+KLT_B": {valueType: xs:int, value: 2, description: {en: "KLTB01, rejected parts", de: "KLTB01, Ausschussteile"}}
+                - _idShort: exchange_delay
+                  _description: {en: "Time for the automatic exchange [s]", de: "Dauer des automatischen Wechsels [s]"}
+                  Direction: In
+                  Type: xs:double
+                  Values:
+                    "+Default": {valueType: xs:double, value: 4.0}
+                    "+Unit": {value: s}
+            Errors:
+              ErrorReference: [{ref: "sm:LC10_TYPE/ControlComponentType#Errors.ContainerFull"}]
+
+  - template: CapabilityDescription-1.0
+    values:
+      CapabilitySet:
+        - _idShort: LineControlCapabilities
+          CapabilityContainer:
+            - _idShort: ControlLineContainer
+              Capability: {_idShort: ControlLine, _semanticId: "https://virtual-factory.example/ids/capability/ControlLine"}
+              CapabilityComment: {en: "Coordinate the devices of LINE01 (AC01, CV01, LB01, LB02, QS01, RB01, KLTA01, KLTB01) according to the PackML state model", de: "Die Geräte von LINE01 (AC01, CV01, LB01, LB02, QS01, RB01, KLTA01, KLTB01) nach dem PackML-Zustandsmodell koordinieren"}
+              PropertySet:
+                - _idShort: ControlLineProperties
+                  PropertyContainer:
+                    - _idShort: StateModel
+                      PropertyProperty: [{_idShort: StateModelStandard, value: "ISA-TR88.00.02 (PackML)"}]
+                      PropertyComment: {en: Machine state model, de: Maschinenzustandsmodell}
+                    - _idShort: CycleTime
+                      PropertyProperty: [{_idShort: TaskCycleTime, valueType: xs:double, value: 0.01}]
+                      PropertyComment: {en: "PLC task cycle time [s]", de: "SPS-Taskzykluszeit [s]"}
+                    - _idShort: ControlledDevices
+                      PropertyProperty: [{_idShort: NumberOfControlledDevices, valueType: xs:int, value: 8}]
+                      PropertyComment: {en: "Number of coordinated devices", de: "Anzahl koordinierter Geräte"}
+              CapabilityRelations:
+                CapabilityRealizedBy:
+                  - _idShort: RealizedByProduceSkill
+                    first: "sm:PLC01/CapabilityDescription#LineControlCapabilities.ControlLineContainer.ControlLine"
+                    second: "sm:PLC01/ControlComponentInstance#Skills.Produce"

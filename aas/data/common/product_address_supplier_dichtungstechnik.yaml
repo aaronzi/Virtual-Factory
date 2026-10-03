@@ -1,0 +1,9 @@
+# ContactInformation structure (IDTA 02002) of the seal supplier (fictional company)
+Company: {en: Dichtungstechnik Süd GmbH, de: Dichtungstechnik Süd GmbH}
+Street: {de: Dichtungsweg 8}
+Zipcode: {de: "72770"}
+CityTown: {en: Reutlingen, de: Reutlingen}
+NationalCode: {en: DE}
+Phone: {TelephoneNumber: {en: "+49 7121 000000-0"}}
+Email: {EmailAddress: info@dichtungstechnik-sued.example}
+AddressOfAdditionalLink: https://virtual-factory.example/dichtungstechnik-sued

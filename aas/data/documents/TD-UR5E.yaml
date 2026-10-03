@@ -1,0 +1,41 @@
+title: UR5e technical data summary
+subtitle: Compiled by the integrator for the plant documentation of LINE01
+organization: VF Automation Systems GmbH
+version: '1.0'
+date: '2025-08-01'
+sections:
+- heading: Scope and source
+  text: >-
+    This sheet summarises the public data sheet values of the collaborative robot UR5e (manufacturer: Universal
+    Robots A/S, Odense, Denmark) as used for the engineering of the robot cell RB01. It is an integrator document
+    of VF Automation Systems GmbH and does not replace the manufacturer's documentation; in case of deviations the
+    manufacturer's current user manual and data sheet prevail.
+- heading: Performance
+  rows:
+  - [Rated payload, 5 kg]
+  - [Reach, 850 mm]
+  - [Degrees of freedom, 6 rotating joints]
+  - [Pose repeatability, ± 0.03 mm (ISO 9283)]
+  - [TCP speed, 1 m/s (typical)]
+- heading: Joints
+  rows:
+  - [Working range, ± 360° (all joints)]
+  - [Maximum speed, 180 °/s (all joints)]
+- heading: Physical and environment
+  rows:
+  - [Mass of the arm, 20.6 kg]
+  - [Footprint, Ø 149 mm]
+  - [Degree of protection, IP54 (arm)]
+  - [Ambient temperature, 0 ... 50 °C]
+  - [Noise, < 65 dB(A)]
+- heading: Electrical
+  rows:
+  - [Power consumption, 'typ. 200 W (moderate program), max. 570 W']
+  - [Powered idle (LINE01 measurement, approx. 90 W]
+  - [basis), '']
+  - [Mains supply control box, '100 ... 240 V AC, 1~']
+- heading: Safety
+  rows:
+  - [Configurable safety functions, '17']
+  - [Performance level, 'PL d, Category 3 (EN ISO 13849-1)']
+  - [Cell safeguarding (LINE01), safety fence with interlocked door -> protective stop]

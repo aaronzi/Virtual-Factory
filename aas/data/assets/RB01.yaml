@@ -1,0 +1,202 @@
+tag: RB01
+idShort: RB01_SortingRobot
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/IndustrialRobot
+derivedFrom: UR5E_TYPE
+displayName: {en: "Robot RB01 (UR5e sorting and packing)", de: "Roboter RB01 (UR5e Sortieren und Verpacken)"}
+description:
+  en: >-
+    UR5e with 2-finger gripper GR01 behind the colour inspection station: picks each inspected cylinder and places it
+    into KLT A (good) or KLT B (reject). Runs the pick & place application of VF Automation Systems and is coordinated
+    by the line controller PLC01 via the job handshake.
+  de: >-
+    UR5e mit 2-Finger-Greifer GR01 hinter der Farbprüfstation: nimmt jeden geprüften Zylinder auf und legt ihn in
+    KLT A (Gut) oder KLT B (Ausschuss) ab. Führt die Pick-&-Place-Applikation der VF Automation Systems aus und wird
+    von der Liniensteuerung PLC01 über den Job-Handshake koordiniert.
+thumbnail: repo:docs/screenshots/assets/ur5e.png
+specificAssetIds: {serialNumber: "20255300123", manufacturerPartId: UR5e}
+locationDescription: "LINE01, robot cell behind the colour inspection station QS01, robot on pedestal inside the safety fence"
+device:
+  modelDescription: godot/devices/ur5e/model/modelDescription.xml
+  energy: {power: power, energy: energy}
+  operatingHours: operating_hours
+  state: {variable: busy, map: {"true": Busy, "false": Idle}, initial: "false"}
+submodels:
+  - template: Nameplate-3.0
+    values:
+      $include: common/control_ur5e_nameplate.yaml
+      SerialNumber: "20255300123"
+      DateOfManufacture: "2025-05-20"
+      YearOfConstruction: "2025"
+
+  - template: EnergyConsumption-1.0
+    values:
+      $include: common/energy_defaults.yaml
+      RatedPower: 570
+      StandbyPower: 90
+      PowerSupply:
+        RatedVoltage: 230
+        Frequency: 50
+        NumberOfPhases: 1
+        RatedCurrent: 2.5
+        "+SupplyVoltageRange": {value: "100-240 V AC, 1~", description: {en: "Permissible mains voltage range of the control box", de: "Zulässiger Netzspannungsbereich des Steuerschranks"}}
+
+  - template: HierarchicalStructures-1.1
+    values:
+      ArcheType: OneDown
+      EntryNode:
+        entityType: SelfManagedEntity
+        globalAssetId: ${asset:RB01}
+        statements:
+          Node:
+            - _idShort: GR01
+              _description: {en: "2-finger parallel gripper PG-85 on the tool flange", de: "2-Finger-Parallelgreifer PG-85 am Werkzeugflansch"}
+              entityType: SelfManagedEntity
+              globalAssetId: ${asset:GR01}
+            - _idShort: Pedestal
+              _description: {en: "Steel pedestal 600 mm with floor anchors (VF Automation Systems, no own AAS)", de: "Stahlsockel 600 mm mit Bodenankern (VF Automation Systems, ohne eigene VWS)"}
+              entityType: CoManagedEntity
+            - _idShort: ControlBox
+              _description: {en: "UR e-Series control box with safety controller (supplied with the robot)", de: "UR-e-Series-Steuerschrank mit Sicherheitssteuerung (Lieferumfang des Roboters)"}
+              entityType: CoManagedEntity
+            - _idShort: TeachPendant
+              _description: {en: "Teach pendant with emergency stop (supplied with the robot)", de: "Programmierhandgerät mit Not-Halt (Lieferumfang des Roboters)"}
+              entityType: CoManagedEntity
+            - _idShort: SafetyFence
+              _description: {en: "Safety fence with interlocked door (protective stop input)", de: "Schutzzaun mit verriegelter Tür (Schutzstopp-Eingang)"}
+              entityType: CoManagedEntity
+          HasPart:
+            - {_idShort: HasPart_GR01, first: "sm:RB01/HierarchicalStructures#EntryNode", second: "sm:RB01/HierarchicalStructures#EntryNode.GR01"}
+            - {_idShort: HasPart_Pedestal, first: "sm:RB01/HierarchicalStructures#EntryNode", second: "sm:RB01/HierarchicalStructures#EntryNode.Pedestal"}
+            - {_idShort: HasPart_ControlBox, first: "sm:RB01/HierarchicalStructures#EntryNode", second: "sm:RB01/HierarchicalStructures#EntryNode.ControlBox"}
+            - {_idShort: HasPart_TeachPendant, first: "sm:RB01/HierarchicalStructures#EntryNode", second: "sm:RB01/HierarchicalStructures#EntryNode.TeachPendant"}
+            - {_idShort: HasPart_SafetyFence, first: "sm:RB01/HierarchicalStructures#EntryNode", second: "sm:RB01/HierarchicalStructures#EntryNode.SafetyFence"}
+
+  - template: CapabilityDescription-1.0
+    values:
+      CapabilitySet:
+        - _idShort: RobotCellCapabilities
+          CapabilityContainer:
+            - _idShort: PickAndPlaceContainer
+              Capability: {_idShort: PickAndPlace, _semanticId: "https://virtual-factory.example/ids/capability/PickAndPlace"}
+              CapabilityComment: {en: "Pick parts at the inspection station and place them into KLT slots (OP90)", de: "Teile an der Prüfstation aufnehmen und in KLT-Fächer ablegen (OP90)"}
+              PropertySet:
+                - _idShort: PickAndPlaceProperties
+                  PropertyContainer:
+                    - _idShort: Payload
+                      PropertyProperty: [{_idShort: MaxPayload, valueType: xs:double, value: 5}]
+                      PropertyComment: {en: "Maximum payload at the tool flange incl. gripper [kg]", de: "Maximale Traglast am Werkzeugflansch inkl. Greifer [kg]"}
+                    - _idShort: Reach
+                      PropertyProperty: [{_idShort: MaxReach, valueType: xs:double, value: 0.85}]
+                      PropertyComment: {en: "Maximum reach from the base axis [m]", de: "Maximale Reichweite ab Fußachse [m]"}
+                    - _idShort: Repeatability
+                      PropertyProperty: [{_idShort: PoseRepeatability, valueType: xs:double, value: 0.00003}]
+                      PropertyComment: {en: "Pose repeatability per ISO 9283, ± [m]", de: "Posenwiederholgenauigkeit nach ISO 9283, ± [m]"}
+              CapabilityRelations:
+                CapabilityRealizedBy:
+                  - _idShort: RealizedByPickAndPlaceSkill
+                    first: "sm:RB01/CapabilityDescription#RobotCellCapabilities.PickAndPlaceContainer.PickAndPlace"
+                    second: "sm:RB01/ControlComponentInstance#Skills.PickAndPlace"
+            - _idShort: SortContainer
+              Capability: {_idShort: Sort, _semanticId: "https://virtual-factory.example/ids/capability/Sort"}
+              CapabilityComment: {en: "Sort inspected parts into KLT A (good) and KLT B (reject) according to the inspection result supplied by the line controller", de: "Geprüfte Teile nach dem von der Liniensteuerung gelieferten Prüfergebnis in KLT A (Gut) und KLT B (Ausschuss) sortieren"}
+              PropertySet:
+                - _idShort: SortProperties
+                  PropertyContainer:
+                    - _idShort: OutputClasses
+                      PropertyProperty: [{_idShort: NumberOfOutputClasses, valueType: xs:int, value: 2}]
+                      PropertyComment: {en: "Number of output containers (good, reject)", de: "Anzahl Ausgangsbehälter (Gut, Ausschuss)"}
+                    - _idShort: ContainerCapacity
+                      PropertyProperty: [{_idShort: SlotsPerContainer, valueType: xs:int, value: 12}]
+                      PropertyComment: {en: "Slots per KLT (4 x 3 grid)", de: "Fächer je KLT (Raster 4 x 3)"}
+              CapabilityRelations:
+                CapabilityRealizedBy:
+                  - _idShort: RealizedByPickAndPlaceSkill
+                    first: "sm:RB01/CapabilityDescription#RobotCellCapabilities.SortContainer.Sort"
+                    second: "sm:RB01/ControlComponentInstance#Skills.PickAndPlace"
+
+  - template: SoftwareNameplate-1.0
+    values:
+      SoftwareNameplateType:
+        URIOfTheProduct: https://virtual-factory.example/vf-automation/software/pick-and-place-ur
+        ManufacturerName: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+        ManufacturerProductDesignation: {en: "Pick & place application for KLT sorting (URScript)", de: "Pick-&-Place-Applikation für KLT-Sortierung (URScript)"}
+        ManufacturerProductDescription: {en: "Robot program for UR e-Series robots: pick at a taught position, palletise into two KLT grids, job handshake with a line controller, recovery after protective stops", de: "Roboterprogramm für UR-e-Series-Roboter: Greifen an geteachter Position, Palettieren in zwei KLT-Raster, Job-Handshake mit einer Liniensteuerung, Wiederanlauf nach Schutzstopps"}
+        ManufacturerProductFamily: {en: VF RobotApps, de: VF RobotApps}
+        ManufacturerProductType: {en: PP-KLT, de: PP-KLT}
+        SoftwareType: Robot application program (PolyScope program with URScript functions)
+        Version: "1.0.0"
+        VersionName: {en: Initial release LINE01, de: Erstausgabe LINE01}
+        VersionInfo: {en: "Job handshake VF-MQTT-JobHandshake/1.0, two target containers with 4 x 3 slots", de: "Job-Handshake VF-MQTT-JobHandshake/1.0, zwei Zielbehälter mit 4 x 3 Fächern"}
+        ReleaseDate: "2025-09-08"
+        ReleaseNotes: {en: "First release for the commissioning of LINE01", de: "Erste Freigabe zur Inbetriebnahme von LINE01"}
+        BuildDate: "2025-09-05"
+        InstallerType: PolyScope program package (.urp, .script, .installation)
+      SoftwareNameplateInstance:
+        InstanceName: RB01 pick & place
+        InstalledVersion: "1.0.0"
+        InstallationDate: "2025-09-12"
+        InstallationPath: file:///programs/vf/pick_and_place.urp
+        InstalledOnOS: "PolyScope 5 (Universal Robots controller software)"
+        InstalledOnHost: rb01.line01.plant01.local
+        InstalledModules:
+          InstalledModule:
+            - {_idShort: MainProgram, value: "pick_and_place.urp (main program)"}
+            - {_idShort: JobHandshake, value: "vf_job_handshake.script (handshake with PLC01)"}
+            - {_idShort: Palletizing, value: "vf_klt_palletizing.script (slot grid KLT A/B)"}
+        ConfigurationPaths:
+          ConfigurationPath:
+            - {_idShort: Installation, ConfigurationURI: file:///programs/vf/line01.installation, ConfigurationType: 1}
+        Contact:
+          - _idShort: Integrator
+            RoleOfContactPerson: "0173-1#07-AAS931#001"
+            $include: common/address_vf_automation.yaml
+
+  - template: ControlComponentInstance-2.0
+    values:
+      Type: {ref: "sm:UR5E_TYPE/ControlComponentType"}
+      Endpoints:
+        Endpoint:
+          - _idShort: JobDone
+            _description: {en: "Job finished (handshake output, MQTT/UNS)", de: "Job beendet (Handshake-Ausgang, MQTT/UNS)"}
+            InterfaceReference: {ref: "sm:UR5E_TYPE/ControlComponentType#Interfaces.JobHandshake"}
+            EndpointReference: {ref: "sm:RB01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.properties.job_done"}
+          - _idShort: Busy
+            _description: {en: "Job running (handshake output, MQTT/UNS)", de: "Job läuft (Handshake-Ausgang, MQTT/UNS)"}
+            InterfaceReference: {ref: "sm:UR5E_TYPE/ControlComponentType#Interfaces.JobHandshake"}
+            EndpointReference: {ref: "sm:RB01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.properties.busy"}
+          - _idShort: PartClear
+            _description: {en: "Part lifted off the conveyor (handshake output, MQTT/UNS)", de: "Teil vom Band abgehoben (Handshake-Ausgang, MQTT/UNS)"}
+            InterfaceReference: {ref: "sm:UR5E_TYPE/ControlComponentType#Interfaces.JobHandshake"}
+            EndpointReference: {ref: "sm:RB01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.properties.part_clear"}
+      Skills:
+        Skill:
+          - _idShort: PickAndPlace
+            _description: {en: "Pick the inspected part and place it into the commanded KLT slot", de: "Geprüftes Teil aufnehmen und in das vorgegebene KLT-Fach ablegen"}
+            Disabled: false
+            Modes:
+              Mode: [{_idShort: Auto, value: AUTO}, {_idShort: Simulate, value: SIMULATE}]
+            Parameters: {$include: common/control_ur5e_pickandplace_parameters.yaml}
+            Errors:
+              ErrorReference:
+                - {ref: "sm:UR5E_TYPE/ControlComponentType#Errors.TargetUnreachable"}
+                - {ref: "sm:UR5E_TYPE/ControlComponentType#Errors.ProtectiveStop"}
+            Uses:
+              SkillReference: [{ref: "sm:RB01/ControlComponentInstance#Skills.MoveHome"}]
+          - _idShort: MoveHome
+            _description: {en: "Move to the home pose above the inspection station", de: "In die Grundstellung über der Prüfstation fahren"}
+            Disabled: false
+            Modes:
+              Mode: [{_idShort: Auto, value: AUTO}, {_idShort: Manual, value: MANUAL}, {_idShort: Simulate, value: SIMULATE}]
+            Parameters:
+              Parameter:
+                - _idShort: speed_override
+                  _description: {en: "Speed slider applied to the motion", de: "Geschwindigkeitsoverride der Bewegung"}
+                  Direction: In
+                  Type: xs:double
+                  Values:
+                    "+Min": {valueType: xs:double, value: 0.0}
+                    "+Max": {valueType: xs:double, value: 1.0}
+                    "+Default": {valueType: xs:double, value: 1.0}
+            Errors:
+              ErrorReference: [{ref: "sm:UR5E_TYPE/ControlComponentType#Errors.ProtectiveStop"}]

@@ -1,0 +1,9 @@
+# ContactInformation structure (IDTA 02002) of the standard-parts supplier (screws; fictional company)
+Company: {en: Normteile Rhein-Neckar GmbH, de: Normteile Rhein-Neckar GmbH}
+Street: {de: Industriestraße 40}
+Zipcode: {de: "68169"}
+CityTown: {en: Mannheim, de: Mannheim}
+NationalCode: {en: DE}
+Phone: {TelephoneNumber: {en: "+49 621 000000-0"}}
+Email: {EmailAddress: service@normteile-rn.example}
+AddressOfAdditionalLink: https://virtual-factory.example/normteile-rhein-neckar

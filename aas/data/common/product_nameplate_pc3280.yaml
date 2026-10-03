@@ -1,0 +1,17 @@
+# Nameplate (IDTA 02006-3-0) values of the product PC-32-80-DA-M shared by the type AAS (PC3280_TYPE) and the
+# workpiece instance AAS created by the MES (aas/data/blueprints/workpiece_instance.yaml).
+# Markings: none. ISO 15552 cylinders are neither machinery (2006/42/EC) nor pressure equipment in the scope of
+# 2014/68/EU and fall under no other CE directive, so no CE marking is affixed (see TechnicalData.FurtherInformation).
+ManufacturerName: {en: VF Pneumatics GmbH, de: VF Pneumatics GmbH}
+ManufacturerProductDesignation:
+  en: "Profile cylinder ISO 15552, bore 32 mm, stroke 80 mm, double-acting, magnetic piston"
+  de: "Profilzylinder ISO 15552, Kolben-Ø 32 mm, Hub 80 mm, doppeltwirkend, Magnetkolben"
+ManufacturerProductRoot: {en: Pneumatic cylinders, de: Pneumatikzylinder}
+ManufacturerProductFamily: {en: PC profile cylinders ISO 15552, de: PC-Profilzylinder ISO 15552}
+ManufacturerProductType: PC-32-80-DA-M
+OrderCodeOfManufacturer: PC-32-80-DA-M
+ProductArticleNumberOfManufacturer: "5032-0080"
+URIOfTheProduct: https://virtual-factory.example/vf-pneumatics/products/PC-32-80-DA-M
+CountryOfOrigin: DE
+HardwareVersion: "B"
+AddressInformation: {$include: common/address_vf_pneumatics.yaml}

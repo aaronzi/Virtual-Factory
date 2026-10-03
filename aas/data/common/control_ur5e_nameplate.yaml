@@ -1,0 +1,12 @@
+# Nameplate (IDTA 02006) values of the Universal Robots UR5e shared by UR5E_TYPE and RB01.
+# Public product information used nominatively; this AAS is maintained by the plant operator, not by Universal Robots.
+ManufacturerName: {en: Universal Robots A/S, de: Universal Robots A/S}
+ManufacturerProductDesignation: {en: "Collaborative industrial robot arm, 6 axes, 5 kg payload, 850 mm reach", de: "Kollaborierender Industrieroboterarm, 6 Achsen, 5 kg Traglast, 850 mm Reichweite"}
+ManufacturerProductRoot: {en: Collaborative robots, de: Kollaborierende Roboter}
+ManufacturerProductFamily: {en: e-Series, de: e-Series}
+ManufacturerProductType: UR5e
+OrderCodeOfManufacturer: UR5e
+URIOfTheProduct: https://www.universal-robots.com/products/ur5e/
+CountryOfOrigin: DK
+AddressInformation: {$include: common/address_universal_robots.yaml}
+Markings: [{$include: common/marking_ce.yaml}]

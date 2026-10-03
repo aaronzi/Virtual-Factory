@@ -1,0 +1,27 @@
+title: "AC-200 assembly and test cell"
+subtitle: "Data sheet"
+organization: VF Automation Systems GmbH
+version: "1.2"
+date: "2025-07-01"
+sections:
+  - heading: Description
+    text: >-
+      Enclosed assembly and test cell for ISO 15552 profile cylinders. The cell pre-assembles piston and rod, inserts
+      the seals, joins barrel and end caps, tightens the end-cap screws, performs a pressure-decay leak test and a
+      full-stroke function test, fits the protective cap and releases the finished cylinder onto the downstream
+      conveyor. The cell is integrated as a black box via a hard-wired handshake and MQTT.
+  - heading: Mechanical data
+    rows: [[Dimensions (W × D × H), "1600 × 1200 × 2000 mm"], [Mass, "approx. 650 kg"], [Outlet transfer height, "850 mm"],
+           [Enclosure, "Aluminium profiles, PC guards"], [Colour, "RAL 7035 / RAL 5010"]]
+  - heading: Supply
+    rows: [[Power supply, "400 V 3/N/PE AC, 50 Hz"], [Main fuse, "16 A"], [Rated power, "1.5 kW"], [Power idle / working, "0.3 kW / 1.2 kW"],
+           [Control voltage, "24 V DC"], [SCCR, "10 kA"], [Compressed air, "6 bar (5.5 ... 7 bar), G 1/2"],
+           [Air quality, "ISO 8573-1:2010 [7:4:4]"], [Air consumption, "5 Nl per part"]]
+  - heading: Process data
+    rows: [[Product, "PC-32-80-DA-M (Ø32 × 80)"], [Takt time, "12 s (300 parts/h)"], [Tightening torque, "6 N m"],
+           [Leak test, "pressure decay, 6 bar, ≤ 1.0 cm³/min"], [Function test, "stroke time 0.28 ... 0.36 s"],
+           [Protective cap, "PE, red, press-fit"]]
+  - heading: Safety and environment
+    rows: [[Safety functions, "Guard locking, emergency stop"], [Performance level, "PL d, Cat. 3 (EN ISO 13849-1)"],
+           [Cabinet protection, "IP54"], [Ambient temperature, "+5 ... +40 °C"], [Humidity, "≤ 80 %, non-condensing"],
+           [Sound pressure level LpA, "≤ 72 dB(A)"]]

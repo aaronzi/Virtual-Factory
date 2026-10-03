@@ -1,0 +1,25 @@
+title: "QS-100 operating instructions"
+subtitle: "Mounting, alignment, teach-in, cleaning"
+organization: VF Automation Systems GmbH
+version: "1.0"
+date: "2025-08-01"
+sections:
+  - heading: Safety
+    text: >-
+      The station is not a safety component. Do not look into the ring light from a short distance. Install the
+      station in a PELV circuit only.
+  - heading: Mounting and alignment
+    text: >-
+      Fasten the bracket to the conveyor profile on the side opposite the robot. Align the sensor so that the light
+      spot hits the centre of the protective cap at a working distance of 150 mm (inclination approx. 53°).
+  - heading: Teach-in of the reference colour
+    text: >-
+      Place a reference part with a correct red cap in the inspection position and start the teach-in via the line
+      controller or the IO-Link parameter "Teach reference 1". Set the colour tolerance (default ΔE 25 for OP80).
+  - heading: Operation
+    text: >-
+      A rising trigger edge starts a measurement. After the integration time the colour values, the colour distance
+      and the result are latched and stay valid while the trigger is held.
+  - heading: Cleaning
+    text: >-
+      Clean the sensor window and the ring light diffuser weekly with a soft lint-free cloth and isopropanol.

@@ -13,6 +13,9 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
 - GIF: `godot --path godot --write-movie <dir>/f.png --fixed-fps 15 --quit-after N` + `uv run tools/frames_to_gif.py`
 - After adding/renaming Godot files: `(cd godot && /Applications/Godot.app/Contents/MacOS/Godot --headless --import)`
 
+- AAS: `uv run -m provisioner check|build|upload [--only TAGS] [--blueprints]`, `uv run tools/check_aasx.py`,
+  `uv run tools/aas_template_tree.py <Template-ver>`; data in aas/data (format: docs/interfaces/aas-model.md §7)
+
 ## Rules
 - Module dependency rules in `docs/architecture/dependency-rules.yaml`: `core` depends on nothing; other modules
   only on `core`; `devices/<type>` isolated from each other; `factory` is the only composition root.
@@ -24,3 +27,5 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
 - Renderer is Compatibility (ADR-0010). Keep draw calls ≤ 450 incl. shadows (`--vf-perf-report=5 --vf-perf-warmup=170`).
 - Long Godot runs from the shell: wrap in `perl -e 'alarm N; exec @ARGV' ...` (macOS can throttle background windows).
 - Keep docs (requirements status, interfaces, open issues) in sync with code changes.
+- AAS data: use IDTA templates (aas/templates/idta) where they exist; custom templates only in the YAML DSL with en/de
+  texts. Quote YAML texts containing ',' or ':' in flow maps. Device interfaces (AID/AIMC) are generated - never hand-write.

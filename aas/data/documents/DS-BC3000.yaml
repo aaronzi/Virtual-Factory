@@ -1,0 +1,23 @@
+title: "BC-3000 belt conveyor"
+subtitle: "Data sheet"
+organization: VF Automation Systems GmbH
+version: "2.0"
+date: "2025-06-01"
+sections:
+  - heading: Description
+    text: >-
+      Flat belt conveyor with anodised aluminium profile frame, adjustable side guides and a three-phase gear motor
+      fed by a variable frequency drive with integrated STO. Reversible, for light piece goods in assembly lines.
+  - heading: Geometry
+    rows: [[Conveyor length, "3000 mm (drum centres)"], [Belt width, "300 mm"], [Working height, "850 mm ± 50 mm"],
+           [Guide gap, "80 mm, adjustable"], [Drum diameter, "50 mm"], [Mass, "approx. 68 kg"]]
+  - heading: Belt
+    rows: [[Belt type, "PVC, 2-ply polyester, green"], [Belt thickness, "2.0 mm"], [Joint, "Endless, finger splice"],
+           [Tensioning, "Screw take-up, 40 mm"]]
+  - heading: Performance
+    rows: [[Belt speed, "0 ... 0.5 m/s"], [Ramp, "0.8 m/s²"], [Max. distributed load, "10 kg/m"], [Max. total load, "30 kg"]]
+  - heading: Drive and electrical data
+    rows: [[Gear motor, "0.18 kW, 400 V 3~, IE3, IP55"], [Rated current, "0.55 A"], [Gear ratio, "14.5"],
+           [Frequency inverter, "0.25 kW, 0 ... 87 Hz, STO"], [Standby power, "8 W"]]
+  - heading: Environment
+    rows: [[Ambient temperature, "+5 ... +40 °C"], [Sound pressure level, "≤ 58 dB(A) at 1 m"]]

@@ -1,0 +1,45 @@
+title: UR5e pick & place cell
+subtitle: Safety and operating instructions - robot cell RB01 of LINE01 (integrator)
+organization: VF Automation Systems GmbH
+version: '1.1'
+date: '2025-09-10'
+sections:
+- heading: 1 Intended use
+  text: >-
+    The robot cell picks inspected pneumatic cylinders (max. 0.6 kg) at the colour inspection station QS01 and places
+    them into the small load carriers KLT A (good) and KLT B (reject). Any other use, operation without the safety
+    fence or with a modified safety configuration is not permitted. These instructions supplement the user manual
+    of the robot manufacturer, which must be observed.
+- heading: 2 Safeguarding and safety configuration
+  text: >-
+    The cell is guarded by a fixed safety fence with an interlocked door wired to the safeguard stop input of the
+    robot controller (protective stop). Emergency stop buttons are located on the teach pendant and on the HMI stand.
+    The safety configuration (joint and TCP limits, stopping time and distance) was set during commissioning by
+    the integrator and is protected by password and checksum; the checksum is recorded in the commissioning report.
+    Collaborative operation without the fence is not part of the risk assessment.
+- heading: 3 Operating modes
+  rows:
+  - [AUTO, 'automatic operation, jobs requested by the line']
+  - ['', controller PLC01]
+  - [MANUAL, 'teaching and jogging with the teach pendant, reduced']
+  - ['', speed]
+  - [SIMULATE, 'virtual commissioning in the Virtual Factory, no motion']
+  - ['', of real hardware]
+- heading: 4 Job handshake with the line controller
+  text: >-
+    PLC01 sets place_target (1 = KLT A, 2 = KLT B), place_slot (0 ... 11) and speed_override, then sets job_start.
+    The robot reports busy, sets part_clear as soon as the part has been lifted off the conveyor and job_done after
+    placing. PLC01 acknowledges by resetting job_start, whereupon the robot resets job_done (profile VF-MQTT-JobHandshake/1.0).
+    The outputs are published via MQTT in the Unified Namespace.
+- heading: 5 Faults and recovery
+  rows:
+  - [RB-001 target unreachable, 'check taught positions and container placement,']
+  - ['', 're-teach, restart job']
+  - [RB-002 protective stop, 'remove cause, close door, acknowledge on the teach']
+  - ['', 'pendant, resume program']
+  - [Emergency stop, 'release button, reset at the HMI stand, restart line']
+  - ['', '(PackML Reset, Start)']
+- heading: 6 Inspection
+  text: >-
+    Safety functions are tested monthly (MI-UR5E-01) and the robot arm and cell are inspected annually (MI-UR5E-02),
+    see the MaintenanceInstructions submodel of the UR5e type AAS.

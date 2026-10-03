@@ -1,0 +1,50 @@
+# BoM component of PC-32-80-DA-M: rear end cap (purchased die-casting, machined by the supplier).
+tag: CMP_ENDCAP_REAR
+idShort: PC32_EndCapRear
+kind: Type
+assetType: https://virtual-factory.example/ids/assettype/CylinderComponent
+displayName: {en: "Rear end cap ISO 15552 Ø32 (component type)", de: "Hinterdeckel ISO 15552 Ø32 (Bauteiltyp)"}
+description:
+  en: "Die-cast and machined aluminium rear end cap with G1/8 port and cushioning screw bore for the cylinder PC-32-80-DA-M; supplied by Druckguss Pfalz GmbH."
+  de: "Druckgegossener und bearbeiteter Aluminium-Hinterdeckel mit Anschluss G1/8 und Bohrung für die Dämpfungsschraube für den Zylinder PC-32-80-DA-M; Lieferant Druckguss Pfalz GmbH."
+specificAssetIds: {manufacturerPartId: DGP-EC32-R, customerPartId: "5032-1003"}
+location: false
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: Druckguss Pfalz GmbH, de: Druckguss Pfalz GmbH}
+      ManufacturerProductDesignation: {en: "Rear end cap ISO 15552 Ø32, die-cast EN AC-46000, machined", de: "Hinterdeckel ISO 15552 Ø32, Druckguss EN AC-46000, bearbeitet"}
+      ManufacturerProductRoot: {en: Aluminium die-castings, de: Aluminium-Druckgussteile}
+      ManufacturerProductType: DGP-EC32-R
+      OrderCodeOfManufacturer: DGP-EC32-R-46000
+      ProductArticleNumberOfManufacturer: "40-3202"
+      URIOfTheProduct: https://virtual-factory.example/druckguss-pfalz/products/DGP-EC32-R
+      CountryOfOrigin: DE
+      AddressInformation: {$include: common/product_address_supplier_druckguss.yaml}
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: Druckguss Pfalz GmbH
+        ManufacturerProductDesignation: {en: "Rear end cap ISO 15552 Ø32", de: "Hinterdeckel ISO 15552 Ø32"}
+        ManufacturerArticleNumber: "40-3202"
+        ManufacturerOrderCode: DGP-EC32-R-46000
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          "+Dimensions": {value: "47 x 47 x 24 mm", description: {en: "Outer dimensions (W x D x H)", de: "Außenabmessungen (B x T x H)"}}
+          "+PneumaticConnection": {value: G1/8, description: {en: "Pneumatic connection (ISO 228-1)", de: "Pneumatischer Anschluss (ISO 228-1)"}}
+          "+MountingThread": {value: "4 x M6, hole pattern TG 32.5 mm", description: {en: "Mounting threads (ISO 15552)", de: "Befestigungsgewinde (ISO 15552)"}}
+          "+CushioningScrewThread": {value: M5x0.5, description: {en: "Thread for the cushioning screw", de: "Gewinde für die Dämpfungsschraube"}}
+          "+Material": {value: "EN AC-46000 (AlSi9Cu3(Fe)), die-cast", description: {en: Material, de: Werkstoff}}
+          "+Mass": {valueType: xs:double, value: 0.085, description: {en: "Mass [kg]", de: "Masse [kg]"}}
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - {PcfCalculationMethods: [{value: "ISO 14067"}], PcfCO2eq: 0.45, ReferenceImpactUnitForCalculation: piece, QuantityOfMeasureForCalculation: 1, LifeCyclePhases: [{value: "A1-A3"}], PublicationDate: "2025-06-01T00:00:00+00:00"}
+  - template: ProductMaterialComposition-1.0
+    values:
+      TotalMass: 0.085
+      Materials:
+        - {MaterialLocation: {ComponentName: Rear end cap, ComponentId: "5032-1003"}, MaterialIdentifier: "EN AC-46000 (EN 1706)", MaterialName: "Aluminium casting alloy AlSi9Cu3(Fe)", MaterialMass: 0.085, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+      HazardousSubstances:
+        - {HazardousSubstanceClass: "Repr. 1A (H360FD); Lact. (H362)", HazardousSubstanceName: Lead, HazardousSubstanceIdentifier: "CAS 7439-92-1 / EC 231-100-4", HazardousSubstanceConcentration: 0.2, HazardousSubstanceLocation: "Rear end cap, die-cast alloy EN AC-46000", ScipNumber: "c71a5e93-2f08-4d6b-a1c4-9e3b6d02f8a5"}
+      DeclarationDate: "2025-06-01"

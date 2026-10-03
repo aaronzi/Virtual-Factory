@@ -1,0 +1,25 @@
+# ControlComponent (IDTA 2.0) skill parameters of the UR5e pick & place application (VF Automation Systems);
+# shared by UR5E_TYPE/ControlComponentType and RB01/ControlComponentInstance.
+Parameter:
+  - _idShort: place_target
+    _description: {en: "Target container: 1 = KLT A (good), 2 = KLT B (reject)", de: "Zielbehälter: 1 = KLT A (Gut), 2 = KLT B (Ausschuss)"}
+    Direction: In
+    Type: xs:int
+    Values:
+      "+KLT_A": {valueType: xs:int, value: 1, description: {en: "KLT A, good parts", de: "KLT A, Gutteile"}}
+      "+KLT_B": {valueType: xs:int, value: 2, description: {en: "KLT B, rejected parts", de: "KLT B, Ausschussteile"}}
+  - _idShort: place_slot
+    _description: {en: "Slot index in the target container (row-major, 4 x 3 grid)", de: "Fachindex im Zielbehälter (zeilenweise, Raster 4 x 3)"}
+    Direction: In
+    Type: xs:int
+    Values:
+      "+Min": {valueType: xs:int, value: 0}
+      "+Max": {valueType: xs:int, value: 11}
+  - _idShort: speed_override
+    _description: {en: "Speed slider applied to all motions (fraction of the programmed speed)", de: "Geschwindigkeitsoverride für alle Bewegungen (Anteil der programmierten Geschwindigkeit)"}
+    Direction: In
+    Type: xs:double
+    Values:
+      "+Min": {valueType: xs:double, value: 0.0}
+      "+Max": {valueType: xs:double, value: 1.0}
+      "+Default": {valueType: xs:double, value: 1.0}

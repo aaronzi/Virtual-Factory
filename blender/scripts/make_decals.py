@@ -45,11 +45,12 @@ def datamatrix(draw: ImageDraw.ImageDraw, x: int, y: int, cells: int, cell: int,
                 draw.rectangle([x + i * cell, y + j * cell, x + (i + 1) * cell - 1, y + (j + 1) * cell - 1], BLACK)
 
 
-def type_plate(name: str, lines: list[str], w: int = 512, h: int = 256, seed: int = 1) -> None:
+def type_plate(name: str, lines: list[str], w: int = 512, h: int = 256, seed: int = 1,
+               company: str = "VF Pneumatics GmbH") -> None:
     img, d = canvas(w, h, (225, 227, 228, 255))
     d.rectangle([4, 4, w - 5, h - 5], outline=GREY, width=4)
     d.rectangle([4, 4, w - 5, 56], fill=BLUE)
-    d.text((18, 12), "VF Pneumatics GmbH", font=font(30), fill=WHITE)
+    d.text((18, 12), company, font=font(30), fill=WHITE)
     for i, line in enumerate(lines):
         d.text((18, 70 + i * 34), line, font=font(24), fill=BLACK)
     datamatrix(d, w - 130, h - 130, 14, 8, seed)
@@ -116,8 +117,9 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     type_plate("typeplate_cylinder", ["PC-32-80-DA-M", "ISO 15552  Ø32 × 80", "1–10 bar  −20…80 °C"], seed=3)
     type_plate("typeplate_cell", ["Assembly cell AC-200", "S/N AC200-2025-0042", "400 V 3~ 50 Hz  16 A",
-                                  "Air 6 bar"], seed=5)
-    type_plate("typeplate_line", ["Line controller LC-10", "S/N LC10-2025-0007", "24 V DC  10 A"], seed=7)
+                                  "Air 6 bar"], seed=5, company="VF Automation Systems GmbH")
+    type_plate("typeplate_line", ["Line controller LC-10", "S/N LC10-2508-00042", "24 V DC  10 A"], seed=7,
+               company="VF Automation Systems GmbH")
     warning("warning_general", "!")
     warning("warning_electric", "bolt")
     warning("warning_robot", "robot")

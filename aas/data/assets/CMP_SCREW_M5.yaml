@@ -1,0 +1,53 @@
+# BoM component of PC-32-80-DA-M: end-cap screw ISO 4762 M5x16-8.8, zinc plated (standard part, 8 per cylinder).
+# All values per piece; 8 pieces: 0.0296 kg, 0.0904 kg CO2e.
+tag: CMP_SCREW_M5
+idShort: ISO4762_M5x16_88_Zn
+kind: Type
+assetType: https://virtual-factory.example/ids/assettype/StandardPart
+displayName: {en: "Socket head cap screw ISO 4762 M5x16-8.8 (component type)", de: "Zylinderschraube ISO 4762 M5x16-8.8 (Bauteiltyp)"}
+description:
+  en: "Hexagon socket head cap screw ISO 4762 M5x16, property class 8.8, zinc plated; fastens the end caps of the cylinder PC-32-80-DA-M (8 per cylinder)."
+  de: "Zylinderschraube mit Innensechskant ISO 4762 M5x16, Festigkeitsklasse 8.8, verzinkt; befestigt die Deckel des Zylinders PC-32-80-DA-M (8 je Zylinder)."
+specificAssetIds: {manufacturerPartId: 4762-M5X16-88-ZN, customerPartId: "9001-0516"}
+location: false
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: Normteile Rhein-Neckar GmbH, de: Normteile Rhein-Neckar GmbH}
+      ManufacturerProductDesignation: {en: "Socket head cap screw ISO 4762 M5x16, property class 8.8, zinc plated", de: "Zylinderschraube ISO 4762 M5x16, Festigkeitsklasse 8.8, galvanisch verzinkt"}
+      ManufacturerProductRoot: {en: Fasteners, de: Verbindungselemente}
+      ManufacturerProductFamily: {en: Socket head cap screws ISO 4762, de: Zylinderschrauben ISO 4762}
+      ManufacturerProductType: ISO 4762 M5x16-8.8
+      OrderCodeOfManufacturer: 4762-M5X16-88-ZN
+      ProductArticleNumberOfManufacturer: "476205016"
+      URIOfTheProduct: https://virtual-factory.example/normteile-rhein-neckar/products/4762-M5X16-88-ZN
+      CountryOfOrigin: DE
+      AddressInformation: {$include: common/product_address_supplier_normteile.yaml}
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: Normteile Rhein-Neckar GmbH
+        ManufacturerProductDesignation: {en: "Socket head cap screw ISO 4762 M5x16-8.8, zinc plated", de: "Zylinderschraube ISO 4762 M5x16-8.8, verzinkt"}
+        ManufacturerArticleNumber: "476205016"
+        ManufacturerOrderCode: 4762-M5X16-88-ZN
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          "+Standard": {value: ISO 4762, description: {en: "Product standard", de: "Produktnorm"}}
+          "+Thread": {value: M5, description: {en: "Thread (ISO 261, coarse)", de: "Gewinde (ISO 261, Regelgewinde)"}}
+          "+Length": {valueType: xs:double, value: 16, description: {en: "Nominal length [mm]", de: "Nennlänge [mm]"}}
+          "+HeadDiameter": {valueType: xs:double, value: 8.5, description: {en: "Head diameter [mm]", de: "Kopfdurchmesser [mm]"}}
+          "+DriveSize": {valueType: xs:double, value: 4, description: {en: "Hexagon socket size [mm]", de: "Schlüsselweite Innensechskant [mm]"}}
+          "+PropertyClass": {value: "8.8 (ISO 898-1)", description: {en: "Property class", de: "Festigkeitsklasse"}}
+          "+Coating": {value: "zinc plated, Cr(VI)-free passivated (ISO 4042)", description: {en: "Surface coating", de: "Oberflächenbeschichtung"}}
+          "+Mass": {valueType: xs:double, value: 0.0037, description: {en: "Mass per piece [kg]", de: "Masse je Stück [kg]"}}
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - {PcfCalculationMethods: [{value: "ISO 14067"}], PcfCO2eq: 0.0113, ReferenceImpactUnitForCalculation: piece, QuantityOfMeasureForCalculation: 1, LifeCyclePhases: [{value: "A1-A3"}], PublicationDate: "2025-04-01T00:00:00+00:00"}
+  - template: ProductMaterialComposition-1.0
+    values:
+      TotalMass: 0.0037
+      Materials:
+        - {MaterialLocation: {ComponentName: Screw ISO 4762 M5x16, ComponentId: "9001-0516"}, MaterialIdentifier: "1.5525 (20MnB4, EN 10263-4), property class 8.8, zinc plated", MaterialName: "Quenched and tempered boron steel", MaterialMass: 0.0037, IsCriticalRawMaterial: false, RecyclabilityClass: Recyclable}
+      HazardousSubstances: []
+      DeclarationDate: "2025-04-01"

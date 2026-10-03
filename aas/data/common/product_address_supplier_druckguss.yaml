@@ -1,0 +1,9 @@
+# ContactInformation structure (IDTA 02002) of the die-casting supplier of the cylinder end caps (fictional company)
+Company: {en: Druckguss Pfalz GmbH, de: Druckguss Pfalz GmbH}
+Street: {de: Gießereistraße 12}
+Zipcode: {de: "66849"}
+CityTown: {en: Landstuhl, de: Landstuhl}
+NationalCode: {en: DE}
+Phone: {TelephoneNumber: {en: "+49 6371 000000-0"}}
+Email: {EmailAddress: vertrieb@druckguss-pfalz.example}
+AddressOfAdditionalLink: https://virtual-factory.example/druckguss-pfalz

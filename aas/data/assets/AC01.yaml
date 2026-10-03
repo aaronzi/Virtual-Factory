@@ -1,0 +1,292 @@
+tag: AC01
+idShort: AC01_AssemblyCell
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/AssemblyCell
+displayName: {en: "Assembly and test cell AC01 (AC-200)", de: "Montage- und Prüfzelle AC01 (AC-200)"}
+description:
+  en: >-
+    Enclosed assembly and test cell AC-200 that assembles, leak-tests and function-tests ISO 15552 profile cylinders
+    PC-32-80-DA-M, fits the protective cap and releases the finished cylinders onto the conveyor infeed at a takt of
+    12 s (process steps OP10-OP70). Black box: the AAS describes interface, nameplate, energy and capabilities, not
+    the internal stations.
+  de: >-
+    Eingehauste Montage- und Prüfzelle AC-200, die Profilzylinder PC-32-80-DA-M nach ISO 15552 montiert, auf
+    Dichtheit und Funktion prüft, die Schutzkappe aufsetzt und die fertigen Zylinder im Takt von 12 s auf den
+    Bandeinlauf abgibt (Prozessschritte OP10-OP70). Black Box: Die VWS beschreibt Schnittstelle, Typschild, Energie und
+    Fähigkeiten, nicht die internen Stationen.
+thumbnail: repo:docs/screenshots/assets/assembly_cell.png
+specificAssetIds: {serialNumber: AC200-2025-0042, manufacturerPartId: AC-200-PC32-3P400}
+locationDescription: "LINE01 start, Hall 1 Final Assembly; outlet tunnel feeds the infeed of conveyor CV01"
+model3d:
+  file: godot/devices/assembly_cell/view/assembly_cell.glb
+  preview: docs/screenshots/assets/assembly_cell.png
+  title: AC-200 assembly and test cell (enclosure, outlet tunnel, HMI, stack light)
+  objectType: Machine
+device:
+  modelDescription: godot/devices/assembly_cell/model/modelDescription.xml
+  energy: {power: power, energy: energy, air: air_consumption}
+  operatingHours: operating_hours
+  state: {variable: state, map: {"0": Idle, "1": Assembling, "2": Blocked}, initial: "0"}
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+      ManufacturerProductDesignation: {en: "Assembly and test cell for ISO 15552 profile cylinders", de: "Montage- und Prüfzelle für Profilzylinder nach ISO 15552"}
+      ManufacturerProductRoot: {en: Assembly systems, de: Montageanlagen}
+      ManufacturerProductFamily: {en: AC assembly cells, de: AC-Montagezellen}
+      ManufacturerProductType: AC-200
+      OrderCodeOfManufacturer: AC-200-PC32-3P400
+      ProductArticleNumberOfManufacturer: "2000-0200"
+      URIOfTheProduct: https://virtual-factory.example/vf-automation/products/AC-200
+      SerialNumber: AC200-2025-0042
+      DateOfManufacture: "2025-07-21"
+      YearOfConstruction: "2025"
+      CountryOfOrigin: DE
+      HardwareVersion: "B"
+      SoftwareVersion: "2.4.1"
+      AddressInformation: {$include: common/address_vf_automation.yaml}
+      Markings:
+        - $include: common/marking_ce.yaml
+          MarkingAdditionalText:
+            - "Machinery Directive 2006/42/EC"
+            - "EMC Directive 2014/30/EU"
+      AssetSpecificProperties:
+        GuidelineSpecificProperties:
+          - GuidelineForConformityDeclaration: "Directive 2006/42/EC on machinery"
+          - GuidelineForConformityDeclaration: "Directive 2014/30/EU (electromagnetic compatibility)"
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: VF Automation Systems GmbH
+        ManufacturerProductDesignation: {en: "Assembly and test cell AC-200", de: "Montage- und Prüfzelle AC-200"}
+        ManufacturerArticleNumber: "2000-0200"
+        ManufacturerOrderCode: AC-200-PC32-3P400
+        ProductImages: [{ImageFile: repo:docs/screenshots/assets/assembly_cell.png, ImageNote: {en: "AC-200 cell with outlet tunnel, HMI and stack light", de: "Zelle AC-200 mit Auslauftunnel, Bedienpanel und Signalsäule"}}]
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          Section:
+            - _idShort: Mechanical
+              "+Width": {valueType: xs:double, value: 1.6, description: {en: "Overall width in material flow direction [m]", de: "Gesamtbreite in Materialflussrichtung [m]"}}
+              "+Depth": {valueType: xs:double, value: 1.2, description: {en: "Overall depth [m]", de: "Gesamttiefe [m]"}}
+              "+Height": {valueType: xs:double, value: 2.0, description: {en: "Overall height incl. stack light [m]", de: "Gesamthöhe inkl. Signalsäule [m]"}}
+              "+Mass": {valueType: xs:double, value: 650, description: {en: "Net mass [kg]", de: "Nettomasse [kg]"}}
+              "+OutletHeight": {valueType: xs:double, value: 0.85, description: {en: "Transfer height of the outlet (belt top of CV01) [m]", de: "Übergabehöhe des Auslaufs (Bandoberkante CV01) [m]"}}
+              "+Enclosure": {modelType: MultiLanguageProperty, value: {en: "Aluminium profile frame, polycarbonate guards, powder-coated sheet steel base", de: "Aluminiumprofilgestell, Schutzscheiben aus Polycarbonat, pulverbeschichteter Stahlblechunterbau"}, description: {en: Enclosure, de: Einhausung}}
+              "+Colour": {value: "RAL 7035 light grey / RAL 5010 gentian blue", description: {en: Colour, de: Farbe}}
+            - _idShort: Electrical
+              "+RatedVoltage": {valueType: xs:double, value: 400, description: {en: "Rated supply voltage, 3/N/PE AC [V]", de: "Bemessungsspannung, 3/N/PE AC [V]"}}
+              "+RatedFrequency": {valueType: xs:double, value: 50, description: {en: "Rated frequency [Hz]", de: "Bemessungsfrequenz [Hz]"}}
+              "+NumberOfPhases": {valueType: xs:int, value: 3, description: {en: Number of phases, de: Anzahl der Phasen}}
+              "+RatedCurrent": {valueType: xs:double, value: 16, description: {en: "Rated current / main fuse [A]", de: "Bemessungsstrom / Hauptsicherung [A]"}}
+              "+RatedPower": {valueType: xs:double, value: 1.5, description: {en: "Rated electrical power [kW]", de: "Elektrische Bemessungsleistung [kW]"}}
+              "+IdlePower": {valueType: xs:double, value: 0.3, description: {en: "Power consumption ready/idle [kW]", de: "Leistungsaufnahme betriebsbereit/Leerlauf [kW]"}}
+              "+WorkingPower": {valueType: xs:double, value: 1.2, description: {en: "Electrical power while assembling (without compressed air) [kW]", de: "Elektrische Leistung beim Montieren (ohne Druckluft) [kW]"}}
+              "+ControlVoltage": {valueType: xs:double, value: 24, description: {en: "Control voltage DC [V]", de: "Steuerspannung DC [V]"}}
+              "+ShortCircuitCurrentRating": {valueType: xs:double, value: 10, description: {en: "Short-circuit current rating SCCR [kA]", de: "Kurzschlussfestigkeit SCCR [kA]"}}
+              "+DegreeOfProtectionCabinet": {value: IP54, description: {en: "Degree of protection of the control cabinet (IEC 60529)", de: "Schutzart des Schaltschranks (IEC 60529)"}}
+              "+ElectricalEquipmentStandard": {value: "EN 60204-1", description: {en: Electrical equipment of machines, de: Elektrische Ausrüstung von Maschinen}}
+            - _idShort: Pneumatic
+              "+SupplyPressure": {valueType: xs:double, value: 6, description: {en: "Nominal compressed-air supply pressure [bar]", de: "Nenn-Versorgungsdruck Druckluft [bar]"}}
+              "+SupplyPressureMin": {valueType: xs:double, value: 5.5, description: {en: "Minimum supply pressure [bar]", de: "Minimaler Versorgungsdruck [bar]"}}
+              "+SupplyPressureMax": {valueType: xs:double, value: 7, description: {en: "Maximum supply pressure [bar]", de: "Maximaler Versorgungsdruck [bar]"}}
+              "+AirQuality": {value: "ISO 8573-1:2010 [7:4:4]", description: {en: Compressed-air quality class, de: Druckluftqualitätsklasse}}
+              "+AirConsumptionPerPart": {valueType: xs:double, value: 5, description: {en: "Compressed-air consumption per cylinder (leak and function test) [Nl]", de: "Druckluftverbrauch je Zylinder (Dichtheits- und Funktionsprüfung) [Nl]"}}
+              "+AirConnection": {value: "G 1/2 internal thread, manual shut-off and soft-start valve", description: {en: Compressed-air connection, de: Druckluftanschluss}}
+            - _idShort: Process
+              "+Product": {value: "PC-32-80-DA-M (ISO 15552, bore 32 mm, stroke 80 mm)", description: {en: Product processed, de: Bearbeitetes Produkt}}
+              "+TaktTime": {valueType: xs:double, value: 12, description: {en: "Takt time [s]", de: "Taktzeit [s]"}}
+              "+Output": {valueType: xs:int, value: 300, description: {en: "Nominal output [parts/h]", de: "Nennausbringung [Teile/h]"}}
+              "+ScrewTighteningTorque": {valueType: xs:double, value: 6, description: {en: "End-cap screw tightening torque [N m]", de: "Anziehdrehmoment der Deckelschrauben [N m]"}}
+              "+LeakTestMethod": {value: "pressure decay, 6 bar", description: {en: Leak test method, de: Verfahren der Dichtheitsprüfung}}
+              "+LeakTestPressure": {valueType: xs:double, value: 6, description: {en: "Leak test pressure [bar]", de: "Prüfdruck Dichtheitsprüfung [bar]"}}
+              "+LeakRateLimit": {valueType: xs:double, value: 1.0, description: {en: "Maximum permissible leak rate [cm³/min]", de: "Maximal zulässige Leckrate [cm³/min]"}}
+              "+StrokeTimeMin": {valueType: xs:double, value: 0.28, description: {en: "Function test: minimum stroke time at 6 bar [s]", de: "Funktionsprüfung: minimale Hubzeit bei 6 bar [s]"}}
+              "+StrokeTimeMax": {valueType: xs:double, value: 0.36, description: {en: "Function test: maximum stroke time at 6 bar [s]", de: "Funktionsprüfung: maximale Hubzeit bei 6 bar [s]"}}
+              "+ProtectiveCap": {value: "PE, red, press-fit on rod end", description: {en: Protective cap fitted, de: Aufgesetzte Schutzkappe}}
+            - _idShort: InterfacesAndSafety
+              "+LineInterface": {value: "Hard-wired handshake (enable, infeed free) and MQTT (UNS) via line controller LC-10", description: {en: Interface to the line, de: Schnittstelle zur Linie}}
+              "+HMI": {value: "7-inch touch panel, stack light red/amber/green", description: {en: Human-machine interface, de: Bedienschnittstelle}}
+              "+SafetyFunctions": {value: "Guard door interlocking with guard locking, emergency stop; PL d, Cat. 3 (EN ISO 13849-1)", description: {en: Safety functions, de: Sicherheitsfunktionen}}
+            - _idShort: Environment
+              "+AmbientTemperatureMin": {valueType: xs:double, value: 5, description: {en: "Minimum ambient temperature [°C]", de: "Minimale Umgebungstemperatur [°C]"}}
+              "+AmbientTemperatureMax": {valueType: xs:double, value: 40, description: {en: "Maximum ambient temperature [°C]", de: "Maximale Umgebungstemperatur [°C]"}}
+              "+RelativeHumidityMax": {valueType: xs:double, value: 80, description: {en: "Maximum relative humidity, non-condensing [%]", de: "Maximale relative Luftfeuchte, nicht kondensierend [%]"}}
+              "+EmissionSoundPressureLevel": {valueType: xs:double, value: 72, description: {en: "A-weighted emission sound pressure level at the workstation LpA (EN ISO 11202) [dB(A)]", de: "A-bewerteter Emissionsschalldruckpegel am Arbeitsplatz LpA (EN ISO 11202) [dB(A)]"}}
+      FurtherInformation:
+        TextStatement:
+          - {en: "Black-box machine: internal stations and components are not disclosed; integration via the asset interface only.", de: "Black-Box-Maschine: Interne Stationen und Komponenten werden nicht offengelegt; Integration ausschließlich über die Asset-Schnittstelle."}
+          - {en: "Product-specific tooling for PC-32-80-DA-M; other variants require a tooling change.", de: "Produktspezifische Werkzeuge für PC-32-80-DA-M; andere Varianten erfordern einen Werkzeugwechsel."}
+        ValidDate: "2025-07-01"
+  - template: ContactInformations-1.0
+    values:
+      ContactInformation:
+        - _idShort: ServiceHotline
+          $include: common/address_vf_automation.yaml
+          RoleOfContactPerson: "0173-1#07-AAS931#001"
+          Department: {en: Customer service, de: Kundendienst}
+          Language: [de, en]
+          TimeZone: "+01:00"
+          Phone:
+            TelephoneNumber: {en: "+49 631 000000-399"}
+            TypeOfTelephone: "0173-1#07-AAS754#001"
+            AvailableTime: {en: "Mon-Fri 06:00-22:00 CET, on-call service outside these hours", de: "Mo-Fr 06:00-22:00 MEZ, Rufbereitschaft außerhalb dieser Zeiten"}
+          Email: {EmailAddress: service@vf-automation.example}
+          FurtherDetailsOfContact: {en: "Please state the serial number AC200-2025-0042.", de: "Bitte die Seriennummer AC200-2025-0042 angeben."}
+        - _idShort: SpareParts
+          $include: common/address_vf_automation.yaml
+          RoleOfContactPerson: "0173-1#07-AAS928#001"
+          Department: {en: Spare parts sales, de: Ersatzteilvertrieb}
+          Language: [de, en]
+          Phone:
+            TelephoneNumber: {en: "+49 631 000000-350"}
+            TypeOfTelephone: "0173-1#07-AAS754#001"
+            AvailableTime: {en: "Mon-Fri 08:00-17:00 CET", de: "Mo-Fr 08:00-17:00 MEZ"}
+          Email: {EmailAddress: spareparts@vf-automation.example}
+  - template: HandoverDocumentation-2.0
+    values:
+      Documents:
+        - DocumentIds: [{DocumentDomainId: VFAutomation, DocumentIdentifier: DS-AC200, DocumentIsPrimary: true}]
+          DocumentClassifications: [{ClassId: "02-01", ClassName: {en: Technical specification, de: Technische Spezifikation}, ClassificationSystem: VDI2770:2020}]
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.2"
+              Title: {en: AC-200 assembly and test cell data sheet, de: Datenblatt Montage- und Prüfzelle AC-200}
+              Description: {en: "Technical data: dimensions, supply, process performance, environment", de: "Technische Daten: Abmessungen, Versorgung, Prozessleistung, Umgebung"}
+              StatusSetDate: "2025-07-01"
+              StatusValue: Released
+              OrganizationShortName: VF Automation
+              OrganizationOfficialName: VF Automation Systems GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/DS-AC200.pdf}]
+        - DocumentIds: [{DocumentDomainId: VFAutomation, DocumentIdentifier: OM-AC200, DocumentIsPrimary: true}]
+          DocumentClassifications: [{ClassId: "03-02", ClassName: {en: Operation, de: Bedienung}, ClassificationSystem: VDI2770:2020}]
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.1"
+              Title: {en: AC-200 operating instructions, de: Betriebsanleitung AC-200}
+              Description: {en: "Safety, operating modes, start-up, fault clearance and maintenance of the cell", de: "Sicherheit, Betriebsarten, Inbetriebnahme, Störungsbehebung und Wartung der Zelle"}
+              StatusSetDate: "2025-08-15"
+              StatusValue: Released
+              OrganizationShortName: VF Automation
+              OrganizationOfficialName: VF Automation Systems GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/OM-AC200.pdf}]
+        - DocumentIds: [{DocumentDomainId: VFAutomation, DocumentIdentifier: DOC-AC200-2025-0042, DocumentIsPrimary: true}]
+          DocumentClassifications: [{ClassId: "02-04", ClassName: {en: "Certificates, declarations", de: "Zeugnisse, Zertifikate, Bescheinigungen"}, ClassificationSystem: VDI2770:2020}]
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.0"
+              Title: {en: EU declaration of conformity AC-200, de: EU-Konformitätserklärung AC-200}
+              Description: {en: "EU declaration of conformity for serial number AC200-2025-0042", de: "EU-Konformitätserklärung für die Seriennummer AC200-2025-0042"}
+              StatusSetDate: "2025-08-29"
+              StatusValue: Released
+              OrganizationShortName: VF Automation
+              OrganizationOfficialName: VF Automation Systems GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/DOC-AC200-2025-0042.pdf}]
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - PcfCalculationMethods: [{value: "ISO 14067"}, {value: "GHG Protocol"}]
+          PcfCO2eq: 1850
+          ReferenceImpactUnitForCalculation: piece
+          QuantityOfMeasureForCalculation: 1
+          LifeCyclePhases: [{value: "A1-A3"}]
+          GoodsHandoverAddress: {$include: common/address_vf_automation.yaml}
+          PublicationDate: "2025-08-29T00:00:00+00:00"
+  - template: EnergyConsumption-1.0
+    values:
+      $include: common/energy_defaults.yaml
+      RatedPower: 1500
+      StandbyPower: 300
+      PowerSupply: {RatedVoltage: 400, Frequency: 50, NumberOfPhases: 3, RatedCurrent: 16}
+      CompressedAir: {SpecificEnergy: 0.12}
+  - template: CapabilityDescription-1.0
+    values:
+      CapabilitySet:
+        _idShort: CapabilitySet
+        CapabilityContainer:
+          - _idShort: AssembleCylinderContainer
+            Capability: {_idShort: AssembleCylinder, _semanticId: "https://virtual-factory.example/ids/capability/AssembleCylinder"}
+            CapabilityComment: {en: "Assembly of ISO 15552 profile cylinders (OP10-OP40): piston and rod, seals, barrel, end caps", de: "Montage von Profilzylindern nach ISO 15552 (OP10-OP40): Kolben und Kolbenstange, Dichtungen, Rohr, Deckel"}
+            PropertySet:
+              - _idShort: AssembleCylinderProperties
+                PropertyContainer:
+                  - _idShort: TaktTimeContainer
+                    PropertyProperty: {_idShort: TaktTime, value: "12"}
+                    PropertyComment: {en: "Takt time of the cell [s]", de: "Taktzeit der Zelle [s]"}
+                    SameProperty:
+                      - _idShort: SameAsTechnicalDataTaktTime
+                        first: "sm:AC01/CapabilityDescription#CapabilitySet.AssembleCylinderContainer.AssembleCylinderProperties.TaktTimeContainer.TaktTime"
+                        second: "sm:AC01/TechnicalData#TechnicalPropertyAreas.0.Process.TaktTime"
+                  - _idShort: CylinderBoreContainer
+                    PropertyProperty: {_idShort: CylinderBore, value: "32"}
+                    PropertyComment: {en: "Bore diameter of the cylinders that can be assembled (ISO 15552) [mm]", de: "Kolbendurchmesser der montierbaren Zylinder (ISO 15552) [mm]"}
+                  - _idShort: CylinderStrokeContainer
+                    PropertyProperty: {_idShort: CylinderStroke, value: "80"}
+                    PropertyComment: {en: "Stroke of the cylinders that can be assembled [mm]", de: "Hub der montierbaren Zylinder [mm]"}
+                  - _idShort: TighteningTorqueContainer
+                    PropertyProperty: {_idShort: TighteningTorque, value: "6"}
+                    PropertyComment: {en: "End-cap screw tightening torque [N m]", de: "Anziehdrehmoment der Deckelschrauben [N m]"}
+          - _idShort: LeakTestContainer
+            Capability: {_idShort: LeakTest, _semanticId: "https://virtual-factory.example/ids/capability/LeakTest"}
+            CapabilityComment: {en: "Pressure-decay leak test of the assembled cylinder (OP50)", de: "Druckabfall-Dichtheitsprüfung des montierten Zylinders (OP50)"}
+            PropertySet:
+              - _idShort: LeakTestProperties
+                PropertyContainer:
+                  - _idShort: TestPressureContainer
+                    PropertyRange: {_idShort: TestPressure, min: 1, max: 10}
+                    PropertyComment: {en: "Adjustable test pressure [bar]; nominal 6 bar for PC-32-80-DA-M", de: "Einstellbarer Prüfdruck [bar]; nominal 6 bar für PC-32-80-DA-M"}
+                  - _idShort: LeakRateLimitContainer
+                    PropertyProperty: {_idShort: LeakRateLimit, value: "1.0"}
+                    PropertyComment: {en: "Maximum permissible leak rate [cm³/min]", de: "Maximal zulässige Leckrate [cm³/min]"}
+                    SameProperty:
+                      - _idShort: SameAsTechnicalDataLeakRateLimit
+                        first: "sm:AC01/CapabilityDescription#CapabilitySet.LeakTestContainer.LeakTestProperties.LeakRateLimitContainer.LeakRateLimit"
+                        second: "sm:AC01/TechnicalData#TechnicalPropertyAreas.0.Process.LeakRateLimit"
+                  - _idShort: TestTimeContainer
+                    PropertyProperty: {_idShort: TestTime, value: "2"}
+                    PropertyComment: {en: "Test time incl. filling and settling [s]", de: "Prüfzeit inkl. Füllen und Beruhigen [s]"}
+          - _idShort: FunctionTestContainer
+            Capability: {_idShort: FunctionTest, _semanticId: "https://virtual-factory.example/ids/capability/FunctionTest"}
+            CapabilityComment: {en: "Full-stroke function test with stroke time measurement (OP60)", de: "Funktionsprüfung über den vollen Hub mit Hubzeitmessung (OP60)"}
+            PropertySet:
+              - _idShort: FunctionTestProperties
+                PropertyContainer:
+                  - _idShort: StrokeTimeWindowContainer
+                    PropertyRange: {_idShort: StrokeTimeWindow, min: 0.28, max: 0.36}
+                    PropertyComment: {en: "Accepted stroke time at 6 bar [s]", de: "Zulässige Hubzeit bei 6 bar [s]"}
+                  - _idShort: TestPressureContainer
+                    PropertyProperty: {_idShort: TestPressure, value: "6"}
+                    PropertyComment: {en: "Operating pressure during the function test [bar]", de: "Betriebsdruck während der Funktionsprüfung [bar]"}
+          - _idShort: FitProtectiveCapContainer
+            Capability: {_idShort: FitProtectiveCap, _semanticId: "https://virtual-factory.example/ids/capability/FitProtectiveCap"}
+            CapabilityComment: {en: "Press-fit of a red PE protective cap onto the rod end (OP70)", de: "Aufdrücken einer roten PE-Schutzkappe auf das Kolbenstangenende (OP70)"}
+            PropertySet:
+              - _idShort: FitProtectiveCapProperties
+                PropertyContainer:
+                  - _idShort: CapMaterialContainer
+                    PropertyProperty: {_idShort: CapMaterial, value: "PE, red (RAL 3020)"}
+                    PropertyComment: {en: Material and colour of the protective cap, de: Werkstoff und Farbe der Schutzkappe}
+                  - _idShort: RodThreadContainer
+                    PropertyProperty: {_idShort: RodThread, value: "M10x1.25"}
+                    PropertyComment: {en: Piston rod thread the cap fits, de: "Kolbenstangengewinde, auf das die Kappe passt"}
+  - template: FunctionalSafety-1.0
+    values:
+      NumberOfFunctionalSafetySetsOfCharacteristics: 2
+      OperatingConditionsOfFunctionalSafetyCharacteristics:
+        - _idShort: ConditionsGuardDoor
+          TypeOfVoltage: DC
+          RatedVoltage: 24
+          TypeOfInterlockingDevice: "Type 4 interlocking device with guard locking (EN ISO 14119), coded RFID actuator"
+          OtherOperatingConditions: "Ambient temperature 5-40 °C; mission time 20 years; demand rate: door opened up to 10 times per shift"
+          UsefulLifeInTimeInterval: 20
+        - _idShort: ConditionsEmergencyStop
+          TypeOfVoltage: DC
+          RatedVoltage: 24
+          OtherOperatingConditions: "Ambient temperature 5-40 °C; mission time 20 years; stop category 0 (EN 60204-1)"
+          UsefulLifeInTimeInterval: 20
+      SafetyDeviceTypes:
+        - _idShort: GuardDoorInterlocking
+          FunctionalSafetyDeviceType: "safety subsystem"
+          SafetySubsystem: {SIL: "SIL 2", PFH: 2.5E-7, PL: "d", Category: "3"}
+        - _idShort: EmergencyStop
+          FunctionalSafetyDeviceType: "safety subsystem"
+          SafetySubsystem: {SIL: "SIL 2", PFH: 1.4E-7, PL: "d", Category: "3"}

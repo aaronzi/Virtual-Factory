@@ -1,0 +1,32 @@
+title: "PC-32-80-DA-M operating and assembly instructions"
+subtitle: "Mounting, commissioning, cushioning adjustment, maintenance"
+organization: VF Pneumatics GmbH
+version: "1.2"
+date: "2025-09-01"
+sections:
+  - heading: Intended use
+    text: >-
+      The cylinder converts compressed-air energy into linear motion. Use it only within the limits of the data
+      sheet DS-PC3280 (1 to 10 bar, -20 to +80 °C) with compressed air according to ISO 8573-1:2010 [7:4:4].
+      Do not use it as a load-bearing or safety-relevant component without additional measures.
+  - heading: Safety
+    text: >-
+      Exhaust the system before mounting or dismantling. Moving piston rods may cause crushing; protect the
+      working area. Remove the red protective cap before commissioning; it is transport protection only.
+  - heading: Mounting
+    text: >-
+      Fasten the cylinder with ISO 15552 mounting accessories (thread M6, hole pattern 32.5 mm). Align the load
+      with the piston-rod axis; lateral forces shorten the service life. Screw the load onto the rod thread
+      M10x1.25 and counter it with the rod nut.
+  - heading: Commissioning and cushioning
+    text: >-
+      Close both cushioning screws completely, then open them about one turn. Pressurise the cylinder slowly
+      (soft-start valve) and adjust the cushioning screws until the piston reaches the end positions without
+      rebound or hard impact. Set the speed with exhaust-air flow control valves.
+  - heading: Maintenance
+    text: >-
+      The cylinder is lifetime-lubricated. Clean the piston rod regularly; do not use solvents. If leakage
+      or reduced cushioning occurs, replace the seals with seal kit SK-PC32 (repair instructions RI-PC3280).
+  - heading: Assembly data (manufacturer)
+    rows: [[End-cap screws, "8 x ISO 4762 M5x16-8.8, 6 Nm crosswise"], [Piston on rod, "8 Nm, thread-locked"],
+           [Leak test, "6 bar, <= 1.0 cm3/min"], [Function test, "stroke time 0.28 ... 0.36 s at 6 bar"]]

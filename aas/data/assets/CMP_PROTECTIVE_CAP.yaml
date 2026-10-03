@@ -1,0 +1,51 @@
+# BoM component of PC-32-80-DA-M: red PE-LD protective cap (purchased injection-moulded part; colour-inspected at OP80).
+tag: CMP_PROTECTIVE_CAP
+idShort: PC32_ProtectiveCap
+kind: Type
+assetType: https://virtual-factory.example/ids/assettype/CylinderComponent
+displayName: {en: "Protective cap 53 mm, PE-LD red (component type)", de: "Schutzkappe 53 mm, PE-LD rot (Bauteiltyp)"}
+description:
+  en: "Injection-moulded PE-LD transport protection cap in traffic red, pressed onto the front end of the cylinder PC-32-80-DA-M; supplied by Kunststofftechnik Westrich GmbH."
+  de: "Spritzgegossene PE-LD-Transportschutzkappe in Verkehrsrot, auf das vordere Ende des Zylinders PC-32-80-DA-M aufgedrückt; Lieferant Kunststofftechnik Westrich GmbH."
+specificAssetIds: {manufacturerPartId: KTW-SK53-RD, customerPartId: "5032-1009"}
+location: false
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: Kunststofftechnik Westrich GmbH, de: Kunststofftechnik Westrich GmbH}
+      ManufacturerProductDesignation: {en: "Protective cap square 53 mm, PE-LD, RAL 3020 traffic red", de: "Schutzkappe vierkant 53 mm, PE-LD, RAL 3020 verkehrsrot"}
+      ManufacturerProductRoot: {en: Protective caps and plugs, de: Schutzkappen und Stopfen}
+      ManufacturerProductFamily: {en: SK square caps, de: SK-Vierkantkappen}
+      ManufacturerProductType: KTW-SK53
+      OrderCodeOfManufacturer: KTW-SK53-RD
+      ProductArticleNumberOfManufacturer: "SK53-3020"
+      URIOfTheProduct: https://virtual-factory.example/kunststofftechnik-westrich/products/KTW-SK53-RD
+      CountryOfOrigin: DE
+      AddressInformation: {$include: common/product_address_supplier_kunststofftechnik.yaml}
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: Kunststofftechnik Westrich GmbH
+        ManufacturerProductDesignation: {en: "Protective cap square 53 mm, PE-LD red", de: "Schutzkappe vierkant 53 mm, PE-LD rot"}
+        ManufacturerArticleNumber: "SK53-3020"
+        ManufacturerOrderCode: KTW-SK53-RD
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          "+Dimensions": {value: "53 x 53 x 45 mm", description: {en: "Outer dimensions (W x D x H)", de: "Außenabmessungen (B x T x H)"}}
+          "+WallThickness": {valueType: xs:double, value: 1.2, description: {en: "Wall thickness [mm]", de: "Wandstärke [mm]"}}
+          "+Colour": {value: "RAL 3020 traffic red", description: {en: Colour, de: Farbe}}
+          "+ColourSRGB": {value: "0.78 / 0.08 / 0.10", description: {en: "Nominal colour as sRGB (R/G/B, 0..1)", de: "Nennfarbe als sRGB (R/G/B, 0..1)"}}
+          "+Material": {value: "PE-LD (ISO 1043-1)", description: {en: Material, de: Werkstoff}}
+          "+TemperatureMax": {valueType: xs:double, value: 80, description: {en: "Maximum service temperature [°C]", de: "Maximale Gebrauchstemperatur [°C]"}}
+          "+Mass": {valueType: xs:double, value: 0.014, description: {en: "Mass [kg]", de: "Masse [kg]"}}
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - {PcfCalculationMethods: [{value: "ISO 14067"}], PcfCO2eq: 0.04, ReferenceImpactUnitForCalculation: piece, QuantityOfMeasureForCalculation: 1, LifeCyclePhases: [{value: "A1-A3"}], PublicationDate: "2025-05-01T00:00:00+00:00"}
+  - template: ProductMaterialComposition-1.0
+    values:
+      TotalMass: 0.014
+      Materials:
+        - {MaterialLocation: {ComponentName: Protective cap, ComponentId: "5032-1009"}, MaterialIdentifier: "PE-LD (ISO 1043-1), red masterbatch", MaterialName: "Low-density polyethylene", MaterialMass: 0.014, IsCriticalRawMaterial: false, RecyclabilityClass: Recyclable}
+      HazardousSubstances: []
+      DeclarationDate: "2025-05-01"

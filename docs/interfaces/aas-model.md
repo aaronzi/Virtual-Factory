@@ -46,7 +46,7 @@ the FMI model description, the layout or the UNS registry.
 
 | Submodel | Template | PLANT | LINE | PRODUCT TYPE | CMP | WORKPIECE | AC01 | CV01 | LB type / inst | QS01 | UR5e type / RB01 | GR01 | KLT type / inst | LC10 type / PLC01 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Nameplate | I 02006 3.0 | ● | ● | ● | ● | ● | ● | ● | ● / ● | ● | ● / ● | ● | ● / ● | ● / ● |
+| Nameplate | I 02006 3.0 | | ● | ● | ● | ● | ● | ● | ● / ● | ● | ● / ● | ● | ● / ● | ● / ● |
 | TechnicalData | I 02003 2.0 | | | ● | ● | | ● | ● | ● / | ● | ● / | ● | ● / | ● / |
 | ContactInformations | I 02002 1.0 | ● | | ● | | | ● | | ● / | | ● / | | | ● / |
 | HandoverDocumentation | I 02004 2.0 | | ● | ● | | | ● | ● | ● / | ● | ● / | | | ● / |
@@ -70,9 +70,9 @@ the FMI model description, the layout or the UNS registry.
 | AssetInterfacesMappingConfiguration | I 2.0 (G) | | | | | | ● | ● | / ● | ● | / ● | | / ● | / ● |
 | OperationalData | C (G) | | | | | | ● | ● | / ● | ● | / ● | | / ● | / ● |
 | EnergyConsumption | C (G + static) | | ● | | | | ● | ● | / ● | ● | / ● | | | / ● |
-| TimeSeries (PowerTimeSeries) | I 1.1 (G) | | | | | | ● | ● | / ● | ● | / ● | | / ● | / ● |
+| TimeSeries (PowerTimeSeries) | I 1.1 (G) | | | | | | ● | ● | / ● | ● | / ● | | | |
 | SimulationModels | I 1.0 (G) | | | | | | ● | ● | / ● | ● | / ● | | / ● | / ● |
-| Reliability | I 1.0 | | | | | | | | ● / | ● | ● / | | | |
+| Reliability | I 1.0 | | | | | | | | ● / | ● | | | | |
 | FunctionalSafety | I 1.0 | | | | | | ● | | | | ● / | | | |
 | MaintenanceInstructions | I 1.0 | | | | | | | ● | | | ● / | | | |
 | SoftwareNameplate | I 1.0 | | | | | | | | | | / ● | | | ● / ● |
@@ -122,7 +122,12 @@ Rationale for the main choices:
 - Plant: VF Pneumatics GmbH, Fabrikstraße 1, 67655 Kaiserslautern, DE (fictional). Hall 1, area *Final Assembly*,
   line LINE01. Machine builder: VF Automation Systems GmbH, Fabrikstraße 3 (fictional). Sensors: Lumetra Sensortechnik
   GmbH, Lichtweg 5, 79111 Freiburg (fictional).
-- Commissioning of the line: 2025-09-15. Assets manufactured in 2025 unless noted.
+- Commissioning of the line: 2025-09-15. Assets manufactured in 2025 unless noted. CE conformity of machines built in
+  2025: Machinery Directive 2006/42/EC (Regulation (EU) 2023/1230 applies from 2027-01-20).
+- Document classes: VDI 2770:2020 (e.g. 02-01 technical specification, 03-02 operation, 01-04 certificate/declaration).
+- Reliability template: MTTF/MTBF values in **years** (unit of the concept description). Only where a figure is
+  published (LB_TYPE, QS01); the UR5e has no public MTTF, so no Reliability submodel rather than a guessed value.
+- PLANT01 is a site, not a product: CompanyData + ContactInformations instead of a Nameplate.
 - Grid emission factor 0.363 kg CO₂e/kWh (`common/energy_defaults.yaml`).
 - Product PC-32-80-DA-M:
   - Mass 0.59 kg. Declared PCF (A1–A3) 4.2 kg CO₂e per piece (ISO 14067).
@@ -164,8 +169,10 @@ See `services/vf_common/src/vf_common/aas/environment.py` and `instantiate.py`. 
   `specificAssetIds`.
 - `model3d: {file, preview, title, objectType}` generates Models3D.
 - `device: {modelDescription, energy: {power, energy, air}, operatingHours, state: {variable, map, initial}}`
-  generates AID, AIMC, OperationalData, EnergyConsumption (dynamic), SimulationModels and PowerTimeSeries.
-- `location: false | [x, y, z]` (default: the position from the layout) generates AssetLocation.
+  generates AID, AIMC, OperationalData and SimulationModels; EnergyConsumption (dynamic part) and PowerTimeSeries
+  only when `energy.power` names a live power output (PLC01 and the KLT stands have none).
+- `location: false | [x, y, z]` (default: the position from the layout), `locationDescription` (text or en/de),
+  `locationTime` (ISO 8601; default commissioning date) generate AssetLocation.
 - `submodels: [{template: <Name-ver>, idShort?, values}]`. Values are keyed by idShort:
   - collections are maps, lists are lists
   - repeated/placeholder elements (`X__00__`) are lists, with an optional `_idShort` per item

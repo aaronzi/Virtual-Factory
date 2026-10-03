@@ -1,0 +1,91 @@
+tag: GR01
+idShort: GR01_Gripper
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/ParallelGripper
+displayName: {en: "2-finger parallel gripper GR01 (PG-85)", de: "2-Finger-Parallelgreifer GR01 (PG-85)"}
+description:
+  en: >-
+    Electric 2-finger parallel gripper PG-85 mounted on the tool flange of robot RB01. Grips the cylinders at the
+    inspection position and places them in KLT A or KLT B (OP90). Its motion is part of the robot simulation model,
+    therefore it has no interface of its own.
+  de: >-
+    Elektrischer 2-Finger-Parallelgreifer PG-85 am Werkzeugflansch des Roboters RB01. Greift die Zylinder an der
+    Prüfposition und legt sie in KLT A oder KLT B ab (OP90). Seine Bewegung ist Teil des Robotersimulationsmodells,
+    daher hat er keine eigene Schnittstelle.
+specificAssetIds: {serialNumber: PG85-2025-0213, manufacturerPartId: PG-85-E24-ISO50}
+location: false
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+      ManufacturerProductDesignation: {en: "Electric 2-finger parallel gripper, stroke 85 mm, 24 V DC, ISO 9409-1-50", de: "Elektrischer 2-Finger-Parallelgreifer, Hub 85 mm, 24 V DC, ISO 9409-1-50"}
+      ManufacturerProductRoot: {en: Gripping systems, de: Greifsysteme}
+      ManufacturerProductFamily: {en: PG parallel grippers, de: PG-Parallelgreifer}
+      ManufacturerProductType: PG-85
+      OrderCodeOfManufacturer: PG-85-E24-ISO50
+      ProductArticleNumberOfManufacturer: "5000-0085"
+      URIOfTheProduct: https://virtual-factory.example/vf-automation/products/PG-85
+      SerialNumber: PG85-2025-0213
+      DateOfManufacture: "2025-05-12"
+      YearOfConstruction: "2025"
+      CountryOfOrigin: DE
+      HardwareVersion: "C"
+      FirmwareVersion: "1.6.2"
+      AddressInformation: {$include: common/address_vf_automation.yaml}
+      Markings:
+        - $include: common/marking_ce.yaml
+          MarkingAdditionalText:
+            - "EMC Directive 2014/30/EU"
+            - "RoHS Directive 2011/65/EU"
+      AssetSpecificProperties:
+        GuidelineSpecificProperties:
+          - GuidelineForConformityDeclaration: "Directive 2014/30/EU (electromagnetic compatibility)"
+          - GuidelineForConformityDeclaration: "Directive 2006/42/EC, partly completed machinery (declaration of incorporation)"
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: VF Automation Systems GmbH
+        ManufacturerProductDesignation: {en: "Parallel gripper PG-85", de: "Parallelgreifer PG-85"}
+        ManufacturerArticleNumber: "5000-0085"
+        ManufacturerOrderCode: PG-85-E24-ISO50
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          Section:
+            - _idShort: Gripping
+              "+GripperType": {value: "Electric 2-finger parallel gripper, servo motor with self-locking spindle", description: {en: Gripper type, de: Greifertyp}}
+              "+StrokeTotal": {valueType: xs:double, value: 85, description: {en: "Total stroke (both jaws) [mm]", de: "Gesamthub (beide Backen) [mm]"}}
+              "+StrokePerJaw": {valueType: xs:double, value: 42.5, description: {en: "Stroke per jaw [mm]", de: "Hub je Backe [mm]"}}
+              "+GripForceMin": {valueType: xs:double, value: 20, description: {en: "Minimum adjustable gripping force [N]", de: "Minimal einstellbare Greifkraft [N]"}}
+              "+GripForceMax": {valueType: xs:double, value: 150, description: {en: "Maximum gripping force [N]", de: "Maximale Greifkraft [N]"}}
+              "+RecommendedPayload": {valueType: xs:double, value: 3, description: {en: "Recommended workpiece mass, force-fit gripping [kg]", de: "Empfohlene Werkstückmasse, kraftschlüssiges Greifen [kg]"}}
+              "+JawSpeedMax": {valueType: xs:double, value: 100, description: {en: "Maximum jaw speed [mm/s]", de: "Maximale Backengeschwindigkeit [mm/s]"}}
+              "+ClosingTimeFullStroke": {valueType: xs:double, value: 0.85, description: {en: "Closing time over the full stroke at maximum speed [s]", de: "Schließzeit über den vollen Hub bei maximaler Geschwindigkeit [s]"}}
+              "+Repeatability": {valueType: xs:double, value: 0.02, description: {en: "Repeatability of the jaw position [± mm]", de: "Wiederholgenauigkeit der Backenposition [± mm]"}}
+              "+GripForceRetention": {value: "self-locking spindle, force retained on power loss", description: {en: Gripping force retention, de: Greifkrafterhaltung}}
+              "+Fingers": {value: "Aluminium V-jaws for Ø 32-50 mm round parts (ISO 15552 barrel)", description: {en: Gripper fingers fitted, de: Montierte Greiferfinger}}
+            - _idShort: MechanicalAndElectrical
+              "+Mass": {valueType: xs:double, value: 0.9, description: {en: "Mass incl. fingers [kg]", de: "Masse inkl. Finger [kg]"}}
+              "+Dimensions": {value: "96 × 75 × 118 mm (W × D × H, jaws open)", description: {en: Dimensions, de: Abmessungen}}
+              "+MountingFlange": {value: "ISO 9409-1-50-4-M6", description: {en: Mechanical interface to the robot, de: Mechanische Schnittstelle zum Roboter}}
+              "+SupplyVoltage": {valueType: xs:double, value: 24, description: {en: "Supply voltage DC [V]", de: "Versorgungsspannung DC [V]"}}
+              "+CurrentMax": {valueType: xs:double, value: 1.5, description: {en: "Maximum current consumption [A]", de: "Maximale Stromaufnahme [A]"}}
+              "+ControlInterface": {value: "Robot tool I/O (M8, 8-pin): 2 digital inputs, 2 digital outputs", description: {en: Control interface, de: Steuerschnittstelle}}
+              "+DegreeOfProtection": {value: IP54, description: {en: "Degree of protection (IEC 60529)", de: "Schutzart (IEC 60529)"}}
+              "+AmbientTemperatureMin": {valueType: xs:double, value: 5, description: {en: "Minimum ambient temperature [°C]", de: "Minimale Umgebungstemperatur [°C]"}}
+              "+AmbientTemperatureMax": {valueType: xs:double, value: 50, description: {en: "Maximum ambient temperature [°C]", de: "Maximale Umgebungstemperatur [°C]"}}
+              "+MaintenanceFreeCycles": {valueType: xs:int, value: 10000000, description: {en: "Maintenance-free operation up to this number of gripping cycles", de: "Wartungsfreier Betrieb bis zu dieser Anzahl an Greifzyklen"}}
+      FurtherInformation:
+        TextStatement:
+          - {en: "Mounted on robot RB01 (UR5e); the gripper is part of the robot cell and is simulated in the robot model.", de: "Am Roboter RB01 (UR5e) montiert; der Greifer ist Teil der Roboterzelle und wird im Robotermodell simuliert."}
+          - {en: "Partly completed machinery: safety of the robot cell is assessed together with RB01.", de: "Unvollständige Maschine: Die Sicherheit der Roboterzelle wird zusammen mit RB01 bewertet."}
+        ValidDate: "2025-05-01"
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - PcfCalculationMethods: [{value: "ISO 14067"}, {value: "GHG Protocol"}]
+          PcfCO2eq: 14.5
+          ReferenceImpactUnitForCalculation: piece
+          QuantityOfMeasureForCalculation: 1
+          LifeCyclePhases: [{value: "A1-A3"}]
+          GoodsHandoverAddress: {$include: common/address_vf_automation.yaml}
+          PublicationDate: "2025-05-12T00:00:00+00:00"

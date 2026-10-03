@@ -1,0 +1,100 @@
+tag: PLANT01
+idShort: PLANT01_VFPneumaticsKaiserslautern
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/Site
+displayName: {en: "Plant 01 of VF Pneumatics GmbH, Kaiserslautern", de: "Werk 01 der VF Pneumatics GmbH, Kaiserslautern"}
+description:
+  en: >-
+    Production site of VF Pneumatics GmbH in Kaiserslautern (ISA-95 site). Hall 1 houses the area Final Assembly with
+    the inspection & sorting line LINE01 for ISO 15552 profile cylinders. The site AAS carries the company data, the
+    contacts and the ISA-95 hierarchy down to the lines.
+  de: >-
+    Produktionsstandort der VF Pneumatics GmbH in Kaiserslautern (ISA-95-Standort). In Halle 1 befindet sich der
+    Bereich Endmontage mit der Prüf- und Sortierlinie LINE01 für ISO-15552-Profilzylinder. Die Standort-VWS enthält
+    die Unternehmensdaten, die Kontakte und die ISA-95-Hierarchie bis zu den Linien.
+thumbnail: repo:docs/screenshots/assets/hall.png
+location: [0, 0, 0]
+locationDescription: "Plant 01, Hall 1 (final assembly, 1 floor): origin of the hall coordinate system at the hall floor centre"
+submodels:
+  - template: CompanyData-1.0
+    values:
+      CompanyIdentification:
+        CompanyName: VF Pneumatics GmbH
+        CompanyDescription:
+          en: "Manufacturer of pneumatic drives and valves for factory automation; fictional company of the Virtual Factory training environment."
+          de: "Hersteller pneumatischer Antriebe und Ventile für die Fabrikautomation; fiktives Unternehmen der Schulungsumgebung Virtual Factory."
+        HomepageURL: {en: "https://virtual-factory.example/vf-pneumatics"}
+        VATNumber: DE000000001
+        CommercialRegisterNumber: "HRB 00001, Amtsgericht Kaiserslautern"
+        FoundingYear: "1987"
+        OrderCurrency: {en: EUR}
+        MainProductGroups:
+          - {en: "Pneumatic cylinders (ISO 15552 profile cylinders, compact cylinders)", de: "Pneumatikzylinder (ISO-15552-Profilzylinder, Kompaktzylinder)"}
+          - {en: "Pneumatic valves and valve terminals", de: "Pneumatikventile und Ventilinseln"}
+          - {en: "Compressed-air preparation and fittings", de: "Druckluftaufbereitung und Verschraubungen"}
+        Industries:
+          - {en: Factory automation and mechanical engineering, de: Fabrikautomation und Maschinenbau}
+          - {en: Automotive supply, de: Automobilzulieferung}
+          - {en: Packaging and food machinery, de: Verpackungs- und Lebensmittelmaschinen}
+      CompanyGovernance:
+        IndustryStandards:
+          Certifications:
+            - {CertificationStandard: "ISO 9001:2015", ApprovalAgency: "Fictional certification body (training data)", CertificateNumber: "QM-0000-2024", IssueDate: "2024-03-01", ExpiryDate: "2027-02-28"}
+            - {CertificationStandard: "ISO 14001:2015", ApprovalAgency: "Fictional certification body (training data)", CertificateNumber: "UM-0000-2024", IssueDate: "2024-03-01", ExpiryDate: "2027-02-28"}
+            - {CertificationStandard: "ISO 50001:2018", ApprovalAgency: "Fictional certification body (training data)", CertificateNumber: "EnM-0000-2025", IssueDate: "2025-01-15", ExpiryDate: "2028-01-14"}
+      DigitalInterfaces:
+        DataExchange:
+          EncryptedDataTransmission: true
+          OutgoingEInvoiceFormat: "XRechnung 3.0 / ZUGFeRD 2.3"
+          EDI: true
+          WebEDI: false
+          CADFormats: [{value: "STEP AP242"}, {value: "glTF 2.0"}, {value: "PDF"}]
+
+  - template: ContactInformations-1.0
+    values:
+      ContactInformation:
+        - _idShort: PlantManagement
+          RoleOfContactPerson: "0173-1#07-AAS927#001"
+          $include: common/address_vf_pneumatics.yaml
+          Department: {en: Plant management Plant 01, de: Werkleitung Werk 01}
+        - _idShort: ProductionFinalAssembly
+          RoleOfContactPerson: "0173-1#07-AAS931#001"
+          $include: common/address_vf_pneumatics.yaml
+          Department: {en: "Production, area Final Assembly (Hall 1)", de: "Produktion, Bereich Endmontage (Halle 1)"}
+          Phone: {TelephoneNumber: {en: "+49 631 000000-410"}, TypeOfTelephone: "0173-1#07-AAS754#001", AvailableTime: {en: "Mon-Fri 06:00-22:00 CET", de: "Mo-Fr 06:00-22:00 MEZ"}}
+          Email: {EmailAddress: final-assembly@vf-pneumatics.example}
+        - _idShort: Sales
+          RoleOfContactPerson: "0173-1#07-AAS928#001"
+          $include: common/address_vf_pneumatics.yaml
+          Department: {en: Sales, de: Vertrieb}
+          Email: {EmailAddress: sales@vf-pneumatics.example}
+
+  - template: HierarchicalStructures-1.1
+    values:
+      ArcheType: Full
+      EntryNode:
+        entityType: SelfManagedEntity
+        globalAssetId: ${asset:PLANT01}
+        statements:
+          Node:
+            - _idShort: FinalAssembly
+              _description: {en: "ISA-95 area Final Assembly in Hall 1", de: "ISA-95-Bereich Endmontage in Halle 1"}
+              entityType: CoManagedEntity
+              statements:
+                "+HierarchyLevel": {value: Area, description: {en: "ISA-95 equipment hierarchy level", de: "ISA-95-Hierarchieebene"}}
+                Node:
+                  - _idShort: LINE01
+                    _description: {en: "ISA-95 production line: inspection & sorting line LINE01", de: "ISA-95-Produktionslinie: Prüf- und Sortierlinie LINE01"}
+                    entityType: SelfManagedEntity
+                    globalAssetId: ${asset:LINE01}
+                    statements:
+                      "+HierarchyLevel": {value: ProductionLine, description: {en: "ISA-95 equipment hierarchy level", de: "ISA-95-Hierarchieebene"}}
+                # the template allows SameAs only down to the first Node level; the relation for the line node is
+                # therefore placed at the area node
+                SameAs:
+                  - {_idShort: SameAs_LINE01, first: "sm:PLANT01/HierarchicalStructures#EntryNode.FinalAssembly.LINE01", second: "sm:LINE01/HierarchicalStructures#EntryNode"}
+                HasPart:
+                  - {_idShort: HasPart_LINE01, first: "sm:PLANT01/HierarchicalStructures#EntryNode.FinalAssembly", second: "sm:PLANT01/HierarchicalStructures#EntryNode.FinalAssembly.LINE01"}
+          HasPart:
+            - {_idShort: HasPart_FinalAssembly, first: "sm:PLANT01/HierarchicalStructures#EntryNode", second: "sm:PLANT01/HierarchicalStructures#EntryNode.FinalAssembly"}
+          "+HierarchyLevel": {value: Site, description: {en: "ISA-95 equipment hierarchy level", de: "ISA-95-Hierarchieebene"}}

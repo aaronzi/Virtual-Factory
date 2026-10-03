@@ -9,8 +9,8 @@
 #   1883  MQTT (TCP)            – edge services, MQTT Explorer
 #   9001  MQTT over WebSocket   – Godot shop-floor simulation
 #
-# The database lives on tmpfs: every `up` starts with a fresh DB and the static AAS
-# are preloaded from ./basyx/preload (workpiece instances are ephemeral, see ADR-0004).
+# The database lives on tmpfs: every `up` starts with a fresh DB. The one-shot `provisioner` service builds the
+# static AAS into ./basyx/preload, which BaSyx imports at startup (workpiece instances are ephemeral, ADR-0004).
 
 name: vf
 
@@ -49,6 +49,17 @@ services:
       db:
         condition: service_healthy
 
+  provisioner:
+    # One-shot: builds the static AAS (IDTA/custom templates + aas/data) into ./basyx/preload before BaSyx starts.
+    build:
+      context: ..
+      dockerfile: services/Dockerfile
+    image: vf-services:dev
+    command: ["-m", "provisioner", "build", "--out", "/out", "--env-json", "/tmp/environment.json"]
+    volumes:
+      - ..:/repo:ro
+      - ./basyx/preload:/out
+
   aas-env:
     image: eclipsebasyx/aasenvironment-go:1.1.0
     command: ["/app/aasenvironmentservice"]
@@ -71,6 +82,8 @@ services:
       - ./basyx/preload:/app/preconfiguration:ro
     depends_on:
       basyx-config:
+        condition: service_completed_successfully
+      provisioner:
         condition: service_completed_successfully
     restart: unless-stopped
 
