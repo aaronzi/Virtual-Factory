@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          lfs: true  # AASX packages embed thumbnails, documents and 3D models
       - uses: astral-sh/setup-uv@v10.2.0
       - run: uv sync
       - name: Python unit tests
