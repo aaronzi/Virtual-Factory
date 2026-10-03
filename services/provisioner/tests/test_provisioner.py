@@ -80,3 +80,40 @@ def _has_blueprints(result) -> bool:
 
 def test_environment_json_roundtrip(result):
     assert json.loads(json.dumps(result.environment))["assetAdministrationShells"]
+
+
+NUMERIC = {"xs:double", "xs:float", "xs:decimal", "xs:int", "xs:integer", "xs:long", "xs:unsignedInt",
+           "xs:short"}
+
+
+def _data_elements(node):
+    if isinstance(node, dict):
+        if node.get("modelType") in ("Property", "Range"):
+            yield node
+        for value in node.values():
+            yield from _data_elements(value)
+    elif isinstance(node, list):
+        for value in node:
+            yield from _data_elements(value)
+
+
+def test_concept_descriptions_carry_semantics_and_units(result):
+    """Every data element resolves to a concept description; measures have a unit there (not in the text)."""
+    env = result.environment
+    cds = {cd["id"]: cd["embeddedDataSpecifications"][0]["dataSpecificationContent"]
+           for cd in env["conceptDescriptions"] if cd.get("embeddedDataSpecifications")}
+    problems = []
+    for el in _data_elements(env["submodels"]):
+        sem = (el.get("semanticId") or {}).get("keys", [{}])[0].get("value")
+        content = cds.get(sem)
+        if content is None:
+            problems.append(f"{el.get('idShort')}: no concept description for {sem}")
+            continue
+        if content.get("dataType", "").endswith("MEASURE") and not content.get("unit"):
+            problems.append(f"{el.get('idShort')}: measure without unit ({sem})")
+        if el.get("valueType") in NUMERIC and content.get("dataType", "").startswith("STRING"):
+            problems.append(f"{el.get('idShort')}: numeric value with {content['dataType']} concept")
+        text = " ".join(d["text"] for d in el.get("description") or [])
+        if any(f"[{u}]" in text for u in ("mm", "m", "kg", "s", "°C", "bar", "N", "W", "V", "A")):
+            problems.append(f"{el.get('idShort')}: unit in description text")
+    assert not problems, "\n".join(sorted(set(problems))[:20])

@@ -33,11 +33,11 @@ submodels:
       TechnicalPropertyAreas:
         - _idShort: TechnicalProperties
           "+Thread": {value: M5x0.5, description: {en: Thread, de: Gewinde}}
-          "+Length": {valueType: xs:double, value: 14, description: {en: "Overall length [mm]", de: "Gesamtlänge [mm]"}}
-          "+DriveSize": {valueType: xs:double, value: 2.5, description: {en: "Hexagon socket size [mm]", de: "Schlüsselweite Innensechskant [mm]"}}
-          "+AdjustmentRange": {valueType: xs:double, value: 4, description: {en: "Adjustment range from closed to fully open [turns]", de: "Einstellbereich von geschlossen bis vollständig offen [Umdrehungen]"}}
+          "+Length": {unit: "mm", valueType: xs:double, value: 14, description: {en: "Overall length", de: "Gesamtlänge"}}
+          "+DriveSize": {unit: "mm", valueType: xs:double, value: 2.5, description: {en: "Hexagon socket size", de: "Schlüsselweite Innensechskant"}}
+          "+AdjustmentRange": {valueType: xs:double, value: 4, description: {en: "Adjustment range from closed to fully open", de: "Einstellbereich von geschlossen bis vollständig offen"}}
           "+Material": {value: "CW614N (CuZn39Pb3)", description: {en: Material, de: Werkstoff}}
-          "+Mass": {valueType: xs:double, value: 0.0015, description: {en: "Mass per piece [kg]", de: "Masse je Stück [kg]"}}
+          "+Mass": {unit: "kg", valueType: xs:double, value: 0.0015, description: {en: "Mass per piece", de: "Masse je Stück"}}
   - template: CarbonFootprint-1.0
     values:
       ProductCarbonFootprints:

@@ -53,26 +53,26 @@ submodels:
           Section:
             - _idShort: Gripping
               "+GripperType": {value: "Electric 2-finger parallel gripper, servo motor with self-locking spindle", description: {en: Gripper type, de: Greifertyp}}
-              "+StrokeTotal": {valueType: xs:double, value: 85, description: {en: "Total stroke (both jaws) [mm]", de: "Gesamthub (beide Backen) [mm]"}}
-              "+StrokePerJaw": {valueType: xs:double, value: 42.5, description: {en: "Stroke per jaw [mm]", de: "Hub je Backe [mm]"}}
-              "+GripForceMin": {valueType: xs:double, value: 20, description: {en: "Minimum adjustable gripping force [N]", de: "Minimal einstellbare Greifkraft [N]"}}
-              "+GripForceMax": {valueType: xs:double, value: 150, description: {en: "Maximum gripping force [N]", de: "Maximale Greifkraft [N]"}}
-              "+RecommendedPayload": {valueType: xs:double, value: 3, description: {en: "Recommended workpiece mass, force-fit gripping [kg]", de: "Empfohlene Werkstückmasse, kraftschlüssiges Greifen [kg]"}}
-              "+JawSpeedMax": {valueType: xs:double, value: 100, description: {en: "Maximum jaw speed [mm/s]", de: "Maximale Backengeschwindigkeit [mm/s]"}}
-              "+ClosingTimeFullStroke": {valueType: xs:double, value: 0.85, description: {en: "Closing time over the full stroke at maximum speed [s]", de: "Schließzeit über den vollen Hub bei maximaler Geschwindigkeit [s]"}}
-              "+Repeatability": {valueType: xs:double, value: 0.02, description: {en: "Repeatability of the jaw position [± mm]", de: "Wiederholgenauigkeit der Backenposition [± mm]"}}
+              "+StrokeTotal": {unit: "mm", valueType: xs:double, value: 85, description: {en: "Total stroke (both jaws)", de: "Gesamthub (beide Backen)"}}
+              "+StrokePerJaw": {unit: "mm", valueType: xs:double, value: 42.5, description: {en: "Stroke per jaw", de: "Hub je Backe"}}
+              "+GripForceMin": {unit: "N", valueType: xs:double, value: 20, description: {en: "Minimum adjustable gripping force", de: "Minimal einstellbare Greifkraft"}}
+              "+GripForceMax": {unit: "N", valueType: xs:double, value: 150, description: {en: "Maximum gripping force", de: "Maximale Greifkraft"}}
+              "+RecommendedPayload": {unit: "kg", valueType: xs:double, value: 3, description: {en: "Recommended workpiece mass, force-fit gripping", de: "Empfohlene Werkstückmasse, kraftschlüssiges Greifen"}}
+              "+JawSpeedMax": {unit: "mm/s", valueType: xs:double, value: 100, description: {en: "Maximum jaw speed", de: "Maximale Backengeschwindigkeit"}}
+              "+ClosingTimeFullStroke": {unit: "s", valueType: xs:double, value: 0.85, description: {en: "Closing time over the full stroke at maximum speed", de: "Schließzeit über den vollen Hub bei maximaler Geschwindigkeit"}}
+              "+Repeatability": {unit: "mm", valueType: xs:double, value: 0.02, description: {en: "Repeatability of the jaw position (±)", de: "Wiederholgenauigkeit der Backenposition (±)"}}
               "+GripForceRetention": {value: "self-locking spindle, force retained on power loss", description: {en: Gripping force retention, de: Greifkrafterhaltung}}
               "+Fingers": {value: "Aluminium V-jaws for Ø 32-50 mm round parts (ISO 15552 barrel)", description: {en: Gripper fingers fitted, de: Montierte Greiferfinger}}
             - _idShort: MechanicalAndElectrical
-              "+Mass": {valueType: xs:double, value: 0.9, description: {en: "Mass incl. fingers [kg]", de: "Masse inkl. Finger [kg]"}}
+              "+Mass": {unit: "kg", valueType: xs:double, value: 0.9, description: {en: "Mass incl. fingers", de: "Masse inkl. Finger"}}
               "+Dimensions": {value: "96 × 75 × 118 mm (W × D × H, jaws open)", description: {en: Dimensions, de: Abmessungen}}
               "+MountingFlange": {value: "ISO 9409-1-50-4-M6", description: {en: Mechanical interface to the robot, de: Mechanische Schnittstelle zum Roboter}}
-              "+SupplyVoltage": {valueType: xs:double, value: 24, description: {en: "Supply voltage DC [V]", de: "Versorgungsspannung DC [V]"}}
-              "+CurrentMax": {valueType: xs:double, value: 1.5, description: {en: "Maximum current consumption [A]", de: "Maximale Stromaufnahme [A]"}}
+              "+SupplyVoltage": {unit: "V", valueType: xs:double, value: 24, description: {en: "Supply voltage DC", de: "Versorgungsspannung DC"}}
+              "+CurrentMax": {unit: "A", valueType: xs:double, value: 1.5, description: {en: "Maximum current consumption", de: "Maximale Stromaufnahme"}}
               "+ControlInterface": {value: "Robot tool I/O (M8, 8-pin): 2 digital inputs, 2 digital outputs", description: {en: Control interface, de: Steuerschnittstelle}}
               "+DegreeOfProtection": {value: IP54, description: {en: "Degree of protection (IEC 60529)", de: "Schutzart (IEC 60529)"}}
-              "+AmbientTemperatureMin": {valueType: xs:double, value: 5, description: {en: "Minimum ambient temperature [°C]", de: "Minimale Umgebungstemperatur [°C]"}}
-              "+AmbientTemperatureMax": {valueType: xs:double, value: 50, description: {en: "Maximum ambient temperature [°C]", de: "Maximale Umgebungstemperatur [°C]"}}
+              "+AmbientTemperatureMin": {unit: "°C", valueType: xs:double, value: 5, description: {en: "Minimum ambient temperature", de: "Minimale Umgebungstemperatur"}}
+              "+AmbientTemperatureMax": {unit: "°C", valueType: xs:double, value: 50, description: {en: "Maximum ambient temperature", de: "Maximale Umgebungstemperatur"}}
               "+MaintenanceFreeCycles": {valueType: xs:int, value: 10000000, description: {en: "Maintenance-free operation up to this number of gripping cycles", de: "Wartungsfreier Betrieb bis zu dieser Anzahl an Greifzyklen"}}
       FurtherInformation:
         TextStatement:

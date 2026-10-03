@@ -104,6 +104,14 @@ submodels:
               _description: {en: Line controller LC-10, de: Liniensteuerung LC-10}
               entityType: SelfManagedEntity
               globalAssetId: ${asset:PLC01}
+              statements:
+                Node:
+                  - _idShort: SL01
+                    _description: {en: Stack light on the control cabinet, de: Signalsäule auf dem Schaltschrank}
+                    entityType: SelfManagedEntity
+                    globalAssetId: ${asset:SL01}
+                HasPart:
+                  - {_idShort: HasPart_SL01, first: "sm:LINE01/HierarchicalStructures#EntryNode.PLC01", second: "sm:LINE01/HierarchicalStructures#EntryNode.PLC01.SL01"}
           HasPart:
             - {_idShort: HasPart_AC01, first: "sm:LINE01/HierarchicalStructures#EntryNode", second: "sm:LINE01/HierarchicalStructures#EntryNode.AC01"}
             - {_idShort: HasPart_CV01, first: "sm:LINE01/HierarchicalStructures#EntryNode", second: "sm:LINE01/HierarchicalStructures#EntryNode.CV01"}

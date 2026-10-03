@@ -32,12 +32,12 @@ submodels:
       TechnicalPropertyAreas:
         - _idShort: TechnicalProperties
           "+Dimensions": {value: "53 x 53 x 45 mm", description: {en: "Outer dimensions (W x D x H)", de: "Außenabmessungen (B x T x H)"}}
-          "+WallThickness": {valueType: xs:double, value: 1.2, description: {en: "Wall thickness [mm]", de: "Wandstärke [mm]"}}
+          "+WallThickness": {unit: "mm", valueType: xs:double, value: 1.2, description: {en: "Wall thickness", de: "Wandstärke"}}
           "+Colour": {value: "RAL 3020 traffic red", description: {en: Colour, de: Farbe}}
           "+ColourSRGB": {value: "0.78 / 0.08 / 0.10", description: {en: "Nominal colour as sRGB (R/G/B, 0..1)", de: "Nennfarbe als sRGB (R/G/B, 0..1)"}}
           "+Material": {value: "PE-LD (ISO 1043-1)", description: {en: Material, de: Werkstoff}}
-          "+TemperatureMax": {valueType: xs:double, value: 80, description: {en: "Maximum service temperature [°C]", de: "Maximale Gebrauchstemperatur [°C]"}}
-          "+Mass": {valueType: xs:double, value: 0.014, description: {en: "Mass [kg]", de: "Masse [kg]"}}
+          "+TemperatureMax": {unit: "°C", valueType: xs:double, value: 80, description: {en: "Maximum service temperature", de: "Maximale Gebrauchstemperatur"}}
+          "+Mass": {unit: "kg", valueType: xs:double, value: 0.014, description: {en: "Mass", de: "Masse"}}
   - template: CarbonFootprint-1.0
     values:
       ProductCarbonFootprints:

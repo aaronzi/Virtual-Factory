@@ -35,26 +35,26 @@ submodels:
         - _idShort: TechnicalProperties
           Section:
             - _idShort: Performance
-              "+Payload": {valueType: xs:double, value: 5, description: {en: "Rated payload [kg]", de: "Nenntraglast [kg]"}}
-              "+Reach": {valueType: xs:double, value: 850, description: {en: "Reach [mm]", de: "Reichweite [mm]"}}
+              "+Payload": {unit: "kg", valueType: xs:double, value: 5, description: {en: "Rated payload", de: "Nenntraglast"}}
+              "+Reach": {unit: "mm", valueType: xs:double, value: 850, description: {en: "Reach", de: "Reichweite"}}
               "+DegreesOfFreedom": {valueType: xs:int, value: 6, description: {en: "Number of rotating joints", de: "Anzahl Drehgelenke"}}
-              "+PoseRepeatability": {valueType: xs:double, value: 0.03, description: {en: "Pose repeatability per ISO 9283, ± [mm]", de: "Posenwiederholgenauigkeit nach ISO 9283, ± [mm]"}}
-              "+TcpSpeedTypical": {valueType: xs:double, value: 1.0, description: {en: "Typical TCP speed [m/s]", de: "Typische TCP-Geschwindigkeit [m/s]"}}
+              "+PoseRepeatability": {unit: "mm", valueType: xs:double, value: 0.03, description: {en: "Pose repeatability per ISO 9283, ±", de: "Posenwiederholgenauigkeit nach ISO 9283, ±"}}
+              "+TcpSpeedTypical": {unit: "m/s", valueType: xs:double, value: 1.0, description: {en: "Typical TCP speed", de: "Typische TCP-Geschwindigkeit"}}
             - _idShort: Joints
-              "+JointWorkingRange": {valueType: xs:double, value: 360, description: {en: "Working range of all joints, ± [°]", de: "Arbeitsbereich aller Gelenke, ± [°]"}}
-              "+JointSpeedMax": {valueType: xs:double, value: 180, description: {en: "Maximum speed of all joints [°/s]", de: "Maximalgeschwindigkeit aller Gelenke [°/s]"}}
+              "+JointWorkingRange": {unit: "°", valueType: xs:double, value: 360, description: {en: "Working range of all joints, ±", de: "Arbeitsbereich aller Gelenke, ±"}}
+              "+JointSpeedMax": {unit: "°/s", valueType: xs:double, value: 180, description: {en: "Maximum speed of all joints", de: "Maximalgeschwindigkeit aller Gelenke"}}
             - _idShort: Physical
-              "+Mass": {valueType: xs:double, value: 20.6, description: {en: "Mass of the robot arm [kg]", de: "Masse des Roboterarms [kg]"}}
-              "+FootprintDiameter": {valueType: xs:double, value: 149, description: {en: "Footprint (base flange) diameter [mm]", de: "Durchmesser Standfläche (Fußflansch) [mm]"}}
+              "+Mass": {unit: "kg", valueType: xs:double, value: 20.6, description: {en: "Mass of the robot arm", de: "Masse des Roboterarms"}}
+              "+FootprintDiameter": {unit: "mm", valueType: xs:double, value: 149, description: {en: "Footprint (base flange) diameter", de: "Durchmesser Standfläche (Fußflansch)"}}
             - _idShort: Environment
               "+DegreeOfProtection": {value: IP54, description: {en: "Degree of protection of the arm (IEC 60529)", de: "Schutzart des Arms (IEC 60529)"}}
-              "+AmbientTemperatureMin": {valueType: xs:double, value: 0, description: {en: "Minimum ambient temperature [°C]", de: "Minimale Umgebungstemperatur [°C]"}}
-              "+AmbientTemperatureMax": {valueType: xs:double, value: 50, description: {en: "Maximum ambient temperature [°C]", de: "Maximale Umgebungstemperatur [°C]"}}
-              "+NoiseLevel": {valueType: xs:double, value: 65, description: {en: "Sound pressure level, less than [dB(A)]", de: "Schalldruckpegel, kleiner als [dB(A)]"}}
+              "+AmbientTemperatureMin": {unit: "°C", valueType: xs:double, value: 0, description: {en: "Minimum ambient temperature", de: "Minimale Umgebungstemperatur"}}
+              "+AmbientTemperatureMax": {unit: "°C", valueType: xs:double, value: 50, description: {en: "Maximum ambient temperature", de: "Maximale Umgebungstemperatur"}}
+              "+NoiseLevel": {unit: "dB(A)", valueType: xs:double, value: 65, description: {en: "Sound pressure level, less than", de: "Schalldruckpegel, kleiner als"}}
             - _idShort: Electrical
-              "+PowerConsumptionTypical": {valueType: xs:double, value: 200, description: {en: "Typical power consumption with a moderate operating program [W]", de: "Typische Leistungsaufnahme bei moderatem Programm [W]"}}
-              "+PowerConsumptionMax": {valueType: xs:double, value: 570, description: {en: "Maximum power consumption [W]", de: "Maximale Leistungsaufnahme [W]"}}
-              "+SupplyVoltage": {value: "100-240 V AC, 47-440 Hz (control box)", description: {en: "Mains supply of the control box", de: "Netzversorgung des Steuerschranks"}}
+              "+PowerConsumptionTypical": {unit: "W", valueType: xs:double, value: 200, description: {en: "Typical power consumption with a moderate operating program", de: "Typische Leistungsaufnahme bei moderatem Programm"}}
+              "+PowerConsumptionMax": {unit: "W", valueType: xs:double, value: 570, description: {en: "Maximum power consumption", de: "Maximale Leistungsaufnahme"}}
+              "+SupplyVoltage": {conceptName: MainsSupply, value: "100-240 V AC, 47-440 Hz (control box)", description: {en: "Mains supply of the control box", de: "Netzversorgung des Steuerschranks"}}
             - _idShort: Safety
               "+ConfigurableSafetyFunctions": {valueType: xs:int, value: 17, description: {en: "Number of configurable safety functions", de: "Anzahl konfigurierbarer Sicherheitsfunktionen"}}
               "+PerformanceLevel": {value: "PL d, Category 3 (EN ISO 13849-1)", description: {en: "Performance level of the safety functions", de: "Performance Level der Sicherheitsfunktionen"}}

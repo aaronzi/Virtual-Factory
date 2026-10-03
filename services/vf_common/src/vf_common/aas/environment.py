@@ -30,9 +30,13 @@ from pathlib import PurePosixPath
 
 from .. import ids
 from .instantiate import instantiate
-from .templates import TemplateLibrary
+from .templates import TemplateLibrary, concept_description
 from .values import file_value, mlp_value
 
+NUMERIC = {"xs:double", "xs:float", "xs:decimal", "xs:int", "xs:integer", "xs:long", "xs:short",
+           "xs:unsignedInt", "xs:unsignedLong", "xs:unsignedShort"}
+# units of template semantic ids without concept description (ECLASS IRDIs used by IDTA templates)
+TEMPLATE_UNITS = {"0173-1#02-ABH960#002": "°", "0173-1#02-ABH961#002": "°"}
 VAR = re.compile(r"\$\{(asset|aas|sm):([^}]+)\}")
 SELF = re.compile(r"^SELF(?=$|/)")
 
@@ -54,6 +58,7 @@ class EnvironmentBuilder:
         self._sm_ids: dict[str, str] = {}    # "TAG/IdShort" -> submodel id
         self._pending: list[dict] = []
         self._specs: list[dict] = []
+        self._concept_units: dict[str, tuple] = {}  # generated cd id -> (unit, first use)
 
     # -- public API -------------------------------------------------------------------------------
 
@@ -71,8 +76,25 @@ class EnvironmentBuilder:
         for ref in self._pending:
             self._resolve_pending(ref)
         cds = self.library.concept_descriptions_for(self.submodels)
+        cds += self._template_concepts({cd["id"] for cd in cds})
         return {"assetAdministrationShells": self.shells, "submodels": self.submodels,
                 "conceptDescriptions": cds}
+
+    def _template_concepts(self, known: set[str]) -> list[dict]:
+        """Concept descriptions for template semantic ids that have none in the library (e.g. ECLASS IRDIs of
+        IDTA AssetLocation): name and definition from the template element, unit from TEMPLATE_UNITS."""
+        out: dict[str, dict] = {}
+        for element in _properties(self.submodels):
+            sem = (element.get("semanticId") or {}).get("keys", [{}])[0].get("value")
+            if not sem or sem in known or sem in out:
+                continue
+            definition = {d["language"]: d["text"] for d in element.get("description") or []}
+            out[sem] = concept_description(sem, {
+                "idShort": element.get("idShort", "Concept"),
+                "valueType": element.get("valueType", "xs:string"),
+                "unit": TEMPLATE_UNITS.get(sem), "preferredName": {"en": _words(element.get("idShort", ""))},
+                "definition": definition or {"en": element.get("idShort", "")}}, element["modelType"])
+        return list(out.values())
 
     # -- assets -----------------------------------------------------------------------------------
 
@@ -110,12 +132,40 @@ class EnvironmentBuilder:
             info["defaultThumbnail"] = {"path": thumb["value"], "contentType": thumb["contentType"]}
         return info
 
+    def _type_concepts(self, submodel: dict, concepts: dict[str, dict], where: str) -> None:
+        """IEC 61360 concept descriptions for extra properties: one concept per name and unit; only numbers
+        may have a unit. A generic name used with several value types (Min, Default, ...) gets one concept per
+        type (`.../property/Min/int`); the element's semanticId is adjusted accordingly."""
+        for element in _properties(submodel):
+            keys = (element.get("semanticId") or {}).get("keys", [])
+            if not keys or keys[0]["value"] not in concepts:
+                continue
+            spec = dict(concepts[keys[0]["value"]], valueType=element.get("valueType", "xs:string"))
+            keys[0]["value"] = self._concept_for(keys[0]["value"], spec, where)
+
+    def _concept_for(self, cd_id: str, spec: dict, where: str) -> str:
+        if spec.get("unit") and spec["valueType"] not in NUMERIC:
+            raise ValueError(f"{where}: {spec['idShort']} has unit '{spec['unit']}' but valueType "
+                             f"{spec['valueType']} (IEC 61360: units only for measures)")
+        known = self._concept_units.setdefault(cd_id, (spec.get("unit"), spec["valueType"], where))
+        if known[0] != spec.get("unit"):
+            raise ValueError(f"concept {cd_id}: unit '{spec.get('unit')}' in {where} differs from "
+                             f"'{known[0]}' in {known[2]} - use conceptName to separate the concepts")
+        target = cd_id if known[1] == spec["valueType"] else f"{cd_id}/{spec['valueType'].split(':')[-1]}"
+        if target not in self.library.concept_descriptions:
+            text = spec.get("description") or {"en": _words(spec["idShort"])}
+            self.library.concept_descriptions[target] = concept_description(target, {
+                "idShort": spec["idShort"], "valueType": spec["valueType"], "unit": spec.get("unit"),
+                "preferredName": text, "definition": text}, spec["modelType"])
+        return target
+
     def _build_submodel(self, tag: str, sm_spec: dict, aas_id: str) -> dict:
         template = self.library.get(sm_spec["template"])
         id_short = sm_spec.get("idShort") or template["idShort"]
         values = self._substitute(sm_spec.get("values") or {}, tag, aas_id)
         result = instantiate(template, values, self._sm_ids[f"{tag}/{id_short}"], self._resolver, id_short)
         key = f"{tag}/{id_short}"
+        self._type_concepts(result.submodel, result.concepts, key)
         if result.missing:
             self.report.missing[key] = result.missing
         if result.unknown:
@@ -195,3 +245,20 @@ def _element_keys(elements: list[dict], path: list[str]) -> list[tuple[str, str]
         keys.append((el["modelType"], part))
         elements = el.get("value") or el.get("statements") or []
     return keys
+
+
+def _properties(node):
+    """All Property / Range / MultiLanguageProperty elements below `node`."""
+    if isinstance(node, dict):
+        if node.get("modelType") in ("Property", "Range", "MultiLanguageProperty"):
+            yield node
+        for value in node.values():
+            yield from _properties(value)
+    elif isinstance(node, list):
+        for value in node:
+            yield from _properties(value)
+
+
+def _words(id_short: str) -> str:
+    """CamelCase idShort -> lower-case words (preferred name)."""
+    return re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", id_short).lower() or id_short

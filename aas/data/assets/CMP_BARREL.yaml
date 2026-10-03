@@ -32,14 +32,15 @@ submodels:
         ManufacturerOrderCode: PB-32-0080
       TechnicalPropertyAreas:
         - _idShort: TechnicalProperties
-          "+BoreDiameter": {value: "32 H9", description: {en: "Bore diameter with tolerance class [mm]", de: "Bohrungsdurchmesser mit Toleranzklasse [mm]"}}
-          "+Length": {valueType: xs:double, value: 126, description: {en: "Cut length [mm]", de: "Schnittlänge [mm]"}}
-          "+ProfileWidth": {valueType: xs:double, value: 44, description: {en: "Profile width across flats [mm]", de: "Profilbreite über Flächen [mm]"}}
-          "+BoreRoughnessRa": {valueType: xs:double, value: 0.2, description: {en: "Maximum bore surface roughness Ra [µm]", de: "Maximale Rauheit der Bohrung Ra [µm]"}}
-          "+AnodicLayerThickness": {valueType: xs:double, value: 15, description: {en: "Anodic oxide layer thickness [µm]", de: "Dicke der Eloxalschicht [µm]"}}
-          "+SensorSlots": {valueType: xs:unsignedInt, value: 2, description: {en: "Number of T-slots for proximity sensors [pcs]", de: "Anzahl T-Nuten für Näherungsschalter [Stk]"}}
+          "+BoreDiameter": {unit: "mm", valueType: xs:double, value: 32, description: {en: "Bore diameter (nominal)", de: "Bohrungsdurchmesser (Nennmaß)"}}
+          "+ToleranceClass": {value: "H9 (ISO 286-2)", description: {en: "Tolerance class of the bore", de: "Toleranzklasse der Bohrung"}}
+          "+Length": {unit: "mm", valueType: xs:double, value: 126, description: {en: "Cut length", de: "Schnittlänge"}}
+          "+ProfileWidth": {unit: "mm", valueType: xs:double, value: 44, description: {en: "Profile width across flats", de: "Profilbreite über Flächen"}}
+          "+BoreRoughnessRa": {unit: "µm", valueType: xs:double, value: 0.2, description: {en: "Maximum bore surface roughness Ra", de: "Maximale Rauheit der Bohrung Ra"}}
+          "+AnodicLayerThickness": {unit: "µm", valueType: xs:double, value: 15, description: {en: "Anodic oxide layer thickness", de: "Dicke der Eloxalschicht"}}
+          "+SensorSlots": {valueType: xs:unsignedInt, value: 2, description: {en: "Number of T-slots for proximity sensors", de: "Anzahl T-Nuten für Näherungsschalter"}}
           "+Material": {value: "EN AW-6063 T6, anodised", description: {en: Material, de: Werkstoff}}
-          "+Mass": {valueType: xs:double, value: 0.200, description: {en: "Mass [kg]", de: "Masse [kg]"}}
+          "+Mass": {unit: "kg", valueType: xs:double, value: 0.200, description: {en: "Mass", de: "Masse"}}
   - template: CarbonFootprint-1.0
     values:
       ProductCarbonFootprints:

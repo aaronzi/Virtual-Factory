@@ -35,6 +35,21 @@ static func children(element: Dictionary) -> Array:
 	return []
 
 
+static func semantic_id(element: Dictionary) -> String:
+	var keys: Array = element.get("semanticId", {}).get("keys", []) if element.get("semanticId") is Dictionary \
+		else []
+	return keys[0].get("value", "") if not keys.is_empty() else ""
+
+
+## Semantic ids of all Properties / Ranges below `elements` (for unit lookup).
+static func value_semantic_ids(elements: Array, out: Dictionary = {}) -> Dictionary:
+	for element: Dictionary in elements:
+		if element.get("modelType") in ["Property", "Range"] and semantic_id(element) != "":
+			out[semantic_id(element)] = true
+		value_semantic_ids(children(element), out)
+	return out
+
+
 static func value_text(element: Dictionary, lang: String) -> String:
 	var v: Variant = element.get("value")
 	match element.get("modelType", ""):

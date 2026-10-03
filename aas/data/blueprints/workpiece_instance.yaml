@@ -67,8 +67,8 @@ submodels:
               ProductParameters:
                 "+SerialNumber": {value: PC3280-2026-000123, description: {en: "Serial number assigned at process start", de: "Bei Prozessstart vergebene Seriennummer"}}
               ProcessParameters:
-                "+TighteningTorque": {valueType: xs:double, value: 8.06, description: {en: "Final tightening torque [N·m]", de: "Endanzugsmoment [N·m]"}}
-                "+FinalAngle": {valueType: xs:double, value: 42, description: {en: "Rotation angle after threshold torque [°]", de: "Drehwinkel nach Schwellmoment [°]"}}
+                "+TighteningTorque": {unit: "N·m", valueType: xs:double, value: 8.06, description: {en: "Final tightening torque", de: "Endanzugsmoment"}}
+                "+FinalAngle": {unit: "°", valueType: xs:double, value: 42, description: {en: "Rotation angle after threshold torque", de: "Drehwinkel nach Schwellmoment"}}
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
               ProcessBoM:
@@ -87,8 +87,8 @@ submodels:
               PlannedProcessTime: PT1.5S
               ProductParameters: {}
               ProcessParameters:
-                "+GreaseQuantity": {valueType: xs:double, value: 0.15, description: {en: "Dispensed grease quantity [g]", de: "Dosierte Fettmenge [g]"}}
-                "+SealsFitted": {valueType: xs:unsignedInt, value: 8, description: {en: "Seals and O-rings fitted [pcs]", de: "Eingesetzte Dichtungen und O-Ringe [Stk]"}}
+                "+GreaseQuantity": {unit: "g", valueType: xs:double, value: 0.15, description: {en: "Dispensed grease quantity", de: "Dosierte Fettmenge"}}
+                "+SealsFitted": {valueType: xs:unsignedInt, value: 8, description: {en: "Seals and O-rings fitted", de: "Eingesetzte Dichtungen und O-Ringe"}}
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
               ProcessBoM:
@@ -106,7 +106,7 @@ submodels:
               PlannedProcessTime: PT1.5S
               ProductParameters: {}
               ProcessParameters:
-                "+InsertionForcePeak": {valueType: xs:double, value: 132, description: {en: "Peak insertion force [N]", de: "Maximale Einschubkraft [N]"}}
+                "+InsertionForcePeak": {unit: "N", valueType: xs:double, value: 132, description: {en: "Peak insertion force", de: "Maximale Einschubkraft"}}
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
               ProcessBoM:
@@ -124,8 +124,8 @@ submodels:
               PlannedProcessTime: PT2.5S
               ProductParameters: {}
               ProcessParameters:
-                "+TighteningTorqueMin": {valueType: xs:double, value: 5.96, description: {en: "Lowest final torque of the 8 screws [N·m]", de: "Kleinstes Endanzugsmoment der 8 Schrauben [N·m]"}}
-                "+TighteningTorqueMax": {valueType: xs:double, value: 6.08, description: {en: "Highest final torque of the 8 screws [N·m]", de: "Größtes Endanzugsmoment der 8 Schrauben [N·m]"}}
+                "+TighteningTorqueMin": {unit: "N·m", valueType: xs:double, value: 5.96, description: {en: "Lowest final torque of the 8 screws", de: "Kleinstes Endanzugsmoment der 8 Schrauben"}}
+                "+TighteningTorqueMax": {unit: "N·m", valueType: xs:double, value: 6.08, description: {en: "Highest final torque of the 8 screws", de: "Größtes Endanzugsmoment der 8 Schrauben"}}
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
               ProcessBoM:
@@ -146,11 +146,11 @@ submodels:
               PlannedProcessTime: PT2S
               ProductParameters: {}
               ProcessParameters:
-                "+TestPressure": {valueType: xs:double, value: 6.02, description: {en: "Actual test pressure (gauge) [bar]", de: "Tatsächlicher Prüfdruck (Überdruck) [bar]"}}
-                "+PressureDecay": {valueType: xs:double, value: 5.1, description: {en: "Pressure decay during the measurement time [Pa]", de: "Druckabfall während der Messzeit [Pa]"}}
+                "+TestPressure": {unit: "bar", valueType: xs:double, value: 6.02, description: {en: "Actual test pressure (gauge)", de: "Tatsächlicher Prüfdruck (Überdruck)"}}
+                "+PressureDecay": {unit: "Pa", valueType: xs:double, value: 5.1, description: {en: "Pressure decay during the measurement time", de: "Druckabfall während der Messzeit"}}
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
-                "+MeasuredLeakRate": {valueType: xs:double, value: 0.38, description: {en: "Measured leak rate [cm³/min] (limit 1.0)", de: "Gemessene Leckrate [cm³/min] (Grenzwert 1,0)"}}
+                "+MeasuredLeakRate": {unit: "cm³/min", valueType: xs:double, value: 0.38, description: {en: "Measured leak rate (limit 1.0)", de: "Gemessene Leckrate (Grenzwert 1,0)"}}
               ProcessBoM: {}
               ProcessStatus: Completed
               ProcessResult: OK
@@ -170,11 +170,11 @@ submodels:
               PlannedProcessTime: PT1.5S
               ProductParameters: {}
               ProcessParameters:
-                "+SupplyPressure": {valueType: xs:double, value: 6.01, description: {en: "Actual supply pressure (gauge) [bar]", de: "Tatsächlicher Versorgungsdruck (Überdruck) [bar]"}}
+                "+SupplyPressure": {unit: "bar", valueType: xs:double, value: 6.01, description: {en: "Actual supply pressure (gauge)", de: "Tatsächlicher Versorgungsdruck (Überdruck)"}}
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
-                "+MeasuredStrokeTimeAdvance": {valueType: xs:double, value: 0.321, description: {en: "Measured stroke time, advancing [s] (limits 0.28-0.36)", de: "Gemessene Hubzeit, Vorhub [s] (Grenzen 0,28-0,36)"}}
-                "+MeasuredStrokeTimeRetract": {valueType: xs:double, value: 0.302, description: {en: "Measured stroke time, retracting [s] (limits 0.28-0.36)", de: "Gemessene Hubzeit, Rückhub [s] (Grenzen 0,28-0,36)"}}
+                "+MeasuredStrokeTimeAdvance": {unit: "s", valueType: xs:double, value: 0.321, description: {en: "Measured stroke time, advancing (limits 0.28-0.36)", de: "Gemessene Hubzeit, Vorhub (Grenzen 0,28-0,36)"}}
+                "+MeasuredStrokeTimeRetract": {unit: "s", valueType: xs:double, value: 0.302, description: {en: "Measured stroke time, retracting (limits 0.28-0.36)", de: "Gemessene Hubzeit, Rückhub (Grenzen 0,28-0,36)"}}
               ProcessBoM: {}
               ProcessStatus: Completed
               ProcessResult: OK
@@ -193,7 +193,7 @@ submodels:
               ProductParameters:
                 "+CapVariant": {value: "red (RAL 3020)", description: {en: "Fitted cap variant", de: "Aufgesetzte Kappenvariante"}}
               ProcessParameters:
-                "+PressOnForcePeak": {valueType: xs:double, value: 31, description: {en: "Peak press-on force [N]", de: "Maximale Aufdrückkraft [N]"}}
+                "+PressOnForcePeak": {unit: "N", valueType: xs:double, value: 31, description: {en: "Peak press-on force", de: "Maximale Aufdrückkraft"}}
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
               ProcessBoM:
@@ -211,7 +211,7 @@ submodels:
               PlannedProcessTime: PT11S
               ProductParameters: {}
               ProcessParameters:
-                "+BeltSpeed": {valueType: xs:double, value: 0.25, description: {en: "Actual belt speed [m/s]", de: "Tatsächliche Bandgeschwindigkeit [m/s]"}}
+                "+BeltSpeed": {unit: "m/s", valueType: xs:double, value: 0.25, description: {en: "Actual belt speed", de: "Tatsächliche Bandgeschwindigkeit"}}
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:CV01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
               ProcessBoM: {}
@@ -228,10 +228,10 @@ submodels:
               PlannedProcessTime: PT0.5S
               ProductParameters: {}
               ProcessParameters:
-                "+DeltaE76Max": {valueType: xs:double, value: 25, description: {en: "Applied limit ΔE*ab (CIE76) [-]", de: "Angewandter Grenzwert ΔE*ab (CIE76) [-]"}}
+                "+DeltaE76Max": {valueType: xs:double, value: 25, description: {en: "Applied limit ΔE*ab (CIE76)", de: "Angewandter Grenzwert ΔE*ab (CIE76)"}}
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:QS01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
-                "+MeasuredDeltaE76": {valueType: xs:double, value: 3.1, description: {en: "Measured colour difference ΔE*ab (CIE76) [-]", de: "Gemessener Farbabstand ΔE*ab (CIE76) [-]"}}
+                "+MeasuredDeltaE76": {valueType: xs:double, value: 3.1, description: {en: "Measured colour difference ΔE*ab (CIE76)", de: "Gemessener Farbabstand ΔE*ab (CIE76)"}}
                 "+MeasuredColourLab": {value: "L* 43.9, a* 62.1, b* 45.2", description: {en: "Measured colour in CIELAB (D65/2°)", de: "Gemessene Farbe in CIELAB (D65/2°)"}}
               ProcessBoM: {}
               ProcessStatus: Completed
@@ -248,10 +248,10 @@ submodels:
               ProductParameters: {}
               ProcessParameters:
                 "+Destination": {valueType: xs:anyURI, value: "${aas:KLTA01}", description: {en: "Destination container (AAS identifier)", de: "Zielbehälter (AAS-Kennung)"}}
-                "+Slot": {valueType: xs:unsignedInt, value: 6, description: {en: "Slot in the destination container [1..12]", de: "Fach im Zielbehälter [1..12]"}}
+                "+Slot": {unit: "1..12", valueType: xs:unsignedInt, value: 6, description: {en: "Slot in the destination container", de: "Fach im Zielbehälter"}}
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:RB01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
-                "+GripForce": {valueType: xs:double, value: 40, description: {en: "Applied gripping force [N]", de: "Angewandte Greifkraft [N]"}}
+                "+GripForce": {unit: "N", valueType: xs:double, value: 40, description: {en: "Applied gripping force", de: "Angewandte Greifkraft"}}
               ProcessBoM: {}
               ProcessStatus: Completed
               ProcessResult: OK

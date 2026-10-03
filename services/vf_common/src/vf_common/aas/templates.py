@@ -115,7 +115,7 @@ def _element(e: dict, tname: str, ver: str, rev: str, cds: list[dict]) -> dict:
         el["supplementalSemanticIds"] = [_ref(s) for s in e["supplementalSemanticIds"]]
     _type_fields(el, e, mt, tname, ver, rev, cds)
     if not e.get("semanticId") and sem not in {c["id"] for c in cds}:
-        cds.append(_concept_description(sem, e, mt))
+        cds.append(concept_description(sem, e, mt))
     return el
 
 
@@ -153,7 +153,9 @@ def _type_fields(el: dict, e: dict, mt: str, tname: str, ver: str, rev: str, cds
                 el[field] = [{"value": var} for var in variables]
 
 
-def _concept_description(cd_id: str, e: dict, mt: str) -> dict:
+def concept_description(cd_id: str, e: dict, mt: str) -> dict:
+    """IEC 61360 concept description from an element spec (idShort, preferredName, definition, valueType,
+    unit)."""
     content = {"modelType": "DataSpecificationIec61360",
                "preferredName": mlp_value(e.get("preferredName") or {"en": e["idShort"]}),
                "definition": mlp_value(e.get("definition") or e.get("preferredName") or e["idShort"])}
@@ -162,15 +164,18 @@ def _concept_description(cd_id: str, e: dict, mt: str) -> dict:
         content["shortName"] = mlp_value({"en": short})
     if mt == "Property":
         content["dataType"] = DATA_TYPES.get(e.get("valueType", "xs:string"), "STRING")
-        if e.get("valueType") in ("xs:int", "xs:integer", "xs:long") and e.get("unit"):
+        integer = ("xs:int", "xs:integer", "xs:long", "xs:unsignedInt", "xs:short")
+        if e.get("valueType") in integer and e.get("unit"):
             content["dataType"] = "INTEGER_MEASURE"
         if e.get("valueType") in ("xs:double", "xs:float") and not e.get("unit"):
             content["dataType"] = "REAL_COUNT"
     elif mt == "MultiLanguageProperty":
         content["dataType"] = "STRING_TRANSLATABLE"
+    elif mt == "Range":
+        content["dataType"] = "REAL_MEASURE" if e.get("unit") else "REAL_COUNT"
     elif mt == "File":
         content["dataType"] = "FILE"
-    if e.get("unit"):
+    if e.get("unit") and mt in ("Property", "Range"):
         content["unit"] = e["unit"]
     if e.get("valueFormat"):
         content["valueFormat"] = e["valueFormat"]

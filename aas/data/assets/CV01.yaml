@@ -62,39 +62,39 @@ submodels:
         - _idShort: TechnicalProperties
           Section:
             - _idShort: Mechanical
-              "+ConveyorLength": {valueType: xs:double, value: 3.0, description: {en: "Conveyor length, drum centre to drum centre [m]", de: "Förderlänge, Trommelmitte bis Trommelmitte [m]"}}
-              "+BeltWidth": {valueType: xs:double, value: 300, description: {en: "Belt width [mm]", de: "Gurtbreite [mm]"}}
-              "+WorkingHeight": {valueType: xs:double, value: 850, description: {en: "Working height floor to belt top, adjustable ±50 mm [mm]", de: "Arbeitshöhe Boden bis Gurtoberkante, einstellbar ±50 mm [mm]"}}
-              "+GuideGap": {valueType: xs:double, value: 80, description: {en: "Clear width between the side guides, adjustable [mm]", de: "Lichte Weite zwischen den Seitenführungen, einstellbar [mm]"}}
-              "+DrumDiameter": {valueType: xs:double, value: 50, description: {en: "Drive and deflection drum diameter [mm]", de: "Durchmesser Antriebs- und Umlenktrommel [mm]"}}
+              "+ConveyorLength": {unit: "m", valueType: xs:double, value: 3.0, description: {en: "Conveyor length, drum centre to drum centre", de: "Förderlänge, Trommelmitte bis Trommelmitte"}}
+              "+BeltWidth": {unit: "mm", valueType: xs:double, value: 300, description: {en: "Belt width", de: "Gurtbreite"}}
+              "+WorkingHeight": {unit: "mm", valueType: xs:double, value: 850, description: {en: "Working height floor to belt top, adjustable ±50 mm", de: "Arbeitshöhe Boden bis Gurtoberkante, einstellbar ±50 mm"}}
+              "+GuideGap": {unit: "mm", valueType: xs:double, value: 80, description: {en: "Clear width between the side guides, adjustable", de: "Lichte Weite zwischen den Seitenführungen, einstellbar"}}
+              "+DrumDiameter": {unit: "mm", valueType: xs:double, value: 50, description: {en: "Drive and deflection drum diameter", de: "Durchmesser Antriebs- und Umlenktrommel"}}
               "+Frame": {modelType: MultiLanguageProperty, value: {en: "Anodised aluminium profile 40 × 80 mm, steel supports with levelling feet", de: "Eloxiertes Aluminiumprofil 40 × 80 mm, Stahlstützen mit Stellfüßen"}, description: {en: Frame, de: Gestell}}
-              "+Mass": {valueType: xs:double, value: 68, description: {en: "Net mass incl. drive [kg]", de: "Nettomasse inkl. Antrieb [kg]"}}
+              "+Mass": {unit: "kg", valueType: xs:double, value: 68, description: {en: "Net mass incl. drive", de: "Nettomasse inkl. Antrieb"}}
             - _idShort: Belt
               "+BeltMaterial": {modelType: MultiLanguageProperty, value: {en: "PVC, 2-ply polyester fabric, smooth top, green", de: "PVC, 2-lagiges Polyestergewebe, glatte Oberseite, grün"}, description: {en: Belt type, de: Gurttyp}}
-              "+BeltThickness": {valueType: xs:double, value: 2.0, description: {en: "Belt thickness [mm]", de: "Gurtdicke [mm]"}}
+              "+BeltThickness": {unit: "mm", valueType: xs:double, value: 2.0, description: {en: "Belt thickness", de: "Gurtdicke"}}
               "+BeltJoint": {value: "Endless, finger splice (hot vulcanised)", description: {en: Belt joint, de: Gurtverbindung}}
               "+BeltTensioning": {value: "Screw take-up at deflection drum, take-up travel 40 mm", description: {en: Belt tensioning, de: Gurtspannung}}
             - _idShort: Performance
-              "+SpeedMin": {valueType: xs:double, value: 0.0, description: {en: "Minimum belt speed [m/s]", de: "Minimale Gurtgeschwindigkeit [m/s]"}}
-              "+SpeedMax": {valueType: xs:double, value: 0.5, description: {en: "Maximum belt speed [m/s]", de: "Maximale Gurtgeschwindigkeit [m/s]"}}
-              "+SpeedNominal": {valueType: xs:double, value: 0.25, description: {en: "Belt speed setpoint in LINE01 [m/s]", de: "Gurtgeschwindigkeitssollwert in LINE01 [m/s]"}}
-              "+Acceleration": {valueType: xs:double, value: 0.8, description: {en: "Acceleration/deceleration ramp of the VFD [m/s²]", de: "Beschleunigungs-/Verzögerungsrampe des Frequenzumrichters [m/s²]"}}
-              "+MaxLoadPerMetre": {valueType: xs:double, value: 10, description: {en: "Maximum distributed load [kg/m]", de: "Maximale Streckenlast [kg/m]"}}
-              "+MaxTotalLoad": {valueType: xs:double, value: 30, description: {en: "Maximum total load [kg]", de: "Maximale Gesamtlast [kg]"}}
+              "+SpeedMin": {unit: "m/s", valueType: xs:double, value: 0.0, description: {en: "Minimum belt speed", de: "Minimale Gurtgeschwindigkeit"}}
+              "+SpeedMax": {unit: "m/s", valueType: xs:double, value: 0.5, description: {en: "Maximum belt speed", de: "Maximale Gurtgeschwindigkeit"}}
+              "+SpeedNominal": {unit: "m/s", valueType: xs:double, value: 0.25, description: {en: "Belt speed setpoint in LINE01", de: "Gurtgeschwindigkeitssollwert in LINE01"}}
+              "+Acceleration": {unit: "m/s²", valueType: xs:double, value: 0.8, description: {en: "Acceleration/deceleration ramp of the VFD", de: "Beschleunigungs-/Verzögerungsrampe des Frequenzumrichters"}}
+              "+MaxLoadPerMetre": {unit: "kg/m", valueType: xs:double, value: 10, description: {en: "Maximum distributed load", de: "Maximale Streckenlast"}}
+              "+MaxTotalLoad": {unit: "kg", valueType: xs:double, value: 30, description: {en: "Maximum total load", de: "Maximale Gesamtlast"}}
               "+Reversible": {valueType: xs:boolean, value: true, description: {en: Reversible direction of travel, de: Umkehrbare Förderrichtung}}
             - _idShort: Drive
               "+MotorType": {value: "Three-phase helical-worm gear motor, IE3", description: {en: Motor type, de: Motortyp}}
-              "+MotorRatedPower": {valueType: xs:double, value: 0.18, description: {en: "Motor rated power [kW]", de: "Motor-Bemessungsleistung [kW]"}}
-              "+MotorRatedVoltage": {valueType: xs:double, value: 400, description: {en: "Motor rated voltage, 3~ [V]", de: "Motor-Bemessungsspannung, 3~ [V]"}}
-              "+MotorRatedCurrent": {valueType: xs:double, value: 0.55, description: {en: "Motor rated current [A]", de: "Motor-Bemessungsstrom [A]"}}
+              "+MotorRatedPower": {unit: "kW", valueType: xs:double, value: 0.18, description: {en: "Motor rated power", de: "Motor-Bemessungsleistung"}}
+              "+MotorRatedVoltage": {unit: "V", valueType: xs:double, value: 400, description: {en: "Motor rated voltage, 3~", de: "Motor-Bemessungsspannung, 3~"}}
+              "+MotorRatedCurrent": {unit: "A", valueType: xs:double, value: 0.55, description: {en: "Motor rated current", de: "Motor-Bemessungsstrom"}}
               "+GearRatio": {valueType: xs:double, value: 14.5, description: {en: Gear ratio, de: Getriebeübersetzung}}
               "+FrequencyInverter": {value: "0.25 kW, 3 × 400 V, 0-87 Hz, integrated STO", description: {en: Variable frequency drive, de: Frequenzumrichter}}
-              "+StandbyPower": {valueType: xs:double, value: 8, description: {en: "Standby power of the VFD [W]", de: "Standby-Leistung des Frequenzumrichters [W]"}}
+              "+StandbyPower": {unit: "W", valueType: xs:double, value: 8, description: {en: "Standby power of the VFD", de: "Standby-Leistung des Frequenzumrichters"}}
               "+MotorDegreeOfProtection": {value: IP55, description: {en: "Degree of protection of the gear motor (IEC 60529)", de: "Schutzart des Getriebemotors (IEC 60529)"}}
             - _idShort: Environment
-              "+AmbientTemperatureMin": {valueType: xs:double, value: 5, description: {en: "Minimum ambient temperature [°C]", de: "Minimale Umgebungstemperatur [°C]"}}
-              "+AmbientTemperatureMax": {valueType: xs:double, value: 40, description: {en: "Maximum ambient temperature [°C]", de: "Maximale Umgebungstemperatur [°C]"}}
-              "+EmissionSoundPressureLevel": {valueType: xs:double, value: 58, description: {en: "A-weighted emission sound pressure level at 1 m [dB(A)]", de: "A-bewerteter Emissionsschalldruckpegel in 1 m Abstand [dB(A)]"}}
+              "+AmbientTemperatureMin": {unit: "°C", valueType: xs:double, value: 5, description: {en: "Minimum ambient temperature", de: "Minimale Umgebungstemperatur"}}
+              "+AmbientTemperatureMax": {unit: "°C", valueType: xs:double, value: 40, description: {en: "Maximum ambient temperature", de: "Maximale Umgebungstemperatur"}}
+              "+EmissionSoundPressureLevel": {unit: "dB(A)", valueType: xs:double, value: 58, description: {en: "A-weighted emission sound pressure level at 1 m", de: "A-bewerteter Emissionsschalldruckpegel in 1 m Abstand"}}
       FurtherInformation:
         TextStatement:
           - {en: "Pinch points at the drums are covered by fixed guards; the conveyor is stopped via STO of the VFD by the line safety circuit.", de: "Einzugsstellen an den Trommeln sind durch feste Schutzeinrichtungen abgedeckt; das Band wird über STO des Frequenzumrichters vom Sicherheitskreis der Linie stillgesetzt."}

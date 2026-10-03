@@ -43,33 +43,33 @@ submodels:
             - _idShort: General
               "+Standard": {value: ISO 15552, description: {en: "Dimensional standard", de: "Maßnorm"}}
               "+DesignType": {value: "profile cylinder, double-acting", description: {en: "Design type", de: "Bauart"}}
-              "+PistonBore": {valueType: xs:double, value: 32, description: {en: "Piston diameter [mm]", de: "Kolbendurchmesser [mm]"}}
-              "+Stroke": {valueType: xs:double, value: 80, description: {en: "Stroke [mm]", de: "Hub [mm]"}}
-              "+PistonRodDiameter": {valueType: xs:double, value: 12, description: {en: "Piston rod diameter [mm]", de: "Kolbenstangendurchmesser [mm]"}}
+              "+PistonBore": {unit: "mm", valueType: xs:double, value: 32, description: {en: "Piston diameter", de: "Kolbendurchmesser"}}
+              "+Stroke": {unit: "mm", valueType: xs:double, value: 80, description: {en: "Stroke", de: "Hub"}}
+              "+PistonRodDiameter": {unit: "mm", valueType: xs:double, value: 12, description: {en: "Piston rod diameter", de: "Kolbenstangendurchmesser"}}
               "+PistonRodThread": {value: M10x1.25, description: {en: "Piston rod thread (male)", de: "Kolbenstangengewinde (außen)"}}
               "+PneumaticConnection": {value: G1/8, description: {en: "Pneumatic connection (ISO 228-1)", de: "Pneumatischer Anschluss (ISO 228-1)"}}
               "+PositionSensing": {value: "magnetic piston for proximity sensors in T-slot", description: {en: "Position sensing", de: "Positionserfassung"}}
               "+MountingPosition": {value: any, description: {en: "Mounting position", de: "Einbaulage"}}
             - _idShort: Pneumatics
               "+OperatingMedium": {value: "compressed air ISO 8573-1:2010 [7:4:4]", description: {en: "Operating medium", de: "Betriebsmedium"}}
-              "+OperatingPressureMin": {valueType: xs:double, value: 1, description: {en: "Minimum operating pressure [bar]", de: "Minimaler Betriebsdruck [bar]"}}
-              "+OperatingPressureMax": {valueType: xs:double, value: 10, description: {en: "Maximum operating pressure [bar]", de: "Maximaler Betriebsdruck [bar]"}}
-              "+TheoreticalForceAdvance": {valueType: xs:double, value: 482, description: {en: "Theoretical force at 6 bar, advancing stroke [N]", de: "Theoretische Kraft bei 6 bar, Vorhub [N]"}}
-              "+TheoreticalForceRetract": {valueType: xs:double, value: 414, description: {en: "Theoretical force at 6 bar, return stroke [N]", de: "Theoretische Kraft bei 6 bar, Rückhub [N]"}}
+              "+OperatingPressureMin": {unit: "bar", valueType: xs:double, value: 1, description: {en: "Minimum operating pressure", de: "Minimaler Betriebsdruck"}}
+              "+OperatingPressureMax": {unit: "bar", valueType: xs:double, value: 10, description: {en: "Maximum operating pressure", de: "Maximaler Betriebsdruck"}}
+              "+TheoreticalForceAdvance": {unit: "N", valueType: xs:double, value: 482, description: {en: "Theoretical force at 6 bar, advancing stroke", de: "Theoretische Kraft bei 6 bar, Vorhub"}}
+              "+TheoreticalForceRetract": {unit: "N", valueType: xs:double, value: 414, description: {en: "Theoretical force at 6 bar, return stroke", de: "Theoretische Kraft bei 6 bar, Rückhub"}}
               "+Cushioning": {value: "pneumatic, adjustable at both ends", description: {en: "End-position cushioning", de: "Endlagendämpfung"}}
-              "+CushioningLength": {valueType: xs:double, value: 17, description: {en: "Cushioning length [mm]", de: "Dämpfungslänge [mm]"}}
-              "+CushioningEnergyMax": {valueType: xs:double, value: 0.4, description: {en: "Maximum cushioning energy [J]", de: "Maximale Dämpfungsenergie [J]"}}
-              "+PistonSpeedMax": {valueType: xs:double, value: 1.0, description: {en: "Maximum piston speed [m/s]", de: "Maximale Kolbengeschwindigkeit [m/s]"}}
+              "+CushioningLength": {unit: "mm", valueType: xs:double, value: 17, description: {en: "Cushioning length", de: "Dämpfungslänge"}}
+              "+CushioningEnergyMax": {unit: "J", valueType: xs:double, value: 0.4, description: {en: "Maximum cushioning energy", de: "Maximale Dämpfungsenergie"}}
+              "+PistonSpeedMax": {unit: "m/s", valueType: xs:double, value: 1.0, description: {en: "Maximum piston speed", de: "Maximale Kolbengeschwindigkeit"}}
               "+Lubrication": {value: "lifetime-lubricated; operation with oil-free air permitted", description: {en: "Lubrication", de: "Schmierung"}}
             - _idShort: Mechanics
-              "+Mass": {valueType: xs:double, value: 0.59, description: {en: "Mass incl. protective cap [kg]", de: "Masse inkl. Schutzkappe [kg]"}}
-              "+OverallLengthL8": {valueType: xs:double, value: 174, description: {en: "Overall length L8 without piston rod (ISO 15552) [mm]", de: "Baulänge L8 ohne Kolbenstange (ISO 15552) [mm]"}}
-              "+PistonRodExtensionWH": {valueType: xs:double, value: 26, description: {en: "Piston rod extension WH (ISO 15552) [mm]", de: "Kolbenstangenüberstand WH (ISO 15552) [mm]"}}
+              "+Mass": {unit: "kg", valueType: xs:double, value: 0.59, description: {en: "Mass incl. protective cap", de: "Masse inkl. Schutzkappe"}}
+              "+OverallLengthL8": {unit: "mm", valueType: xs:double, value: 174, description: {en: "Overall length L8 without piston rod (ISO 15552)", de: "Baulänge L8 ohne Kolbenstange (ISO 15552)"}}
+              "+PistonRodExtensionWH": {unit: "mm", valueType: xs:double, value: 26, description: {en: "Piston rod extension WH (ISO 15552)", de: "Kolbenstangenüberstand WH (ISO 15552)"}}
               "+MountingThread": {value: M6, description: {en: "Mounting thread in end caps", de: "Befestigungsgewinde in den Deckeln"}}
-              "+MountingHolePitchTG": {valueType: xs:double, value: 32.5, description: {en: "Mounting hole pitch TG (ISO 15552) [mm]", de: "Lochabstand TG (ISO 15552) [mm]"}}
+              "+MountingHolePitchTG": {unit: "mm", valueType: xs:double, value: 32.5, description: {en: "Mounting hole pitch TG (ISO 15552)", de: "Lochabstand TG (ISO 15552)"}}
             - _idShort: Environment
-              "+AmbientTemperatureMin": {valueType: xs:double, value: -20, description: {en: "Minimum ambient and medium temperature [°C]", de: "Minimale Umgebungs- und Mediumstemperatur [°C]"}}
-              "+AmbientTemperatureMax": {valueType: xs:double, value: 80, description: {en: "Maximum ambient and medium temperature [°C]", de: "Maximale Umgebungs- und Mediumstemperatur [°C]"}}
+              "+AmbientTemperatureMin": {unit: "°C", valueType: xs:double, value: -20, description: {en: "Minimum ambient and medium temperature", de: "Minimale Umgebungs- und Mediumstemperatur"}}
+              "+AmbientTemperatureMax": {unit: "°C", valueType: xs:double, value: 80, description: {en: "Maximum ambient and medium temperature", de: "Maximale Umgebungs- und Mediumstemperatur"}}
               "+PwisFree": {valueType: xs:boolean, value: true, description: {en: "Free of paint-wetting impairment substances (PWIS)", de: "Frei von lackbenetzungsstörenden Substanzen (LABS)"}}
             - _idShort: Materials
               "+MaterialBarrel": {value: "EN AW-6063 T6, anodised", description: {en: "Material of the barrel", de: "Werkstoff des Zylinderrohrs"}}
@@ -195,90 +195,90 @@ submodels:
             ProcessDescription: {en: "Screw the piston with magnet ring onto the piston rod spigot and tighten with thread locker.", de: "Kolben mit Magnetring auf den Kolbenstangenzapfen schrauben und mit Schraubensicherung anziehen."}
             PlannedProcessTime: PT2S
             ProductParameters:
-              "+PistonTighteningTorque": {valueType: xs:double, value: 8.0, description: {en: "Tightening torque piston on rod [N·m]", de: "Anzugsmoment Kolben auf Kolbenstange [N·m]"}}
+              "+PistonTighteningTorque": {unit: "N·m", valueType: xs:double, value: 8.0, description: {en: "Tightening torque piston on rod", de: "Anzugsmoment Kolben auf Kolbenstange"}}
               "+ThreadLocking": {value: "anaerobic thread locker, medium strength", description: {en: "Thread locking of the piston thread", de: "Sicherung des Kolbengewindes"}}
             ProcessParameters:
-              "+TorqueTolerance": {valueType: xs:double, value: 0.5, description: {en: "Permitted torque deviation (±) [N·m]", de: "Zulässige Drehmomentabweichung (±) [N·m]"}}
-              "+FinalAngleWindowMin": {valueType: xs:double, value: 10, description: {en: "Minimum final rotation angle after threshold torque [°]", de: "Minimaler Drehwinkel nach Schwellmoment [°]"}}
-              "+FinalAngleWindowMax": {valueType: xs:double, value: 90, description: {en: "Maximum final rotation angle after threshold torque [°]", de: "Maximaler Drehwinkel nach Schwellmoment [°]"}}
+              "+TorqueTolerance": {unit: "N·m", valueType: xs:double, value: 0.5, description: {en: "Permitted torque deviation (±)", de: "Zulässige Drehmomentabweichung (±)"}}
+              "+FinalAngleWindowMin": {unit: "°", valueType: xs:double, value: 10, description: {en: "Minimum final rotation angle after threshold torque", de: "Minimaler Drehwinkel nach Schwellmoment"}}
+              "+FinalAngleWindowMax": {unit: "°", valueType: xs:double, value: 90, description: {en: "Maximum final rotation angle after threshold torque", de: "Maximaler Drehwinkel nach Schwellmoment"}}
             ResourceParameters:
               "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/AssembleCylinder", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
               "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
-              "+NutrunnerTorqueRangeMax": {valueType: xs:double, value: 12, description: {en: "Minimum required nutrunner capacity [N·m]", de: "Mindestens erforderlicher Schraubermessbereich [N·m]"}}
+              "+NutrunnerTorqueRangeMax": {unit: "N·m", valueType: xs:double, value: 12, description: {en: "Minimum required nutrunner capacity", de: "Mindestens erforderlicher Schraubermessbereich"}}
             ProcessBoM:
-              "+PistonRod": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_PISTON_ROD}", specificAssetIds: [{name: customerPartId, value: "5032-1004"}], description: {en: Piston rod, de: Kolbenstange}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
-              "+Piston": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_PISTON}", specificAssetIds: [{name: customerPartId, value: "5032-1005"}], description: {en: Piston with magnet ring, de: Kolben mit Magnetring}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
+              "+PistonRod": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_PISTON_ROD}", specificAssetIds: [{name: customerPartId, value: "5032-1004"}], description: {en: Piston rod, de: Kolbenstange}, statements: [{modelType: Property, idShort: Quantity, semanticId: {type: ExternalReference, keys: [{type: GlobalReference, value: "https://admin-shell.io/idta/HierarchicalStructures/BulkCount/1/0"}]}, valueType: xs:unsignedInt, value: "1"}]}
+              "+Piston": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_PISTON}", specificAssetIds: [{name: customerPartId, value: "5032-1005"}], description: {en: Piston with magnet ring, de: Kolben mit Magnetring}, statements: [{modelType: Property, idShort: Quantity, semanticId: {type: ExternalReference, keys: [{type: GlobalReference, value: "https://admin-shell.io/idta/HierarchicalStructures/BulkCount/1/0"}]}, valueType: xs:unsignedInt, value: "1"}]}
           - _idShort: OP20
             ProcessId: OP20
             ProcessName: Insert seals
             ProcessDescription: {en: "Fit piston seals, rod seal, wiper, cushioning seals and O-rings of the seal kit with assembly grease.", de: "Kolbendichtungen, Stangendichtung, Abstreifer, Dämpfungsdichtungen und O-Ringe des Dichtungssatzes mit Montagefett einsetzen."}
             PlannedProcessTime: PT1.5S
             ProductParameters:
-              "+SealsToFit": {valueType: xs:unsignedInt, value: 8, description: {en: "Number of seals and O-rings to fit [pcs]", de: "Anzahl einzusetzender Dichtungen und O-Ringe [Stk]"}}
+              "+SealsToFit": {valueType: xs:unsignedInt, value: 8, description: {en: "Number of seals and O-rings to fit", de: "Anzahl einzusetzender Dichtungen und O-Ringe"}}
               "+Grease": {value: "PWIS-free lithium-soap assembly grease", description: {en: "Assembly grease", de: "Montagefett"}}
             ProcessParameters:
-              "+GreaseQuantity": {valueType: xs:double, value: 0.15, description: {en: "Grease quantity per cylinder [g]", de: "Fettmenge je Zylinder [g]"}}
-              "+SealInsertionForceMax": {valueType: xs:double, value: 150, description: {en: "Maximum seal insertion force [N]", de: "Maximale Einpresskraft der Dichtungen [N]"}}
+              "+GreaseQuantity": {unit: "g", valueType: xs:double, value: 0.15, description: {en: "Grease quantity per cylinder", de: "Fettmenge je Zylinder"}}
+              "+SealInsertionForceMax": {unit: "N", valueType: xs:double, value: 150, description: {en: "Maximum seal insertion force", de: "Maximale Einpresskraft der Dichtungen"}}
             ResourceParameters:
               "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/AssembleCylinder", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
               "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
             ProcessBoM:
-              "+SealKit": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_SEAL_KIT}", specificAssetIds: [{name: customerPartId, value: "5032-1006"}], description: {en: Seal kit, de: Dichtungssatz}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
+              "+SealKit": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_SEAL_KIT}", specificAssetIds: [{name: customerPartId, value: "5032-1006"}], description: {en: Seal kit, de: Dichtungssatz}, statements: [{modelType: Property, idShort: Quantity, semanticId: {type: ExternalReference, keys: [{type: GlobalReference, value: "https://admin-shell.io/idta/HierarchicalStructures/BulkCount/1/0"}]}, valueType: xs:unsignedInt, value: "1"}]}
           - _idShort: OP30
             ProcessId: OP30
             ProcessName: Insert piston assembly into barrel
             ProcessDescription: {en: "Push the greased piston assembly into the barrel bore with controlled force.", de: "Gefettete Kolbenbaugruppe kraftüberwacht in die Rohrbohrung einschieben."}
             PlannedProcessTime: PT1.5S
             ProductParameters:
-              "+InsertionDepth": {valueType: xs:double, value: 105, description: {en: "Insertion depth of the piston measured from the rod-side barrel face [mm]", de: "Einschubtiefe des Kolbens ab stangenseitiger Rohrstirnfläche [mm]"}}
+              "+InsertionDepth": {unit: "mm", valueType: xs:double, value: 105, description: {en: "Insertion depth of the piston measured from the rod-side barrel face", de: "Einschubtiefe des Kolbens ab stangenseitiger Rohrstirnfläche"}}
             ProcessParameters:
-              "+InsertionForceMax": {valueType: xs:double, value: 200, description: {en: "Maximum insertion force [N]", de: "Maximale Einschubkraft [N]"}}
-              "+InsertionSpeed": {valueType: xs:double, value: 0.05, description: {en: "Insertion speed [m/s]", de: "Einschubgeschwindigkeit [m/s]"}}
+              "+InsertionForceMax": {unit: "N", valueType: xs:double, value: 200, description: {en: "Maximum insertion force", de: "Maximale Einschubkraft"}}
+              "+InsertionSpeed": {unit: "m/s", valueType: xs:double, value: 0.05, description: {en: "Insertion speed", de: "Einschubgeschwindigkeit"}}
             ResourceParameters:
               "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/AssembleCylinder", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
               "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
             ProcessBoM:
-              "+Barrel": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_BARREL}", specificAssetIds: [{name: customerPartId, value: "5032-1001"}], description: {en: Barrel, de: Zylinderrohr}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
+              "+Barrel": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_BARREL}", specificAssetIds: [{name: customerPartId, value: "5032-1001"}], description: {en: Barrel, de: Zylinderrohr}, statements: [{modelType: Property, idShort: Quantity, semanticId: {type: ExternalReference, keys: [{type: GlobalReference, value: "https://admin-shell.io/idta/HierarchicalStructures/BulkCount/1/0"}]}, valueType: xs:unsignedInt, value: "1"}]}
           - _idShort: OP40
             ProcessId: OP40
             ProcessName: Mount end caps and tighten screws
             ProcessDescription: {en: "Mount front and rear end caps with preset cushioning screws and tighten the eight M5 screws crosswise to 6 N·m.", de: "Vorder- und Hinterdeckel mit voreingestellten Dämpfungsschrauben montieren und die acht M5-Schrauben über Kreuz mit 6 N·m anziehen."}
             PlannedProcessTime: PT2.5S
             ProductParameters:
-              "+TighteningTorque": {valueType: xs:double, value: 6.0, description: {en: "Tightening torque of the end-cap screws M5 [N·m]", de: "Anzugsmoment der Deckelschrauben M5 [N·m]"}}
-              "+CushioningScrewPreset": {valueType: xs:double, value: 1.0, description: {en: "Preset opening of the cushioning screws [turns]", de: "Voreingestellte Öffnung der Dämpfungsschrauben [Umdrehungen]"}}
+              "+TighteningTorque": {unit: "N·m", valueType: xs:double, value: 6.0, description: {en: "Tightening torque of the end-cap screws M5", de: "Anzugsmoment der Deckelschrauben M5"}}
+              "+CushioningScrewPreset": {valueType: xs:double, value: 1.0, description: {en: "Preset opening of the cushioning screws", de: "Voreingestellte Öffnung der Dämpfungsschrauben"}}
             ProcessParameters:
-              "+TorqueTolerance": {valueType: xs:double, value: 0.5, description: {en: "Permitted torque deviation (±) [N·m]", de: "Zulässige Drehmomentabweichung (±) [N·m]"}}
+              "+TorqueTolerance": {unit: "N·m", valueType: xs:double, value: 0.5, description: {en: "Permitted torque deviation (±)", de: "Zulässige Drehmomentabweichung (±)"}}
               "+TighteningSequence": {value: "crosswise, two stages (3 N·m, 6 N·m)", description: {en: "Tightening sequence", de: "Anzugsreihenfolge"}}
-              "+ScrewCount": {valueType: xs:unsignedInt, value: 8, description: {en: "Number of screws [pcs]", de: "Anzahl Schrauben [Stk]"}}
+              "+ScrewCount": {valueType: xs:unsignedInt, value: 8, description: {en: "Number of screws", de: "Anzahl Schrauben"}}
             ResourceParameters:
               "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/AssembleCylinder", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
               "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
-              "+SpindleCount": {valueType: xs:unsignedInt, value: 4, description: {en: "Number of nutrunner spindles (multi-spindle) [pcs]", de: "Anzahl Schraubspindeln (Mehrfachschrauber) [Stk]"}}
+              "+SpindleCount": {valueType: xs:unsignedInt, value: 4, description: {en: "Number of nutrunner spindles (multi-spindle)", de: "Anzahl Schraubspindeln (Mehrfachschrauber)"}}
             ProcessBoM:
-              "+EndCapFront": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_ENDCAP_FRONT}", specificAssetIds: [{name: customerPartId, value: "5032-1002"}], description: {en: Front end cap, de: Vorderdeckel}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
-              "+EndCapRear": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_ENDCAP_REAR}", specificAssetIds: [{name: customerPartId, value: "5032-1003"}], description: {en: Rear end cap, de: Hinterdeckel}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
-              "+ScrewM5x16": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_SCREW_M5}", specificAssetIds: [{name: customerPartId, value: "9001-0516"}], description: {en: "Socket head cap screw ISO 4762 M5x16", de: "Zylinderschraube ISO 4762 M5x16"}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "8"}]}
-              "+CushioningScrew": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_CUSHION_SCREW}", specificAssetIds: [{name: customerPartId, value: "5032-1008"}], description: {en: Cushioning screw, de: Dämpfungsschraube}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "2"}]}
+              "+EndCapFront": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_ENDCAP_FRONT}", specificAssetIds: [{name: customerPartId, value: "5032-1002"}], description: {en: Front end cap, de: Vorderdeckel}, statements: [{modelType: Property, idShort: Quantity, semanticId: {type: ExternalReference, keys: [{type: GlobalReference, value: "https://admin-shell.io/idta/HierarchicalStructures/BulkCount/1/0"}]}, valueType: xs:unsignedInt, value: "1"}]}
+              "+EndCapRear": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_ENDCAP_REAR}", specificAssetIds: [{name: customerPartId, value: "5032-1003"}], description: {en: Rear end cap, de: Hinterdeckel}, statements: [{modelType: Property, idShort: Quantity, semanticId: {type: ExternalReference, keys: [{type: GlobalReference, value: "https://admin-shell.io/idta/HierarchicalStructures/BulkCount/1/0"}]}, valueType: xs:unsignedInt, value: "1"}]}
+              "+ScrewM5x16": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_SCREW_M5}", specificAssetIds: [{name: customerPartId, value: "9001-0516"}], description: {en: "Socket head cap screw ISO 4762 M5x16", de: "Zylinderschraube ISO 4762 M5x16"}, statements: [{modelType: Property, idShort: Quantity, semanticId: {type: ExternalReference, keys: [{type: GlobalReference, value: "https://admin-shell.io/idta/HierarchicalStructures/BulkCount/1/0"}]}, valueType: xs:unsignedInt, value: "8"}]}
+              "+CushioningScrew": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_CUSHION_SCREW}", specificAssetIds: [{name: customerPartId, value: "5032-1008"}], description: {en: Cushioning screw, de: Dämpfungsschraube}, statements: [{modelType: Property, idShort: Quantity, semanticId: {type: ExternalReference, keys: [{type: GlobalReference, value: "https://admin-shell.io/idta/HierarchicalStructures/BulkCount/1/0"}]}, valueType: xs:unsignedInt, value: "2"}]}
           - _idShort: OP50
             ProcessId: OP50
             ProcessName: Leak test
             ProcessDescription: {en: "Pressure-decay leak test of both cylinder chambers at 6 bar.", de: "Druckabfall-Dichtheitsprüfung beider Zylinderkammern bei 6 bar."}
             PlannedProcessTime: PT2S
             ProductParameters:
-              "+LeakRateMax": {valueType: xs:double, value: 1.0, description: {en: "Maximum permitted leak rate [cm³/min] (standard conditions)", de: "Maximal zulässige Leckrate [cm³/min] (Normbedingungen)"}}
+              "+LeakRateMax": {unit: "cm³/min", valueType: xs:double, value: 1.0, description: {en: "Maximum permitted leak rate (standard conditions)", de: "Maximal zulässige Leckrate (Normbedingungen)"}}
             ProcessParameters:
-              "+TestPressure": {valueType: xs:double, value: 6.0, description: {en: "Test pressure (gauge) [bar]", de: "Prüfdruck (Überdruck) [bar]"}}
+              "+TestPressure": {unit: "bar", valueType: xs:double, value: 6.0, description: {en: "Test pressure (gauge)", de: "Prüfdruck (Überdruck)"}}
               "+TestMethod": {value: "pressure decay, both chambers", description: {en: "Test method", de: "Prüfverfahren"}}
-              "+FillTime": {valueType: xs:double, value: 0.6, description: {en: "Fill time [s]", de: "Füllzeit [s]"}}
-              "+StabilisationTime": {valueType: xs:double, value: 0.6, description: {en: "Stabilisation time [s]", de: "Beruhigungszeit [s]"}}
-              "+MeasurementTime": {valueType: xs:double, value: 0.6, description: {en: "Measurement time [s]", de: "Messzeit [s]"}}
-              "+VentTime": {valueType: xs:double, value: 0.2, description: {en: "Vent time [s]", de: "Entlüftungszeit [s]"}}
+              "+FillTime": {unit: "s", valueType: xs:double, value: 0.6, description: {en: "Fill time", de: "Füllzeit"}}
+              "+StabilisationTime": {unit: "s", valueType: xs:double, value: 0.6, description: {en: "Stabilisation time", de: "Beruhigungszeit"}}
+              "+MeasurementTime": {unit: "s", valueType: xs:double, value: 0.6, description: {en: "Measurement time", de: "Messzeit"}}
+              "+VentTime": {unit: "s", valueType: xs:double, value: 0.2, description: {en: "Vent time", de: "Entlüftungszeit"}}
               "+TestMedium": {value: "dry compressed air ISO 8573-1:2010 [7:4:4]", description: {en: "Test medium", de: "Prüfmedium"}}
             ResourceParameters:
               "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/LeakTest", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
               "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
-              "+LeakTesterResolution": {valueType: xs:double, value: 0.01, description: {en: "Required resolution of the leak tester [cm³/min]", de: "Erforderliche Auflösung des Dichtheitsprüfgeräts [cm³/min]"}}
+              "+LeakTesterResolution": {unit: "cm³/min", valueType: xs:double, value: 0.01, description: {en: "Required resolution of the leak tester", de: "Erforderliche Auflösung des Dichtheitsprüfgeräts"}}
             ProcessBoM: {}
           - _idShort: OP60
             ProcessId: OP60
@@ -286,16 +286,16 @@ submodels:
             ProcessDescription: {en: "Full stroke in both directions at 6 bar without load; measure the stroke times and check the cushioning.", de: "Voller Hub in beide Richtungen bei 6 bar ohne Last; Hubzeiten messen und Dämpfung prüfen."}
             PlannedProcessTime: PT1.5S
             ProductParameters:
-              "+StrokeTimeMin": {valueType: xs:double, value: 0.28, description: {en: "Minimum permitted stroke time [s]", de: "Minimal zulässige Hubzeit [s]"}}
-              "+StrokeTimeMax": {valueType: xs:double, value: 0.36, description: {en: "Maximum permitted stroke time [s]", de: "Maximal zulässige Hubzeit [s]"}}
+              "+StrokeTimeMin": {unit: "s", valueType: xs:double, value: 0.28, description: {en: "Minimum permitted stroke time", de: "Minimal zulässige Hubzeit"}}
+              "+StrokeTimeMax": {unit: "s", valueType: xs:double, value: 0.36, description: {en: "Maximum permitted stroke time", de: "Maximal zulässige Hubzeit"}}
             ProcessParameters:
-              "+SupplyPressure": {valueType: xs:double, value: 6.0, description: {en: "Supply pressure (gauge) [bar]", de: "Versorgungsdruck (Überdruck) [bar]"}}
-              "+Load": {valueType: xs:double, value: 0, description: {en: "External load [N]", de: "Externe Last [N]"}}
+              "+SupplyPressure": {unit: "bar", valueType: xs:double, value: 6.0, description: {en: "Supply pressure (gauge)", de: "Versorgungsdruck (Überdruck)"}}
+              "+Load": {unit: "N", valueType: xs:double, value: 0, description: {en: "External load", de: "Externe Last"}}
               "+Directions": {value: "advance and retract", description: {en: "Tested stroke directions", de: "Geprüfte Hubrichtungen"}}
             ResourceParameters:
               "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/FunctionTest", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
               "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
-              "+ValveFlowRate": {valueType: xs:double, value: 500, description: {en: "Standard nominal flow rate of the test valve [l/min]", de: "Normalnenndurchfluss des Prüfventils [l/min]"}}
+              "+ValveFlowRate": {unit: "l/min", valueType: xs:double, value: 500, description: {en: "Standard nominal flow rate of the test valve", de: "Normalnenndurchfluss des Prüfventils"}}
             ProcessBoM: {}
           - _idShort: OP70
             ProcessId: OP70
@@ -305,12 +305,12 @@ submodels:
             ProductParameters:
               "+CapColour": {value: "red, RAL 3020 traffic red", description: {en: "Colour of the protective cap", de: "Farbe der Schutzkappe"}}
             ProcessParameters:
-              "+PressOnForceMax": {valueType: xs:double, value: 50, description: {en: "Maximum press-on force [N]", de: "Maximale Aufdrückkraft [N]"}}
+              "+PressOnForceMax": {unit: "N", valueType: xs:double, value: 50, description: {en: "Maximum press-on force", de: "Maximale Aufdrückkraft"}}
             ResourceParameters:
               "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/FitProtectiveCap", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
               "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
             ProcessBoM:
-              "+ProtectiveCap": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_PROTECTIVE_CAP}", specificAssetIds: [{name: customerPartId, value: "5032-1009"}], description: {en: Protective cap, de: Schutzkappe}, statements: [{modelType: Property, idShort: Quantity, valueType: xs:unsignedInt, value: "1"}]}
+              "+ProtectiveCap": {modelType: Entity, entityType: SelfManagedEntity, globalAssetId: "${asset:CMP_PROTECTIVE_CAP}", specificAssetIds: [{name: customerPartId, value: "5032-1009"}], description: {en: Protective cap, de: Schutzkappe}, statements: [{modelType: Property, idShort: Quantity, semanticId: {type: ExternalReference, keys: [{type: GlobalReference, value: "https://admin-shell.io/idta/HierarchicalStructures/BulkCount/1/0"}]}, valueType: xs:unsignedInt, value: "1"}]}
           - _idShort: OP75
             ProcessId: OP75
             ProcessName: Transport to inspection
@@ -319,8 +319,8 @@ submodels:
             ProductParameters:
               "+Orientation": {value: "upright, standing on the rear end cap", description: {en: "Orientation of the part on the belt", de: "Lage des Teils auf dem Gurt"}}
             ProcessParameters:
-              "+BeltSpeed": {valueType: xs:double, value: 0.25, description: {en: "Belt speed [m/s]", de: "Bandgeschwindigkeit [m/s]"}}
-              "+TransportDistance": {valueType: xs:double, value: 2.75, description: {en: "Transport distance [m]", de: "Transportweg [m]"}}
+              "+BeltSpeed": {unit: "m/s", valueType: xs:double, value: 0.25, description: {en: "Belt speed", de: "Bandgeschwindigkeit"}}
+              "+TransportDistance": {unit: "m", valueType: xs:double, value: 2.75, description: {en: "Transport distance", de: "Transportweg"}}
             ResourceParameters:
               "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/Transport", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
               "+Resource": {valueType: xs:anyURI, value: "${aas:CV01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
@@ -331,12 +331,12 @@ submodels:
             ProcessDescription: {en: "Measure the colour of the protective cap and compare it with the taught reference (CIE76 colour difference).", de: "Farbe der Schutzkappe messen und mit der eingelernten Referenz vergleichen (Farbabstand CIE76)."}
             PlannedProcessTime: PT0.5S
             ProductParameters:
-              "+ReferenceColourR": {valueType: xs:double, value: 0.78, description: {en: "Reference colour, sRGB red component [0..1]", de: "Referenzfarbe, sRGB-Rotanteil [0..1]"}}
-              "+ReferenceColourG": {valueType: xs:double, value: 0.08, description: {en: "Reference colour, sRGB green component [0..1]", de: "Referenzfarbe, sRGB-Grünanteil [0..1]"}}
-              "+ReferenceColourB": {valueType: xs:double, value: 0.10, description: {en: "Reference colour, sRGB blue component [0..1]", de: "Referenzfarbe, sRGB-Blauanteil [0..1]"}}
+              "+ReferenceColourR": {valueType: xs:double, value: 0.78, description: {en: "Reference colour, sRGB red component (0..1)", de: "Referenzfarbe, sRGB-Rotanteil (0..1)"}}
+              "+ReferenceColourG": {valueType: xs:double, value: 0.08, description: {en: "Reference colour, sRGB green component (0..1)", de: "Referenzfarbe, sRGB-Grünanteil (0..1)"}}
+              "+ReferenceColourB": {valueType: xs:double, value: 0.10, description: {en: "Reference colour, sRGB blue component (0..1)", de: "Referenzfarbe, sRGB-Blauanteil (0..1)"}}
               "+ReferenceColourLab": {value: "L* 42.3, a* 64.4, b* 46.6 (D65/2°)", description: {en: "Reference colour in CIELAB", de: "Referenzfarbe in CIELAB"}}
             ProcessParameters:
-              "+DeltaE76Max": {valueType: xs:double, value: 25, description: {en: "Maximum colour difference ΔE*ab (CIE76) [-]", de: "Maximaler Farbabstand ΔE*ab (CIE76) [-]"}}
+              "+DeltaE76Max": {valueType: xs:double, value: 25, description: {en: "Maximum colour difference ΔE*ab (CIE76)", de: "Maximaler Farbabstand ΔE*ab (CIE76)"}}
               "+MeasurementZone": {value: "protective cap, 190-235 mm above belt", description: {en: "Measurement zone", de: "Messzone"}}
             ResourceParameters:
               "+RequiredCapability": {valueType: xs:anyURI, value: "https://virtual-factory.example/ids/capability/InspectColour", description: {en: "Required capability of the resource", de: "Benötigte Fähigkeit der Ressource"}}
@@ -350,16 +350,16 @@ submodels:
             PlannedProcessTime: PT7S
             ProductParameters:
               "+GripPosition": {value: "barrel, 85 mm above the rear face", description: {en: "Grip position on the part", de: "Greifposition am Teil"}}
-              "+PartMass": {valueType: xs:double, value: 0.59, description: {en: "Part mass [kg]", de: "Teilemasse [kg]"}}
+              "+PartMass": {unit: "kg", valueType: xs:double, value: 0.59, description: {en: "Part mass", de: "Teilemasse"}}
             ProcessParameters:
-              "+KltCapacity": {valueType: xs:unsignedInt, value: 12, description: {en: "Parts per KLT [pcs]", de: "Teile je KLT [Stk]"}}
+              "+KltCapacity": {valueType: xs:unsignedInt, value: 12, description: {en: "Parts per KLT", de: "Teile je KLT"}}
               "+GoodDestination": {valueType: xs:anyURI, value: "${aas:KLTA01}", description: {en: "Destination of good parts (AAS identifier)", de: "Ziel der Gutteile (AAS-Kennung)"}}
               "+RejectDestination": {valueType: xs:anyURI, value: "${aas:KLTB01}", description: {en: "Destination of rejected parts (AAS identifier)", de: "Ziel der Schlechtteile (AAS-Kennung)"}}
             ResourceParameters:
               "+RequiredCapabilities": {value: "https://virtual-factory.example/ids/capability/PickAndPlace https://virtual-factory.example/ids/capability/Sort", description: {en: "Required capabilities of the resource (space-separated IRIs)", de: "Benötigte Fähigkeiten der Ressource (leerzeichengetrennte IRIs)"}}
               "+Resource": {valueType: xs:anyURI, value: "${aas:RB01}", description: {en: "Assigned resource (AAS identifier)", de: "Zugeordnete Ressource (AAS-Kennung)"}}
-              "+GripWidth": {valueType: xs:double, value: 44, description: {en: "Gripper jaw opening at grip [mm]", de: "Backenöffnung beim Greifen [mm]"}}
-              "+GripForce": {valueType: xs:double, value: 40, description: {en: "Gripping force [N]", de: "Greifkraft [N]"}}
+              "+GripWidth": {unit: "mm", valueType: xs:double, value: 44, description: {en: "Gripper jaw opening at grip", de: "Backenöffnung beim Greifen"}}
+              "+GripForce": {unit: "N", valueType: xs:double, value: 40, description: {en: "Gripping force", de: "Greifkraft"}}
             ProcessBoM: {}
 
   - template: ManufacturingRecipe-1.1

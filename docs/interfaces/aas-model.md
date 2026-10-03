@@ -203,6 +203,17 @@ See `services/vf_common/src/vf_common/aas/environment.py` and `instantiate.py`. 
 - Tag `SELF` in `${asset:SELF}` / `sm:SELF/...` refers to the asset being built (shared files such as
   `common/machine_klt_instance.yaml`).
 - Operations: `{_delegation: <URL>}` adds the BaSyx `invocationDelegation` qualifier (LINE01 LineControl → ops gateway).
+- Extra elements `"+Name": {valueType, value, unit, description, conceptName?, semanticId?}`: the **unit belongs in
+  `unit`, never in the description text**. Without an explicit `semanticId` the builder generates an IEC 61360
+  concept description `<ID_BASE>/cd/property/<Name>` (preferred name/definition from the description, data type
+  from the valueType, unit). One concept per name: the same name with another unit is a build error (use
+  `conceptName` to separate concepts); a name used with several value types gets one concept per type
+  (`.../property/Min/int`). Units are only allowed on numeric values (IEC 61360) - split values like "32 H9"
+  into a number (mm) and a text property (tolerance class).
+- Template semantic ids without a concept description in the IDTA library (ECLASS IRDIs of AssetLocation, the
+  generic ArbitraryProp) get a concept description derived from the template element (`TEMPLATE_UNITS` adds
+  units, e.g. ° for latitude/longitude). A test asserts that every Property/Range resolves to a concept
+  description, measures have a unit and numeric values have numeric data types.
 - `submodels: [{template: <Name-ver>, idShort?, values}]`. Values are keyed by idShort:
   - collections are maps, lists are lists
   - repeated/placeholder elements (`X__00__`) are lists, with an optional `_idShort` per item

@@ -12,7 +12,8 @@ Data is a nested dict keyed by idShort (see docs/interfaces/aas-model.md, "Asset
     Capability               {} (only "_idShort"/"_description")
     Operation                {"_delegation": "<URL>"} (BaSyx invocationDelegation qualifier) or {}
     Blob                     {"contentType": ..., "value": str | bytes | JSON object}
-    extra element            "+Name": {modelType, valueType, value, semanticId, description, ...}
+    extra element            "+Name": {modelType, valueType, value, unit, semanticId, description, ...}
+                             (no semanticId: a concept description <ID_BASE>/cd/property/<Name> is generated)
     any element              "_idShort" / "_description" / "_semanticId" override the template values
 
 Unfilled optional elements (ZeroToOne/ZeroToMany) are removed. Unfilled mandatory leaves are kept with an
@@ -28,8 +29,11 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
+from ..ids import ID_BASE
 from .values import convert_property_value, file_value, mlp_value
 
+EXTRA_META = ("semanticId", "description", "value", "unit", "conceptName")
+CONCEPT_TYPES = ("Property", "MultiLanguageProperty", "Range")
 PLACEHOLDER = re.compile(r"__\d\d__|\{\d\d\}")
 OPTIONAL = {"ZeroToOne", "ZeroToMany"}
 MULTIPLE = {"ZeroToMany", "OneToMany"}
@@ -42,6 +46,9 @@ class InstantiationResult:
     submodel: dict
     missing: list[str] = field(default_factory=list)
     unknown: list[str] = field(default_factory=list)
+    # concept descriptions to generate for extra properties:
+    # cd id -> spec {idShort, valueType, unit, description}
+    concepts: dict[str, dict] = field(default_factory=dict)
 
 
 def instantiate(template: dict, data: dict, submodel_id: str, resolver: RefResolver,
@@ -82,7 +89,7 @@ class _Ctx:
                                          f"{path}.{name}"))
         for key, value in data.items():
             if key.startswith("+"):
-                out.append(_extra_element(key[1:], value))
+                out.append(_extra_element(key[1:], value, self.result.concepts))
             elif key not in used and not key.startswith("_"):
                 self.result.unknown.append(f"{path}.{key}")
         return out
@@ -107,6 +114,8 @@ class _Ctx:
     def fill_one(self, tmpl: dict, value: Any, path: str) -> dict:
         el = copy.deepcopy(tmpl)
         el.pop("qualifiers", None)
+        for key in (el.get("semanticId") or {}).get("keys", []):
+            key["value"] = key["value"].strip()  # e.g. " 0173-1#02-ABH961#002" in AssetLocation 1.0
         if isinstance(value, dict) and "_idShort" in value:
             el["idShort"] = value["_idShort"]
         if isinstance(value, dict) and "_description" in value:
@@ -217,7 +226,7 @@ class _Ctx:
         item_tmpl = (el.get("value") or [None])[0]
         items = value if isinstance(value, list) else []
         if item_tmpl is None:
-            el["value"] = [_extra_element("", v) for v in items]
+            el["value"] = [_extra_element("", v, self.result.concepts) for v in items]
         else:
             el["value"] = [self._list_item(item_tmpl, v, f"{path}[{i}]") for i, v in enumerate(items)]
         _fix_list_value_type(el)
@@ -257,15 +266,25 @@ def _fix_list_value_type(el: dict) -> None:
         el["valueTypeListElement"] = items[0].get("valueType", "xs:string") if items else "xs:string"
 
 
-def _extra_element(id_short: str, spec: dict) -> dict:
-    """A fully specified element that is not part of the template (e.g. technical properties)."""
-    el = {k: v for k, v in spec.items() if k not in ("semanticId", "description", "value")}
+def _extra_element(id_short: str, spec: dict, concepts: dict | None = None) -> dict:
+    """A fully specified element that is not part of the template (e.g. technical properties).
+
+    Properties without an explicit semanticId get a generated concept description (unit, definition from the
+    description): `{value, valueType, unit, description, conceptName?}`; the unit never goes into the text."""
+    el = {k: v for k, v in spec.items() if k not in EXTRA_META}
     el.setdefault("modelType", "Property")
     if id_short:
         el["idShort"] = id_short
-    if spec.get("semanticId"):
+    semantic_id = spec.get("semanticId")
+    if not semantic_id and id_short and concepts is not None and el["modelType"] in CONCEPT_TYPES:
+        name = spec.get("conceptName", id_short)
+        semantic_id = f"{ID_BASE}/cd/property/{name}"
+        concepts[semantic_id] = {"idShort": name, "valueType": el.get("valueType", "xs:string"),
+                                 "unit": spec.get("unit"), "description": spec.get("description"),
+                                 "modelType": el["modelType"]}
+    if semantic_id:
         el["semanticId"] = {"type": "ExternalReference",
-                            "keys": [{"type": "GlobalReference", "value": spec["semanticId"]}]}
+                            "keys": [{"type": "GlobalReference", "value": semantic_id}]}
     if spec.get("description"):
         el["description"] = mlp_value(spec["description"])
     if el["modelType"] == "Property":

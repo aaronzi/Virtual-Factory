@@ -31,13 +31,14 @@ submodels:
         ManufacturerOrderCode: PR-12-0146
       TechnicalPropertyAreas:
         - _idShort: TechnicalProperties
-          "+Diameter": {value: "12 f7", description: {en: "Rod diameter with tolerance class [mm]", de: "Stangendurchmesser mit Toleranzklasse [mm]"}}
-          "+Length": {valueType: xs:double, value: 146, description: {en: "Overall length [mm]", de: "Gesamtlänge [mm]"}}
+          "+Diameter": {unit: "mm", valueType: xs:double, value: 12, description: {en: "Rod diameter (nominal)", de: "Stangendurchmesser (Nennmaß)"}}
+          "+ToleranceClass": {value: "f7 (ISO 286-2)", description: {en: "Tolerance class of the rod diameter", de: "Toleranzklasse des Stangendurchmessers"}}
+          "+Length": {unit: "mm", valueType: xs:double, value: 146, description: {en: "Overall length", de: "Gesamtlänge"}}
           "+RodThread": {value: "M10x1.25, length 22 mm", description: {en: "Rod end thread (male)", de: "Stangenendgewinde (außen)"}}
           "+PistonSpigotThread": {value: M8, description: {en: "Piston spigot thread", de: "Gewinde des Kolbenzapfens"}}
-          "+SurfaceRoughnessRa": {valueType: xs:double, value: 0.2, description: {en: "Maximum surface roughness Ra of the sealing surface [µm]", de: "Maximale Rauheit Ra der Dichtfläche [µm]"}}
+          "+SurfaceRoughnessRa": {unit: "µm", valueType: xs:double, value: 0.2, description: {en: "Maximum surface roughness Ra of the sealing surface", de: "Maximale Rauheit Ra der Dichtfläche"}}
           "+Material": {value: "1.4301 (X5CrNi18-10), ground and polished", description: {en: Material, de: Werkstoff}}
-          "+Mass": {valueType: xs:double, value: 0.128, description: {en: "Mass [kg]", de: "Masse [kg]"}}
+          "+Mass": {unit: "kg", valueType: xs:double, value: 0.128, description: {en: "Mass", de: "Masse"}}
   - template: CarbonFootprint-1.0
     values:
       ProductCarbonFootprints:

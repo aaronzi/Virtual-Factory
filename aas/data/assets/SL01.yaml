@@ -1,0 +1,66 @@
+# Stack light (signal tower) of LINE01 on the control cabinet, driven by the PLC outputs light_green/amber/red and
+# horn. Simple purchased component: one instance AAS (no type AAS); interfaces generated from the FMI model.
+tag: SL01
+idShort: SL01_StackLight
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/SignalTower
+displayName: {en: "Stack light SL01 (LINE01 status)", de: "Signalsäule SL01 (Status LINE01)"}
+description:
+  en: >-
+    Three-segment LED signal tower with buzzer on the LINE01 control cabinet: green = EXECUTE, amber = held,
+    suspended or in an acting state, red = stopped, aborted or alarm (see PLC01 alarm codes).
+  de: >-
+    Dreistufige LED-Signalsäule mit Summer auf dem Schaltschrank von LINE01: grün = EXECUTE, gelb = angehalten,
+    unterbrochen oder in einem Übergangszustand, rot = gestoppt, abgebrochen oder Alarm (siehe Alarmcodes PLC01).
+thumbnail: repo:docs/screenshots/assets/stack_light.png
+specificAssetIds: {serialNumber: SL3-2506-04417, manufacturerPartId: SL3-RAG-B-24}
+locationDescription: "LINE01, on the control cabinet (PLC01)"
+device:
+  modelDescription: godot/devices/stack_light/model/modelDescription.xml
+  energy: {power: power, energy: energy}
+  operatingHours: operating_hours
+  state: {variable: red_on, map: {"true": Alarm, "false": NoAlarm}, initial: "false"}
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: Lumetra Sensortechnik GmbH, de: Lumetra Sensortechnik GmbH}
+      ManufacturerProductDesignation: {en: "LED signal tower, 3 segments red/amber/green, buzzer, 24 V DC", de: "LED-Signalsäule, 3 Segmente rot/gelb/grün, Summer, 24 V DC"}
+      ManufacturerProductFamily: {en: SL3 signal towers, de: SL3-Signalsäulen}
+      ManufacturerProductType: SL3-RAG-B
+      OrderCodeOfManufacturer: SL3-RAG-B-24
+      URIOfTheProduct: https://virtual-factory.example/lumetra/products/SL3
+      SerialNumber: SL3-2506-04417
+      DateOfManufacture: "2025-06-02"
+      YearOfConstruction: "2025"
+      CountryOfOrigin: DE
+      HardwareVersion: "1.2"
+      AddressInformation: {$include: common/address_lumetra.yaml}
+      Markings: [{$include: common/marking_ce.yaml}]
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: Lumetra Sensortechnik GmbH
+        ManufacturerProductDesignation: {en: "LED signal tower SL3-RAG-B", de: "LED-Signalsäule SL3-RAG-B"}
+        ManufacturerArticleNumber: "1083-0310"
+        ManufacturerOrderCode: SL3-RAG-B-24
+        ProductImages: [{ImageFile: repo:docs/screenshots/assets/stack_light.png, ImageNote: {en: Signal tower on its mounting tube}}]
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          "+Segments": {value: "red, amber, green (top to bottom)", description: {en: Light segments}}
+          "+LightMode": {value: "steady", description: {en: "Light mode (steady; flashing configurable)"}}
+          "+Buzzer": {value: "continuous tone, 85 dB(A) at 1 m", description: {en: Buzzer}}
+          "+SupplyVoltage": {unit: "V", valueType: xs:double, value: 24, description: {en: "Rated supply voltage (DC)"}}
+          "+PowerPerSegment": {unit: "W", valueType: xs:double, value: 1.8, description: {en: "Power of one lit segment"}}
+          "+DegreeOfProtection": {value: IP65, description: {en: "Degree of protection (IEC 60529)"}}
+          "+Diameter": {unit: "mm", valueType: xs:double, value: 70, description: {en: "Segment diameter"}}
+          "+AmbientTemperatureMin": {unit: "°C", valueType: xs:double, value: -20, description: {en: "Minimum ambient temperature"}}
+          "+AmbientTemperatureMax": {unit: "°C", valueType: xs:double, value: 50, description: {en: "Maximum ambient temperature"}}
+      FurtherInformation:
+        TextStatement: [{en: "Signalling device; not a safety component.", de: "Meldegerät; kein Sicherheitsbauteil."}]
+        ValidDate: "2025-05-01"
+  - template: EnergyConsumption-1.0
+    values:
+      $include: common/energy_defaults.yaml
+      RatedPower: 6.4
+      StandbyPower: 0.2
+      PowerSupply: {RatedVoltage: 24, Frequency: 0, RatedCurrent: 0.27}

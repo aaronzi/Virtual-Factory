@@ -32,13 +32,13 @@ submodels:
           Section:
             - _idShort: Processor
               "+Cpu": {value: "x86-64 quad-core, 2.0 GHz, fanless", description: {en: Processor, de: Prozessor}}
-              "+Memory": {valueType: xs:int, value: 4, description: {en: "Main memory [GB]", de: "Arbeitsspeicher [GB]"}}
-              "+Storage": {valueType: xs:int, value: 32, description: {en: "Industrial eMMC storage [GB]", de: "Industrie-eMMC-Speicher [GB]"}}
+              "+Memory": {unit: "GB", valueType: xs:int, value: 4, description: {en: "Main memory", de: "Arbeitsspeicher"}}
+              "+Storage": {unit: "GB", valueType: xs:int, value: 32, description: {en: "Industrial eMMC storage", de: "Industrie-eMMC-Speicher"}}
               "+OperatingSystem": {value: "Real-time Linux (PREEMPT_RT)", description: {en: Operating system, de: Betriebssystem}}
             - _idShort: Runtime
               "+ControlRuntime": {value: "IEC 61131-3 soft-PLC runtime (ST, SFC, FBD, LD)", description: {en: Control runtime and languages, de: Steuerungslaufzeit und Sprachen}}
-              "+CycleTime": {valueType: xs:double, value: 10, description: {en: "Configured task cycle time [ms]", de: "Konfigurierte Taskzykluszeit [ms]"}}
-              "+CycleTimeMin": {valueType: xs:double, value: 1, description: {en: "Minimum task cycle time [ms]", de: "Minimale Taskzykluszeit [ms]"}}
+              "+CycleTime": {unit: "ms", valueType: xs:double, value: 10, description: {en: "Configured task cycle time", de: "Konfigurierte Taskzykluszeit"}}
+              "+CycleTimeMin": {unit: "ms", valueType: xs:double, value: 1, description: {en: "Minimum task cycle time", de: "Minimale Taskzykluszeit"}}
               "+StateModel": {value: "ISA-TR88.00.02 (PackML) state machine library", description: {en: Machine state model, de: Maschinenzustandsmodell}}
             - _idShort: Communication
               "+Ethernet": {value: "2 x 10/100/1000 Mbit/s, RJ45", description: {en: Ethernet interfaces, de: Ethernet-Schnittstellen}}
@@ -46,16 +46,16 @@ submodels:
               "+OpcUa": {value: "OPC UA server with PackML companion specification (planned, firmware 5.0)", description: {en: "OPC UA (planned)", de: "OPC UA (geplant)"}}
               "+DigitalIo": {value: "16 DI / 16 DO 24 V DC (on-board), extendable via fieldbus coupler", description: {en: Digital inputs and outputs, de: Digitale Ein- und Ausgänge}}
             - _idShort: Electrical
-              "+SupplyVoltage": {valueType: xs:double, value: 24, description: {en: "Rated supply voltage [V DC]", de: "Nennversorgungsspannung [V DC]"}}
+              "+SupplyVoltage": {unit: "V", valueType: xs:double, value: 24, description: {en: "Rated supply voltage (DC)", de: "Nennversorgungsspannung (DC)"}}
               "+SupplyVoltageRange": {value: "19.2-28.8 V DC (SELV/PELV)", description: {en: Permissible supply voltage range, de: Zulässiger Versorgungsspannungsbereich}}
-              "+PowerConsumption": {valueType: xs:double, value: 25, description: {en: "Rated power consumption incl. on-board I/O [W]", de: "Nennleistungsaufnahme inkl. On-Board-E/A [W]"}}
+              "+PowerConsumption": {unit: "W", valueType: xs:double, value: 25, description: {en: "Rated power consumption incl. on-board I/O", de: "Nennleistungsaufnahme inkl. On-Board-E/A"}}
             - _idShort: Mechanical
               "+Mounting": {value: "DIN rail TS35 (EN 60715)", description: {en: Mounting, de: Montage}}
               "+DegreeOfProtection": {value: IP20, description: {en: "Degree of protection (IEC 60529)", de: "Schutzart (IEC 60529)"}}
-              "+AmbientTemperatureMin": {valueType: xs:double, value: 0, description: {en: "Minimum ambient temperature [°C]", de: "Minimale Umgebungstemperatur [°C]"}}
-              "+AmbientTemperatureMax": {valueType: xs:double, value: 55, description: {en: "Maximum ambient temperature [°C]", de: "Maximale Umgebungstemperatur [°C]"}}
+              "+AmbientTemperatureMin": {unit: "°C", valueType: xs:double, value: 0, description: {en: "Minimum ambient temperature", de: "Minimale Umgebungstemperatur"}}
+              "+AmbientTemperatureMax": {unit: "°C", valueType: xs:double, value: 55, description: {en: "Maximum ambient temperature", de: "Maximale Umgebungstemperatur"}}
               "+Dimensions": {value: "150 x 110 x 60 mm (W x H x D)", description: {en: Dimensions, de: Abmessungen}}
-              "+Mass": {valueType: xs:double, value: 0.9, description: {en: "Mass [kg]", de: "Masse [kg]"}}
+              "+Mass": {unit: "kg", valueType: xs:double, value: 0.9, description: {en: "Mass", de: "Masse"}}
       FurtherInformation:
         TextStatement:
           - {en: "Not a safety controller; safety functions of the line are implemented in separate safety devices.", de: "Keine Sicherheitssteuerung; die Sicherheitsfunktionen der Linie sind in separaten Sicherheitsgeräten realisiert."}

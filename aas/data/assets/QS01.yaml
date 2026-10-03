@@ -71,12 +71,12 @@ submodels:
               "+MeasuringPrinciple": {modelType: MultiLanguageProperty, value: {en: "True-colour sensor, tristimulus filters matched to the CIE 1931 standard observer", de: "Echtfarbsensor, Dreibereichsfilter angepasst an den CIE-1931-Normalbeobachter"}, description: {en: Measuring principle, de: Messprinzip}}
               "+ColourSpace": {value: "CIELAB (D65, 10°)", description: {en: Colour space of the measured values, de: Farbraum der Messwerte}}
               "+ColourDistance": {value: "ΔE*ab (CIE76)", description: {en: Colour distance formula, de: Farbabstandsformel}}
-              "+WorkingDistance": {valueType: xs:double, value: 150, description: {en: "Working distance sensor to part surface [mm]", de: "Arbeitsabstand Sensor zur Teileoberfläche [mm]"}}
-              "+WorkingDistanceTolerance": {valueType: xs:double, value: 20, description: {en: "Permissible deviation of the working distance [± mm]", de: "Zulässige Abweichung des Arbeitsabstands [± mm]"}}
-              "+SpotDiameter": {valueType: xs:double, value: 6, description: {en: "Light spot diameter at the working distance [mm]", de: "Lichtfleckdurchmesser im Arbeitsabstand [mm]"}}
-              "+MountingAngle": {valueType: xs:double, value: 53, description: {en: "Sensor axis inclination to the vertical (keeps the gripper space free) [°]", de: "Neigung der Sensorachse zur Senkrechten (hält den Greiferraum frei) [°]"}}
-              "+IntegrationTime": {valueType: xs:double, value: 0.15, description: {en: "Integration time per measurement [s]", de: "Integrationszeit je Messung [s]"}}
-              "+Repeatability": {valueType: xs:double, value: 0.5, description: {en: "Repeatability (ΔE*ab, 1 sigma)", de: "Wiederholgenauigkeit (ΔE*ab, 1 Sigma)"}}
+              "+WorkingDistance": {unit: "mm", valueType: xs:double, value: 150, description: {en: "Working distance sensor to part surface", de: "Arbeitsabstand Sensor zur Teileoberfläche"}}
+              "+WorkingDistanceTolerance": {unit: "mm", valueType: xs:double, value: 20, description: {en: "Permissible deviation of the working distance (±)", de: "Zulässige Abweichung des Arbeitsabstands (±)"}}
+              "+SpotDiameter": {unit: "mm", valueType: xs:double, value: 6, description: {en: "Light spot diameter at the working distance", de: "Lichtfleckdurchmesser im Arbeitsabstand"}}
+              "+MountingAngle": {unit: "°", valueType: xs:double, value: 53, description: {en: "Sensor axis inclination to the vertical (keeps the gripper space free)", de: "Neigung der Sensorachse zur Senkrechten (hält den Greiferraum frei)"}}
+              "+IntegrationTime": {unit: "s", valueType: xs:double, value: 0.15, description: {en: "Integration time per measurement", de: "Integrationszeit je Messung"}}
+              "+Repeatability": {conceptName: ColourRepeatability, valueType: xs:double, value: 0.5, description: {en: "Repeatability (ΔE*ab, 1 sigma)", de: "Wiederholgenauigkeit (ΔE*ab, 1 Sigma)"}}
               "+ToleranceMin": {valueType: xs:double, value: 0.5, description: {en: "Smallest settable colour tolerance (ΔE*ab)", de: "Kleinste einstellbare Farbtoleranz (ΔE*ab)"}}
               "+ToleranceMax": {valueType: xs:double, value: 50, description: {en: "Largest settable colour tolerance (ΔE*ab)", de: "Größte einstellbare Farbtoleranz (ΔE*ab)"}}
               "+ReferenceColours": {valueType: xs:int, value: 8, description: {en: Number of teachable reference colours, de: Anzahl einlernbarer Referenzfarben}}
@@ -84,22 +84,22 @@ submodels:
               "+LightSource": {value: "White LED ring light, 5600 K, diffuse", description: {en: Light source, de: Lichtquelle}}
               "+LightSwitching": {value: "Switched on during the measurement only (triggered by the line controller)", description: {en: Light control, de: Lichtsteuerung}}
             - _idShort: Electrical
-              "+SupplyVoltage": {valueType: xs:double, value: 24, description: {en: "Supply voltage DC, PELV [V]", de: "Versorgungsspannung DC, PELV [V]"}}
+              "+SupplyVoltage": {unit: "V", valueType: xs:double, value: 24, description: {en: "Supply voltage DC, PELV", de: "Versorgungsspannung DC, PELV"}}
               "+SupplyVoltageTolerance": {value: "-15 % / +20 %", description: {en: Supply voltage tolerance, de: Toleranz der Versorgungsspannung}}
-              "+PowerSensor": {valueType: xs:double, value: 2.5, description: {en: "Power consumption of the sensor [W]", de: "Leistungsaufnahme des Sensors [W]"}}
-              "+PowerRingLight": {valueType: xs:double, value: 4, description: {en: "Power consumption of the ring light when on [W]", de: "Leistungsaufnahme des Ringlichts im eingeschalteten Zustand [W]"}}
+              "+PowerSensor": {unit: "W", valueType: xs:double, value: 2.5, description: {en: "Power consumption of the sensor", de: "Leistungsaufnahme des Sensors"}}
+              "+PowerRingLight": {unit: "W", valueType: xs:double, value: 4, description: {en: "Power consumption of the ring light when on", de: "Leistungsaufnahme des Ringlichts im eingeschalteten Zustand"}}
               "+Connection": {value: "M12, 5-pin, A-coded (sensor); M8, 4-pin (ring light)", description: {en: Electrical connection, de: Elektrischer Anschluss}}
             - _idShort: Communication
               "+SensorInterface": {value: "IO-Link 1.1, COM3 (230.4 kBaud), process data L*, a*, b*, ΔE, result", description: {en: Sensor interface to the line controller, de: Sensorschnittstelle zur Liniensteuerung}}
               "+DataPublication": {value: "MQTT (UNS) via line controller LC-10", description: {en: Publication of the measured values, de: Veröffentlichung der Messwerte}}
               "+DigitalOutput": {value: "PNP result output OK/NOK, 100 mA", description: {en: Switching output, de: Schaltausgang}}
             - _idShort: MechanicalAndEnvironment
-              "+Mass": {valueType: xs:double, value: 2.4, description: {en: "Mass of the station incl. bracket [kg]", de: "Masse der Station inkl. Halter [kg]"}}
+              "+Mass": {unit: "kg", valueType: xs:double, value: 2.4, description: {en: "Mass of the station incl. bracket", de: "Masse der Station inkl. Halter"}}
               "+Bracket": {value: "Aluminium bracket on the conveyor profile, 3-axis adjustable", description: {en: Mounting, de: Befestigung}}
               "+DegreeOfProtection": {value: IP65, description: {en: "Degree of protection of sensor and ring light (IEC 60529)", de: "Schutzart von Sensor und Ringlicht (IEC 60529)"}}
-              "+AmbientTemperatureMin": {valueType: xs:double, value: 5, description: {en: "Minimum ambient temperature [°C]", de: "Minimale Umgebungstemperatur [°C]"}}
-              "+AmbientTemperatureMax": {valueType: xs:double, value: 45, description: {en: "Maximum ambient temperature [°C]", de: "Maximale Umgebungstemperatur [°C]"}}
-              "+AmbientLightImmunity": {valueType: xs:double, value: 5000, description: {en: "Ambient light immunity [lx]", de: "Fremdlichtfestigkeit [lx]"}}
+              "+AmbientTemperatureMin": {unit: "°C", valueType: xs:double, value: 5, description: {en: "Minimum ambient temperature", de: "Minimale Umgebungstemperatur"}}
+              "+AmbientTemperatureMax": {unit: "°C", valueType: xs:double, value: 45, description: {en: "Maximum ambient temperature", de: "Maximale Umgebungstemperatur"}}
+              "+AmbientLightImmunity": {unit: "lx", valueType: xs:double, value: 5000, description: {en: "Ambient light immunity", de: "Fremdlichtfestigkeit"}}
       FurtherInformation:
         TextStatement:
           - {en: "The reference colour and the tolerance are process parameters of OP80 (taught sRGB 0.78/0.08/0.10, ΔE76 ≤ 25).", de: "Referenzfarbe und Toleranz sind Prozessparameter von OP80 (eingelernt sRGB 0,78/0,08/0,10, ΔE76 ≤ 25)."}

@@ -20,6 +20,7 @@ var hmi: HmiController
 var tasks: TaskController
 var menu: MenuController
 var dataflow: DataFlowController
+var fence_door: FenceDoorController
 
 
 func setup(p_factory: Node, p_rig: PlayerRig) -> void:
@@ -45,6 +46,7 @@ func setup(p_factory: Node, p_rig: PlayerRig) -> void:
 	process_physics_priority = -10  # local commands are applied before the factory steps the co-simulation
 	_setup_hmi()
 	_setup_tasks()
+	_setup_fence_door()
 	dataflow = DataFlowController.new()
 	add_child(dataflow)
 	dataflow.setup(factory.builder, factory.get("uns"), feed)
@@ -86,6 +88,16 @@ func _setup_hmi() -> void:
 			hmi = HmiController.new()
 			add_child(hmi)
 			hmi.setup(factory.builder.master, commands, prop)
+			return
+
+
+func _setup_fence_door() -> void:
+	for prop: Node3D in factory.builder.props:
+		if prop.scene_file_path.ends_with("safety_fence.glb"):
+			fence_door = FenceDoorController.new()
+			add_child(fence_door)
+			if not fence_door.setup(factory.builder.master, commands, prop):
+				push_warning("TrainingUi: safety fence has no Door object")
 			return
 
 

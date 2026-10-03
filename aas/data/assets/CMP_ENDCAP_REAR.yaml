@@ -35,7 +35,7 @@ submodels:
           "+MountingThread": {value: "4 x M6, hole pattern TG 32.5 mm", description: {en: "Mounting threads (ISO 15552)", de: "Befestigungsgewinde (ISO 15552)"}}
           "+CushioningScrewThread": {value: M5x0.5, description: {en: "Thread for the cushioning screw", de: "Gewinde für die Dämpfungsschraube"}}
           "+Material": {value: "EN AC-46000 (AlSi9Cu3(Fe)), die-cast", description: {en: Material, de: Werkstoff}}
-          "+Mass": {valueType: xs:double, value: 0.085, description: {en: "Mass [kg]", de: "Masse [kg]"}}
+          "+Mass": {unit: "kg", valueType: xs:double, value: 0.085, description: {en: "Mass", de: "Masse"}}
   - template: CarbonFootprint-1.0
     values:
       ProductCarbonFootprints:

@@ -126,6 +126,19 @@ func _refresh_submodel() -> void:
 		view.show_submodel(sm)
 		view.flash_live()
 		panel.mark_dirty()
+		if await _load_units(sm) and requested == _submodel_id:
+			view.show_submodel(sm)  # again, now with units
+			panel.mark_dirty()
+
+
+## Fetches the units of the submodel's concepts (cached in the client); true if new units were found.
+func _load_units(submodel: Dictionary) -> bool:
+	var added := false
+	for sem: String in AasFormat.value_semantic_ids(submodel.get("submodelElements", [])):
+		if not view.units.has(sem):
+			view.units[sem] = await aas.get_unit(sem)
+			added = added or view.units[sem] != ""
+	return added
 
 
 func _on_submodel_changed(submodel_id: String, _type: String) -> void:

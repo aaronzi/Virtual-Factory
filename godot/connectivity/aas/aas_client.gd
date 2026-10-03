@@ -4,6 +4,7 @@ extends HttpJson
 
 var base_url := "http://localhost:8091"
 var id_base := "https://virtual-factory.example/ids"
+var _units := {}  # concept id -> unit
 
 
 func aas_id(tag: String) -> String:
@@ -23,6 +24,19 @@ func get_shell(id: String) -> Dictionary:
 func get_submodel(id: String) -> Dictionary:
 	var r := await request("%s/submodels/%s" % [base_url, b64url(id)])
 	return r.data if r.ok and r.data is Dictionary else {}
+
+
+## Unit of a concept description (IEC 61360), "" if none; cached because many elements share concepts.
+func get_unit(concept_id: String) -> String:
+	if _units.has(concept_id):
+		return _units[concept_id]
+	var r := await request("%s/concept-descriptions/%s" % [base_url, b64url(concept_id)])
+	var unit := ""
+	if r.ok and r.data is Dictionary:
+		for spec: Dictionary in r.data.get("embeddedDataSpecifications", []):
+			unit = String(spec.get("dataSpecificationContent", {}).get("unit", ""))
+	_units[concept_id] = unit
+	return unit
 
 
 ## The shell's default thumbnail as an Image, or null.

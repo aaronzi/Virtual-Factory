@@ -9,6 +9,7 @@ signal action_pressed(action_id: String)
 signal close_requested
 
 var lang := "en"
+var units := {}  # semantic id -> unit (from concept descriptions, filled by the controller)
 var _title: Label
 var _subtitle: Label
 var _live: Label
@@ -133,7 +134,8 @@ func _add_element(parent: TreeItem, element: Dictionary, path: String) -> void:
 	var item := _tree.create_item(parent)
 	var name: String = element.get("idShort", "[%d]" % (parent.get_child_count() - 1))
 	item.set_text(0, name)
-	item.set_text(1, AasFormat.value_text(element, lang))
+	var unit: String = units.get(AasFormat.semantic_id(element), "")
+	item.set_text(1, AasFormat.value_text(element, lang) + (" " + unit if unit != "" else ""))
 	item.set_text_alignment(1, HORIZONTAL_ALIGNMENT_LEFT)
 	item.set_custom_color(1, UiTheme.ACCENT.lightened(0.35))
 	item.set_tooltip_text(0, AasFormat.lang_text(element.get("description"), lang))

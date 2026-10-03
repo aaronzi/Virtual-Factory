@@ -66,52 +66,52 @@ submodels:
         - _idShort: TechnicalProperties
           Section:
             - _idShort: Mechanical
-              "+Width": {valueType: xs:double, value: 1.6, description: {en: "Overall width in material flow direction [m]", de: "Gesamtbreite in Materialflussrichtung [m]"}}
-              "+Depth": {valueType: xs:double, value: 1.2, description: {en: "Overall depth [m]", de: "Gesamttiefe [m]"}}
-              "+Height": {valueType: xs:double, value: 2.0, description: {en: "Overall height incl. stack light [m]", de: "Gesamthöhe inkl. Signalsäule [m]"}}
-              "+Mass": {valueType: xs:double, value: 650, description: {en: "Net mass [kg]", de: "Nettomasse [kg]"}}
-              "+OutletHeight": {valueType: xs:double, value: 0.85, description: {en: "Transfer height of the outlet (belt top of CV01) [m]", de: "Übergabehöhe des Auslaufs (Bandoberkante CV01) [m]"}}
+              "+Width": {unit: "mm", valueType: xs:double, value: 1600, description: {en: "Overall width in material flow direction", de: "Gesamtbreite in Materialflussrichtung"}}
+              "+Depth": {unit: "mm", valueType: xs:double, value: 1200, description: {en: "Overall depth", de: "Gesamttiefe"}}
+              "+Height": {unit: "mm", valueType: xs:double, value: 2000, description: {en: "Overall height incl. stack light", de: "Gesamthöhe inkl. Signalsäule"}}
+              "+Mass": {unit: "kg", valueType: xs:double, value: 650, description: {en: "Net mass", de: "Nettomasse"}}
+              "+OutletHeight": {unit: "m", valueType: xs:double, value: 0.85, description: {en: "Transfer height of the outlet (belt top of CV01)", de: "Übergabehöhe des Auslaufs (Bandoberkante CV01)"}}
               "+Enclosure": {modelType: MultiLanguageProperty, value: {en: "Aluminium profile frame, polycarbonate guards, powder-coated sheet steel base", de: "Aluminiumprofilgestell, Schutzscheiben aus Polycarbonat, pulverbeschichteter Stahlblechunterbau"}, description: {en: Enclosure, de: Einhausung}}
               "+Colour": {value: "RAL 7035 light grey / RAL 5010 gentian blue", description: {en: Colour, de: Farbe}}
             - _idShort: Electrical
-              "+RatedVoltage": {valueType: xs:double, value: 400, description: {en: "Rated supply voltage, 3/N/PE AC [V]", de: "Bemessungsspannung, 3/N/PE AC [V]"}}
-              "+RatedFrequency": {valueType: xs:double, value: 50, description: {en: "Rated frequency [Hz]", de: "Bemessungsfrequenz [Hz]"}}
+              "+RatedVoltage": {unit: "V", valueType: xs:double, value: 400, description: {en: "Rated supply voltage, 3/N/PE AC", de: "Bemessungsspannung, 3/N/PE AC"}}
+              "+RatedFrequency": {unit: "Hz", valueType: xs:double, value: 50, description: {en: "Rated frequency", de: "Bemessungsfrequenz"}}
               "+NumberOfPhases": {valueType: xs:int, value: 3, description: {en: Number of phases, de: Anzahl der Phasen}}
-              "+RatedCurrent": {valueType: xs:double, value: 16, description: {en: "Rated current / main fuse [A]", de: "Bemessungsstrom / Hauptsicherung [A]"}}
-              "+RatedPower": {valueType: xs:double, value: 1.5, description: {en: "Rated electrical power [kW]", de: "Elektrische Bemessungsleistung [kW]"}}
-              "+IdlePower": {valueType: xs:double, value: 0.3, description: {en: "Power consumption ready/idle [kW]", de: "Leistungsaufnahme betriebsbereit/Leerlauf [kW]"}}
-              "+WorkingPower": {valueType: xs:double, value: 1.2, description: {en: "Electrical power while assembling (without compressed air) [kW]", de: "Elektrische Leistung beim Montieren (ohne Druckluft) [kW]"}}
-              "+ControlVoltage": {valueType: xs:double, value: 24, description: {en: "Control voltage DC [V]", de: "Steuerspannung DC [V]"}}
-              "+ShortCircuitCurrentRating": {valueType: xs:double, value: 10, description: {en: "Short-circuit current rating SCCR [kA]", de: "Kurzschlussfestigkeit SCCR [kA]"}}
+              "+RatedCurrent": {unit: "A", valueType: xs:double, value: 16, description: {en: "Rated current / main fuse", de: "Bemessungsstrom / Hauptsicherung"}}
+              "+RatedPower": {unit: "kW", valueType: xs:double, value: 1.5, description: {en: "Rated electrical power", de: "Elektrische Bemessungsleistung"}}
+              "+IdlePower": {unit: "kW", valueType: xs:double, value: 0.3, description: {en: "Power consumption ready/idle", de: "Leistungsaufnahme betriebsbereit/Leerlauf"}}
+              "+WorkingPower": {unit: "kW", valueType: xs:double, value: 1.2, description: {en: "Electrical power while assembling (without compressed air)", de: "Elektrische Leistung beim Montieren (ohne Druckluft)"}}
+              "+ControlVoltage": {unit: "V", valueType: xs:double, value: 24, description: {en: "Control voltage DC", de: "Steuerspannung DC"}}
+              "+ShortCircuitCurrentRating": {unit: "kA", valueType: xs:double, value: 10, description: {en: "Short-circuit current rating SCCR", de: "Kurzschlussfestigkeit SCCR"}}
               "+DegreeOfProtectionCabinet": {value: IP54, description: {en: "Degree of protection of the control cabinet (IEC 60529)", de: "Schutzart des Schaltschranks (IEC 60529)"}}
               "+ElectricalEquipmentStandard": {value: "EN 60204-1", description: {en: Electrical equipment of machines, de: Elektrische Ausrüstung von Maschinen}}
             - _idShort: Pneumatic
-              "+SupplyPressure": {valueType: xs:double, value: 6, description: {en: "Nominal compressed-air supply pressure [bar]", de: "Nenn-Versorgungsdruck Druckluft [bar]"}}
-              "+SupplyPressureMin": {valueType: xs:double, value: 5.5, description: {en: "Minimum supply pressure [bar]", de: "Minimaler Versorgungsdruck [bar]"}}
-              "+SupplyPressureMax": {valueType: xs:double, value: 7, description: {en: "Maximum supply pressure [bar]", de: "Maximaler Versorgungsdruck [bar]"}}
+              "+SupplyPressure": {unit: "bar", valueType: xs:double, value: 6, description: {en: "Nominal compressed-air supply pressure", de: "Nenn-Versorgungsdruck Druckluft"}}
+              "+SupplyPressureMin": {unit: "bar", valueType: xs:double, value: 5.5, description: {en: "Minimum supply pressure", de: "Minimaler Versorgungsdruck"}}
+              "+SupplyPressureMax": {unit: "bar", valueType: xs:double, value: 7, description: {en: "Maximum supply pressure", de: "Maximaler Versorgungsdruck"}}
               "+AirQuality": {value: "ISO 8573-1:2010 [7:4:4]", description: {en: Compressed-air quality class, de: Druckluftqualitätsklasse}}
-              "+AirConsumptionPerPart": {valueType: xs:double, value: 5, description: {en: "Compressed-air consumption per cylinder (leak and function test) [Nl]", de: "Druckluftverbrauch je Zylinder (Dichtheits- und Funktionsprüfung) [Nl]"}}
+              "+AirConsumptionPerPart": {unit: "Nl", valueType: xs:double, value: 5, description: {en: "Compressed-air consumption per cylinder (leak and function test)", de: "Druckluftverbrauch je Zylinder (Dichtheits- und Funktionsprüfung)"}}
               "+AirConnection": {value: "G 1/2 internal thread, manual shut-off and soft-start valve", description: {en: Compressed-air connection, de: Druckluftanschluss}}
             - _idShort: Process
               "+Product": {value: "PC-32-80-DA-M (ISO 15552, bore 32 mm, stroke 80 mm)", description: {en: Product processed, de: Bearbeitetes Produkt}}
-              "+TaktTime": {valueType: xs:double, value: 12, description: {en: "Takt time [s]", de: "Taktzeit [s]"}}
-              "+Output": {valueType: xs:int, value: 300, description: {en: "Nominal output [parts/h]", de: "Nennausbringung [Teile/h]"}}
-              "+ScrewTighteningTorque": {valueType: xs:double, value: 6, description: {en: "End-cap screw tightening torque [N m]", de: "Anziehdrehmoment der Deckelschrauben [N m]"}}
+              "+TaktTime": {unit: "s", valueType: xs:double, value: 12, description: {en: "Takt time", de: "Taktzeit"}}
+              "+Output": {unit: "parts/h", valueType: xs:int, value: 300, description: {en: "Nominal output", de: "Nennausbringung"}}
+              "+ScrewTighteningTorque": {unit: "N·m", valueType: xs:double, value: 6, description: {en: "End-cap screw tightening torque", de: "Anziehdrehmoment der Deckelschrauben"}}
               "+LeakTestMethod": {value: "pressure decay, 6 bar", description: {en: Leak test method, de: Verfahren der Dichtheitsprüfung}}
-              "+LeakTestPressure": {valueType: xs:double, value: 6, description: {en: "Leak test pressure [bar]", de: "Prüfdruck Dichtheitsprüfung [bar]"}}
-              "+LeakRateLimit": {valueType: xs:double, value: 1.0, description: {en: "Maximum permissible leak rate [cm³/min]", de: "Maximal zulässige Leckrate [cm³/min]"}}
-              "+StrokeTimeMin": {valueType: xs:double, value: 0.28, description: {en: "Function test: minimum stroke time at 6 bar [s]", de: "Funktionsprüfung: minimale Hubzeit bei 6 bar [s]"}}
-              "+StrokeTimeMax": {valueType: xs:double, value: 0.36, description: {en: "Function test: maximum stroke time at 6 bar [s]", de: "Funktionsprüfung: maximale Hubzeit bei 6 bar [s]"}}
+              "+LeakTestPressure": {unit: "bar", valueType: xs:double, value: 6, description: {en: "Leak test pressure", de: "Prüfdruck Dichtheitsprüfung"}}
+              "+LeakRateLimit": {unit: "cm³/min", valueType: xs:double, value: 1.0, description: {en: "Maximum permissible leak rate", de: "Maximal zulässige Leckrate"}}
+              "+StrokeTimeMin": {unit: "s", valueType: xs:double, value: 0.28, description: {en: "Function test: minimum stroke time at 6 bar", de: "Funktionsprüfung: minimale Hubzeit bei 6 bar"}}
+              "+StrokeTimeMax": {unit: "s", valueType: xs:double, value: 0.36, description: {en: "Function test: maximum stroke time at 6 bar", de: "Funktionsprüfung: maximale Hubzeit bei 6 bar"}}
               "+ProtectiveCap": {value: "PE, red, press-fit on rod end", description: {en: Protective cap fitted, de: Aufgesetzte Schutzkappe}}
             - _idShort: InterfacesAndSafety
               "+LineInterface": {value: "Hard-wired handshake (enable, infeed free) and MQTT (UNS) via line controller LC-10", description: {en: Interface to the line, de: Schnittstelle zur Linie}}
               "+HMI": {value: "7-inch touch panel, stack light red/amber/green", description: {en: Human-machine interface, de: Bedienschnittstelle}}
               "+SafetyFunctions": {value: "Guard door interlocking with guard locking, emergency stop; PL d, Cat. 3 (EN ISO 13849-1)", description: {en: Safety functions, de: Sicherheitsfunktionen}}
             - _idShort: Environment
-              "+AmbientTemperatureMin": {valueType: xs:double, value: 5, description: {en: "Minimum ambient temperature [°C]", de: "Minimale Umgebungstemperatur [°C]"}}
-              "+AmbientTemperatureMax": {valueType: xs:double, value: 40, description: {en: "Maximum ambient temperature [°C]", de: "Maximale Umgebungstemperatur [°C]"}}
-              "+RelativeHumidityMax": {valueType: xs:double, value: 80, description: {en: "Maximum relative humidity, non-condensing [%]", de: "Maximale relative Luftfeuchte, nicht kondensierend [%]"}}
-              "+EmissionSoundPressureLevel": {valueType: xs:double, value: 72, description: {en: "A-weighted emission sound pressure level at the workstation LpA (EN ISO 11202) [dB(A)]", de: "A-bewerteter Emissionsschalldruckpegel am Arbeitsplatz LpA (EN ISO 11202) [dB(A)]"}}
+              "+AmbientTemperatureMin": {unit: "°C", valueType: xs:double, value: 5, description: {en: "Minimum ambient temperature", de: "Minimale Umgebungstemperatur"}}
+              "+AmbientTemperatureMax": {unit: "°C", valueType: xs:double, value: 40, description: {en: "Maximum ambient temperature", de: "Maximale Umgebungstemperatur"}}
+              "+RelativeHumidityMax": {unit: "%", valueType: xs:double, value: 80, description: {en: "Maximum relative humidity, non-condensing", de: "Maximale relative Luftfeuchte, nicht kondensierend"}}
+              "+EmissionSoundPressureLevel": {unit: "dB(A)", valueType: xs:double, value: 72, description: {en: "A-weighted emission sound pressure level at the workstation LpA (EN ISO 11202)", de: "A-bewerteter Emissionsschalldruckpegel am Arbeitsplatz LpA (EN ISO 11202)"}}
       FurtherInformation:
         TextStatement:
           - {en: "Black-box machine: internal stations and components are not disclosed; integration via the asset interface only.", de: "Black-Box-Maschine: Interne Stationen und Komponenten werden nicht offengelegt; Integration ausschließlich über die Asset-Schnittstelle."}

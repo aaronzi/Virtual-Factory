@@ -31,13 +31,13 @@ submodels:
         ManufacturerOrderCode: PI-32-M
       TechnicalPropertyAreas:
         - _idShort: TechnicalProperties
-          "+OuterDiameter": {valueType: xs:double, value: 31.6, description: {en: "Outer diameter of the piston body [mm]", de: "Außendurchmesser des Kolbenkörpers [mm]"}}
-          "+Width": {valueType: xs:double, value: 24, description: {en: "Piston width incl. cushioning spigots [mm]", de: "Kolbenbreite inkl. Dämpfungszapfen [mm]"}}
+          "+OuterDiameter": {unit: "mm", valueType: xs:double, value: 31.6, description: {en: "Outer diameter of the piston body", de: "Außendurchmesser des Kolbenkörpers"}}
+          "+Width": {unit: "mm", valueType: xs:double, value: 24, description: {en: "Piston width incl. cushioning spigots", de: "Kolbenbreite inkl. Dämpfungszapfen"}}
           "+CentreThread": {value: M8, description: {en: "Centre thread for the piston rod spigot", de: "Mittengewinde für den Kolbenstangenzapfen"}}
           "+MagnetType": {value: "NdFeB ring, sintered, N35, axially magnetised", description: {en: "Magnet type", de: "Magnettyp"}}
-          "+MagneticFluxDensity": {valueType: xs:double, value: 4.0, description: {en: "Minimum flux density at the sensor slot [mT]", de: "Minimale Flussdichte an der Sensornut [mT]"}}
+          "+MagneticFluxDensity": {unit: "mT", valueType: xs:double, value: 4.0, description: {en: "Minimum flux density at the sensor slot", de: "Minimale Flussdichte an der Sensornut"}}
           "+Material": {value: "EN AW-6082 T6; magnet NdFeB", description: {en: Material, de: Werkstoff}}
-          "+Mass": {valueType: xs:double, value: 0.024, description: {en: "Mass [kg]", de: "Masse [kg]"}}
+          "+Mass": {unit: "kg", valueType: xs:double, value: 0.024, description: {en: "Mass", de: "Masse"}}
   - template: CarbonFootprint-1.0
     values:
       ProductCarbonFootprints:

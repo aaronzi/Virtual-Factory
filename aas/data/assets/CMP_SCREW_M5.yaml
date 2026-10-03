@@ -34,12 +34,12 @@ submodels:
         - _idShort: TechnicalProperties
           "+Standard": {value: ISO 4762, description: {en: "Product standard", de: "Produktnorm"}}
           "+Thread": {value: M5, description: {en: "Thread (ISO 261, coarse)", de: "Gewinde (ISO 261, Regelgewinde)"}}
-          "+Length": {valueType: xs:double, value: 16, description: {en: "Nominal length [mm]", de: "Nennlänge [mm]"}}
-          "+HeadDiameter": {valueType: xs:double, value: 8.5, description: {en: "Head diameter [mm]", de: "Kopfdurchmesser [mm]"}}
-          "+DriveSize": {valueType: xs:double, value: 4, description: {en: "Hexagon socket size [mm]", de: "Schlüsselweite Innensechskant [mm]"}}
+          "+Length": {unit: "mm", valueType: xs:double, value: 16, description: {en: "Nominal length", de: "Nennlänge"}}
+          "+HeadDiameter": {unit: "mm", valueType: xs:double, value: 8.5, description: {en: "Head diameter", de: "Kopfdurchmesser"}}
+          "+DriveSize": {unit: "mm", valueType: xs:double, value: 4, description: {en: "Hexagon socket size", de: "Schlüsselweite Innensechskant"}}
           "+PropertyClass": {value: "8.8 (ISO 898-1)", description: {en: "Property class", de: "Festigkeitsklasse"}}
           "+Coating": {value: "zinc plated, Cr(VI)-free passivated (ISO 4042)", description: {en: "Surface coating", de: "Oberflächenbeschichtung"}}
-          "+Mass": {valueType: xs:double, value: 0.0037, description: {en: "Mass per piece [kg]", de: "Masse je Stück [kg]"}}
+          "+Mass": {unit: "kg", valueType: xs:double, value: 0.0037, description: {en: "Mass per piece", de: "Masse je Stück"}}
   - template: CarbonFootprint-1.0
     values:
       ProductCarbonFootprints:

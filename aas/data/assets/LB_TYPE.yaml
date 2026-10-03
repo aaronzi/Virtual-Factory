@@ -40,18 +40,18 @@ submodels:
       TechnicalPropertyAreas:
         - _idShort: TechnicalProperties
           "+SensingPrinciple": {value: "retro-reflective, polarisation filter", description: {en: Sensing principle}}
-          "+SensingRangeMax": {valueType: xs:double, value: 6.0, description: {en: "Maximum sensing range with reflector R50 [m]"}}
-          "+SensingRangeMin": {valueType: xs:double, value: 0.05, description: {en: "Minimum sensing range [m]"}}
+          "+SensingRangeMax": {unit: "m", valueType: xs:double, value: 6.0, description: {en: "Maximum sensing range with reflector R50"}}
+          "+SensingRangeMin": {unit: "m", valueType: xs:double, value: 0.05, description: {en: "Minimum sensing range"}}
           "+LightSource": {value: "LED red 640 nm", description: {en: Light source}}
-          "+SupplyVoltageMin": {valueType: xs:double, value: 10, description: {en: "Minimum supply voltage [V DC]"}}
-          "+SupplyVoltageMax": {valueType: xs:double, value: 30, description: {en: "Maximum supply voltage [V DC]"}}
-          "+CurrentConsumption": {valueType: xs:double, value: 0.025, description: {en: "Typical current consumption [A]"}}
-          "+ResponseTime": {valueType: xs:double, value: 0.0005, description: {en: "Response time [s]"}}
+          "+SupplyVoltageMin": {unit: "V", valueType: xs:double, value: 10, description: {en: "Minimum supply voltage (DC)"}}
+          "+SupplyVoltageMax": {unit: "V", valueType: xs:double, value: 30, description: {en: "Maximum supply voltage (DC)"}}
+          "+CurrentConsumption": {unit: "A", valueType: xs:double, value: 0.025, description: {en: "Typical current consumption"}}
+          "+ResponseTime": {unit: "s", valueType: xs:double, value: 0.0005, description: {en: "Response time"}}
           "+SwitchingOutput": {value: "PNP, NO/NC selectable, 100 mA", description: {en: Switching output}}
           "+DegreeOfProtection": {value: IP67, description: {en: "Degree of protection (IEC 60529)"}}
-          "+AmbientTemperatureMin": {valueType: xs:double, value: -25, description: {en: "Minimum ambient temperature [°C]"}}
-          "+AmbientTemperatureMax": {valueType: xs:double, value: 55, description: {en: "Maximum ambient temperature [°C]"}}
-          "+Mass": {valueType: xs:double, value: 0.010, description: {en: "Mass [kg]"}}
+          "+AmbientTemperatureMin": {unit: "°C", valueType: xs:double, value: -25, description: {en: "Minimum ambient temperature"}}
+          "+AmbientTemperatureMax": {unit: "°C", valueType: xs:double, value: 55, description: {en: "Maximum ambient temperature"}}
+          "+Mass": {unit: "kg", valueType: xs:double, value: 0.010, description: {en: "Mass"}}
       FurtherInformation:
         TextStatement: [{en: "Not a safety component; not for personnel protection.", de: "Kein Sicherheitsbauteil; nicht für den Personenschutz."}]
         ValidDate: "2025-03-01"
