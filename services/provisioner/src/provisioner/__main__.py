@@ -20,9 +20,11 @@ def main() -> int:
     parser.add_argument("--out", type=Path, default=REPO / "infra" / "basyx" / "preload")
     parser.add_argument("--url", default="http://localhost:8091")
     parser.add_argument("--env-json", type=Path, default=REPO / "aas" / "build" / "environment.json",
-                        help="where to write the complete environment (debugging; never into the preload dir)")
+                        help="where to write the complete environment "
+                             "(debugging; never into the preload dir)")
     parser.add_argument("--only", help="comma-separated asset tags (subset build for authoring)")
-    parser.add_argument("--blueprints", action="store_true", help="also validate aas/data/blueprints (check only)")
+    parser.add_argument("--blueprints", action="store_true",
+                        help="also validate aas/data/blueprints (check only)")
     args = parser.parse_args()
     if args.blueprints and args.command != "check":
         parser.error("--blueprints is only allowed with 'check' (blueprints are never preloaded)")

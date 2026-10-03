@@ -1,0 +1,68 @@
+name: LineControl
+version: "1"
+revision: "0"
+displayName: {en: "Line Control", de: "Liniensteuerung"}
+description:
+  en: >-
+    Callable control services of a production line for IT systems, agents and workflows: PackML commands, container
+    exchange and operating options as AAS Operations. The operations are executed by the line controller; the AAS
+    server forwards invocations to an operations gateway (invocation delegation), which translates them into
+    commands on the shop-floor interface described in the controller's Asset Interfaces Description. The live state
+    (PackML state, counters) is published on that interface and mapped into OperationalData. Complements Control
+    Component Type/Instance 2.0, which describes skills and endpoints but no invocable operations.
+    Virtual Factory custom template.
+  de: >-
+    Aufrufbare Steuerungsdienste einer Fertigungslinie für IT-Systeme, Agenten und Workflows: PackML-Befehle,
+    Behälterwechsel und Betriebsoptionen als AAS-Operationen. Ausgeführt werden sie von der Liniensteuerung; der
+    AAS-Server leitet Aufrufe an ein Operations-Gateway weiter (Invocation Delegation), das sie in Befehle an der
+    in der Asset Interfaces Description der Steuerung beschriebenen Shopfloor-Schnittstelle übersetzt. Der aktuelle
+    Zustand (PackML-Zustand, Zähler) wird über diese Schnittstelle veröffentlicht und in OperationalData abgebildet.
+    Ergänzt Control Component Type/Instance 2.0, das Skills und Endpunkte, aber keine aufrufbaren Operationen
+    beschreibt.
+elements:
+  - idShort: Controller
+    modelType: ReferenceElement
+    preferredName: {en: "line controller", de: "Liniensteuerung"}
+    definition: {en: "Reference to the AAS of the controller that executes the operations.", de: "Verweis auf die AAS der Steuerung, die die Operationen ausführt."}
+  - idShort: ControlComponent
+    modelType: ReferenceElement
+    cardinality: ZeroToOne
+    preferredName: {en: "control component", de: "Control Component"}
+    definition: {en: "Reference to the Control Component Instance submodel of the controller (skills, endpoints).", de: "Verweis auf das Control-Component-Instance-Teilmodell der Steuerung (Skills, Endpunkte)."}
+  - idShort: StateModel
+    preferredName: {en: "state model", de: "Zustandsmodell"}
+    definition: {en: "State model followed by the line, e.g. ISA-TR88.00.02 (PackML).", de: "Von der Linie verwendetes Zustandsmodell, z. B. ISA-TR88.00.02 (PackML)."}
+  - idShort: CurrentState
+    modelType: ReferenceElement
+    cardinality: ZeroToOne
+    preferredName: {en: "current state", de: "aktueller Zustand"}
+    definition: {en: "Reference to the element holding the current state (e.g. a process value in OperationalData).", de: "Verweis auf das Element mit dem aktuellen Zustand (z. B. ein Prozesswert in OperationalData)."}
+  - idShort: ExecutePackMLCommand
+    modelType: Operation
+    preferredName: {en: "execute PackML command", de: "PackML-Befehl ausführen"}
+    definition: {en: "Sends a PackML unit command to the line controller and returns the state reached. Commands that are not allowed in the current state are rejected without effect.", de: "Sendet einen PackML-Befehl an die Liniensteuerung und liefert den erreichten Zustand. Im aktuellen Zustand unzulässige Befehle werden ohne Wirkung abgelehnt."}
+    inputs:
+      - {idShort: Command, preferredName: {en: "PackML command", de: "PackML-Befehl"}, definition: {en: "One of Reset, Start, Stop, Hold, Unhold, Suspend, Unsuspend, Abort, Clear (ISA-TR88.00.02).", de: "Einer von Reset, Start, Stop, Hold, Unhold, Suspend, Unsuspend, Abort, Clear (ISA-TR88.00.02)."}}
+    outputs:
+      - {idShort: Accepted, valueType: xs:boolean, preferredName: {en: "accepted", de: "angenommen"}, definition: {en: "True if the controller accepted and executed the request.", de: "Wahr, wenn die Steuerung die Anforderung angenommen und ausgeführt hat."}}
+      - {idShort: State, preferredName: {en: "resulting state", de: "erreichter Zustand"}, definition: {en: "PackML state after the command (name, e.g. EXECUTE).", de: "PackML-Zustand nach dem Befehl (Name, z. B. EXECUTE)."}}
+      - {idShort: Message, preferredName: {en: "message", de: "Meldung"}, definition: {en: "Human-readable result or rejection reason.", de: "Lesbares Ergebnis oder Ablehnungsgrund."}}
+  - idShort: ExchangeContainer
+    modelType: Operation
+    preferredName: {en: "exchange container", de: "Behälter wechseln"}
+    definition: {en: "Requests the exchange of an output container (e.g. a full KLT) by an empty one.", de: "Fordert den Tausch eines Ausgangsbehälters (z. B. eines vollen KLT) gegen einen leeren an."}
+    inputs:
+      - {idShort: Container, valueType: xs:int, preferredName: {en: "container number", de: "Behälternummer"}, definition: {en: "Number of the output container station of the line.", de: "Nummer der Ausgangsbehälterstation der Linie."}}
+    outputs:
+      - {idShort: Accepted, valueType: xs:boolean, preferredName: {en: "accepted", de: "angenommen"}, definition: {en: "True if the controller accepted and executed the request.", de: "Wahr, wenn die Steuerung die Anforderung angenommen und ausgeführt hat."}}
+      - {idShort: Message, preferredName: {en: "message", de: "Meldung"}, definition: {en: "Human-readable result or rejection reason.", de: "Lesbares Ergebnis oder Ablehnungsgrund."}}
+  - idShort: SetAutoExchange
+    modelType: Operation
+    cardinality: ZeroToOne
+    preferredName: {en: "set automatic container exchange", de: "automatischen Behälterwechsel einstellen"}
+    definition: {en: "Switches between automatic container exchange and exchange on request (ExchangeContainer).", de: "Schaltet zwischen automatischem Behälterwechsel und Wechsel auf Anforderung (ExchangeContainer) um."}
+    inputs:
+      - {idShort: Enabled, valueType: xs:boolean, preferredName: {en: "enabled", de: "aktiviert"}, definition: {en: "True: full containers are exchanged automatically.", de: "Wahr: volle Behälter werden automatisch gewechselt."}}
+    outputs:
+      - {idShort: Accepted, valueType: xs:boolean, preferredName: {en: "accepted", de: "angenommen"}, definition: {en: "True if the controller accepted and executed the request.", de: "Wahr, wenn die Steuerung die Anforderung angenommen und ausgeführt hat."}}
+      - {idShort: Message, preferredName: {en: "message", de: "Meldung"}, definition: {en: "Human-readable result or rejection reason.", de: "Lesbares Ergebnis oder Ablehnungsgrund."}}

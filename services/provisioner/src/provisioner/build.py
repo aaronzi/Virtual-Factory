@@ -31,8 +31,8 @@ class BuildResult:
 
 
 def load_yaml(path: Path) -> dict:
-    """Loads asset data; `_extends: file` (top level) and `$include: file` (any mapping) merge shared fragments
-    (paths relative to aas/data). Keys next to `$include` override the included content."""
+    """Loads asset data; `_extends: file` (top level) and `$include: file` (any mapping) merge shared
+    fragments (paths relative to aas/data). Keys next to `$include` override the included content."""
     data = yaml.safe_load(path.read_text()) or {}
     base = data.pop("_extends", None)
     data = _resolve_includes(data, DATA_ROOT)
@@ -52,7 +52,8 @@ def _resolve_includes(node, root: Path):
 
 
 def deep_merge(base, override, key: str = ""):
-    """Recursive merge (override wins). Lists are replaced, except `submodels`, which merge per template/idShort."""
+    """Recursive merge (override wins). Lists are replaced, except `submodels`, which merge per
+    template/idShort."""
     if isinstance(base, dict) and isinstance(override, dict):
         out = dict(base)
         for k, v in override.items():
@@ -85,19 +86,33 @@ def load_assets(data_dir: Path, only: set[str] | None = None, blueprints: bool =
     return [s for s in specs if not only or s["tag"] in only]
 
 
+class BuildContext:
+    """Template library, layout positions and UNS registry, loaded once; builds environments from asset specs
+    (used by `build` and at runtime by the MES for workpiece instance AAS)."""
+
+    def __init__(self, repo: Path = REPO):
+        self.repo = repo
+        self.library = TemplateLibrary(repo / "aas" / "templates")
+        layout = json.loads((repo / "godot" / "config" / "layouts" / "line1.layout.json").read_text())
+        self.uns = json.loads((repo / "godot" / "config" / "uns.json").read_text())
+        self.positions = layout_positions(layout)
+        capabilities = yaml.safe_load((repo / "aas" / "data" / "capabilities.yaml").read_text())
+        self.library.concept_descriptions.update(capability_cds(capabilities))
+
+    def build(self, specs: list[dict], validate: bool = True) -> BuildResult:
+        builder = EnvironmentBuilder(self.library)
+        for spec in specs:
+            spec = copy.deepcopy(spec)
+            _apply_generators(spec, self.library, self.repo, self.uns, self.positions)
+            builder.add_asset(spec)
+        env = builder.build()
+        if validate:
+            to_object_store(env)  # strict validation
+        return BuildResult(env, builder)
+
+
 def build(repo: Path = REPO, only: set[str] | None = None, blueprints: bool = False) -> BuildResult:
-    library = TemplateLibrary(repo / "aas" / "templates")
-    layout = json.loads((repo / "godot" / "config" / "layouts" / "line1.layout.json").read_text())
-    uns = yaml.safe_load((repo / "godot" / "config" / "uns.yaml").read_text())
-    positions = layout_positions(layout)
-    library.concept_descriptions.update(capability_cds(yaml.safe_load((DATA_ROOT / "capabilities.yaml").read_text())))
-    builder = EnvironmentBuilder(library)
-    for spec in load_assets(repo / "aas" / "data", only, blueprints):
-        _apply_generators(spec, library, repo, uns, positions)
-        builder.add_asset(spec)
-    env = builder.build()
-    to_object_store(env)  # strict validation
-    return BuildResult(env, builder)
+    return BuildContext(repo).build(load_assets(repo / "aas" / "data", only, blueprints))
 
 
 def capability_cds(dictionary: dict) -> dict[str, dict]:
@@ -108,16 +123,20 @@ def capability_cds(dictionary: dict) -> dict[str, dict]:
     cds = {}
     for name, entry in dictionary.items():
         cd_id = f"{ids.ID_BASE}/capability/{name}"
-        content = {"modelType": "DataSpecificationIec61360", "preferredName": mlp_value(entry["preferredName"]),
+        content = {"modelType": "DataSpecificationIec61360",
+                   "preferredName": mlp_value(entry["preferredName"]),
                    "definition": mlp_value(entry["definition"])}
         if len(name) <= 18:
             content["shortName"] = mlp_value({"en": name})
         cds[cd_id] = {"modelType": "ConceptDescription", "id": cd_id, "idShort": name,
                       "isCaseOf": [{"type": "ExternalReference", "keys": [
                           {"type": "GlobalReference",
-                           "value": "https://admin-shell.io/idta/SubmodelTemplate/CapabilityDescription/1/0"}]}],
-                      "embeddedDataSpecifications": [{"dataSpecification": {"type": "ExternalReference", "keys": [
-                          {"type": "GlobalReference", "value": IEC61360}]}, "dataSpecificationContent": content}]}
+                           "value": "https://admin-shell.io/idta/SubmodelTemplate/"
+                                    "CapabilityDescription/1/0"}]}],
+                      "embeddedDataSpecifications": [{
+                          "dataSpecification": {"type": "ExternalReference", "keys": [
+                              {"type": "GlobalReference", "value": IEC61360}]},
+                          "dataSpecificationContent": content}]}
     return cds
 
 
@@ -137,7 +156,8 @@ def _apply_generators(spec: dict, library: TemplateLibrary, repo: Path, uns: dic
         library.concept_descriptions.update({cd["id"]: cd for cd in dm.process_value_cds(md)})
         mappings, energy_vars = dm.aimc_mappings(device, md)
         instance = device.get("instance", tag)
-        generated["AssetInterfacesDescription-1.1"] = aid_values(tag, instance, md, uns, f"{tag} shop-floor data (UNS)")
+        generated["AssetInterfacesDescription-1.1"] = aid_values(tag, instance, md, uns,
+                                                                 f"{tag} shop-floor data (UNS)")
         generated["AssetInterfacesMappingConfiguration-2.0"] = aimc_values(tag, mappings)
         generated["OperationalData-1.0"] = dm.operational_data_values(md, device, energy_vars)
         generated["SimulationModels-1.0"] = dm.simulation_model_values(tag, md, model_path)
@@ -162,11 +182,13 @@ def _merge_generated(spec: dict, generated: dict[str, dict]) -> None:
             existing["values"] = deep_merge(values, existing.get("values") or {})
 
 
-def write_outputs(result: BuildResult, out_dir: Path, env_json: Path | None = None, repo: Path = REPO) -> list[Path]:
+def write_outputs(result: BuildResult, out_dir: Path, env_json: Path | None = None,
+                  repo: Path = REPO) -> list[Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     for old in out_dir.glob("*.aasx"):
         old.unlink()
     if env_json:
         env_json.parent.mkdir(parents=True, exist_ok=True)
         env_json.write_text(json.dumps(result.environment, indent=1, ensure_ascii=False))
-    return write_aasx_per_shell(result.environment, result.builder.files, result.builder.shell_files, repo, out_dir)
+    return write_aasx_per_shell(result.environment, result.builder.files, result.builder.shell_files,
+                                repo, out_dir)

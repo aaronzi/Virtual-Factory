@@ -1,0 +1,85 @@
+{
+  "_doc": "Unified Namespace (UNS) registry of the shop floor - single source for the Godot UNS gateway, the AAS Asset Interfaces Description (provisioner), the AIMC bridge, the MES and the ops gateway. ISA-95 path enterprise/site/area/line. Reference: docs/interfaces/uns.md",
+  "broker": {
+    "base": "mqtt://localhost:1883",
+    "websocket": "ws://localhost:9001"
+  },
+  "topic_root": "vf/plant01/final-assembly/line01",
+  "payload": {
+    "content_type": "application/json",
+    "value_key": "v",
+    "timestamp_key": "ts"
+  },
+  "session": {
+    "topic": "{root}/session",
+    "status_topic": "{root}/status",
+    "retain": true,
+    "qos": 1
+  },
+  "telemetry": {
+    "topic": "{root}/{device}/{variable}",
+    "retain": true,
+    "qos": 0,
+    "min_interval_s": 0.1
+  },
+  "events": {
+    "topic": "{root}/{device}/event/{event}",
+    "retain": false,
+    "qos": 1,
+    "definitions": [
+      {
+        "device": "AC01", "event": "part_released", "trigger": "AC01.release_count",
+        "description": "A finished cylinder left the assembly cell onto the conveyor (cell test data included)",
+        "fields": {
+          "serial": "AC01.last_serial", "cap_variant": "AC01.last_cap_variant",
+          "leak_rate": "AC01.last_leak_rate", "stroke_time": "AC01.last_stroke_time"
+        }
+      },
+      {
+        "device": "PLC01", "event": "part_inspected", "trigger": "PLC01.parts_total",
+        "description": "The colour inspection of a part at QS01 is complete (result latched by the PLC)",
+        "fields": {
+          "serial": "PLC01.serial_at_qs", "result": "PLC01.last_result",
+          "r": "QS01.r", "g": "QS01.g", "b": "QS01.b", "hue": "QS01.hue", "delta_e": "QS01.delta_e"
+        }
+      },
+      {
+        "device": "PLC01", "event": "part_sorted", "trigger": "PLC01.sorted_count",
+        "description": "The robot placed a part into a KLT (1 = KLT A good parts, 2 = KLT B rejects)",
+        "fields": {
+          "serial": "PLC01.sorted_serial", "container": "PLC01.sorted_target", "slot": "PLC01.sorted_slot"
+        }
+      },
+      {
+        "device": "KLTA01", "event": "container_full", "trigger": "KLTA01.full", "when": true,
+        "description": "KLT A is full and must be exchanged",
+        "fields": {"fill_count": "KLTA01.fill_count"}
+      },
+      {
+        "device": "KLTB01", "event": "container_full", "trigger": "KLTB01.full", "when": true,
+        "description": "KLT B is full and must be exchanged",
+        "fields": {"fill_count": "KLTB01.fill_count"}
+      },
+      {
+        "device": "KLTA01", "event": "container_exchanged", "trigger": "KLTA01.exchange_count",
+        "description": "An empty KLT replaced the full one at station KLTA01",
+        "fields": {"exchange_count": "KLTA01.exchange_count"}
+      },
+      {
+        "device": "KLTB01", "event": "container_exchanged", "trigger": "KLTB01.exchange_count",
+        "description": "An empty KLT replaced the full one at station KLTB01",
+        "fields": {"exchange_count": "KLTB01.exchange_count"}
+      }
+    ]
+  },
+  "commands": {
+    "topic": "{root}/{device}/cmd/{variable}",
+    "ack_topic": "{root}/{device}/cmd-resp/{variable}",
+    "retain": false,
+    "qos": 1,
+    "writable": {
+      "PLC01": ["packml_command", "klt_exchange_command", "auto_exchange"]
+    },
+    "pulse": ["PLC01.packml_command", "PLC01.klt_exchange_command"]
+  }
+}

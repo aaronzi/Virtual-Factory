@@ -23,22 +23,27 @@ TEMPLATE = {
     "administration": {"version": "1", "revision": "0"},
     "submodelElements": [
         {"modelType": "Property", "idShort": "Name", "valueType": "xs:string", "qualifiers": _q("One")},
-        {"modelType": "Property", "idShort": "Optional", "valueType": "xs:int", "qualifiers": _q("ZeroToOne")},
+        {"modelType": "Property", "idShort": "Optional", "valueType": "xs:int",
+         "qualifiers": _q("ZeroToOne")},
         {"modelType": "MultiLanguageProperty", "idShort": "Title", "qualifiers": _q("One")},
         {"modelType": "SubmodelElementCollection", "idShort": "Item__00__", "qualifiers": _q("ZeroToMany"),
-         "value": [{"modelType": "Property", "idShort": "Value", "valueType": "xs:double", "qualifiers": _q("One")}]},
-        {"modelType": "SubmodelElementList", "idShort": "Entries", "typeValueListElement": "SubmodelElementCollection",
+         "value": [{"modelType": "Property", "idShort": "Value", "valueType": "xs:double",
+                    "qualifiers": _q("One")}]},
+        {"modelType": "SubmodelElementList", "idShort": "Entries",
+         "typeValueListElement": "SubmodelElementCollection",
          "qualifiers": _q("ZeroToOne"),
          "value": [{"modelType": "SubmodelElementCollection", "idShort": "Entry",
                     "value": [{"modelType": "Property", "idShort": "Flag", "valueType": "xs:boolean"}]}]},
         {"modelType": "ReferenceElement", "idShort": "Link", "qualifiers": _q("ZeroToOne")},
-        {"modelType": "Blob", "idShort": "Data", "contentType": "application/json", "qualifiers": _q("ZeroToOne")},
+        {"modelType": "Blob", "idShort": "Data", "contentType": "application/json",
+         "qualifiers": _q("ZeroToOne")},
     ],
 }
 
 
 def _resolver(key):
-    return {"type": "ExternalReference", "keys": [{"type": "GlobalReference", "value": key.removeprefix("global:")}]}
+    return {"type": "ExternalReference",
+            "keys": [{"type": "GlobalReference", "value": key.removeprefix("global:")}]}
 
 
 def test_instantiate_fills_expands_and_prunes():
@@ -70,7 +75,8 @@ def test_missing_mandatory_and_unknown_keys_are_reported():
 
 def test_cardinality_variants():
     assert _cardinality({"qualifiers": [{"type": "Multiplicity", "value": "ZeroToOne"}]}) == "ZeroToOne"
-    assert _cardinality({"qualifiers": [{"type": "SMT/SMT/Cardinality", "value": "ZerotoMany"}]}) == "ZeroToMany"
+    assert _cardinality(
+        {"qualifiers": [{"type": "SMT/SMT/Cardinality", "value": "ZerotoMany"}]}) == "ZeroToMany"
     assert _cardinality({}) == "One"
 
 

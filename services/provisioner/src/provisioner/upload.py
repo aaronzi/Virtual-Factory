@@ -2,29 +2,18 @@
 
 from __future__ import annotations
 
-import base64
-
-import httpx
-
-
-def _b64(identifier: str) -> str:
-    return base64.urlsafe_b64encode(identifier.encode()).decode().rstrip("=")
+from vf_common.basyx import BasyxClient
 
 
 def upload(env: dict, builder, url: str) -> None:
-    with httpx.Client(base_url=url, timeout=30) as http:
+    client = BasyxClient(url, timeout=30)
+    try:
         for cd in env["conceptDescriptions"]:
-            _put_or_post(http, "/concept-descriptions", cd)
+            client.put_concept_description(cd)
         for sm in env["submodels"]:
-            _put_or_post(http, "/submodels", sm)
+            client.put_submodel(sm)
         for shell in env["assetAdministrationShells"]:
-            _put_or_post(http, "/shells", shell)
+            client.put_shell(shell)
+    finally:
+        client.close()
     print(f"uploaded {len(env['assetAdministrationShells'])} AAS to {url}")
-
-
-def _put_or_post(http: httpx.Client, collection: str, obj: dict) -> None:
-    response = http.put(f"{collection}/{_b64(obj['id'])}", json=obj)
-    if response.status_code == 404:
-        response = http.post(collection, json=obj)
-    if response.status_code >= 300:
-        raise RuntimeError(f"{collection} {obj['id']}: HTTP {response.status_code} {response.text[:300]}")

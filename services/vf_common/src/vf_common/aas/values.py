@@ -9,7 +9,8 @@ from typing import Any
 
 DEFAULT_LANG = "en"
 LANG_TAG = re.compile(r"^[a-z]{2,3}(-[A-Za-z0-9]{1,8})*$")
-MIME_OVERRIDES = {".glb": "model/gltf-binary", ".xml": "application/xml", ".aasx": "application/asset-administration-shell-package"}
+MIME_OVERRIDES = {".glb": "model/gltf-binary", ".xml": "application/xml", ".bpmn": "application/bpmn+xml",
+                  ".aasx": "application/asset-administration-shell-package"}
 
 
 def convert_property_value(value_type: str, value: Any) -> str:

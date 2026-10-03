@@ -41,10 +41,11 @@ flowchart LR
 | Block | Path | Responsibility |
 |---|---|---|
 | Godot simulation | `godot/` | 3D world, device models, virtual PLC, MQTT gateway, AAS inspector |
-| Edge/IT services | `services/` | `vf_common` (shared: IDs, AAS template engine), `provisioner` (static AAS → AASX preload); databridge, mes, ops_gateway *(M4)* |
+| Edge/IT services | `services/` | `vf_common` (IDs, AAS template engine, BaSyx/MQTT clients, UNS registry), `provisioner` (static AAS → AASX preload), `bridge` (UNS → AAS via AIMC), `mes` (workpiece AAS, BPMN workers), `ops_gateway` (delegated AAS operations) – see [services.md](../interfaces/services.md) |
+| BPMN models | `bpmn/` | WorkpieceLifecycle (procedure model of the master recipe), ProductionOrder (ADR-0016) |
 | AAS master data | `aas/` | Vendored IDTA templates + CDs, custom templates (YAML DSL), asset data, capability dictionary, documents (PDF) |
 | 3D asset sources | `blender/` | .blend files and the generator scripts that produce them |
-| Infrastructure | `infra/` | docker compose: BaSyx Go, AAS Web UI, Postgres, Mosquitto |
+| Infrastructure | `infra/` | docker compose: BaSyx Go, AAS Web UI, Postgres, Mosquitto, Operaton, services |
 | Tooling | `tools/` | Architecture/complexity checks, test runners, screenshot helper |
 
 ### Level 2: Godot modules
@@ -56,7 +57,7 @@ Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 | `devices/<type>` | One device type each: model (FMU), probes, view, scene, type metadata | core |
 | `products` | Workpiece scene, product-type resources | core |
 | `control` | PLC programs (SortingLine), I/O maps | core |
-| `connectivity` | MQTT gateway, UNS mapping, AAS REST reader | core (+ mqtt addon) |
+| `connectivity` | MQTT 3.1.1 client (own GDScript, TCP/WebSocket), UNS gateway, AAS REST reader | core |
 | `world` | Hall, lighting, props | core |
 | `player` | DesktopRig (later XRRig) | core |
 | `ui` | World-space panels, AAS inspector, HMI, i18n | core |
@@ -65,7 +66,7 @@ Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 
 ## 6. Runtime view
 - [Life cycle of one part](runtime-part-lifecycle.md) (OT layer, M1)
-- Session start and agent operation: *(planned, M4)*, see [PLAN.md §3.9–3.10](../PLAN.md)
+- [OT/IT data flow, workpiece AAS and agent operation](runtime-ot-it.md) (M4)
 
 ## 7. Deployment view
 | Container | Image | Host port |
@@ -76,7 +77,8 @@ Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 | basyx-config | `eclipsebasyx/basyxconfigurationservice-go:1.1.0` (one-shot) | – |
 | mqtt | `eclipse-mosquitto:2` | 1883, 9001 (ws) |
 | provisioner | `vf-services:dev` (built from `services/Dockerfile`), one-shot before aas-env | – |
-| databridge, mes, ops-gateway | `vf-services:dev` *(M4)* | 8095 (ops) |
+| bridge, mes, ops-gateway | `vf-services:dev` | 8095 (ops-gateway, fixed IP 172.30.42.95 for the delegation allow-list) |
+| bpmn | `operaton/operaton:2.1.5` (in-memory H2) | 8092 (REST, Cockpit, Tasklist) |
 
 The Godot application runs natively on the host and connects to `ws://localhost:9001` and `http://localhost:8091`.
 
@@ -95,7 +97,11 @@ The Godot application runs natively on the host and connects to `ws://localhost:
   ([ADR-0011](../adr/0011-template-based-aas-generation.md)), Control Components with PackML on the interface
   ([ADR-0012](../adr/0012-control-component-packml-on-interface.md)), interfaces generated from FMI
   ([ADR-0013](../adr/0013-aas-interfaces-generated-from-fmi.md))
-- **UNS topics**: `godot/config/uns.yaml` (single source for the Godot gateway, AID generation and the data bridge)
+- **UNS topics**: `godot/config/uns.json` (single source for the Godot gateway, AID generation, bridge, MES and ops
+  gateway), [interfaces/uns.md](../interfaces/uns.md), [ADR-0014](../adr/0014-godot-uns-gateway.md)
+- **AAS-driven integration**: AIMC bridge ([ADR-0015](../adr/0015-aimc-bridge.md)), BaSyx MQTT eventing for mapping
+  reloads, line commands as delegated AAS operations ([ADR-0017](../adr/0017-aas-operations-delegated.md))
+- **Orchestration**: BPMN on MES level, PLC keeps real-time control ([ADR-0016](../adr/0016-bpmn-orchestration.md))
 
 ## 9. Architecture decisions
 See [adr/](../adr/README.md).

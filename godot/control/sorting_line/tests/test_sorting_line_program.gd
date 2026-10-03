@@ -111,3 +111,65 @@ func test_hold_command_stops_production() -> void:
 	plc.set_value("packml_command", PackMLStateMachine.Command.UNHOLD)
 	_run(0.05)
 	assert_eq(plc.get_value("packml_state"), PackMLStateMachine.State.EXECUTE)
+
+
+func _sorted() -> Array:
+	return [plc.get_value("sorted_count"), plc.get_value("sorted_serial"), plc.get_value("sorted_target"),
+		plc.get_value("sorted_slot")]
+
+
+func test_sorted_outputs_report_serial_target_and_slot() -> void:
+	_run(0.1)
+	_part_through(false, "S7")
+	assert_eq(_sorted(), [0, "", 0, 0], "nothing sorted before the robot reports job done")
+	_robot_cycle()
+	assert_eq(_sorted(), [1, "S7", 2, 0])
+	_part_through(true, "S8")
+	_robot_cycle()
+	assert_eq(_sorted(), [2, "S8", 1, 0])
+	_part_through(true, "S9")
+	assert_eq(_sorted(), [2, "S8", 1, 0], "unchanged while the next job is pending")
+	_robot_cycle()
+	assert_eq(_sorted(), [3, "S9", 1, 1])
+
+
+func test_manual_klt_exchange_command() -> void:
+	plc.set_value("auto_exchange", false)
+	_run(0.1)
+	_part_through(true, "S1")
+	_robot_cycle()
+	plc.set_value("klt_a_count", 1)
+	plc.set_value("klt_exchange_command", 2)
+	_run(0.05)
+	assert_false(plc.get_value("klt_b_exchange"), "empty KLT B is not exchanged")
+	assert_false(plc.get_value("klt_a_exchange"), "no automatic exchange of a non-full KLT")
+	plc.set_value("klt_exchange_command", 1)
+	_run(0.05)
+	assert_true(plc.get_value("klt_a_exchange"))
+	plc.set_value("klt_a_count", 0)
+	_run(0.05)
+	assert_false(plc.get_value("klt_a_exchange"), "request cleared once the empty KLT is in place")
+	_part_through(true, "S2")
+	assert_eq(plc.get_value("rb_place_slot"), 0, "slot counter restarts in the new KLT")
+	_robot_cycle()
+	plc.set_value("klt_a_count", 1)
+	_run(0.05)
+	assert_false(plc.get_value("klt_a_exchange"), "holding the command value does not retrigger")
+	plc.set_value("klt_exchange_command", 0)
+	_run(0.05)
+	plc.set_value("klt_exchange_command", 1)
+	_run(0.05)
+	assert_true(plc.get_value("klt_a_exchange"), "a new edge triggers again")
+
+
+func test_exchange_waits_until_the_last_part_is_placed() -> void:
+	_run(0.1)
+	_part_through(true, "S0")
+	_robot_cycle()
+	_part_through(true, "S1")
+	plc.set_value("klt_a_count", 2)
+	plc.set_value("klt_exchange_command", 1)
+	_run(4.5)
+	assert_false(plc.get_value("klt_a_exchange"), "neither manual nor automatic while the robot places")
+	_robot_cycle()
+	assert_true(plc.get_value("klt_a_exchange"), "pending manual request honoured after job done")

@@ -21,6 +21,10 @@
 | D8 | Retention | Workpiece instance AAS are **ephemeral per factory session**. |
 | D9 | Language | English code and docs. UI in **German + English** (Godot translation CSV). |
 | D10 | Cadence | I work autonomously inside a milestone, send screenshots and renders at key points, and stop for review at the end of each milestone. |
+| D11 | Orchestration (M3 review) | **BPMN on MES level** (bpmn.io models, Operaton engine, external tasks in Python); the PLC keeps real-time control (ADR-0016). |
+| D12 | Data bridge (M3 review) | Own **AIMC-driven bridge**; not the archived BaSyx DataBridge, not Node-RED in the core path (ADR-0015). |
+| D13 | Eventing (M3 review) | BaSyx MQTT eventing **on**; submodel-level only, consumers re-read; core flow does not depend on it. |
+| D14 | Recipe (M3 review) | ISA-88 recipe leads (structure, limits, BPMN procedure model), IDTA ProcessParameters holds the setpoints; referenced, not duplicated. |
 
 ---
 
@@ -39,7 +43,7 @@
 | Godot export templates | ⚠️ missing | Only needed for exported builds (M6). Editor and headless runs don't need them. |
 | VR toolchain | ⚠️ none on macOS | No OpenXR runtime and no Android SDK. Acceptable, see D1. |
 | GitHub MCP plugin | ⚠️ failed to connect (auth header) | Doesn't matter; the `gh` CLI works. |
-| To be installed by me (project-local) | ➕ | GUT 9.6.1 (tests), godot-mqtt V1.4 (pure-GDScript MQTT), gdtoolkit (`gdlint`/`gdformat`), `eclipse-mosquitto:2` image, Python: `paho-mqtt`, `httpx`, `pydantic`, `fastapi`+`uvicorn`, `xmlschema`, `aas-test-engines`, `pytest`, `import-linter`. |
+| To be installed by me (project-local) | ➕ | GUT 9.6.1 (tests), own GDScript MQTT 3.1.1 client (M4; replaced godot-mqtt V1.4), gdtoolkit (`gdlint`/`gdformat`), `eclipse-mosquitto:2` image, Python: `paho-mqtt`, `httpx`, `pydantic`, `fastapi`+`uvicorn`, `xmlschema`, `aas-test-engines`, `pytest`, `import-linter`. |
 
 **Result: every prerequisite for implementation is met.** The open items are either installed project-locally in M0 or not needed until later (export templates, VR).
 
@@ -193,8 +197,8 @@ Virtual-Factory/
 │   ├── world/                 # hall, lighting, props
 │   ├── player/                # PlayerRig interface, DesktopRig, (XRRig later)
 │   ├── ui/                    # world-space panels, AAS inspector, HMI, i18n
-│   ├── config/                # layouts/*.layout.json, uns.yaml – shared with Python
-│   ├── addons/                # gut, mqtt (third-party)
+│   ├── config/                # layouts/*.layout.json, uns.json – shared with Python
+│   ├── addons/                # gut (third-party)
 │   └── tests/                 # integration tests (unit tests live next to modules)
 ├── services/                  # Python uv workspace
 │   ├── vf_common/             # config, ID scheme, AAS builders, REST client
@@ -323,7 +327,8 @@ devices/light_barrier/
 
 - State topics are retained.
 - Godot publishes a session birth message (`line01/plc01/state/session`). The MES uses it to start a new session, which wipes the previous workpiece instance AAS (D8).
-- The topic registry `config/uns.yaml` is the single source. Docs and the AID submodels are generated from it.
+- The topic registry `config/uns.json` is the single source. Docs and the AID submodels are generated from it.
+- **As implemented (M4):** see [docs/interfaces/uns.md](interfaces/uns.md); the examples above are the original sketch.
 
 ### 3.10 IT services (Python)
 
@@ -347,7 +352,7 @@ Model building and serialisation use `basyx-python-sdk` 2.2. REST calls use the 
 | `mqtt` | `eclipse-mosquitto:2` (TCP + WebSocket listeners) | **1883 / 9001** |
 | `databridge`, `mes`, `ops-gateway` | built from `services/` | 8095 (ops) |
 
-BaSyx Go MQTT eventing (experimental, submodel granularity only) stays **off** at first. The Godot AAS inspector polls. Eventing becomes an optional switch once validated (M4).
+BaSyx Go MQTT eventing (experimental, submodel granularity only) is **on** since M4 (D13): CloudEvents on `vf/basyx/...`, used by the bridge to reload mappings.
 
 ### 3.12 AAS model
 
@@ -474,7 +479,7 @@ Each milestone ends with a **checkpoint**: screenshots or renders plus a short r
 | **M1 Simulation core + greybox line** | FMI layer + master, PLC runtime + FBs + PackML, all device models with primitive-geometry views, UR5e kinematics/trajectory, physics transport, layout loader, desktop rig, unit tests | **Greybox line running end to end** (screenshots + short frame sequence); performance baseline; renderer ADR |
 | **M2 3D assets (Blender)** | Product variants → conveyor → light barrier → QA station → KLT → assembly cell → UR5e + gripper → hall/props; baked clips; glTF export; views swapped into the device scenes | One render **per asset** as it's done (send → feedback), then in-engine screenshots |
 | **M3 AAS model + provisioning** | Asset master data, AAS builders for all submodels, concept descriptions, AASX preload, conformance tests, REST client decision | AAS Web UI screenshots of type, machine and line AAS; conformance report |
-| **M4 OT/IT integration** | MQTT gateway + UNS, data bridge (AID/AIMC-driven), MES (sessions, workpiece AAS, QA, PCF, KPIs, orders/recipe download), ops_gateway + delegated Operations | Live values in the AAS Web UI while the factory runs; an agent-style Operation call (`Start`/`Hold`) works end to end |
+| **M4 OT/IT integration** | MQTT gateway + UNS, data bridge (AID/AIMC-driven), MES (sessions, workpiece AAS, QA, PCF, KPIs, orders/recipe download), ops_gateway + delegated Operations; *added after M3 review:* BPMN orchestration (Operaton), BaSyx eventing, recipe restructuring | Live values in the AAS Web UI while the factory runs; an agent-style Operation call (`Start`/`Hold`) works end to end |
 | **M5 UX + training** | AAS inspector, data-flow visualisation, HMI, stack lights, scenarios/fault injection, demo tour, DE/EN i18n, quality presets, layout edit mode (stretch) | Screenshots per feature + a scenario walkthrough |
 | **M6 Hardening + docs** | Low-end performance pass, Compatibility check, export templates + desktop builds (macOS/Windows/Linux), XR-readiness review (XRRig stub compiles, checklist), docs completed, conformance report, open issues | Final report, builds, documentation |
 

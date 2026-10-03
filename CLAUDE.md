@@ -3,7 +3,8 @@
 Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` (arc42) + `docs/adr/`.
 
 ## Commands
-- Backend: `docker compose -f infra/docker-compose.yml up -d` (project `vf`; ports 8091 AAS env, 3001 UI, 1883/9001 MQTT).
+- Backend: `docker compose -f infra/docker-compose.yml up -d [--build]` (project `vf`; ports 8091 AAS env, 3001 UI,
+  1883/9001 MQTT, 8092 Operaton BPMN (demo/demo), 8095 ops gateway). Services: bridge, mes, ops-gateway (`services/`).
   Do NOT touch the separate `rebac-*` containers (other project on 8080/8082/3000).
 - GDScript tests: `tools/run_godot_tests.sh` (also compiles every script) · line run: `tools/run_line_simulation.sh [s]`
 - Python tests: `uv run pytest` (`-m integration` needs the stack) · interface docs: `uv run tools/gen_interface_docs.py`
@@ -27,5 +28,7 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
 - Renderer is Compatibility (ADR-0010). Keep draw calls ≤ 450 incl. shadows (`--vf-perf-report=5 --vf-perf-warmup=170`).
 - Long Godot runs from the shell: wrap in `perl -e 'alarm N; exec @ARGV' ...` (macOS can throttle background windows).
 - Keep docs (requirements status, interfaces, open issues) in sync with code changes.
+- UNS contract: `godot/config/uns.json` (Godot gateway, AID generation and all services read it). BPMN models in
+  `bpmn/` (deployed by the MES). Line commands only via LINE01 LineControl operations (delegated to ops-gateway).
 - AAS data: use IDTA templates (aas/templates/idta) where they exist; custom templates only in the YAML DSL with en/de
   texts. Quote YAML texts containing ',' or ':' in flow maps. Device interfaces (AID/AIMC) are generated - never hand-write.

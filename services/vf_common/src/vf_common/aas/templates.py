@@ -16,6 +16,8 @@ Custom template DSL (aas/templates/custom/*.yaml):
         definition: {en: ..., de: ...}
         supplementalSemanticIds: [...]  # optional, e.g. equivalent ECLASS IRDIs
         elements: [...]                 # children of collections / entities / lists
+        inputs: [...]                   # Operation: input / output / inoutput variables (element specs)
+        outputs: [...]
 
 Each element gets the semantic id <ID_BASE>/cd/<name>/<idShort>/<version>/<revision> (unless given) and an
 IEC 61360 concept description, so custom templates have the same structure and quality as IDTA templates.
@@ -41,6 +43,8 @@ DATA_TYPES = {"xs:double": "REAL_MEASURE", "xs:float": "REAL_MEASURE", "xs:decim
               "xs:int": "INTEGER_COUNT", "xs:integer": "INTEGER_COUNT", "xs:long": "INTEGER_COUNT",
               "xs:unsignedInt": "INTEGER_COUNT", "xs:boolean": "BOOLEAN", "xs:dateTime": "TIMESTAMP",
               "xs:date": "DATE", "xs:duration": "STRING", "xs:anyURI": "IRI", "xs:string": "STRING"}
+OPERATION_VARIABLES = {"inputs": "inputVariables", "outputs": "outputVariables",
+                       "inoutputs": "inoutputVariables"}
 
 
 class TemplateLibrary:
@@ -140,6 +144,13 @@ def _type_fields(el: dict, e: dict, mt: str, tname: str, ver: str, rev: str, cds
     elif mt == "Entity":
         el["entityType"] = e.get("entityType", "SelfManagedEntity")
         el["statements"] = children
+    elif mt == "Operation":
+        for key, field in OPERATION_VARIABLES.items():
+            variables = [_element(c, tname, ver, rev, cds) for c in e.get(key, [])]
+            for var in variables:
+                var.pop("qualifiers")  # operation variables are always present
+            if variables:
+                el[field] = [{"value": var} for var in variables]
 
 
 def _concept_description(cd_id: str, e: dict, mt: str) -> dict:

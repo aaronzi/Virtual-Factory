@@ -12,7 +12,8 @@ from PIL import Image
 
 def main() -> None:
     src, out = Path(sys.argv[1]), Path(sys.argv[2])
-    first, last, step, width, fps = (int(a) for a in (sys.argv[3:8] + ["0", "100000", "1", "800", "15"][len(sys.argv) - 3:]))
+    first, last, step, width, fps = (
+        int(a) for a in (sys.argv[3:8] + ["0", "100000", "1", "800", "15"][len(sys.argv) - 3:]))
     files = sorted(src.glob("*.png"))[first:last:step]
     frames = []
     for f in files:

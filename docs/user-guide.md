@@ -10,15 +10,23 @@ docker compose -f infra/docker-compose.yml up -d
 ```
 - AAS Web UI: http://localhost:3001
 - AAS API (BaSyx Go AAS Environment): http://localhost:8091 (Swagger UI at `/swagger`)
-- MQTT: `localhost:1883` (TCP), `ws://localhost:9001` (WebSocket)
+- MQTT: `localhost:1883` (TCP), `ws://localhost:9001` (WebSocket); BaSyx change events on `vf/basyx/#`
+- BPMN engine (Operaton): Cockpit http://localhost:8092/operaton/app/cockpit/, Tasklist
+  http://localhost:8092/operaton/app/tasklist/ (local user `demo` / `demo`), REST `/engine-rest`
+- Services: `bridge` (UNS → AAS), `mes` (workpiece AAS, BPMN workers), `ops-gateway` (AAS operations → PLC),
+  see [interfaces/services.md](interfaces/services.md). Logs: `docker compose -f infra/docker-compose.yml logs -f mes`
 
-Stop it with `docker compose -f infra/docker-compose.yml down`. The database is ephemeral (tmpfs).
+Stop it with `docker compose -f infra/docker-compose.yml down`. The database and the BPMN engine are ephemeral.
+After changing code in `services/`, rebuild with `docker compose -f infra/docker-compose.yml up -d --build`.
 
 ## Start the factory
 Open `godot/project.godot` in Godot 4.7 and press Play, or run:
 ```bash
 /Applications/Godot.app/Contents/MacOS/Godot --path godot
 ```
+The factory publishes its state to the MQTT broker (UNS, see [interfaces/uns.md](interfaces/uns.md)); without a
+running broker it works normally and reconnects in the background. Options after `--`: `--vf-uns=mqtt://host:1883`
+or `--vf-uns=ws://host:9001` selects another broker, `--vf-uns=off` disables MQTT.
 
 ### Desktop controls
 | Input | Action |
@@ -31,7 +39,21 @@ Open `godot/project.godot` in Godot 4.7 and press Play, or run:
 
 ## What you see
 The line runs automatically (PackML auto-start). The overlay shows the line state, the inspection results, KLT fill
-levels, robot step and line power. Full KLTs are exchanged automatically after 4 s.
+levels, robot step and line power. Full KLTs are exchanged automatically 4 s after the last part was placed
+(`auto_exchange`; can be switched off and KLTs exchanged manually with the MQTT command `klt_exchange_command`).
+
+## Factory and AAS together (M4)
+With the backend and the factory running:
+- Live values appear in the AAS of every device (OperationalData, EnergyConsumption, PowerTimeSeries).
+- Each released cylinder gets its own AAS (`PC3280_2026_<number>`), filled at inspection and packing: executed
+  processes, quality inspection, measurement values, actual carbon footprint, location in the KLT. The KLT AAS list
+  their contents (HierarchicalStructures). A new factory start begins a new session and removes the old instances.
+- Cockpit shows one `Workpiece lifecycle` instance per part in production.
+- **Production order:** in Tasklist *Start process → Production order (MES)* (quantity, manual KLT exchange,
+  reject rate limit). With manual exchange, full KLTs appear as task *Exchange KLT*; completing it exchanges the KLT.
+- **Command the line through its AAS:** LINE01 → LineControl → `ExecutePackMLCommand` (Start, Stop, Hold, Unhold,
+  Reset, Suspend, Unsuspend, Abort, Clear), `ExchangeContainer`, `SetAutoExchange` - e.g. with curl, see
+  [interfaces/services.md](interfaces/services.md#starting-a-production-order).
 
 ## AAS model (provisioner)
 `docker compose up` runs the one-shot `provisioner` service, which generates one AASX per asset into

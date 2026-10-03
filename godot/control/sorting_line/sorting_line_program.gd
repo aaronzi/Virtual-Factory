@@ -2,6 +2,8 @@ extends PlcProgram
 ## PLC program of LINE01 (inspection & sorting). Sequence per part:
 ##   WAIT_PART (belt runs) -LB02↑-> POSITIONING (stop delay) -> SETTLING -> INSPECTING (trigger QA)
 ##   -> WAIT_ROBOT (free robot, target KLT not full) -> PICKING (until part clear) -> WAIT_PART
+## When the robot reports a job done, sorted_serial/target/slot and sorted_count are set in the same scan.
+## KLT exchange: automatic after exchange_delay (auto_exchange) or manual via klt_exchange_command.
 
 enum Seq { WAIT_PART, POSITIONING, SETTLING, INSPECTING, WAIT_ROBOT, PICKING }
 const S := PackMLStateMachine.State
@@ -15,6 +17,7 @@ var _lb02_rise := IecRTrig.new()
 var _stop_delay := IecTon.new()
 var _settle := IecTon.new()
 var _result_ok := false
+var _last_klt_command := 0
 
 
 func _on_initialize() -> void:
@@ -28,7 +31,9 @@ func _scan(dt: float) -> void:
 		packml.command(C.START)
 	var executing := packml.state == S.EXECUTE
 	_tracker.update(_get_var("ac_release_count"), _get_var("ac_last_serial"), _get_var("lb01_signal"), dt)
-	_robot.update(_get_var("rb_job_done"))
+	if _robot.update(_get_var("rb_job_done")):
+		_report_sorted()
+	_handle_klt_exchange_command()
 	var lb02_rising := _lb02_rise.update(_get_var("lb02_signal"))
 	if executing or packml.state in [S.SUSPENDED, S.HELD]:
 		_run_sequence(dt, lb02_rising, executing)
@@ -79,15 +84,37 @@ func _request_pick(executing: bool) -> void:
 		packml.command(C.SUSPEND)
 	elif not full and packml.state == S.SUSPENDED:
 		packml.command(C.UNSUSPEND)
-	if executing and not full and _robot.is_idle() and _robot.request(target, klt.next_slot):
+	# no new job while an exchange is pending: the part would land in the replacement KLT
+	var available := not full and not klt.exchange_request
+	if executing and available and _robot.is_idle() \
+			and _robot.request(target, klt.next_slot, _get_var("serial_at_qs")):
 		klt.place()
 		_seq = Seq.PICKING
 
 
+func _report_sorted() -> void:
+	_set_var("sorted_serial", _robot.serial)
+	_set_var("sorted_target", _robot.target)
+	_set_var("sorted_slot", _robot.slot)
+	_set_var("sorted_count", _get_var("sorted_count") + 1)
+
+
+## klt_exchange_command (1 = KLT A, 2 = KLT B) is edge-triggered like packml_command.
+func _handle_klt_exchange_command() -> void:
+	var cmd: int = _get_var("klt_exchange_command")
+	if cmd != _last_klt_command and _klt.has(cmd):
+		_klt[cmd].request_exchange()
+	_last_klt_command = cmd
+
+
 func _update_klts(dt: float) -> void:
 	var capacity: int = _get_var("klt_capacity")
-	_klt[1].update(capacity, _get_var("klt_a_count"), _get_var("auto_exchange"), _get_var("exchange_delay"), dt)
-	_klt[2].update(capacity, _get_var("klt_b_count"), _get_var("auto_exchange"), _get_var("exchange_delay"), dt)
+	var auto: bool = _get_var("auto_exchange")
+	var delay: float = _get_var("exchange_delay")
+	var counts := {1: _get_var("klt_a_count"), 2: _get_var("klt_b_count")}
+	for target: int in _klt:
+		var placing := _robot.job_start() and _robot.target == target
+		_klt[target].update(capacity, counts[target], auto, delay, dt, placing)
 
 
 func _write_outputs(executing: bool) -> void:

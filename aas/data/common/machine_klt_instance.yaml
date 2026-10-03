@@ -42,3 +42,18 @@ submodels:
               - _idShort: LoadHeightContainer
                 PropertyProperty: {_idShort: LoadHeight, value: "0.55"}
                 PropertyComment: {en: "Height of the container bottom above floor (place height for the robot) [m]", de: "Höhe des Behälterbodens über Boden (Ablagehöhe für den Roboter) [m]"}
+  # Current contents: station (entry node) -> KLT box on the station -> packed workpieces (Node + HasPart each).
+  # The MES adds the workpieces at runtime and replaces the box node when the KLT is exchanged. Starts empty.
+  - template: HierarchicalStructures-1.1
+    values:
+      ArcheType: OneDown
+      EntryNode:
+        entityType: SelfManagedEntity
+        globalAssetId: ${asset:SELF}
+        statements:
+          Node:
+            - _idShort: Box
+              _description: {en: "KLT 6428 box currently on the station (empty at session start)", de: "KLT-6428-Behälter, der aktuell auf der Station steht (bei Sitzungsbeginn leer)"}
+              entityType: CoManagedEntity
+          HasPart:
+            - {_idShort: HasPart_Box, first: "sm:SELF/HierarchicalStructures#EntryNode", second: "sm:SELF/HierarchicalStructures#EntryNode.Box"}

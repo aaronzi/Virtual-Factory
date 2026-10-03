@@ -9,17 +9,16 @@ Description) and how they map to submodel elements (IDTA AIMC), and process valu
 Hand-maintaining this per device would drift from the simulation.
 
 ## Decision
-- The provisioner generates, per device, from `modelDescription.xml` + `godot/config/uns.yaml` + the asset data:
+- The provisioner generates, per device, from `modelDescription.xml` + `godot/config/uns.json` + the asset data:
   - **AID** (MQTT interface; one WoT property per FMI output with JSON payload `{v, ts}`, unit, and forms with topic,
     retain and QoS; actions for writable inputs)
-  - **AIMC 2.0** (one mapping per output → OperationalData/EnergyConsumption element; JSON lookup transformation for
-    state codes)
+  - **AIMC 2.0** (one mapping per output → OperationalData/EnergyConsumption element; state codes are mapped by a
+    Lua transformation with the template's `aimc_main(sources)` entry point, generated from `device.state.map`)
   - **OperationalData** process values with **generated concept descriptions** (`…/cd/fmi/<Model>/<variable>`, unit
     and definition from the model description)
   - **SimulationModels** ports and model file
   - PowerTimeSeries
-- The edge data bridge (M4) configures itself by reading the AIMC/AID from BaSyx: the same pattern as the BaSyx
-  DataBridge.
+- The AIMC bridge (M4, [ADR-0015](0015-aimc-bridge.md)) configures itself by reading the AIMC/AID from BaSyx.
 
 ## Consequences
 + The FMI model description is the single source of truth for device interfaces in the simulation, MQTT and AAS.

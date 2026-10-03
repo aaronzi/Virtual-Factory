@@ -1,6 +1,6 @@
 name: ManufacturingRecipe
 version: "1"
-revision: "0"
+revision: "1"
 displayName: {en: "Manufacturing Recipe", de: "Fertigungsrezept"}
 description:
   en: >-
@@ -36,7 +36,7 @@ elements:
       - idShort: Parameters
         modelType: SubmodelElementCollection
         preferredName: {en: "formula parameters", de: "Formelparameter"}
-        definition: {en: "Process parameters with nominal value and limits.", de: "Prozessparameter mit Nennwert und Grenzen."}
+        definition: {en: "Process parameters with acceptance limits; the setpoint is referenced from IDTA 02031 Process Parameters or given as nominal value.", de: "Prozessparameter mit Annahmegrenzen; der Sollwert wird aus IDTA 02031 Process Parameters referenziert oder als Nennwert angegeben."}
         elements:
           - idShort: Parameter__00__
             conceptName: Parameter
@@ -47,11 +47,12 @@ elements:
             elements:
               - {idShort: ParameterId, preferredName: {en: "parameter identifier", de: "Parameterkennung"}, definition: {en: "Identifier of the parameter within the recipe.", de: "Kennung des Parameters innerhalb des Rezepts."}}
               - {idShort: ParameterName, modelType: MultiLanguageProperty, preferredName: {en: "parameter name", de: "Parametername"}, definition: {en: "Name of the parameter.", de: "Name des Parameters."}}
-              - {idShort: NominalValue, preferredName: {en: "nominal value", de: "Nennwert"}, definition: {en: "Nominal (target) value in lexical form.", de: "Nennwert (Sollwert) in lexikalischer Form."}}
+              - {idShort: NominalValue, cardinality: ZeroToOne, preferredName: {en: "nominal value", de: "Nennwert"}, definition: {en: "Nominal (target) value in lexical form.", de: "Nennwert (Sollwert) in lexikalischer Form."}}
               - {idShort: LowerLimit, valueType: xs:double, cardinality: ZeroToOne, preferredName: {en: "lower limit", de: "untere Grenze"}, definition: {en: "Lowest permitted value.", de: "Kleinster zulässiger Wert."}}
               - {idShort: UpperLimit, valueType: xs:double, cardinality: ZeroToOne, preferredName: {en: "upper limit", de: "obere Grenze"}, definition: {en: "Highest permitted value.", de: "Größter zulässiger Wert."}}
               - {idShort: Unit, cardinality: ZeroToOne, preferredName: {en: "unit", de: "Einheit"}, definition: {en: "Unit of the values (UCUM or SI symbol).", de: "Einheit der Werte (UCUM- oder SI-Symbol)."}}
               - {idShort: ParameterSemantic, modelType: ReferenceElement, cardinality: ZeroToOne, preferredName: {en: "parameter semantics", de: "Parametersemantik"}, definition: {en: "Reference to a concept description defining the parameter.", de: "Referenz auf eine Begriffsbeschreibung, die den Parameter definiert."}}
+              - {idShort: ProcessParameterReference, modelType: ReferenceElement, cardinality: ZeroToOne, preferredName: {en: "process parameter reference", de: "Verweis auf Prozessparameter"}, definition: {en: "Reference to the element of the IDTA 02031 Process Parameters submodel that holds the setpoint of this parameter (single source of the value; NominalValue is then omitted).", de: "Verweis auf das Element des Teilmodells IDTA 02031 Process Parameters, das den Sollwert dieses Parameters enthält (einzige Quelle des Werts; NominalValue entfällt dann)."}}
       - idShort: Inputs
         modelType: SubmodelElementCollection
         cardinality: ZeroToOne
@@ -106,6 +107,12 @@ elements:
     preferredName: {en: "procedure", de: "Prozedur"}
     definition: {en: "Ordered procedure steps (unit procedures and operations) of the recipe.", de: "Geordnete Prozedurschritte (Teilprozeduren und Operationen) des Rezepts."}
     elements:
+      - idShort: ProcedureModel
+        modelType: File
+        contentType: application/bpmn+xml
+        cardinality: ZeroToOne
+        preferredName: {en: "procedure model", de: "Prozedurmodell"}
+        definition: {en: "Executable model of the procedure (BPMN 2.0 process) run by the workflow engine of the MES; its elements are referenced by ExecutionElement of the steps.", de: "Ausführbares Modell der Prozedur (BPMN-2.0-Prozess), das von der Workflow-Engine des MES ausgeführt wird; seine Elemente werden über ExecutionElement der Schritte referenziert."}
       - idShort: Step__00__
         conceptName: Step
         modelType: SubmodelElementCollection
@@ -123,3 +130,5 @@ elements:
           - {idShort: ParameterRefs, cardinality: ZeroToOne, preferredName: {en: "parameter references", de: "Parameterverweise"}, definition: {en: "Comma-separated ParameterIds of the formula used by this step.", de: "Kommagetrennte ParameterIds der Formel, die dieser Schritt verwendet."}}
           - {idShort: PlannedDuration, valueType: xs:duration, cardinality: ZeroToOne, preferredName: {en: "planned duration", de: "geplante Dauer"}, definition: {en: "Planned execution time of the step (ISO 8601 duration).", de: "Geplante Ausführungszeit des Schritts (ISO-8601-Dauer)."}}
           - {idShort: QualityRelevant, valueType: xs:boolean, cardinality: ZeroToOne, preferredName: {en: "quality relevant", de: "qualitätsrelevant"}, definition: {en: "True if the step produces a quality record.", de: "Wahr, wenn der Schritt einen Qualitätsnachweis erzeugt."}}
+          - {idShort: ProcessReference, modelType: ReferenceElement, cardinality: ZeroToOne, preferredName: {en: "process reference", de: "Prozessverweis"}, definition: {en: "Reference to the process of the IDTA 02031 Process Parameters submodel that parameterises this step.", de: "Verweis auf den Prozess im Teilmodell IDTA 02031 Process Parameters, der diesen Schritt parametriert."}}
+          - {idShort: ExecutionElement, cardinality: ZeroToOne, preferredName: {en: "execution element", de: "Ausführungselement"}, definition: {en: "Identifier of the element of the procedure model (e.g. BPMN task id) that executes or records this step.", de: "Kennung des Elements im Prozedurmodell (z. B. BPMN-Task-ID), das diesen Schritt ausführt oder erfasst."}}

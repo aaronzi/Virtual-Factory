@@ -4,3 +4,6 @@ EmissionFactorSource:
   en: "German electricity mix 2024 (location-based), Umweltbundesamt, provisional value; assumption for training purposes"
   de: "Strommix Deutschland 2024 (standortbasiert), Umweltbundesamt, vorläufiger Wert; Annahme für Schulungszwecke"
 MeasurementStart: "2026-10-01T06:00:00+00:00"
+# derived values, updated by the MES every 10 s (EnergyConsumed x EmissionFactor)
+OperationalCO2eq: 0
+LastUpdate: "2026-10-01T06:00:00+00:00"

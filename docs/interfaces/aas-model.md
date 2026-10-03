@@ -54,12 +54,13 @@ the FMI model description, the layout or the UNS registry.
 | CompanyData | I 1.0 | ● | | | | | | | | | | | | |
 | AssetLocation | I 1.0 (G) | ● | ● | | | ● | ● | ● | / ● | ● | / ● | | / ● | / ● |
 | Models3D | I 1.0 (G) | | | ● | | | ● | ● | ● / | ● | ● / | | ● / | |
-| HierarchicalStructures | I 02011 1.1 | ● (site) | ● (line) | ● (BoM) | | | | | | | / ● (robot cell) | | | |
+| HierarchicalStructures | I 02011 1.1 | ● (site) | ● (line) | ● (BoM) | | | | | | | / ● (robot cell) | | / ● (contents, G at runtime) | |
 | CapabilityDescription | I 02020 1.0 | | ● | | | | ● | ● | / ● | ● | / ● | | / ● | / ● |
 | ControlComponentType | I 2.0 | | | | | | | | | | ● / | | | ● / |
 | ControlComponentInstance | I 2.0 | | | | | | | | | | / ● | | | / ● |
 | ProcessParameters | I 02031 1.0 | | | ● | | | | | | | | | | |
-| ManufacturingRecipe | C | | | ● | | | | | | | | | | |
+| ManufacturingRecipe | C 1.1 | | | ● | | | | | | | | | | |
+| LineControl (Operations) | C 1.0 | | ● | | | | | | | | | | | |
 | DppMetadata | I 1.0 | | | ● (model) | | ● (item) | | | | | | | | |
 | ProductMaterialComposition | C (from DBP) | | | ● | ● | | | | | | | | | |
 | ProductCircularity | C (from DBP) | | | ● | | | | | | | | | | |
@@ -94,7 +95,7 @@ Rationale for the main choices:
     action `packml_command`.
   - The Control Component Instance references these via `Endpoints`. This follows Control Component 2.0, which keeps
     runtime state out of the submodel.
-- **Interfaces:** the AID (MQTT, UNS topics from `godot/config/uns.yaml`) and the AIMC mapping (AID property →
+- **Interfaces:** the AID (MQTT, UNS topics from `godot/config/uns.json`) and the AIMC mapping (AID property →
   OperationalData/EnergyConsumption element, with JSON lookup transformations) are *generated* from the FMI model
   descriptions. The edge data bridge (M4) reads exactly this AIMC from BaSyx.
 - **Process values:** every FMI output becomes an OperationalData process value with its own concept description
@@ -151,16 +152,41 @@ Rationale for the main choices:
   - Power typical 200 W, max 570 W.
   - 17 configurable safety functions, PLd Category 3 (EN ISO 13849-1).
 
-## 6. Recipe representations compared (IDTA 02031 vs. custom ISA-88 recipe)
+## 6. Recipe representations (IDTA 02031 and custom ISA-88 recipe, M4: complementary roles)
 
-| Aspect | Process Parameters (IDTA 02031) | ManufacturingRecipe (custom) |
+Both describe OP10–OP90, but since M4 each has its own job and they reference each other instead of duplicating
+values:
+
+| Aspect | Process Parameters (IDTA 02031) | ManufacturingRecipe 1.1 (custom, ISA-88) |
 |---|---|---|
-| Structure | Flat list of processes, each with product/process/resource parameters and process BoM | ISA-88: header, formula, equipment requirements, procedure |
-| Sequencing | Not modelled (process order implicit) | Explicit `Sequence` and `Predecessors` |
-| Resource assignment | Resource parameters per process (concrete values) | Required **capabilities**, optional candidate resource; master vs. control recipe |
-| Parameters | Arbitrary elements with semantic ids | Uniform `Parameter` (nominal, limits, unit, semantics) |
+| Role | **Setpoints**: product/process/resource parameters per process (single source of the values) | **Structure and acceptance**: header, formula limits, equipment requirements, procedure |
+| Sequencing | Not modelled | `Sequence`, `Predecessors`, executable **procedure model** (`Procedure/ProcedureModel` = `bpmn/workpiece_lifecycle.bpmn`) |
+| Links | – | `Parameter/ProcessParameterReference` → the setpoint element; `Step/ProcessReference` → the process; `Step/ExecutionElement` → BPMN task that executes/records the step |
+| Resource assignment | Resource parameters (concrete resource) | Required **capabilities**, optional candidate resource |
 | Life cycle | Submodel versioning only | Recipe version, approval status, valid-from |
-| Reuse at runtime | Same structure as ExecutedProcesses (instance) | Downloaded by the MES as control recipe (M4) |
+| Runtime use | Same structure as ExecutedProcesses of the instance | MES: limits for the quality verdict; Operaton: procedure model |
+
+`NominalValue` is kept only where no single setpoint element exists (composite reference colour, stroke time
+nominal between min/max).
+
+## 6a. Runtime submodels (M4)
+
+- **Workpiece instance AAS** grow along the process (stages released → inspected → packed, or lost); structure from
+  `aas/data/blueprints/workpiece_instance.yaml`, see [services.md](services.md#mes). Thumbnail: link to the product
+  type's thumbnail (no copy per part).
+- **KLT contents** (KLTA01/KLTB01 `HierarchicalStructures`, archetype OneDown): station → `Box` (KLT on the station,
+  CoManagedEntity) → one Node per packed workpiece (`globalAssetId` = workpiece asset id) + `HasPart`. Cleared on
+  exchange.
+- **Instance PCF** (ISO 14067 terminology, simplified, R9): Σ BulkCount × component PCF (A1–A3, read from the
+  component AAS found via the type's BoM) + line energy per part (rolling 5 min, from EnergyConsumption) × emission
+  factor (0.363 kg/kWh). The declared type PCF (4.2 kg) additionally covers upstream manufacturing at suppliers.
+- **EnergyConsumption** (devices + LINE01 totals): `OperationalCO2eq`, `LastUpdate`, `MeasurementStart` (session
+  start) maintained by the MES; **PowerTimeSeries**: segment `Session` with `StartTime`, `SamplingInterval` 10 s,
+  records `Time` (s since start) / `Power` (W), ring buffer of 180 records.
+- **LINE01 KPIs** (02066): production, busy, delay (Suspended) and down time from PackML state durations; good,
+  inspected, produced, scrap quantities from the PLC counters.
+- **AIMC transformations** are Lua (`aimc_main(sources)`, template-conformant), e.g. PackML state number →
+  `OperatingState` name.
 
 ## 7. Asset data format (`aas/data/assets/<TAG>.yaml`)
 
@@ -173,6 +199,10 @@ See `services/vf_common/src/vf_common/aas/environment.py` and `instantiate.py`. 
   only when `energy.power` names a live power output (PLC01 and the KLT stands have none).
 - `location: false | [x, y, z]` (default: the position from the layout), `locationDescription` (text or en/de),
   `locationTime` (ISO 8601; default commissioning date) generate AssetLocation.
+- `thumbnail: repo:<path>` (embedded) or `{path: <absolute URL>, contentType}` (runtime AAS linking an existing image).
+- Tag `SELF` in `${asset:SELF}` / `sm:SELF/...` refers to the asset being built (shared files such as
+  `common/machine_klt_instance.yaml`).
+- Operations: `{_delegation: <URL>}` adds the BaSyx `invocationDelegation` qualifier (LINE01 LineControl → ops gateway).
 - `submodels: [{template: <Name-ver>, idShort?, values}]`. Values are keyed by idShort:
   - collections are maps, lists are lists
   - repeated/placeholder elements (`X__00__`) are lists, with an optional `_idShort` per item

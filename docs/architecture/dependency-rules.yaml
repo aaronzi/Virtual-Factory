@@ -24,7 +24,6 @@ isolated_submodules: [devices]
 # Third-party addons and which modules may use them.
 addons:
   gut: ["*tests*"]          # test code only
-  mqtt: [connectivity]
 
 # Code below any `tests/` folder may depend on anything (excluded from the adherence score).
 test_dirs: [tests]

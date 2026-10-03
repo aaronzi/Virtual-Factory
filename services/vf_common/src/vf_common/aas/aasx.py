@@ -46,7 +46,8 @@ def write_aasx_per_shell(environment: dict, files: dict[str, str], shell_files: 
 
 
 def _package_object_ids(environment: dict, shell: dict) -> list[str]:
-    """The shell, its submodels and every concept description used by them (semantic, list and supplemental ids)."""
+    """The shell, its submodels and every concept description used by them (semantic, list and supplemental
+    ids)."""
     sm_ids = {ref["keys"][0]["value"] for ref in shell.get("submodels", [])}
     submodels = [sm for sm in environment["submodels"] if sm["id"] in sm_ids]
     used: set[str] = set()
@@ -70,8 +71,8 @@ def _collect_ids(node, ids: set[str]) -> None:
 
 
 def _strip_empty_specific_asset_ids(package: Path) -> None:
-    """basyx-python-sdk 2.2 serialises Entities with `"specificAssetIds": []`, which violates the V3.0 JSON schema
-    (minItems 1) and is rejected by aas-test-engines. Removes the empty arrays from the JSON parts."""
+    """basyx-python-sdk 2.2 serialises Entities with `"specificAssetIds": []`, which violates the V3.0 JSON
+    schema (minItems 1) and is rejected by aas-test-engines. Removes the empty arrays from the JSON parts."""
     with zipfile.ZipFile(package) as src:
         entries = [(info, src.read(info.filename)) for info in src.infolist()]
     with zipfile.ZipFile(package, "w", zipfile.ZIP_DEFLATED) as dst:
@@ -101,5 +102,6 @@ def _thumbnail(path: Path, width: int = 480) -> io.BytesIO:
 
 def _mime(path: str) -> str:
     suffix = path.rsplit(".", 1)[-1].lower()
-    return {"png": "image/png", "pdf": "application/pdf", "glb": "model/gltf-binary", "xml": "application/xml",
+    return {"png": "image/png", "pdf": "application/pdf", "glb": "model/gltf-binary",
+            "xml": "application/xml", "bpmn": "application/bpmn+xml",
             "json": "application/json"}.get(suffix, "application/octet-stream")

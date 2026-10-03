@@ -2,11 +2,11 @@
 
 | ID | Type | Description | Mitigation / next step | Status |
 |---|---|---|---|---|
-| R1 | Risk | BaSyx Go MQTT eventing is experimental and works at submodel granularity | Godot polls at 1 Hz; eventing is an optional switch later | open |
+| R1 | Risk | BaSyx Go MQTT eventing is experimental and works at submodel granularity | M4: enabled (CloudEvents with submodel id/semanticId only); used by the bridge to reload mappings, consumers re-read the submodel; nothing in the core flow depends on it | mitigated |
 | R2 | Risk | basyx-python-sdk 2.2 vs BaSyx Go metamodel V3.2 | Round trip verified (M0); M3: V3.0 AASX strictly validated and imported by BaSyx Go 1.1.0 (warnings only for V3.1+ idShort rules in IDTA templates) | mitigated |
 | R3 | Gap | No IDTA templates for energy consumption, quality inspection, recipe; DBP material/circularity are battery-specific | Custom templates EnergyConsumption, OperationalData, QualityInspection, ManufacturingRecipe, ProductMaterialComposition, ProductCircularity with IEC 61360 CDs (ADR-0011); production log uses IDTA ExecutedProcesses | mitigated |
 | R4 | Risk | Physics instability of workpieces on the belt | **M1: stable in a 600 s run** (no tipping; stop accuracy ±10 mm). `can_sleep=false` needed ([ADR-0009](adr/0009-physical-transport-and-items.md)) | mitigated |
-| R5 | Risk | REST write load from telemetry and workpieces | Throttling and deadband in the bridge, ephemeral sessions | open |
+| R5 | Risk | REST write load from telemetry and workpieces | M4: bridge writes ≤ 1/s per numeric element with deadband (~15 writes/s), workpiece AAS 3 builds per part, rolling retention (500) | mitigated |
 | R6 | Constraint | Godot MCP has no screenshot or script-editing tools | Direct file authoring, `tools/screenshot.sh` | mitigated |
 | R7 | Risk | UR5e IK singularities / wrist flips | Analytic IK verified on 2000 random poses; elbow-up home, closest-solution continuity. Residual ≤ 0.2 mm near wrist singularity (single-precision `Transform3D`) | mitigated |
 | R8 | Legal | UR5e appearance resembles the real product | No logos; name used only on the nameplate | open |
@@ -28,3 +28,11 @@
 | O14 | Limitation | AID payload description uses object properties `Value`/`Timestamp` with `key` v/ts (idShort ≥ 2 characters) | Matches the UNS payload; data bridge must read the `key` | open |
 | O15 | Upstream | basyx-python-sdk 2.2 serialises Entities with `"specificAssetIds": []` (violates the V3.0 JSON schema, minItems 1) | `aasx._strip_empty_specific_asset_ids` post-processes the package; remove when fixed upstream | open |
 | O16 | Upstream | `AASXWriter.write_aas()` only follows ModelReference semanticIds, so packages built from IDTA templates (GlobalReferences) contain no concept descriptions | Explicit object set via `write_all_aas_objects` | mitigated |
+| O17 | Limitation | Godot MQTT client: outgoing QoS 1 is not resent after a reconnect; events during a broker outage are lost | Retained telemetry is republished on reconnect; event `seq` gaps are detectable; add an outbox if needed | open |
+| O18 | Improvement | UNS telemetry ≈ 200 msg/s at real time, mostly slowly accumulating values (`energy`, `operating_hours`) at 10 Hz | Optional per-variable interval/deadband in uns.json if broker or bridge load matters | open |
+| O19 | Info | BaSyx Go omits Blob values unless `extent=withBlobValue` is requested (spec default) - AIMC transformations looked empty | Bridge requests the extent explicitly | closed |
+| O20 | Constraint | BaSyx operation delegation checks the resolved IP of the delegate against `SMREPO_DELEGATION_TRUSTED_HOSTS` (no CIDR) | ops-gateway has a fixed IP (172.30.42.95) in the compose network | accepted |
+| O21 | Limitation | An MES restart (like a new Godot session) removes the workpiece AAS and processes of the running session | MES state is rebuilt from the AAS/engine only on a new session; persist the instance list if restarts mid-session matter | open |
+| O22 | Limitation | PackML acting states that complete within one PLC scan (e.g. HOLDING) never appear in telemetry | Consumers see 6 → 11 directly; ops gateway waits for the target state | accepted |
+| O23 | Simplification | Assembly-cell process data other than leak rate / stroke time (torques, forces, lots) is generated deterministically by the MES around the recipe values | Documented in services.md; extend the AC01 FMU if a scenario needs them | accepted |
+| O24 | Improvement | AAS Web UI deep links (`?aas=…&path=…`) are the reliable way to show a workpiece; with ~300 workpiece AAS per hour the shell list gets long | Retention window; filter by asset kind in M5 UI | open |

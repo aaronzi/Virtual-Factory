@@ -49,7 +49,8 @@ TEMPLATES = {
     "MaintenanceInstructions-1.0": ID + "MaintenanceInstructions/1/0",
     "SoftwareNameplate-1.0": ID + "SoftwareNameplate/1/0",
     "DataRetentionPolicies-1.0": "https://admin-shell.io/idta/DataRetentionPolicies/1/0",
-    "ProcessVariablesForManufacturingKPICalculation-1.0": ID + "ProcessVariablesForManufacturingKPICalculation/1/0",
+    "ProcessVariablesForManufacturingKPICalculation-1.0":
+        ID + "ProcessVariablesForManufacturingKPICalculation/1/0",
     "ProductionCalendar-1.0": ID + "ProductionCalendar/1/0",
     "CompanyData-1.0": ID + "CompanyData/1/0",
     # Digital Battery Passport templates: reference for the generic product variants in aas/templates/custom

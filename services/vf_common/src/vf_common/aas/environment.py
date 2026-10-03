@@ -17,7 +17,9 @@ Asset definition (see docs/interfaces/aas-model.md):
 
 String values may contain ${asset:TAG}, ${aas:TAG}, ${sm:TAG/IdShort} (replaced by identifiers).
 ReferenceElements use {"ref": "aas:TAG" | "sm:TAG/IdShort" | "sm:TAG/IdShort#a.b.c" | "global:IRI"}.
-File values / thumbnails starting with "repo:" are embedded as supplementary files.
+TAG "SELF" stands for the asset being built (for shared files included by several assets).
+File values / thumbnails starting with "repo:" are embedded as supplementary files; a thumbnail may also be
+{path: <absolute URL>, contentType} (runtime AAS referring to an existing image).
 """
 
 from __future__ import annotations
@@ -32,6 +34,7 @@ from .templates import TemplateLibrary
 from .values import file_value, mlp_value
 
 VAR = re.compile(r"\$\{(asset|aas|sm):([^}]+)\}")
+SELF = re.compile(r"^SELF(?=$|/)")
 
 
 @dataclass
@@ -68,7 +71,8 @@ class EnvironmentBuilder:
         for ref in self._pending:
             self._resolve_pending(ref)
         cds = self.library.concept_descriptions_for(self.submodels)
-        return {"assetAdministrationShells": self.shells, "submodels": self.submodels, "conceptDescriptions": cds}
+        return {"assetAdministrationShells": self.shells, "submodels": self.submodels,
+                "conceptDescriptions": cds}
 
     # -- assets -----------------------------------------------------------------------------------
 
@@ -87,7 +91,8 @@ class EnvironmentBuilder:
             if spec.get(key):
                 shell[key] = mlp_value(spec[key])
         if spec.get("derivedFrom"):
-            shell["derivedFrom"] = self._model_ref([("AssetAdministrationShell", ids.aas_id(spec["derivedFrom"]))])
+            shell["derivedFrom"] = self._model_ref(
+                [("AssetAdministrationShell", ids.aas_id(spec["derivedFrom"]))])
         self.shells.append(shell)
 
     def _asset_information(self, spec: dict, aas_id: str) -> dict:
@@ -97,8 +102,11 @@ class EnvironmentBuilder:
         specific = [{"name": k, "value": str(v)} for k, v in (spec.get("specificAssetIds") or {}).items()]
         if specific:
             info["specificAssetIds"] = specific
-        if spec.get("thumbnail"):
-            thumb = file_value(self._embed(spec["thumbnail"], spec["tag"], aas_id))
+        thumbnail = spec.get("thumbnail")
+        if isinstance(thumbnail, dict):  # {path: absolute URL, contentType} - e.g. the type's thumbnail
+            info["defaultThumbnail"] = dict(thumbnail)
+        elif thumbnail:
+            thumb = file_value(self._embed(thumbnail, spec["tag"], aas_id))
             info["defaultThumbnail"] = {"path": thumb["value"], "contentType": thumb["contentType"]}
         return info
 
@@ -114,7 +122,8 @@ class EnvironmentBuilder:
             self.report.unknown[key] = result.unknown
         if sm_spec.get("semanticId"):
             result.submodel["semanticId"] = {"type": "ExternalReference",
-                                             "keys": [{"type": "GlobalReference", "value": sm_spec["semanticId"]}]}
+                                             "keys": [{"type": "GlobalReference",
+                                                       "value": sm_spec["semanticId"]}]}
         self.submodels.append(result.submodel)
         return result.submodel
 
@@ -128,7 +137,9 @@ class EnvironmentBuilder:
         if isinstance(node, str):
             if node.startswith("repo:"):
                 return self._embed(node, tag, aas_id)
-            return VAR.sub(lambda m: self._identifier(m.group(1), m.group(2)), node)
+            if node.startswith(("sm:SELF/", "aas:SELF")):
+                node = node.replace("SELF", tag, 1)
+            return VAR.sub(lambda m: self._identifier(m.group(1), SELF.sub(tag, m.group(2), count=1)), node)
         return node
 
     def _identifier(self, kind: str, target: str) -> str:

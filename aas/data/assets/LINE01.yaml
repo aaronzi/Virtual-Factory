@@ -274,3 +274,17 @@ submodels:
       ActualPower: 0
       EnergyConsumed: 0
       CompressedAir: {AirConsumed: 0, SpecificEnergy: 0.12}
+
+  # Invocable line services (custom). BaSyx forwards each invocation to the ops gateway (invocationDelegation),
+  # which sends the command to PLC01 via MQTT (AID action) and waits for the acknowledgement / state change.
+  - template: LineControl-1.0
+    values:
+      Controller: {ref: "aas:PLC01"}
+      ControlComponent: {ref: "sm:PLC01/ControlComponentInstance"}
+      StateModel: "ISA-TR88.00.02 (PackML)"
+      CurrentState: {ref: "sm:PLC01/OperationalData#OperatingState"}
+      ExecutePackMLCommand: {_delegation: "http://ops-gateway:8095/operations/ExecutePackMLCommand"}
+      ExchangeContainer:
+        _delegation: "http://ops-gateway:8095/operations/ExchangeContainer"
+        _description: {en: "Exchange a full KLT: 1 = KLTA01 (good parts), 2 = KLTB01 (rejects)", de: "Vollen KLT wechseln: 1 = KLTA01 (Gutteile), 2 = KLTB01 (Ausschuss)"}
+      SetAutoExchange: {_delegation: "http://ops-gateway:8095/operations/SetAutoExchange"}

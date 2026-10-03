@@ -6,9 +6,11 @@ Data is a nested dict keyed by idShort (see docs/interfaces/aas-model.md, "Asset
     SubmodelElementCollection dict                        File: "path" or {value, contentType}
     SubmodelElementList      list of item data            Range: {min, max, valueType?}
     placeholder X__00__ / repeated ZeroToMany element: list -> X01, X02, ... (or "_idShort" per item)
-    ReferenceElement         {"ref": "<resolver key>"}    Entity: {entityType, globalAssetId, specificAssetIds, statements}
+    ReferenceElement         {"ref": "<resolver key>"}    Entity: {entityType, globalAssetId,
+                                                                  specificAssetIds, statements}
     RelationshipElement      {"first": "<key>", "second": "<key>"}
     Capability               {} (only "_idShort"/"_description")
+    Operation                {"_delegation": "<URL>"} (BaSyx invocationDelegation qualifier) or {}
     Blob                     {"contentType": ..., "value": str | bytes | JSON object}
     extra element            "+Name": {modelType, valueType, value, semanticId, description, ...}
     any element              "_idShort" / "_description" / "_semanticId" override the template values
@@ -76,7 +78,8 @@ class _Ctx:
                 used.add(key)
                 out += self.fill_named(tmpl, data[key], f"{path}.{key}")
             elif _cardinality(tmpl) not in OPTIONAL and not PLACEHOLDER.search(name):
-                out.append(self.fill_one(tmpl, {} if tmpl["modelType"] in CONTAINERS else None, f"{path}.{name}"))
+                out.append(self.fill_one(tmpl, {} if tmpl["modelType"] in CONTAINERS else None,
+                                         f"{path}.{name}"))
         for key, value in data.items():
             if key.startswith("+"):
                 out.append(_extra_element(key[1:], value))
@@ -117,6 +120,16 @@ class _Ctx:
         filler(el, value, path)
         return el
 
+    def _fill_Operation(self, el: dict, value: Any, path: str) -> None:
+        """{_delegation: URL} adds the BaSyx `invocationDelegation` qualifier (invocation is forwarded
+        there)."""
+        for field in ("inputVariables", "outputVariables", "inoutputVariables"):
+            for var in el.get(field, []):
+                var["value"].pop("qualifiers", None)
+        if isinstance(value, dict) and value.get("_delegation"):
+            el["qualifiers"] = [{"type": "invocationDelegation", "kind": "ConceptQualifier",
+                                 "valueType": "xs:string", "value": value["_delegation"]}]
+
     def _fill_Property(self, el: dict, value: Any, path: str) -> None:
         if isinstance(value, dict):  # {value, valueType, semanticId, _idShort, ...} for repeated properties
             if value.get("valueType"):
@@ -146,7 +159,8 @@ class _Ctx:
             el.update(file_value(value))
 
     def _fill_Blob(self, el: dict, value: Any, path: str) -> None:
-        """{contentType, value}: value (str/bytes, or JSON-serialisable for application/json) is base64-encoded."""
+        """{contentType, value}: value (str/bytes, or JSON-serialisable for application/json) is
+        base64-encoded."""
         if not value:
             el.pop("value", None)
             return
@@ -192,7 +206,8 @@ class _Ctx:
             if key in value:
                 el[key] = value[key]
         if value.get("specificAssetIds"):
-            el["specificAssetIds"] = [{"name": k, "value": str(v)} for k, v in value["specificAssetIds"].items()]
+            el["specificAssetIds"] = [{"name": k, "value": str(v)}
+                                      for k, v in value["specificAssetIds"].items()]
         if el.get("entityType") == "CoManagedEntity":
             el.pop("globalAssetId", None)
             el.pop("specificAssetIds", None)

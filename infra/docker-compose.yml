@@ -8,11 +8,22 @@
 #   3001  BaSyx AAS Web UI
 #   1883  MQTT (TCP)            – edge services, MQTT Explorer
 #   9001  MQTT over WebSocket   – Godot shop-floor simulation
+#   8092  Operaton BPMN engine  – Cockpit / Tasklist (/operaton/app/), REST (/engine-rest), local user demo/demo
+#   8095  ops gateway           – AAS operation delegation target (health: /health)
 #
 # The database lives on tmpfs: every `up` starts with a fresh DB. The one-shot `provisioner` service builds the
 # static AAS into ./basyx/preload, which BaSyx imports at startup (workpiece instances are ephemeral, ADR-0004).
+# M4 services (ADR-0014..0017): bridge (UNS -> AAS via AIMC), mes (workpiece AAS, BPMN workers), ops-gateway
+# (delegated AAS operations -> UNS commands), bpmn (Operaton). The Godot simulation runs on the host and connects
+# to ws://localhost:9001.
 
 name: vf
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.30.42.0/24   # fixed, because BaSyx checks the resolved delegation address (ops-gateway)
 
 x-postgres-env: &postgres-env
   POSTGRES_HOST: db
@@ -78,6 +89,15 @@ services:
       GENERAL_EXTERNALURL: http://localhost:8091
       GENERAL_AAS_PRECONFIG_PATHS: /app/preconfiguration
       LOGGING_LEVEL: info
+      # MQTT eventing (CloudEvents, submodel granularity) on vf/basyx/... - used by the bridge to reload mappings
+      BASYX_EVENTING_ENABLED: "true"
+      BASYX_EVENTING_OUTBOX_ENABLED: "true"
+      BASYX_EVENTING_SINKS: mqtt
+      BASYX_EVENTING_MQTT_BROKER: mqtt://mqtt:1883
+      BASYX_EVENTING_MQTT_CLIENT_ID: basyx-aas-env
+      BASYX_EVENTING_TOPIC_PREFIX: vf/basyx
+      # operation delegation targets (host and resolved address must be allow-listed)
+      SMREPO_DELEGATION_TRUSTED_HOSTS: "ops-gateway:8095,172.30.42.95:8095,172.30.42.95"
     volumes:
       - ./basyx/preload:/app/preconfiguration:ro
     depends_on:
@@ -85,6 +105,8 @@ services:
         condition: service_completed_successfully
       provisioner:
         condition: service_completed_successfully
+      mqtt:
+        condition: service_started
     restart: unless-stopped
 
   aas-ui:
@@ -105,4 +127,57 @@ services:
       - "9001:9001"
     volumes:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    restart: unless-stopped
+
+  bpmn:
+    image: operaton/operaton:2.1.5
+    ports:
+      - "8092:8080"
+    environment:
+      OPERATON_BPM_RUN_EXAMPLE_ENABLED: "false"   # in-memory H2 per container: process data is ephemeral
+    restart: unless-stopped
+
+  bridge:
+    image: vf-services:dev
+    command: ["-m", "bridge"]
+    environment: &service-env
+      VF_AAS_URL: http://aas-env:8091
+      VF_MQTT_URL: mqtt://mqtt:1883
+      VF_BPMN_URL: http://bpmn:8080/engine-rest
+      VF_AAS_PUBLIC_URL: http://localhost:8091
+      LOG_LEVEL: INFO
+    volumes:
+      - ..:/repo:ro
+    depends_on:
+      aas-env:
+        condition: service_started
+    restart: unless-stopped
+
+  mes:
+    image: vf-services:dev
+    command: ["-m", "mes"]
+    environment: *service-env
+    volumes:
+      - ..:/repo:ro
+    depends_on:
+      aas-env:
+        condition: service_started
+      bpmn:
+        condition: service_started
+    restart: unless-stopped
+
+  ops-gateway:
+    image: vf-services:dev
+    command: ["-m", "ops_gateway"]
+    environment: *service-env
+    ports:
+      - "8095:8095"
+    volumes:
+      - ..:/repo:ro
+    networks:
+      default:
+        ipv4_address: 172.30.42.95
+    depends_on:
+      mqtt:
+        condition: service_started
     restart: unless-stopped

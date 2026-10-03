@@ -24,13 +24,14 @@ Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robo
 | 11 | `klt_a_count` | input | discrete | Int32 |  | 0 | KLT A measured fill count |
 | 12 | `klt_b_count` | input | discrete | Int32 |  | 0 | KLT B measured fill count |
 | 13 | `packml_command` | input | discrete | Int32 |  | 0 | PackML command (1 Reset, 2 Start, 3 Stop, 4 Hold, 5 Unhold, 6 Suspend, 7 Unsuspend, 8 Abort, 9 Clear); edge-triggered on change |
+| 14 | `klt_exchange_command` | input | discrete | Int32 |  | 0 | Manual container exchange (1 KLT A, 2 KLT B, 0 none); edge-triggered on change, only if the KLT holds parts |
 | 50 | `scan_time` | parameter | fixed | Float64 | s | 0.01 | PLC cycle time |
 | 51 | `auto_start` | parameter | fixed | Boolean |  | true | Reset and start automatically |
 | 52 | `belt_speed` | parameter | tunable | Float64 | m/s | 0.25 | Conveyor speed setpoint (recipe) |
 | 53 | `lb02_stop_delay` | parameter | tunable | Float64 | s | 0.17 | Delay after LB02 until the belt stops so the part is centred at the station |
 | 54 | `settle_time` | parameter | tunable | Float64 | s | 0.35 | Wait after belt stop before measuring |
 | 55 | `klt_capacity` | parameter | tunable | Int32 |  | 12 |  |
-| 56 | `auto_exchange` | parameter | tunable | Boolean |  | true | Exchange full KLTs automatically (demo/agent mode) |
+| 56 | `auto_exchange` | parameter | tunable | Boolean |  | true | Exchange full KLTs automatically after exchange_delay (demo mode); false = operator/MES exchanges via klt_exchange_command |
 | 57 | `exchange_delay` | parameter | tunable | Float64 | s | 4.0 |  |
 | 58 | `infeed_timeout` | parameter | fixed | Float64 | s | 8.0 | Max time between release and LB01 |
 | 59 | `max_parts_on_belt` | parameter | fixed | Int32 |  | 3 |  |
@@ -56,6 +57,10 @@ Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robo
 | 119 | `sequence_step` | output | discrete | Int32 |  | 0 | 0 wait part, 1 positioning, 2 settling, 3 inspecting, 4 wait robot, 5 picking |
 | 120 | `parts_on_belt` | output | discrete | Int32 |  | 0 |  |
 | 121 | `infeed_faults` | output | discrete | Int32 |  | 0 |  |
+| 122 | `sorted_count` | output | discrete | Int32 |  | 0 | Parts placed into a KLT (increments when the robot reports job done; sorted_* are set in the same scan) |
+| 123 | `sorted_serial` | output | discrete | String |  | "" | Serial of the last sorted part (latched at inspection) |
+| 124 | `sorted_target` | output | discrete | Int32 |  | 0 | KLT of the last sorted part: 1 = KLT A (OK), 2 = KLT B (NOK) |
+| 125 | `sorted_slot` | output | discrete | Int32 |  | 0 | Slot index of the last sorted part in its KLT |
 
 ## AssemblyCell
 

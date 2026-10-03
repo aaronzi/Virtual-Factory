@@ -32,6 +32,8 @@
         description="KLT B measured fill count"/>
     <Int32 name="packml_command" valueReference="13" causality="input" variability="discrete" start="0"
         description="PackML command (1 Reset, 2 Start, 3 Stop, 4 Hold, 5 Unhold, 6 Suspend, 7 Unsuspend, 8 Abort, 9 Clear); edge-triggered on change"/>
+    <Int32 name="klt_exchange_command" valueReference="14" causality="input" variability="discrete" start="0"
+        description="Manual container exchange (1 KLT A, 2 KLT B, 0 none); edge-triggered on change, only if the KLT holds parts"/>
     <Float64 name="scan_time" valueReference="50" causality="parameter" variability="fixed" start="0.01" unit="s"
         description="PLC cycle time"/>
     <Boolean name="auto_start" valueReference="51" causality="parameter" variability="fixed" start="true"
@@ -44,7 +46,7 @@
         description="Wait after belt stop before measuring"/>
     <Int32 name="klt_capacity" valueReference="55" causality="parameter" variability="tunable" start="12"/>
     <Boolean name="auto_exchange" valueReference="56" causality="parameter" variability="tunable" start="true"
-        description="Exchange full KLTs automatically (demo/agent mode)"/>
+        description="Exchange full KLTs automatically after exchange_delay (demo mode); false = operator/MES exchanges via klt_exchange_command"/>
     <Float64 name="exchange_delay" valueReference="57" causality="parameter" variability="tunable" start="4.0" unit="s"/>
     <Float64 name="infeed_timeout" valueReference="58" causality="parameter" variability="fixed" start="8.0" unit="s"
         description="Max time between release and LB01"/>
@@ -75,6 +77,14 @@
         description="0 wait part, 1 positioning, 2 settling, 3 inspecting, 4 wait robot, 5 picking"/>
     <Int32 name="parts_on_belt" valueReference="120" causality="output" variability="discrete" initial="exact" start="0"/>
     <Int32 name="infeed_faults" valueReference="121" causality="output" variability="discrete" initial="exact" start="0"/>
+    <Int32 name="sorted_count" valueReference="122" causality="output" variability="discrete" initial="exact" start="0"
+        description="Parts placed into a KLT (increments when the robot reports job done; sorted_* are set in the same scan)"/>
+    <String name="sorted_serial" valueReference="123" causality="output" variability="discrete" initial="exact"
+        description="Serial of the last sorted part (latched at inspection)"><Start value=""/></String>
+    <Int32 name="sorted_target" valueReference="124" causality="output" variability="discrete" initial="exact" start="0"
+        description="KLT of the last sorted part: 1 = KLT A (OK), 2 = KLT B (NOK)"/>
+    <Int32 name="sorted_slot" valueReference="125" causality="output" variability="discrete" initial="exact" start="0"
+        description="Slot index of the last sorted part in its KLT"/>
   </ModelVariables>
   <ModelStructure>
     <Output valueReference="100"/>
@@ -99,5 +109,9 @@
     <Output valueReference="119"/>
     <Output valueReference="120"/>
     <Output valueReference="121"/>
+    <Output valueReference="122"/>
+    <Output valueReference="123"/>
+    <Output valueReference="124"/>
+    <Output valueReference="125"/>
   </ModelStructure>
 </fmiModelDescription>

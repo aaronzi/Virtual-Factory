@@ -45,7 +45,8 @@ def test_device_interfaces_match_fmi_outputs(result):
         device = load_yaml(path).get("device")
         if not device:
             continue
-        outputs = {v.name for v in read_model_description(REPO / device["modelDescription"]).by_causality("output")}
+        outputs = {v.name for v in
+                   read_model_description(REPO / device["modelDescription"]).by_causality("output")}
         aid = _sm(env, tag, "AssetInterfacesDescription")
         interface = aid["submodelElements"][0]
         meta = next(e for e in interface["value"] if e["idShort"] == "InteractionMetadata")
@@ -61,7 +62,8 @@ def test_aasx_packages_are_conformant(result, tmp_path: Path):
     for path in write_outputs(result if not _has_blueprints(result) else build(), tmp_path):
         with open(path, "rb") as fh:
             check = aas_file.check_aasx_file(fh)
-        assert check.ok(), f"{path.name}: " + "\n".join(line for line in check.to_lines() if "\x1b[91m" in line)
+        assert check.ok(), f"{path.name}: " + "\n".join(
+            line for line in check.to_lines() if "\x1b[91m" in line)
         with zipfile.ZipFile(path) as package:
             data = json.loads(package.read("aasx/data.json"))
         assert data.get("conceptDescriptions"), f"{path.name}: concept descriptions must be packaged"
@@ -72,7 +74,8 @@ def _child(el: dict, id_short: str) -> dict:
 
 
 def _has_blueprints(result) -> bool:
-    return any(s["id"].endswith("WP_PC3280_2026_000123") for s in result.environment["assetAdministrationShells"])
+    return any(s["id"].endswith("WP_PC3280_2026_000123")
+               for s in result.environment["assetAdministrationShells"])
 
 
 def test_environment_json_roundtrip(result):

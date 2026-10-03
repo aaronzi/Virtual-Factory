@@ -7,7 +7,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 VAR_TAGS = ("Float64", "Int32", "UInt64", "Boolean", "String")
-JSON_TYPES = {"Float64": "number", "Int32": "integer", "UInt64": "integer", "Boolean": "boolean", "String": "string"}
+JSON_TYPES = {"Float64": "number", "Int32": "integer", "UInt64": "integer", "Boolean": "boolean",
+              "String": "string"}
 XSD_TYPES = {"Float64": "xs:double", "Int32": "xs:int", "UInt64": "xs:unsignedLong", "Boolean": "xs:boolean",
              "String": "xs:string"}
 
@@ -44,7 +45,11 @@ class ModelDescription:
         return [v for v in self.variables if v.causality == causality]
 
     def variable(self, name: str) -> FmiVariable:
-        return next(v for v in self.variables if v.name == name)
+        found = next((v for v in self.variables if v.name == name), None)
+        if found is None:
+            raise KeyError(f"{self.model_name} has no FMI variable '{name}' "
+                           "(referenced by godot/config/uns.json?)")
+        return found
 
 
 def read_model_description(path: Path) -> ModelDescription:
@@ -59,6 +64,7 @@ def read_model_description(path: Path) -> ModelDescription:
         variables.append(FmiVariable(
             name=el.get("name"), type=el.tag, causality=el.get("causality", "local"),
             variability=el.get("variability", ""), unit=el.get("unit", ""),
-            description=el.get("description", ""), start=start or "", min=el.get("min", ""), max=el.get("max", "")))
+            description=el.get("description", ""), start=start or "", min=el.get("min", ""),
+            max=el.get("max", "")))
     return ModelDescription(root.get("modelName"), root.get("description", ""), root.get("version", "1.0.0"),
                             tuple(variables))

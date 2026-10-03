@@ -1,0 +1,17 @@
+[project]
+name = "mes"
+version = "0.1.0"
+description = "MES: sessions, workpiece instance AAS, quality, PCF, KPIs and BPMN external-task workers (Operaton)"
+requires-python = ">=3.12"
+dependencies = ["vf-common", "provisioner"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mes"]
+
+[tool.uv.sources]
+vf-common = { workspace = true }
+provisioner = { workspace = true }
