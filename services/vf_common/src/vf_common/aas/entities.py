@@ -22,6 +22,8 @@ def asset_names(specs: list[dict]) -> Names:
     out: Names = {}
     for spec in specs:
         gid = spec.get("globalAssetId") or ids.asset_id(spec["tag"])
+        if spec.get("idBase") and not spec.get("globalAssetId"):
+            gid = spec["idBase"].rstrip("/") + gid[len(ids.ID_BASE):]
         out[gid] = {key: _mlp(spec[key]) for key in ("displayName", "description") if spec.get(key)}
     return out
 

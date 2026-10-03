@@ -13,12 +13,15 @@ var _config: UnsConfig
 var _queue: Array = []  # [Route, value, corr]
 
 
-func _init(master: CoSimMaster, config: UnsConfig) -> void:
+## `opcua`: only the devices on the OPC UA path (default: only the directly published ones).
+func _init(master: CoSimMaster, config: UnsConfig, opcua := false) -> void:
 	_config = config
 	var section := config.section("commands")
 	var pulses: Array = section.get("pulse", [])
 	var writable: Dictionary = section.get("writable", {})
 	for device: String in writable:
+		if not config.on_path(device, opcua):
+			continue
 		for var_name: String in writable[device]:
 			var ep := UnsConfig.resolve(master, "%s.%s" % [device, var_name])
 			if ep.is_empty() or not (ep.variable as Fmi3Variable).is_settable_in_step_mode():

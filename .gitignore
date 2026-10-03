@@ -44,5 +44,6 @@ __pycache__/
 
 # Generated AAS (provisioner output)
 infra/basyx/preload/*.aasx
+infra/basyx/preload-supplier/*.aasx
 aas/build/
 /build/

@@ -6,7 +6,7 @@ const H := 1.0 / 60.0
 const PICK := Vector3(0.0, -0.55, 0.25)
 
 
-func _make() -> Fmi3CoSimulation:
+func _make(params := {}) -> Fmi3CoSimulation:
 	var m: Fmi3CoSimulation = Model.new()
 	m.instantiate("RB", Fmi3ModelDescription.load_file(MD))
 	_set_vec(m, "pick", PICK)
@@ -16,6 +16,8 @@ func _make() -> Fmi3CoSimulation:
 	_set_vec(m, "place_b", Vector3(-0.6, 0.18, -0.025))
 	_set_vec(m, "place_b_row", Vector3(-0.6, -0.18, -0.025))
 	_set_vec(m, "place_b_col", Vector3(-0.4, 0.18, -0.025))
+	for key: String in params:
+		m.set_value(key, params[key])
 	m.enter_initialization_mode()
 	m.exit_initialization_mode()
 	return m
@@ -96,5 +98,63 @@ func test_protective_stop_freezes_motion() -> void:
 		t += H
 	assert_false(m.get_value("protective_stopped"))
 	assert_true(m.get_value("job_done"), "job resumes and completes after release")
+	assert_false(m.get_value("fault"))
+	assert_eq(m.get_value("cycle_count"), 1)
+
+
+func _run_job(m: Fmi3CoSimulation, t0: float, limit_s: float) -> float:
+	m.set_value("object_in_grip", true)
+	m.set_value("object_width", 0.047)
+	m.set_value("job_start", true)
+	var t := t0
+	while t < t0 + limit_s and not m.get_value("job_done"):
+		m.do_step(t, H)
+		t += H
+	m.set_value("job_start", false)
+	m.do_step(t, H)
+	return t + H
+
+
+func test_finger_wear_symptoms_and_finger_change() -> void:
+	var m := _make()
+	var t := _run_job(m, 0.0, 20.0)
+	var fresh_close: float = m.get_value("grip_close_time")
+	var fresh_force: float = m.get_value("grip_force")
+	assert_eq(m.get_value("grip_cycles"), 1)
+	assert_between(fresh_close, 0.1, 0.5, "jaws close from 85 mm onto 47 mm")
+	m.set_value("finger_wear_rate", 1.5e-4)
+	for i in 4:
+		t = _run_job(m, t, 20.0)
+	assert_eq(m.get_value("grip_cycles"), 5)
+	assert_almost_eq(m.get_value("finger_wear"), 6e-4, 6e-5)
+	assert_lt(m.get_value("grip_force"), fresh_force - 10.0)
+	assert_gt(m.get_value("grip_close_time"), fresh_close)
+	assert_eq(m.get_value("cycle_count"), 5, "no failure below the slip threshold")
+	m.set_value("gripper_maintenance_reset", true)
+	m.do_step(t, H)
+	m.set_value("gripper_maintenance_reset", false)
+	m.do_step(t + H, H)
+	assert_eq(m.get_value("grip_cycles"), 0)
+	assert_eq(m.get_value("finger_wear"), 0.0)
+
+
+func test_worn_out_fingers_fault_until_the_fingers_are_changed() -> void:
+	var m := _make({"finger_wear_start": 1.3e-3})
+	m.set_value("object_in_grip", true)
+	m.set_value("object_width", 0.047)
+	m.set_value("job_start", true)
+	var t := 0.0
+	while t < 8.0 and not m.get_value("gripper_fault"):
+		m.do_step(t, H)
+		t += H
+	assert_true(m.get_value("gripper_fault"), "every regrip slips")
+	assert_true(m.get_value("fault"), "robot fault for the PLC (alarm 202)")
+	assert_false(m.get_value("job_done"), "the job waits at the pick position")
+	assert_eq(m.get_value("grasp_retries"), 3)
+	m.set_value("gripper_maintenance_reset", true)
+	while t < 40.0 and not m.get_value("job_done"):
+		m.do_step(t, H)
+		t += H
+	assert_true(m.get_value("job_done"), "retry after the finger change holds the part")
 	assert_false(m.get_value("fault"))
 	assert_eq(m.get_value("cycle_count"), 1)

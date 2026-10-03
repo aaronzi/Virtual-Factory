@@ -9,7 +9,8 @@ import pytest
 
 from mes import lots, passport
 from mes.certificate import CertificateData, generate, sample
-from mes.pdf import Page, render
+from vf_common.digital_link import batch_link
+from vf_common.pdf import Page, render
 from mes.quality import Limits, evaluate
 from mes.store import WorkpieceStore, file_elements
 from mes.workpiece import WorkpieceSpec, load_blueprint
@@ -82,15 +83,18 @@ def test_released_passport_carries_the_reported_lots(specs):
     meta = _values(spec, "DppMetadata")
     assert passport.CONTENT["TechnicalData"] not in meta["contentSpecificationIds"]
     assert passport.CONTENT["HierarchicalStructures"] in meta["contentSpecificationIds"]
+    assert meta["dppStatus"] == "Inactive"  # in production: not yet placed on the market
 
 
 def test_packed_good_part_has_full_passport_and_certificate(specs):
     v = PACKED
     verdict = evaluate(v, Limits())
-    spec = specs.build(v, "packed", verdict, pcf=3.9)
+    spec = specs.build(v, "packed", verdict)
     meta = _values(spec, "DppMetadata")
     assert meta["contentSpecificationIds"] == list(passport.CONTENT.values())
     assert meta["dppStatus"] == "Active"
+    # the CarbonFootprint section is listed but written by the sustainability service, not by the MES
+    assert not any(s["template"].startswith("CarbonFootprint") for s in spec["submodels"])
     section = _values(spec, "TechnicalData")["TechnicalPropertyAreas"][0]["Section"][-1]
     assert section["+MeasuredLeakRate"]["value"] == 0.41 and section["+MeasuredDeltaE76"]["value"] == 3.4
     documents = _values(spec, "HandoverDocumentation")["Documents"]
@@ -105,7 +109,7 @@ def test_packed_good_part_has_full_passport_and_certificate(specs):
 def test_rejected_part_has_no_certificate_and_an_inactive_passport(specs):
     v = {**PACKED, "deltaE": 40.0, "container": 2}
     verdict = evaluate(v, Limits())
-    spec = specs.build(v, "packed", verdict, pcf=3.9)
+    spec = specs.build(v, "packed", verdict)
     documents = _values(spec, "HandoverDocumentation")["Documents"]
     assert [d["DocumentIds"][0]["DocumentIdentifier"] for d in documents] == [
         "DS-PC3280", "OM-PC3280", "RI-PC3280", "SVHC-PC3280"]
@@ -119,9 +123,17 @@ def test_as_built_bom_mirrors_the_type_bom_with_batch_nodes(specs):
     nodes = passport.bom_nodes(specs.build(V, "released"))
     assert [(n["_idShort"], n["statements"]["BulkCount"]) for n in nodes] == [
         (n["_idShort"], n["statements"]["BulkCount"]) for n in type_nodes]
-    for node in nodes:  # batches have no AAS: CoManagedEntity, linked to the type node by SameAs
-        assert node["entityType"] == "CoManagedEntity" and "globalAssetId" not in node
+    components = {s["tag"]: s for s in load_assets(DATA_ROOT) if s["tag"].startswith("CMP_")}
+    gtins = {n["_idShort"]: components[n["globalAssetId"][8:-1]]["specificAssetIds"].get("gtin")
+             for n in type_nodes}  # globalAssetId "${asset:CMP_...}"
+    for node in nodes:  # linked to the type node by SameAs
         assert node["statements"]["SameAs"][0]["second"].endswith(f"#EntryNode.{node['_idShort']}")
+        lot = node["statements"]["+BatchId"]["value"]
+        if gtins[node["_idShort"]]:  # purchased batch with its own AAS in the supplier environment (ADR-0028)
+            assert node["entityType"] == "SelfManagedEntity"
+            assert node["globalAssetId"] == batch_link(gtins[node["_idShort"]], lot)
+        else:  # in-house lot without AAS
+            assert node["entityType"] == "CoManagedEntity" and "globalAssetId" not in node
 
 
 def test_blueprint_content_list_matches_the_template_semantic_ids():
@@ -172,7 +184,7 @@ class _Aas:
 def test_store_uploads_documents_and_the_generated_certificate(specs):
     v = PACKED
     verdict = evaluate(v, Limits())
-    spec = specs.build(v, "packed", verdict, pcf=3.9)
+    spec = specs.build(v, "packed", verdict)
     aas = _Aas()
     WorkpieceStore(BuildContext(), aas).publish(spec, {f"aas/files/docs/IC-{SERIAL}.pdf": b"%PDF-cert"})
     by_name = {name: (path, size, ctype) for path, name, size, ctype in aas.attachments}

@@ -1,0 +1,79 @@
+# Batch profiles of the supplier portal (services/supplier, ADR-0028): how each supplier article forms its lots
+# and which batch-specific values its batch AAS and material certificate state. Simulation parameters, not AAS
+# data (not loaded by the provisioner). Keys = tag of the supplier's product type AAS (aas/data/supplier/assets).
+#
+#   lot.pattern     regex of the supplier's lot numbers (the lots AC01 stages, component_lots.gd); named group
+#                   `date` (YYMMDD, die caster: one cast lot per day) or `seq` (sequence number)
+#   lot.firstSeq/firstDate/daysPerLot   production date of sequence lots: firstDate + (seq - firstSeq) x days
+#   quantity        pieces per lot (= parts per feeder lot in component_lots.gd x BulkCount)
+#   pcf             batch PCF = declared x (1 + spread x (2u - 1)) - recycledCredit x (recycled - declared
+#                   recycled), u from the lot (process energy of the batch); declared = type CarbonFootprint
+#   recycled        declared average recycled content (%), identical to the PC-32 passport fragment; per lot
+#                   +-15 % (vf_common.lot_values.recycled_share - the MES passport states the same values)
+#   certificate     EN 10204 3.1 content: [characteristic, unit, min, max]; measured values within the limits
+DGP_EC32_F:
+  customerPartId: "5032-1002"
+  lot: {pattern: '^DGP-(?P<date>\d{6})-F$'}
+  quantity: 180
+  leadDays: 2
+  site: {en: "Plant Landstuhl, die-casting cell 3", de: "Werk Landstuhl, Druckgusszelle 3"}
+  pcf: {spread: 0.06, recycledCredit: 0.006}
+  primaryDataShare: [80, 92]
+  recycled: {material: "Aluminium casting alloy EN AC-46000", pre: 30, post: 55}
+  certificate: &alu
+    material: "EN AC-46000 (AlSi9Cu3(Fe)) to EN 1706, high-pressure die-cast, machined"
+    analysis: [[Si, "%", 8.0, 11.0], [Fe, "%", 0.6, 1.3], [Cu, "%", 2.0, 4.0], [Mn, "%", 0.1, 0.55], [Mg, "%", 0.05, 0.55], [Zn, "%", 0.1, 1.2], [Pb, "%", 0.05, 0.35]]
+    properties: [["Brinell hardness HBW 5/250", "HBW", 80, 110], ["Leak test of the casting at 8 bar", "cm³/min", 0.0, 0.5]]
+    dimensions: [["Rod bore Ø12 H8", "mm", 12.000, 12.027], ["Bore pattern TG 32.5", "mm", 32.45, 32.55], ["Height 24", "mm", 23.9, 24.1]]
+DGP_EC32_R:
+  customerPartId: "5032-1003"
+  lot: {pattern: '^DGP-(?P<date>\d{6})-R$'}
+  quantity: 200
+  leadDays: 2
+  site: {en: "Plant Landstuhl, die-casting cell 3", de: "Werk Landstuhl, Druckgusszelle 3"}
+  pcf: {spread: 0.06, recycledCredit: 0.0054}
+  primaryDataShare: [80, 92]
+  recycled: {material: "Aluminium casting alloy EN AC-46000", pre: 30, post: 55}
+  certificate:
+    <<: *alu
+    dimensions: [["Bore pattern TG 32.5", "mm", 32.45, 32.55], ["Height 24", "mm", 23.9, 24.1]]
+DTS_SK_PC32:
+  customerPartId: "5032-1006"
+  lot: {pattern: '^DTS-2608-(?P<seq>\d{4})$', firstSeq: 1172, firstDate: "2026-08-24", daysPerLot: 3}
+  quantity: 500
+  leadDays: 5
+  site: {en: "Plant Reutlingen, injection moulding hall 2", de: "Werk Reutlingen, Spritzgießhalle 2"}
+  pcf: {spread: 0.08, recycledCredit: 0.0}
+  primaryDataShare: [70, 85]
+  certificate:
+    material: "TPU 93 Shore A (ISO 18064) and NBR 70 Shore A (ISO 1629)"
+    analysis: [["Density TPU (ISO 1183-1)", "g/cm³", 1.20, 1.24], ["Density NBR (ISO 1183-1)", "g/cm³", 1.20, 1.30]]
+    properties: [["Hardness TPU (ISO 48-4)", "Shore A", 90, 96], ["Hardness NBR (ISO 48-4)", "Shore A", 67, 73], ["Tensile strength TPU (ISO 37)", "MPa", 40, 60]]
+    dimensions: [["Piston seal Ø32 outer", "mm", 32.15, 32.35], ["Rod seal Ø12 inner", "mm", 11.70, 11.85]]
+NRN_4762_M5X16:
+  customerPartId: "9001-0516"
+  lot: {pattern: '^NRN-26-(?P<seq>\d{5})$', firstSeq: 33870, firstDate: "2026-09-01", daysPerLot: 1}
+  quantity: 2400
+  leadDays: 3
+  site: {en: "Plant Mannheim, cold forming", de: "Werk Mannheim, Kaltumformung"}
+  pcf: {spread: 0.05, recycledCredit: 0.00008}
+  primaryDataShare: [75, 90]
+  recycled: {material: "Steel 20MnB4", pre: 10, post: 25}
+  certificate:
+    material: "1.5525 (20MnB4) to EN 10263-4, quenched and tempered, property class 8.8 (ISO 898-1), zinc plated"
+    analysis: [[C, "%", 0.18, 0.23], [Mn, "%", 0.80, 1.10], [B, "%", 0.0008, 0.005], [P, "%", 0.0, 0.025], [S, "%", 0.0, 0.025]]
+    properties: [["Tensile strength Rm (ISO 898-1)", "MPa", 800, 950], ["Core hardness", "HV10", 250, 320], ["Zinc layer thickness", "µm", 5, 12]]
+    dimensions: [["Thread M5 gauge 6g", "-", 1, 1], ["Length 16 js16", "mm", 15.65, 16.35]]
+KTW_SK53_RD:
+  customerPartId: "5032-1009"
+  lot: {pattern: '^KTW-26-(?P<seq>\d{4})$', firstSeq: 910, firstDate: "2026-09-04", daysPerLot: 2}
+  quantity: 400
+  leadDays: 2
+  site: {en: "Plant Zweibrücken, injection moulding", de: "Werk Zweibrücken, Spritzguss"}
+  pcf: {spread: 0.10, recycledCredit: 0.0}
+  primaryDataShare: [72, 88]
+  certificate:
+    material: "PE-LD (ISO 1043-1) with red masterbatch RAL 3020"
+    analysis: [["Density (ISO 1183-1)", "g/cm³", 0.918, 0.925], ["Melt flow rate MFR 190/2.16 (ISO 1133)", "g/10 min", 1.5, 4.0]]
+    properties: [["Colour difference to RAL 3020 master, ΔE*ab", "-", 0.0, 2.0], ["Hardness (ISO 868)", "Shore D", 42, 50]]
+    dimensions: [["Width across flats 53", "mm", 52.7, 53.3], ["Height 12", "mm", 11.8, 12.2]]

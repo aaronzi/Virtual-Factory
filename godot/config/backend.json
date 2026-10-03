@@ -1,10 +1,26 @@
 {
-  "_doc": "IT endpoints used by the in-world UI (AAS inspector, operator terminal) and the menu link to the Grafana dashboard. dpp_url: BaSyx DPP API (inspector action 'open passport' of workpieces). Override with --vf-aas-url / --vf-dpp-url / --vf-bpmn-url / --vf-grafana-url.",
+  "_doc": "IT endpoints used by the in-world UI (AAS inspector, operator terminal) and the menu link to the Grafana dashboard. The inspector opens assets by global asset id via discovery + registry (ADR-0023): aas_registries lists the environments [{name, discovery, aas_registry, submodel_registry}] in lookup order (empty = all at aas_url, which is also the fallback repository and the concept description source): the plant's (8091) and the suppliers' (8191, batch AAS of the as-built BoM, ADR-0028). resolver_url: GS1 Digital Link resolver (inspector action 'Scan QR' of workpieces); alarms_url: alarms service (HMI acknowledge button); product_gtin: GTIN of the produced cylinder. Override with --vf-aas-url / --vf-resolver-url / --vf-bpmn-url / --vf-grafana-url / --vf-alarms-url.",
   "aas_url": "http://localhost:8091",
   "aas_events_topic": "vf/basyx/#",
   "id_base": "https://virtual-factory.example/ids",
+  "aas_registries": [
+    {
+      "name": "vf",
+      "discovery": "http://localhost:8091",
+      "aas_registry": "http://localhost:8091",
+      "submodel_registry": "http://localhost:8091"
+    },
+    {
+      "name": "supplier",
+      "discovery": "http://localhost:8191",
+      "aas_registry": "http://localhost:8191",
+      "submodel_registry": "http://localhost:8191"
+    }
+  ],
   "bpmn_url": "http://localhost:8092/engine-rest",
-  "dpp_url": "http://localhost:8093",
+  "resolver_url": "http://localhost:8096",
+  "alarms_url": "http://localhost:8099",
+  "product_gtin": "04099999032808",
   "task_poll_s": 2.0,
   "terminal_position": [
     2.25,

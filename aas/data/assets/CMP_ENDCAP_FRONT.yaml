@@ -7,7 +7,7 @@ displayName: {en: "Front end cap ISO 15552 Ø32 (component type)", de: "Vorderde
 description:
   en: "Die-cast and machined aluminium front end cap with rod bearing seat, G1/8 port and cushioning screw bore for the cylinder PC-32-80-DA-M; supplied by Druckguss Pfalz GmbH."
   de: "Druckgegossener und bearbeiteter Aluminium-Vorderdeckel mit Stangenlagersitz, Anschluss G1/8 und Bohrung für die Dämpfungsschraube für den Zylinder PC-32-80-DA-M; Lieferant Druckguss Pfalz GmbH."
-specificAssetIds: {manufacturerPartId: DGP-EC32-F, customerPartId: "5032-1002"}
+specificAssetIds: {manufacturerPartId: DGP-EC32-F, customerPartId: "5032-1002", gtin: "04099991010019"}
 location: false
 submodels:
   - template: Nameplate-3.0

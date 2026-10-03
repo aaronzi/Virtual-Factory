@@ -16,13 +16,14 @@ from .skills import SkillExecutor
 log = logging.getLogger("ops-gateway")
 
 
-WITH_STATE = {"ExecutePackMLCommand", "ExecuteSkill"}
+WITH_STATE = {"ExecutePackMLCommand", "ExecuteSkill", "SetUnitMode"}
 
 
 def operations(gw: LineGateway) -> dict:
     skills = SkillExecutor(gw)
     return {
         "ExecutePackMLCommand": lambda a: gw.packml_command(str(a.get("Command", ""))),
+        "SetUnitMode": lambda a: skills.set_unit_mode(str(a.get("Mode") or "")),
         # the operation is a shortcut for the skill: container checked against the skill's parameter values
         "ExchangeContainer": lambda a: skills.execute("ExchangeContainer", "",
                                                       {"container": a.get("Container") or ""}),
@@ -35,8 +36,10 @@ def operations(gw: LineGateway) -> dict:
 def health(gw: LineGateway) -> dict:
     config = gw.config
     return {"status": "ok" if config else "unconfigured", "packml_state": gw.state,
+            "unit_mode": gw.values.get("UnitMode"),
             "controller": config.controller if config else None,
-            "endpoints": {k: {"kind": a.kind, "affordance": a.name, "topic": a.form.topic,
+            "endpoints": {k: {"kind": a.kind, "affordance": a.name, "protocol": a.protocol,
+                              "server": a.base if a.protocol == "opcua" else None, "topic": a.form.topic,
                               "ack": a.ack.topic if a.ack else None}
                           for k, a in (config.endpoints.items() if config else [])},
             "skills": sorted(config.skills) if config else []}

@@ -1,5 +1,7 @@
 """Historian service: subscribes to the UNS telemetry of all devices and the session birth message and writes
-every sample into InfluxDB 3 with the UNS timestamp (ADR-0019).
+every sample into InfluxDB 3 with the UNS timestamp (ADR-0019). Condition monitoring results of the
+maintenance service ({root}/maintenance/{component}/{indicator}, ADR-0029) go into the table `maintenance`
+with the tag `component`; their types are listed in uns.json (maintenance.indicators).
 
 The devices and the FMI type of every output come from the asset data (`aas/data`, `device.modelDescription`),
 the same source the provisioner uses for the AAS interfaces - unknown topics are ignored."""
@@ -43,10 +45,15 @@ class Historian:
         self._value_key = uns.config["payload"]["value_key"]
         self._ts_key = uns.config["payload"]["timestamp_key"]
         self._last_stats = time.monotonic()
+        maintenance = uns.config.get("maintenance") or {}
+        self.indicators: dict[str, str] = maintenance.get("indicators", {})
+        self._maintenance_prefix = self._prefix + "maintenance/"
 
     def subscribe(self) -> None:
         self.mqtt.subscribe(self.uns.session_topic, qos=1)  # first: the retained birth precedes the telemetry
         self.mqtt.subscribe(self.uns.telemetry("+", "+"), qos=0)
+        if self.indicators:
+            self.mqtt.subscribe(self.uns.maintenance("+", "+"), qos=1)
 
     def handle(self, topic: str, payload: bytes) -> None:
         try:
@@ -59,6 +66,9 @@ class Historian:
             self.session = str(data.get("id") or self.session or "")
             log.info("session %s", self.session)
             return
+        if topic.startswith(self._maintenance_prefix):
+            self._maintenance(topic, data)
+            return
         device, _, variable = topic.removeprefix(self._prefix).partition("/")
         fmi_type = self.types.get(device, {}).get(variable)
         value = field_value(fmi_type, data.get(self._value_key)) if fmi_type else None
@@ -70,6 +80,20 @@ class Historian:
         except ValueError:
             return
         self.writer.add(device, self.session or "unknown", variable, value, ts_ms)
+
+    def _maintenance(self, topic: str, data: dict) -> None:
+        component, _, indicator = topic.removeprefix(self._maintenance_prefix).partition("/")
+        value_type = self.indicators.get(indicator)
+        value = field_value(value_type, data.get(self._value_key)) if value_type and component else None
+        ts = data.get(self._ts_key)
+        if value is None or not isinstance(ts, str):
+            return
+        try:
+            ts_ms = ts_millis(ts)
+        except ValueError:
+            return
+        self.writer.add("maintenance", self.session or "unknown", indicator, value, ts_ms,
+                        {"component": component.upper()})
 
     def run(self) -> None:
         self.subscribe()

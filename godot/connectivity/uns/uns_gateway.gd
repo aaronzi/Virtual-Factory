@@ -139,5 +139,10 @@ func _status_topic() -> String:
 	return _config.topic(_config.section("session").get("status_topic", "{root}/status"))
 
 
+## Registry view shared with the backplane link (same time base, OPC UA device split).
+func get_config() -> UnsConfig:
+	return _config
+
+
 func is_broker_connected() -> bool:
 	return _client.is_broker_connected()

@@ -1,0 +1,930 @@
+{
+ "uid": "vf-alarms-events",
+ "title": "Alarms & events",
+ "tags": [
+  "virtual-factory",
+  "LINE01",
+  "alarms",
+  "ISA-18.2"
+ ],
+ "description": "ISA-18.2 alarm management of LINE01 and the UNS event journal (alarms service, TimescaleDB, ADR-0026)",
+ "editable": true,
+ "graphTooltip": 1,
+ "refresh": "10s",
+ "schemaVersion": 41,
+ "version": 1,
+ "time": {
+  "from": "now-1h",
+  "to": "now"
+ },
+ "timezone": "browser",
+ "fiscalYearStartMonth": 0,
+ "timepicker": {
+  "refresh_intervals": [
+   "5s",
+   "10s",
+   "30s",
+   "1m",
+   "5m"
+  ]
+ },
+ "templating": {
+  "list": []
+ },
+ "annotations": {
+  "list": []
+ },
+ "links": [
+  {
+   "title": "LINE01 live",
+   "type": "link",
+   "url": "/d/vf-line01-live",
+   "targetBlank": false,
+   "icon": "dashboard",
+   "tooltip": "Process values (historian)",
+   "asDropdown": false,
+   "includeVars": false,
+   "keepTime": true,
+   "tags": []
+  },
+  {
+   "title": "Alarms API",
+   "type": "link",
+   "url": "http://localhost:8099/api/alarms",
+   "targetBlank": true,
+   "icon": "external link",
+   "tooltip": "REST API of the alarms service (acknowledge, shelve)",
+   "asDropdown": false,
+   "includeVars": false,
+   "keepTime": false,
+   "tags": []
+  }
+ ],
+ "liveNow": false,
+ "weekStart": "",
+ "panels": [
+  {
+   "id": 1,
+   "type": "stat",
+   "title": "Standing alarms",
+   "description": "Alarms active now (ISA-18.2 standing alarms; stale = active longer than 1 h)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT count(*) AS \"Standing\" FROM alarm_state WHERE active",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "decimals": 0,
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 1
+       },
+       {
+        "color": "red",
+        "value": 5
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center"
+   }
+  },
+  {
+   "id": 2,
+   "type": "stat",
+   "title": "Unacknowledged",
+   "description": "Alarms waiting for acknowledgement (UNACK, RTNUN)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 4,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT count(*) AS \"Unacknowledged\" FROM alarm_state WHERE state IN ('UNACK', 'RTNUN')",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "decimals": 0,
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 1
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center"
+   }
+  },
+  {
+   "id": 3,
+   "type": "stat",
+   "title": "Shelved / suppressed",
+   "description": "Shelved by an operator (SHLVD) or active but suppressed by design (DSUPR)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT count(*) FILTER (WHERE state IN ('SHLVD', 'DSUPR')) AS \"Hidden\" FROM alarm_state",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "decimals": 0,
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "blue",
+        "value": 1
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center"
+   }
+  },
+  {
+   "id": 4,
+   "type": "stat",
+   "title": "Alarms last 10 min",
+   "description": "Annunciated alarms in the last 10 minutes (EEMUA 191: > 10 = flood)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT count(*) AS \"Last 10 min\" FROM alarm_occurrence WHERE annunciated AND activated_at > now() - INTERVAL '10 minutes'",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "decimals": 0,
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "yellow",
+        "value": 2
+       },
+       {
+        "color": "red",
+        "value": 10
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center"
+   }
+  },
+  {
+   "id": 5,
+   "type": "stat",
+   "title": "Average per 10 min",
+   "description": "Annunciated alarms per 10 minutes over the selected range (EEMUA 191: <= 1 very likely acceptable, <= 2 manageable)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 16,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT count(*)::float / greatest(1, extract(epoch FROM ($__timeTo()::timestamptz - $__timeFrom()::timestamptz)) / 600) AS \"Per 10 min\" FROM alarm_occurrence WHERE annunciated AND $__timeFilter(activated_at)",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "decimals": 2,
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "yellow",
+        "value": 1
+       },
+       {
+        "color": "orange",
+        "value": 2
+       },
+       {
+        "color": "red",
+        "value": 10
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center"
+   }
+  },
+  {
+   "id": 6,
+   "type": "stat",
+   "title": "Mean time to acknowledge",
+   "description": "Average time from activation to acknowledgement in the selected range",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 20,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT avg(extract(epoch FROM acked_at - activated_at)) AS \"MTTA\" FROM alarm_occurrence WHERE acked_at IS NOT NULL AND $__timeFilter(activated_at)",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "decimals": 1,
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "yellow",
+        "value": 60
+       },
+       {
+        "color": "red",
+        "value": 300
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "background",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center"
+   }
+  },
+  {
+   "id": 7,
+   "type": "timeseries",
+   "title": "Annunciated alarms per 10 minutes",
+   "description": "Alarm rate per operator position (ISA-18.2 / EEMUA 191 benchmark lines at 1 and 10)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 4,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT $__timeGroupAlias(activated_at, '10m', 0), count(*) AS \"Alarms\" FROM alarm_occurrence WHERE annunciated AND $__timeFilter(activated_at) GROUP BY 1 ORDER BY 1",
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "drawStyle": "bars",
+      "fillOpacity": 70,
+      "barAlignment": -1,
+      "thresholdsStyle": {
+       "mode": "line+area"
+      }
+     },
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "yellow",
+        "value": 1
+       },
+       {
+        "color": "red",
+        "value": 10
+       }
+      ]
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "showLegend": false
+    },
+    "tooltip": {
+     "mode": "single"
+    }
+   }
+  },
+  {
+   "id": 8,
+   "type": "table",
+   "title": "Current alarms",
+   "description": "Alarms not in NORM, most urgent first (state per ISA-18.2: UNACK, ACKED, RTNUN, SHLVD, DSUPR)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 4,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT s.code AS \"Code\", d.priority AS \"Priority\", s.state AS \"State\", d.text_en AS \"Alarm\", s.activated_at AS \"Activated\", s.acked_by AS \"Acknowledged by\", s.shelved_until AS \"Shelved until\" FROM alarm_state s JOIN alarm_definition d USING (code) WHERE s.state <> 'NORM' ORDER BY d.priority_rank, s.activated_at DESC",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "State"
+      },
+      "properties": [
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "color-background"
+        }
+       },
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "UNACK": {
+            "color": "red",
+            "index": 0
+           },
+           "RTNUN": {
+            "color": "orange",
+            "index": 1
+           },
+           "ACKED": {
+            "color": "yellow",
+            "index": 2
+           },
+           "SHLVD": {
+            "color": "blue",
+            "index": 3
+           },
+           "DSUPR": {
+            "color": "purple",
+            "index": 4
+           }
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Code"
+      },
+      "properties": [
+       {
+        "id": "custom.width",
+        "value": 60
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": 9,
+   "type": "bargauge",
+   "title": "Top 10 bad actors",
+   "description": "Alarms with the most activations in the selected range (EEMUA 191: the top 10 often cause most of the load)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 12,
+    "w": 8,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT d.code || ' ' || d.text_en AS \"Alarm\", count(*) AS \"Activations\" FROM alarm_occurrence o JOIN alarm_definition d USING (code) WHERE $__timeFilter(o.activated_at) GROUP BY d.code, d.text_en ORDER BY 2 DESC LIMIT 10",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "basic",
+    "showUnfilled": true,
+    "reduceOptions": {
+     "calcs": [],
+     "fields": "",
+     "values": true
+    }
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "continuous-YlRd"
+     },
+     "min": 0,
+     "decimals": 0
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 10,
+   "type": "piechart",
+   "title": "Priority distribution",
+   "description": "Activations per priority in the selected range (guideline about 80 % Low, 15 % Medium, 5 % High/Critical)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 12,
+    "w": 6,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT d.priority AS \"Priority\", count(*) AS \"Activations\" FROM alarm_occurrence o JOIN alarm_definition d USING (code) WHERE $__timeFilter(o.activated_at) GROUP BY d.priority, d.priority_rank ORDER BY d.priority_rank",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [],
+     "fields": "",
+     "values": true
+    },
+    "pieType": "donut",
+    "legend": {
+     "showLegend": true,
+     "placement": "right",
+     "displayMode": "list"
+    }
+   },
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Critical"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "dark-red"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "High"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "red"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Medium"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "orange"
+        }
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Low"
+      },
+      "properties": [
+       {
+        "id": "color",
+        "value": {
+         "mode": "fixed",
+         "fixedColor": "yellow"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": 11,
+   "type": "table",
+   "title": "Chattering and standing alarms",
+   "description": "Chattering: >= 3 activations within 60 s; standing: active now with duration",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 14,
+    "y": 12,
+    "w": 10,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT code AS \"Code\", 'chattering' AS \"Finding\", max(n) || ' activations in 60 s' AS \"Detail\" FROM (SELECT code, count(*) OVER (PARTITION BY code ORDER BY activated_at RANGE BETWEEN INTERVAL '60 seconds' PRECEDING AND CURRENT ROW) AS n FROM alarm_occurrence WHERE $__timeFilter(activated_at)) x GROUP BY code HAVING max(n) >= 3 UNION ALL SELECT code, CASE WHEN now() - activated_at > INTERVAL '1 hour' THEN 'stale' ELSE 'standing' END, 'active for ' || date_trunc('second', now() - activated_at)::text FROM alarm_state WHERE active ORDER BY 1",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "type": "table",
+   "title": "Alarm journal",
+   "description": "Alarm transitions (ACTIVATED, ACKNOWLEDGED, CLEARED, SHELVED, ...) in the selected range, newest first",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 20,
+    "w": 12,
+    "h": 10
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT j.time AS \"Time\", j.code AS \"Code\", j.event AS \"Event\", j.state AS \"State\", j.priority AS \"Priority\", j.annunciated AS \"Annunciated\", j.operator AS \"Operator\", d.text_en AS \"Alarm\" FROM alarm_journal j LEFT JOIN alarm_definition d USING (code) WHERE $__timeFilter(j.time) ORDER BY j.time DESC LIMIT 500",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "type": "table",
+   "title": "Event journal (UNS)",
+   "description": "UNS events, commands, acknowledgements, PackML state changes and session births, newest first",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 20,
+    "w": 12,
+    "h": 10
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT time AS \"Time\", kind AS \"Kind\", device AS \"Device\", name AS \"Name\", seq AS \"Seq\", payload::text AS \"Payload\" FROM event_journal WHERE $__timeFilter(time) ORDER BY time DESC LIMIT 500",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "type": "timeseries",
+   "title": "Events per minute",
+   "description": "UNS event journal by kind",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 30,
+    "w": 24,
+    "h": 6
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT $__timeGroupAlias(time, '1m', 0), kind AS metric, count(*) AS value FROM event_journal WHERE $__timeFilter(time) GROUP BY 1, 2 ORDER BY 1",
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "drawStyle": "bars",
+      "fillOpacity": 60,
+      "stacking": {
+       "mode": "normal"
+      }
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "showLegend": true,
+     "placement": "bottom",
+     "displayMode": "list"
+    }
+   }
+  }
+ ]
+}

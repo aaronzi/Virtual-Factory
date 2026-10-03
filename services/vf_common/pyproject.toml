@@ -9,6 +9,7 @@ dependencies = [
     "pyyaml>=6",
     "pillow>=11",
     "paho-mqtt>=2.1",
+    "asyncua==2.0.1",  # OPC UA server (plc_comm) and clients (edge, ops gateway), ADR-0024
 ]
 
 [build-system]

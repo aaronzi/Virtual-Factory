@@ -54,7 +54,9 @@ def test_gateway_endpoints_resolved_from_the_server(aas):
     assert health["controller"] == config.controller
     for name, affordance in config.endpoints.items():
         assert health["endpoints"][name]["topic"] == affordance.form.topic
-    assert health["endpoints"]["PackMLCommand"]["ack"].endswith("/plc01/cmd-resp/packml_command")
+    # PLC01: OPC UA interface (ADR-0024) - synchronous method calls, no MQTT acknowledgement topic
+    assert health["endpoints"]["PackMLCommand"]["protocol"] == "opcua"
+    assert health["endpoints"]["PackMLCommand"]["topic"].endswith(";s=PLC01.Commands.packml_command")
     assert {"Produce", "ExchangeContainer"} <= set(health["skills"])
 
 

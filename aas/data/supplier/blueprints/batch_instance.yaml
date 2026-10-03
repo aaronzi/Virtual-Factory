@@ -1,0 +1,75 @@
+# Blueprint of ONE supplier batch AAS as created by the supplier portal (services/supplier, ADR-0028) when a batch
+# is despatched to VF Pneumatics, shown for lot DGP-260914-F of the front end cap DGP-EC32-F (Druckguss Pfalz).
+# Validated with `uv run -m provisioner check --data supplier --blueprints`; never preloaded. The portal replaces
+# the organisation (idBase), product type, lot, dates, quantities, PCF, recycled content, material composition
+# and certificate per batch (values from aas/data/supplier/batch_profiles.yaml); the structure is fixed.
+# globalAssetId = GS1 Digital Link of the batch (01 = GTIN of the product type, 10 = lot), which VF Pneumatics
+# writes into the as-built BoM of every part built with the batch.
+tag: BATCH_DGP_260914_F
+idBase: https://virtual-factory.example/druckguss-pfalz/ids
+idShort: Batch_DGP_260914_F
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/ComponentBatch
+derivedFrom: DGP_EC32_F
+globalAssetId: https://virtual-factory.example/01/04099991010019/10/DGP-260914-F
+displayName: {en: "Batch DGP-260914-F of Front end cap DGP-EC32-F", de: "Charge DGP-260914-F von Vorderdeckel DGP-EC32-F"}
+description:
+  en: "Production batch DGP-260914-F (180 pieces, produced 2026-09-14) delivered to VF Pneumatics GmbH with despatch advice DA-DGP-260914-F; batch-specific carbon footprint, recycled content and material certificate EN 10204 3.1."
+  de: "Fertigungscharge DGP-260914-F (180 Stück, gefertigt am 2026-09-14), an die VF Pneumatics GmbH geliefert mit Lieferavis DA-DGP-260914-F; chargenspezifischer CO2-Fußabdruck, Rezyklatanteil und Werkstoffzeugnis EN 10204 3.1."
+specificAssetIds: {manufacturerPartId: DGP-EC32-F, batchId: DGP-260914-F, customerPartId: "5032-1002"}
+submodels:
+  - template: BatchInformation-1.0
+    values:
+      BatchId: DGP-260914-F
+      ManufacturerPartId: DGP-EC32-F
+      CustomerPartId: "5032-1002"
+      ProductType: {ref: "aas:DGP_EC32_F"}
+      Quantity: 180
+      DateOfManufacture: "2026-09-14"
+      ProductionSite: {en: "Plant Landstuhl, die-casting cell 3", de: "Werk Landstuhl, Druckgusszelle 3"}
+      Customer: VF Pneumatics GmbH
+      DespatchAdviceNumber: DA-DGP-260914-F
+      DespatchDate: "2026-09-16"
+      MaterialCertificate: MC-DGP-260914-F
+      MeanMassPerPiece: 0.09443
+      RecycledContent: {RecycledMaterial: "Aluminium casting alloy EN AC-46000", PreConsumerShare: 34, PostConsumerShare: 51}
+
+  # Batch PCF (supplier primary data, PACT-like): per piece of this batch, cradle-to-gate at the supplier.
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - _description: {en: "Carbon footprint per piece of this batch (A1-A3 at the supplier), calculated from the energy and material lots recorded for the batch (primary data).", de: "CO2-Fußabdruck je Stück dieser Charge (A1-A3 beim Lieferanten), berechnet aus den für die Charge erfassten Energie- und Materiallosen (Primärdaten)."}
+          PcfCalculationMethods: [{value: "ISO 14067"}, {value: "PACT Methodology 3.0"}]
+          PcfCO2eq: 0.5417
+          ReferenceImpactUnitForCalculation: piece
+          QuantityOfMeasureForCalculation: 1
+          LifeCyclePhases: [{value: "A1-A3"}]
+          PublicationDate: "2026-09-16T00:00:00+00:00"
+          "+PrimaryDataShare": {unit: "%", valueType: xs:double, value: 86, description: {en: "Share of the footprint calculated from primary (company- and batch-specific) data (PACT primaryDataShare)", de: "Anteil des Fußabdrucks, der aus Primärdaten (unternehmens- und chargenspezifisch) berechnet ist (PACT primaryDataShare)"}}
+          "+BatchId": {value: DGP-260914-F, description: {en: "Batch the footprint applies to", de: "Charge, für die der Fußabdruck gilt"}}
+
+  - template: ProductMaterialComposition-1.0
+    values:
+      TotalMass: 0.09443
+      Materials:
+        - {MaterialLocation: {ComponentName: Front end cap, BatchId: DGP-260914-F}, MaterialIdentifier: "EN AC-46000 (EN 1706)", MaterialName: "Aluminium casting alloy AlSi9Cu3(Fe)", MaterialMass: 0.09443, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+      HazardousSubstances: []
+      DeclarationDate: "2026-09-16"
+
+  # Material certificate of the batch, generated as PDF by the supplier portal and uploaded as attachment.
+  - template: HandoverDocumentation-2.0
+    values:
+      Documents:
+        - DocumentIds: [{DocumentDomainId: DruckgussPfalz, DocumentIdentifier: MC-DGP-260914-F, DocumentIsPrimary: true}]
+          DocumentClassifications:
+            - {ClassId: "02-04", ClassName: {en: "Certificates, declarations", de: "Zeugnisse, Zertifikate, Bescheinigungen"}, ClassificationSystem: VDI2770:2020}
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.0"
+              Title: {en: "Inspection certificate 3.1 (EN 10204) batch DGP-260914-F", de: "Abnahmeprüfzeugnis 3.1 (EN 10204) Charge DGP-260914-F"}
+              Description: {en: "Chemical composition, material properties and dimensional inspection of the batch; issued by the quality department, independent of production", de: "Chemische Zusammensetzung, Werkstoffeigenschaften und Maßprüfung der Charge; ausgestellt von der von der Fertigung unabhängigen Qualitätssicherung"}
+              StatusSetDate: "2026-09-16"
+              StatusValue: Released
+              OrganizationShortName: Druckguss Pfalz
+              OrganizationOfficialName: Druckguss Pfalz GmbH
+              DigitalFiles: [{value: repo:aas/files/supplier/MC-DGP-260914-F.pdf}]

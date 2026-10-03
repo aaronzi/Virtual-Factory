@@ -1,0 +1,18 @@
+{
+  "id": "gripper_wear",
+  "title_en": "Gripper finger wear (predictive maintenance)",
+  "title_de": "Verschleiß der Greiferfinger (vorausschauende Instandhaltung)",
+  "description_en": "Abrasive dust on the parts wears the finger pads of gripper GR01 about 100 000 times faster than normal. The gripper reports the jaw offset (finger_wear), the grip force drops and the jaws close slower. With the IT stack the maintenance service predicts the end of life from the historian (Grafana: Maintenance), opens a maintenance order and raises advisory alarm 901: plan it on the MES terminal, the line stops at the next order boundary in maintenance mode, replace the fingers, complete the task - the wear is reset and production restarts. Without maintenance the parts start to slip at 85 % of the wear limit and the robot faults (alarm 202).",
+  "description_de": "Abrasiver Staub auf den Teilen verschleißt die Backeneinlagen des Greifers GR01 etwa 100 000-mal schneller als normal. Der Greifer meldet den Backenversatz (finger_wear), die Greifkraft sinkt und die Backen schließen langsamer. Mit IT-Stack prognostiziert der Instandhaltungsdienst das Lebensende aus dem Historian (Grafana: Maintenance), eröffnet einen Instandhaltungsauftrag und meldet den Hinweisalarm 901: am MES-Terminal einplanen, die Linie hält an der nächsten Auftragsgrenze in der Betriebsart Wartung, Finger tauschen, Aufgabe abschließen - der Verschleiß wird zurückgesetzt und die Produktion läuft wieder an. Ohne Instandhaltung rutschen die Teile ab 85 % der Verschleißgrenze und der Roboter geht in Störung (Alarm 202).",
+  "steps": [
+    {"at": 5.0, "set": {"RB01.finger_wear_rate": 4.5e-5},
+     "message_en": "Abrasive dust: the finger pads wear 45 um per grip.",
+     "message_de": "Abrasiver Staub: die Backeneinlagen verschleißen 45 um je Griff."},
+    {"when": {"var": "RB01.grip_cycles", "op": ">=", "value": 6},
+     "message_en": "Wear trend visible: the maintenance service predicts the remaining useful life (Grafana: Maintenance) and opens a maintenance order - plan it on the MES terminal.",
+     "message_de": "Verschleißtrend sichtbar: der Instandhaltungsdienst prognostiziert die Restnutzungsdauer (Grafana: Maintenance) und eröffnet einen Instandhaltungsauftrag - am MES-Terminal einplanen."},
+    {"after": 90.0, "reset": "all",
+     "message_en": "Dust source removed: normal wear again (worn fingers stay worn until they are replaced).",
+     "message_de": "Staubquelle beseitigt: wieder normaler Verschleiß (verschlissene Finger bleiben es bis zum Tausch)."}
+  ]
+}

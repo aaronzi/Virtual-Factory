@@ -28,6 +28,24 @@ func test_inspector_shows_tree() -> void:
 	assert_true(view._type_button.visible)
 
 
+func test_inspector_opens_the_asset_of_a_bom_entity() -> void:
+	var view := AasInspectorView.new()
+	add_child_autofree(view)
+	view.show_shell({"idShort": "WP_1"})
+	var batch := "https://virtual-factory.example/01/04099994010016/10/KTW-26-0911"
+	view.show_submodel({"submodelElements": [{"modelType": "Entity", "idShort": "ProtectiveCap",
+		"entityType": "SelfManagedEntity", "globalAssetId": batch}, {"modelType": "Entity",
+		"idShort": "Barrel", "entityType": "CoManagedEntity"}]})
+	watch_signals(view)
+	var cap := view._tree.get_root().get_first_child()
+	cap.select(0)
+	assert_true(view._asset_button.visible)
+	view._asset_button.pressed.emit()
+	assert_signal_emitted_with_parameters(view, "asset_requested", [batch])
+	cap.get_next().select(0)
+	assert_false(view._asset_button.visible)
+
+
 func test_world_panel_maps_hits_to_pixels() -> void:
 	var panel := WorldPanel.new()
 	panel.size_m = Vector2(1.0, 0.5)

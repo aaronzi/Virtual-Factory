@@ -11,6 +11,7 @@ Asset definition (see docs/interfaces/aas-model.md):
     thumbnail: repo:docs/screenshots/assets/assembly_cell.png
     specificAssetIds: {serialNumber: ..., manufacturerPartId: ...}
     globalAssetId: <IRI>           # optional, default ids.asset_id(tag) (e.g. a GS1 Digital Link URI)
+    idBase: <IRI>                  # optional id namespace of another organisation (default ids.ID_BASE)
     submodels:
       - template: Nameplate-3.0     # name in the TemplateLibrary
         idShort: Nameplate          # optional (default: template idShort)
@@ -62,16 +63,19 @@ class EnvironmentBuilder:
         self._pending: list[dict] = []
         self._specs: list[dict] = []
         self._global_ids: dict[str, str] = {}  # tag -> explicit globalAssetId of the spec
+        self._bases: dict[str, str] = {}  # tag -> id namespace of the spec (idBase), default ids.ID_BASE
         self._concept_units: dict[str, tuple] = {}  # generated cd id -> (unit, first use)
 
     # -- public API -------------------------------------------------------------------------------
 
     def add_asset(self, spec: dict) -> None:
         tag = spec["tag"]
+        if spec.get("idBase"):
+            self._bases[tag] = spec["idBase"].rstrip("/")
         for sm_spec in spec.get("submodels", []):
             id_short = sm_spec.get("idShort") or self.library.get(sm_spec["template"])["idShort"]
             version = sm_spec["template"].rsplit("-", 1)[-1].split(".")[0]
-            self._sm_ids[f"{tag}/{id_short}"] = ids.submodel_id(tag, id_short, version)
+            self._sm_ids[f"{tag}/{id_short}"] = self._based(ids.submodel_id(tag, id_short, version), tag)
         if spec.get("globalAssetId"):
             self._global_ids[tag] = spec["globalAssetId"]
         self._specs.append(spec)
@@ -107,7 +111,7 @@ class EnvironmentBuilder:
 
     def _build_asset(self, spec: dict) -> None:
         tag = spec["tag"]
-        aas_id = ids.aas_id(tag)
+        aas_id = self._aas_id(tag)
         self.shell_files[aas_id] = set()
         sm_refs = []
         for sm_spec in spec.get("submodels", []):
@@ -121,7 +125,7 @@ class EnvironmentBuilder:
                 shell[key] = mlp_value(spec[key])
         if spec.get("derivedFrom"):
             shell["derivedFrom"] = self._model_ref(
-                [("AssetAdministrationShell", ids.aas_id(spec["derivedFrom"]))])
+                [("AssetAdministrationShell", self._aas_id(spec["derivedFrom"]))])
         self.shells.append(shell)
 
     def _asset_information(self, spec: dict, aas_id: str) -> dict:
@@ -202,10 +206,18 @@ class EnvironmentBuilder:
 
     def _identifier(self, kind: str, target: str) -> str:
         if kind == "asset":
-            return self._global_ids.get(target) or ids.asset_id(target)
+            return self._global_ids.get(target) or self._based(ids.asset_id(target), target)
         if kind == "aas":
-            return ids.aas_id(target)
+            return self._aas_id(target)
         return self._sm_ids[target]
+
+    def _aas_id(self, tag: str) -> str:
+        return self._based(ids.aas_id(tag), tag)
+
+    def _based(self, identifier: str, tag: str) -> str:
+        """An id minted by `vf_common.ids`, moved into the namespace (idBase) of the asset's organisation."""
+        base = self._bases.get(tag)
+        return base + identifier[len(ids.ID_BASE):] if base else identifier
 
     def _embed(self, repo_path: str, tag: str, aas_id: str) -> str:
         rel = repo_path.removeprefix("repo:")
@@ -220,7 +232,7 @@ class EnvironmentBuilder:
         if kind == "global":
             return {"type": "ExternalReference", "keys": [{"type": "GlobalReference", "value": target}]}
         if kind == "aas":
-            return self._model_ref([("AssetAdministrationShell", ids.aas_id(target))])
+            return self._model_ref([("AssetAdministrationShell", self._aas_id(target))])
         pending = {"__pending__": target}
         self._pending.append(pending)
         return pending

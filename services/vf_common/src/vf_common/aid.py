@@ -1,5 +1,6 @@
 """Runtime reading of AAS references and Asset Interfaces Description (AID 1.1) affordances: which MQTT topic,
-QoS/retain flags and JSON keys an interaction uses (docs/interfaces/aas-model.md, ADR-0020).
+QoS/retain flags and JSON keys an interaction uses (docs/interfaces/aas-model.md, ADR-0020), or which OPC UA
+node (href ?id=nsu=...;s=..., uav_browsePath) on which server (EndpointMetadata.base opc.tcp://..., ADR-0024).
 
 Shared by the services that configure themselves from the AAS: the ops gateway (Control Component endpoints ->
 AID properties/actions) and the MES (AID events). Works on a BaSyx server (`BasyxClient`) or on an environment
@@ -43,13 +44,15 @@ class InMemoryAas:
 
 @dataclass(frozen=True)
 class Form:
-    """One WoT form of an affordance (MQTT binding): topic = href without the leading '/'."""
+    """One WoT form of an affordance. MQTT binding: topic = href without the leading '/'. OPC UA binding:
+    `topic` holds the href (?id=nsu=<uri>;s=<identifier>), `browse_path` the uav_browsePath."""
     topic: str
     op: str = ""
     content_type: str = "application/json"
     qos: int = 0
     retain: bool = False
     control_packet: str = ""
+    browse_path: str = ""
 
 
 @dataclass(frozen=True)
@@ -60,6 +63,11 @@ class Affordance:
     keys: dict[str, str] = field(default_factory=dict)      # payload schema: idShort -> JSON key
     ack: Form | None = None                    # action: acknowledgement form (op queryaction)
     ack_keys: dict[str, str] = field(default_factory=dict)  # action: output (ack) schema
+    base: str = ""                             # EndpointMetadata.base of the interface (broker / server)
+
+    @property
+    def protocol(self) -> str:
+        return protocol_of(self.base)
 
     def key(self, name: str, default: str) -> str:
         return self.keys.get(name, default)
@@ -102,16 +110,27 @@ class Resolver:
         kind = KINDS.get(keys[-2]["value"]) if len(keys) > 2 else None
         if kind is None:
             raise LookupError(f"not an AID affordance reference: {'/'.join(k['value'] for k in keys)}")
-        return affordance(self.element(ref), kind)
+        interface = self.element({"type": "ModelReference", "keys": keys[:2]})
+        return affordance(self.element(ref), kind, endpoint_base(interface))
 
 
-def affordance(element: dict, kind: str) -> Affordance:
+def protocol_of(base: str) -> str:
+    """'opcua' for opc.tcp:// interfaces, otherwise 'mqtt' (the only other binding used here)."""
+    return "opcua" if base.startswith("opc.tcp://") else "mqtt"
+
+
+def endpoint_base(interface: dict) -> str:
+    meta = child(interface.get("value") or [], "EndpointMetadata", required=False) or {}
+    return str(value_of(meta.get("value") or [], "base", "") or "")
+
+
+def affordance(element: dict, kind: str, base: str = "") -> Affordance:
     elements = element.get("value") or []
     schema = {"property": "properties", "action": "input", "event": "data"}[kind]
     output = child(elements, "output", required=False)
     ack = child(elements, "ackForms", required=False)
     return Affordance(element["idShort"], kind, form(child(elements, "forms")), schema_keys(elements, schema),
-                      form(ack) if ack else None, schema_keys([output] if output else [], "output"))
+                      form(ack) if ack else None, schema_keys([output] if output else [], "output"), base)
 
 
 def form(element: dict) -> Form:
@@ -120,7 +139,8 @@ def form(element: dict) -> Form:
     return Form(topic=str(values.get("href") or "").lstrip("/"), op=values.get("op") or "",
                 content_type=values.get("contentType") or "application/json",
                 qos=int(values.get("mqv_qos") or 0), retain=str(values.get("mqv_retain")).lower() == "true",
-                control_packet=values.get("mqv_controlPacket") or "")
+                control_packet=values.get("mqv_controlPacket") or "",
+                browse_path=values.get("uav_browsePath") or "")
 
 
 def schema_keys(elements: list[dict], name: str) -> dict[str, str]:
@@ -147,13 +167,20 @@ def aid_submodels(source: AasSource) -> list[dict]:
     return list(found.values())
 
 
-def events(aid: dict) -> list[Affordance]:
-    """All event affordances of all interfaces of an AID submodel."""
+def events(aid: dict, protocol: str = "mqtt") -> list[Affordance]:
+    """All event affordances of the interfaces of an AID submodel that use `protocol` (mqtt / opcua)."""
+    return [a for a in affordances(aid, "events") if a.protocol == protocol]
+
+
+def affordances(aid: dict, collection_name: str) -> list[Affordance]:
+    """All affordances of one kind ("properties", "actions", "events") of all interfaces of an AID
+    submodel."""
     out = []
     for interface in aid.get("submodelElements") or []:
         meta = child(interface.get("value") or [], "InteractionMetadata", required=False) or {}
-        collection = child(meta.get("value") or [], "events", required=False) or {}
-        out += [affordance(e, "event") for e in collection.get("value") or []]
+        collection = child(meta.get("value") or [], collection_name, required=False) or {}
+        base = endpoint_base(interface)
+        out += [affordance(e, KINDS[collection_name], base) for e in collection.get("value") or []]
     return out
 
 

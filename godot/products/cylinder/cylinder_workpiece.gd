@@ -1,6 +1,7 @@
 extends TrackedItem
 ## ISO 15552 pneumatic cylinder Ø32 × 80 mm (PC-32-80-DA-M), standing on its rear end cap.
 ## Origin = bottom centre. The protective end cap ("lid") is red (ok), missing, or blue (wrong).
+## The type plate carries a QR code of the part's GS1 Digital Link (its globalAssetId, ADR-0023).
 
 const MODEL := preload("res://products/cylinder/cylinder.glb")
 const CAP_COLORS := {0: Color(0.78, 0.08, 0.10), 2: Color(0.10, 0.30, 0.80)}
@@ -8,10 +9,14 @@ const ALUMINIUM := Color(0.70, 0.71, 0.72)
 const ANODISED := Color(0.78, 0.79, 0.80)
 const CAP_ZONE_Y := 0.19
 const HEIGHT := 0.235
+const GTIN := "04099999032808"  # PC-32-80-DA-M
 
 static var _cap_materials := {}
+## Domain of the canonical Digital Links (set by the composition root from the backend configuration).
+static var digital_link_domain := DigitalLink.DEFAULT_DOMAIN
 
 var _cap: MeshInstance3D
+var _label: CylinderLabel
 
 
 func _ready() -> void:
@@ -29,6 +34,13 @@ func _ready() -> void:
 	var model := MODEL.instantiate()
 	add_child(model)
 	_cap = model.find_child("Cap") as MeshInstance3D
+	_label = CylinderLabel.new(model.find_child("Body") as MeshInstance3D,
+		DigitalLink.product(GTIN, digital_link_domain))
+
+
+func _exit_tree() -> void:
+	if _label:
+		_label.finish()
 
 
 func configure(p_item_id: String, p_properties: Dictionary) -> void:
@@ -37,6 +49,11 @@ func configure(p_item_id: String, p_properties: Dictionary) -> void:
 	_cap.visible = CAP_COLORS.has(variant)
 	if _cap.visible:
 		_cap.material_override = _cap_material(variant)
+	_label.show_link(get_asset_id())
+
+
+func get_asset_id() -> String:
+	return DigitalLink.item(GTIN, item_id, digital_link_domain) if item_id != "" else ""
 
 
 func get_surface_color_at(world_point: Vector3) -> Color:

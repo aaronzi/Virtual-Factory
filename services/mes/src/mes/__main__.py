@@ -8,23 +8,24 @@ import time
 
 from provisioner.build import BuildContext, load_assets
 from vf_common import ids
-from vf_common.basyx import BasyxClient, b64
-from vf_common.historian import HistorianConfig, InfluxClient
+from vf_common.basyx import BasyxClient
+from vf_common.bpmn import BpmnClient
+from vf_common.bpmn_worker import Worker
 from vf_common.mqtt import MqttClient
+from vf_common.registry_aas import RegistryAas
+from vf_common.resolver import AasResolver, until_resolved
 from vf_common.uns import Uns, broker_address, telemetry_value
 
-from .bpmn import BpmnClient
-from .carbon import EnergyIntensity, FootprintCalculator, PartFootprint
 from .event_topics import EventTopics
 from .events import EventRouter
-from .handlers import ActiveOrder, OrderHandlers, WorkpieceHandlers
+from .handlers import OrderHandlers, WorkpieceHandlers
 from .klt import CONTAINERS, KltContents
 from .kpi import KpiTracker
-from .plant_data import PlantData
-from .process_energy import ProcessEnergy, power_tables
+from .orders import ActiveOrder, ErpClient
+from .passport import bom_nodes
 from .quality import Limits
+from .staging import LotStaging
 from .store import WorkpieceStore
-from .workers import Worker
 from .workpiece import WorkpieceSpec, load_blueprint
 
 log = logging.getLogger("mes")
@@ -38,14 +39,13 @@ class Mes:
         self.bpmn = BpmnClient(ENV("VF_BPMN_URL", "http://localhost:8092/engine-rest"))
         self.aas = BasyxClient(self.aas_url)
         self.ctx = BuildContext()
-        self.intensity = EnergyIntensity()
-        self.plant = PlantData(BasyxClient(self.aas_url), self.intensity)
         self.kpi = KpiTracker()
         self.klt = KltContents(BasyxClient(self.aas_url))
-        historian = HistorianConfig.load()
-        influx = InfluxClient(ENV("VF_INFLUX_URL", "http://localhost:8181"), historian.database)
-        energy = ProcessEnergy(influx, power_tables(load_assets(self.ctx.repo / "aas" / "data")))
-        self.pcf = FootprintCalculator(self.aas_url, energy, self.intensity)
+        self.kpi_aas = BasyxClient(self.aas_url)
+        self.erp = ErpClient(ENV("VF_ERP_URL", ""))
+        # AAS of other owners (line, PLC, device AIDs, product type) are located via discovery + registry
+        # (ADR-0023); the MES writes its own AAS (workpieces, KLT contents, KPIs) into its repository.
+        self.resolver = AasResolver.from_env()
 
     def wait_for_backends(self) -> None:
         """Waits for the engine and until the AAS server has finished its preload (shell count stable)."""
@@ -65,32 +65,40 @@ class Mes:
         aas = BasyxClient(self.aas_url)
         type_spec = load_assets(self.ctx.repo / "aas" / "data", {"PC3280_TYPE"})[0]
         recipe = next(s for s in type_spec["submodels"] if s["template"].startswith("ManufacturingRecipe"))
-        public = ENV("VF_AAS_PUBLIC_URL", "http://localhost:8091")
-        thumbnail = {"path": f"{public}/shells/{b64(ids.aas_id('PC3280_TYPE'))}/asset-information/thumbnail",
-                     "contentType": "image/png"}
-        store = WorkpieceStore(self.ctx, aas, retention=int(ENV("VF_RETENTION", "500")))
+        type_asset = type_spec["globalAssetId"]  # GS1 Digital Link of the product type
+        product = until_resolved(lambda: self.resolver.resolve_asset(type_asset), "PC3280_TYPE")
+        thumbnail = {"path": f"{product.href}/asset-information/thumbnail", "contentType": "image/png"}
+        store = WorkpieceStore(self.ctx, aas, retention=int(ENV("VF_RETENTION", "500")),
+                               passport_limit=int(ENV("VF_PASSPORT_LIMIT", "0")))
         self.store = store
-        order = ActiveOrder()
-        workpieces = WorkpieceHandlers(store, WorkpieceSpec(load_blueprint(), self.ctx.positions, thumbnail),
-                                       Limits.from_recipe(recipe["values"]), KltContents(aas), self.footprint,
-                                       order)
+        blueprint = load_blueprint()
+        bulk = {n["_idShort"]: float(n["statements"]["BulkCount"]) for n in bom_nodes(blueprint)}
+        order = ActiveOrder(bulk)
+        workpieces = WorkpieceHandlers(store, WorkpieceSpec(blueprint, self.ctx.positions, thumbnail),
+                                       Limits.from_recipe(recipe["values"]), KltContents(aas), order,
+                                       LotStaging(ENV("VF_ERP_URL", "")))
         Worker(self.bpmn, "workpiece", workpieces.topics()).start()
-        Worker(BpmnClient(str(self.bpmn.http.base_url)), "order",
-               OrderHandlers(BasyxClient(self.aas_url), order=order).topics()).start()
+        # order tasks wait for the line / the ERP: retried every 15 s for up to an hour before an incident
+        orders = OrderHandlers(RegistryAas(self.resolver), order=order, erp=self.erp)
+        orders.line_control = self._submodel("LINE01", "LineControl")
+        orders.operational_data = self._submodel("PLC01", "OperationalData")
+        Worker(BpmnClient(str(self.bpmn.http.base_url)), "order", orders.topics(),
+               retries=240, retry_timeout_ms=15000).start()
 
-    def footprint(self, v: dict) -> PartFootprint:
-        """Production-based instance PCF of a sorted part (carbon.py; energy from the historian)."""
-        return self.pcf.part(v)
+    def _submodel(self, tag: str, id_short: str) -> str:
+        """Submodel id of a device's AAS: asset id -> discovery -> registry (no id convention)."""
+        asset = ids.asset_id(tag)  # the asset's own identifier (type plate)
+        return until_resolved(lambda: self.resolver.submodel_of_asset(asset, id_short).id,
+                              f"{tag} {id_short}")
 
     def on_session(self, session: str, birth: dict) -> None:
-        removed = self.store.clear_session()
+        removed, kept = self.store.clear_session()
         self.bpmn.delete_instances("WorkpieceLifecycle", f"new factory session {session}")
         for tag in CONTAINERS.values():
             self.klt.clear(tag, 0)
-        self.plant.discover()
-        self.plant.new_session(time.monotonic())
         self.kpi.reset()
-        log.info("session %s: removed %d workpiece AAS of the previous session", session, removed)
+        log.info("session %s: removed %d workpiece AAS of the previous session (session data), kept %d "
+                 "passports of shipped units", session, removed, kept)
 
     def on_exchange(self, tag: str, count: int) -> None:
         self.klt.clear(tag, count)
@@ -98,12 +106,11 @@ class Mes:
     def run(self) -> None:
         self.wait_for_backends()
         self.bpmn.deploy("virtual-factory", sorted((self.ctx.repo / "bpmn").glob("*.bpmn")))
-        self.plant.discover()
         self.start_workers()
         host, port = broker_address(ENV("VF_MQTT_URL", "mqtt://localhost:1883"))
         mqtt = MqttClient("vf-mes", host, port)
         # event topics from the AID event affordances (reloaded on AID changes), session from the registry
-        topics = EventTopics(BasyxClient(self.aas_url), mqtt,
+        topics = EventTopics(RegistryAas(self.resolver), mqtt,
                              ENV("VF_AAS_EVENTS_TOPIC", "vf/basyx/submodelrepository/#") or None)
         topics.reload()
         router = EventRouter(self.bpmn, self.uns, self.on_session, self.on_exchange, topics=topics)
@@ -115,8 +122,7 @@ class Mes:
         self._loop(mqtt, router, kpi_topics)
 
     def _loop(self, mqtt: MqttClient, router: EventRouter, kpi_topics: dict) -> None:
-        next_sample = next_kpi = 0.0
-        next_discover = time.monotonic() + 300
+        next_kpi = 0.0
         last_ts = None
         while True:
             msg = mqtt.get(timeout=0.5)
@@ -131,9 +137,7 @@ class Mes:
             elif msg and isinstance(msg.json(), dict):
                 router.handle(msg.topic, msg.json(), now)
             router.retry(now)
-            next_sample = self._periodic(now, next_sample, 10.0, self.plant.sample)
-            next_kpi = self._periodic(now, next_kpi, 15.0, lambda t: self.kpi.write(self.plant.aas, last_ts))
-            next_discover = self._periodic(now, next_discover, 300.0, lambda t: self.plant.discover())
+            next_kpi = self._periodic(now, next_kpi, 15.0, lambda t: self.kpi.write(self.kpi_aas, last_ts))
 
     @staticmethod
     def _periodic(now: float, due: float, interval: float, job) -> float:

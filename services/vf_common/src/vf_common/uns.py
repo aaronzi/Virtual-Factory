@@ -7,6 +7,9 @@ Topic kinds (see docs/interfaces/uns.md):
     command    {root}/{device}/cmd/{variable}        {"v": value, "corr": id, "source": name}
     ack        {root}/{device}/cmd-resp/{variable}   {"corr", "accepted", "reason", "v", "ts"}
     session    {root}/session, {root}/status         birth message / {"v": "online" | "offline"}
+    maintenance {root}/maintenance/{component}/{indicator}  {"v", "ts"} retained (condition monitoring,
+                                                         ADR-0029)
+                {root}/maintenance/active_alarms         advisory alarm word of the maintenance service
 """
 
 from __future__ import annotations
@@ -56,6 +59,15 @@ class Uns:
     @property
     def status_topic(self) -> str:
         return self.config["session"]["status_topic"].format(root=self.root)
+
+    def maintenance(self, component: str, indicator: str) -> str:
+        return self.config["maintenance"]["topic"].format(root=self.root, component=component.lower(),
+                                                          indicator=indicator)
+
+    @property
+    def maintenance_alarm_topic(self) -> str | None:
+        section = self.config.get("maintenance")
+        return section["alarm_topic"].format(root=self.root) if section else None
 
     def all_events(self) -> str:
         return self._topic("events", device="+", event="+")

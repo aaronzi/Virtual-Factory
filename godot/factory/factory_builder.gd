@@ -11,6 +11,7 @@ var devices: Dictionary = {}  ## id -> DeviceNode
 var item_factory: ItemFactory
 var layout: Dictionary = {}
 var props: Array[Node3D] = []  ## static scenery; `asset_tag` meta if the layout names its AAS (e.g. PLC01)
+var parameter_overrides: Dictionary = {}  ## device id -> {parameter: value} over the layout (retained values)
 
 
 func build(layout_path: String, root: Node3D, items_root: Node3D) -> Error:
@@ -46,7 +47,9 @@ func _add_device(spec: Dictionary, root: Node3D) -> bool:
 	var p: Array = spec.get("position", [0, 0, 0])
 	device.position = Vector3(p[0], p[1], p[2])
 	device.rotation_degrees.y = spec.get("rotation_deg", 0.0)
-	var model := device.create_model(spec.get("parameters", {}))
+	var parameters: Dictionary = spec.get("parameters", {}).duplicate()
+	parameters.merge(parameter_overrides.get(spec.id, {}), true)
+	var model := device.create_model(parameters)
 	if model == null:
 		return false
 	master.add_instance(model)

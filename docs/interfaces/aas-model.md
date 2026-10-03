@@ -18,6 +18,36 @@
 | FMI process value concept | `…/ids/cd/fmi/<ModelName>/<variable>` | `…/cd/fmi/BeltConveyor/belt_speed` |
 | Capability concept | `…/ids/capability/<Name>` (`aas/data/capabilities.yaml`) | `…/capability/InspectColour` |
 | Workpiece serial | `PC3280-<YYYY>-<NNNNNN>` | `PC3280-2026-000123` |
+| Supplier AAS / submodel (ADR-0028) | same patterns below the company's namespace `https://virtual-factory.example/<company>/ids` (`idBase` in the asset data) | `…/druckguss-pfalz/ids/aas/BATCH_DGP_260914_F` |
+| Supplier product type / batch (globalAssetId) | GS1 Digital Link `…/01/<GTIN>` / `…/01/<GTIN>/10/<lot>` (AI 10 = batch) | `https://virtual-factory.example/01/04099991010019/10/DGP-260914-F` |
+
+These patterns are how the provisioner and the MES **mint** ids. Clients do not build AAS or submodel ids from
+them to read an AAS: they resolve them (next section).
+
+## 1a. Identification and resolution (ADR-0023)
+
+| Step | Service (BaSyx Go AAS environment, 8091) | Input → output |
+|---|---|---|
+| 1 | Discovery `GET /lookup/shells?assetIds=<b64url({"name":"globalAssetId","value":…})>` | asset id → AAS id(s). Specific asset ids (`serialNumber`, `manufacturerPartId`) work too; several `assetIds` must all match |
+| 2 | AAS Registry `GET /shell-descriptors/<b64url(AAS id)>` | AAS id → descriptor: `globalAssetId`, `specificAssetIds`, endpoint (`AAS-3.2`, href), ids + endpoints of the submodels |
+| 3 | Submodel Registry `GET /submodel-descriptors/<b64url(submodel id)>` | submodel id → idShort, semanticId, endpoint (`SUBMODEL-3.2`) |
+| 4 | Repository at the descriptor's href | shell / submodel content, `$value`, `invoke`, attachments |
+
+- **What a client knows**: devices and props have the asset id `…/ids/asset/<TAG>` (their type plate). The product
+  type and the workpieces carry the GS1 Digital Link `https://virtual-factory.example/01/<GTIN>[/21/<serial>]`
+  (QR code on the part label). The serial number also works as a specific asset id.
+- Descriptors are written by the registry integration of the repository (`GENERAL_*REGISTRYINTEGRATION=true`),
+  including the workpiece AAS of the MES. Endpoints use `GENERAL_EXTERNALURL` (`http://localhost:8091`). Services
+  in the compose network rewrite this prefix to `http://aas-env:8091` (`VF_AAS_ENDPOINT_MAP`).
+- Federation: clients take a **list** of environments (`VF_AAS_REGISTRIES`, Godot `aas_registries`) and use the
+  first one that knows the id. Endpoints in descriptors may point to other hosts. The **supplier environment**
+  (port 8191, `http://supplier-aas-env:8191` in compose, ADR-0028) is listed for the sustainability service and the
+  Godot inspector; an unreachable environment is skipped, its error is raised only if no other one knows the id.
+- Fallback (documented, Godot inspector only): an AAS that no registry knows is read from the own repository by
+  its id. Concept descriptions have no registry and come from the own repository.
+- Implementations: `vf_common.resolver.AasResolver` / `vf_common.registry_aas.RegistryAas` (Python),
+  `connectivity/aas/aas_client.gd` (Godot). The GS1 Digital Link resolver (`services/resolver`, port 8096) uses
+  the same chain: see [services.md](services.md#resolver).
 
 ## 2. Asset inventory
 
@@ -37,6 +67,12 @@
 | KLT_TYPE / KLTA01, KLTB01 | Small load carrier KLT 6428 on stand | Type / Instance | KLT_TYPE | VF Automation Systems GmbH (stand), VDA 4500 box |
 | LC10_TYPE / PLC01 | Line controller LC-10 running the "SortingLine" PLC program | Type / Instance | LC10_TYPE | VF Automation Systems GmbH |
 | SL01 | Stack light SL3-RAG-B on the control cabinet (driven by PLC01) | Instance | – | Lumetra Sensortechnik GmbH (fictional) |
+
+**Supplier environment** (port 8191, data `aas/data/supplier/`, ADR-0028): company AAS of the four suppliers
+(CompanyData, ContactInformations), the suppliers' product type AAS of the five purchased articles (DGP_EC32_F,
+DGP_EC32_R, DTS_SK_PC32, NRN_4762_M5X16, KTW_SK53_RD: Nameplate, declared CarbonFootprint, material composition;
+globalAssetId = Digital Link of the GTIN) and the batch AAS of delivered lots (§6c). The `CMP_*` AAS above are VF
+Pneumatics' purchased-part view of the same articles (same `gtin` specific asset id).
 
 Companies other than Universal Robots are **fictional**. The UR5e AAS is maintained by the plant operator and
 uses public data sheet values nominatively; no logos are reproduced.
@@ -62,7 +98,7 @@ the FMI model description, the layout or the UNS registry.
 | ControlComponentInstance | I 2.0 | | | | | | | | | | / ● | | | / ● |
 | ProcessParameters | I 02031 1.0 | | | ● | | | | | | | | | | |
 | ManufacturingRecipe | C 1.1 | | | ● | | | | | | | | | | |
-| LineControl (Operations) | C 1.0 | | ● | | | | | | | | | | | |
+| LineControl (Operations) | C 1.2 | | ● | | | | | | | | | | | |
 | DppMetadata | I 1.0 | | | ● (model) | | ● (item) | | | | | | | | |
 | ProductMaterialComposition | C (from DBP) | | | ● | ● | ● (+ batches) | | | | | | | | |
 | ProductCircularity | C (from DBP) | | | ● | | ● (per lot) | | | | | | | | |
@@ -75,9 +111,10 @@ the FMI model description, the layout or the UNS registry.
 | EnergyConsumption | C (G + static) | | ● | | | | ● | ● | / ● | ● | / ● | | | / ● |
 | TimeSeries (LinkedSegment → historian) | I 1.1 (G) | | | | | | ● | ● | / ● | ● | / ● | | / ● | / ● |
 | SimulationModels | I 1.0 (G) | | | | | | ● | ● | / ● | ● | / ● | | / ● | / ● |
-| Reliability | I 1.0 | | | | | | | | ● / | ● | | | | |
+| Reliability | I 1.0 | | | | | | | | ● / | ● | | ● (+ observed, runtime) | | |
 | FunctionalSafety | I 1.0 | | | | | | ● | | | | ● / | | | |
-| MaintenanceInstructions | I 1.0 | | | | | | | ● | | | ● / | | | |
+| MaintenanceInstructions | I 1.0 | | | | | | | ● | | | ● / | ● | | |
+| ConditionMonitoring | C 1.0 | | | | | | | | | | | ● (runtime values) | | |
 | SoftwareNameplate | I 1.0 | | | | | | | | | | / ● | | | ● / ● |
 | ProcessVariablesForManufacturingKPICalculation | I 02066 1.0 | | ● | | | | | | | | | | | |
 | ProductionCalendar | I 02067 1.0 | | ● | | | | | | | | | | | |
@@ -93,21 +130,25 @@ Rationale for the main choices:
   custom ISA-88 *ManufacturingRecipe* (sequencing, required capabilities, formula) describe the same process
   (OP10–OP90) for comparison. See §6.
 - **Control Component Type/Instance 2.0:** offered by the PLC program and the robot.
-  - The runtime execution state (PackML) lives on the interface: the AID MQTT properties `packml_state` and the
-    action `packml_command`.
+  - The runtime execution state (PackML) lives on the interface: the AID properties `packml_state`, `unit_mode`
+    and the actions `packml_command`, `unit_mode_command` (PLC01: OPC UA interface, ADR-0024).
   - The Control Component Instance references these via `Endpoints`. This follows Control Component 2.0, which keeps
     runtime state out of the submodel.
-  - PLC01 endpoints (contract with the ops gateway, ADR-0020): `PackMLState` → AID property `packml_state`,
-    `PackMLCommand` → action `packml_command` (interface PackML); `ContainerExchange` → action
+  - PLC01 endpoints (contract with the ops gateway, ADR-0020/0024), all in `InterfaceOPCUA`: `PackMLState` →
+    property `packml_state`, `PackMLCommand` → action `packml_command`, `UnitMode` → property `unit_mode`,
+    `UnitModeCommand` → action `unit_mode_command` (interface PackML); `ContainerExchange` → action
     `klt_exchange_command`, `AutoExchange` → action `auto_exchange` (interface `ContainerHandling` of LC10_TYPE).
+    The robot's endpoints stay in its MQTT interface.
   - Each skill instance has an extra list `UsesEndpoints` (ReferenceElements → `Endpoints.<name>`), because Control
     Component 2.0 has no skill → endpoint relation: Produce → PackMLCommand, PackMLState, AutoExchange;
     ExchangeContainer → ContainerExchange. Skills, modes and parameters are enforced at runtime by
     `LINE01/LineControl/ExecuteSkill` (services.md).
-- **Interfaces:** the AID (MQTT, UNS topics from `godot/config/uns.json`) and the AIMC mapping (AID property →
-  OperationalData/EnergyConsumption element, with JSON lookup transformations) are *generated* from the FMI model
-  descriptions. At runtime the AAS is the configuration: the bridge reads AIMC + AID properties, the ops gateway
-  the AID actions behind the Control Component endpoints, the MES the AID events (ADR-0015, ADR-0020).
+- **Interfaces:** the AID (MQTT, UNS topics from `godot/config/uns.json`; for controllers with an OPC UA server
+  also `InterfaceOPCUA`, ADR-0024) and the AIMC mapping (MQTT AID property → OperationalData/EnergyConsumption
+  element, with JSON lookup transformations) are *generated* from the FMI model descriptions. At runtime the AAS is
+  the configuration: the bridge reads AIMC + AID properties, the ops gateway the AID affordances behind the Control
+  Component endpoints, the MES the AID events of the MQTT interfaces, the edge connector pairs the OPC UA and MQTT
+  affordances of each AID by name (ADR-0015, ADR-0020, ADR-0024). The AIMC stays on the MQTT interface.
 - **AID actions and events** (open collections, generated, ADR-0020):
 
   | Element | Content |
@@ -121,6 +162,24 @@ Rationale for the main choices:
 
   AID 1.1 maps a single form per affordance; `ackForms` is the documented extension for the second form (TD 1.1
   allows several forms told apart by `op`). Consumers that ignore it still see a valid `forms`.
+- **AID OPC UA interface** (`InterfaceOPCUA`, AID 1.1 `InterfaceTemplateForOPCUA`, generated by
+  `provisioner/interfaces_opcua.py` from the same address-space model as the server, ADR-0024):
+
+  | Element | Content |
+  |---|---|
+  | `EndpointMetadata` | `base` = `opc.tcp://localhost:4840/vf/plc01`, `contentType` application/octet-stream (UA binary), `security` → `opcua_channel_sc` (`scheme` ua_channelsec, `uav_securityMode` None, `uav_securityPolicy` …/SecurityPolicy#None) and `opcua_authentication_sc` (`scheme` ua_authentication, `uav_userIdentityToken` Anonymous) |
+  | properties | every FMI output (same set as the MQTT interface): `type`, `title`, `unit`, `observable`; `forms.href` = `?id=nsu=urn:virtual-factory:plant01:line01:plc01;s=PLC01.Status.StateCurrent`, `forms.uav_browsePath` = `/0:Objects/2:PLC01/2:Status/2:StateCurrent` |
+  | actions | every writable variable: method `PLC01.Commands.<variable>`; `synchronous` true (result = status code of the call, no `ackForms`), `input.properties.Value` (`key` = argument name `Value`), `forms` with `op` invokeaction, `href`, `uav_browsePath`; the object of the call is the parent of the method (`PLC01.Commands`) |
+  | events | `forms.href` = the event type (`?id=nsu=…;s=PartSortedEventType`), `op` subscribeevent, `uav_browsePath` `/0:Types/0:EventTypes/0:BaseEventType/2:PartSortedEventType`; the notifier (`PLC01`) is found over the inverse `GeneratesEvent` reference |
+
+  `href` uses the expanded NodeId with the namespace URI (`nsu=`), so it does not depend on the namespace index;
+  the browse path uses index 2, which `plc-comm` guarantees (it warns otherwise). Example (packml_state):
+  ```json
+  {"idShort": "packml_state", "type": "integer", "title": "PackML state (ISA-TR88: 2 Stopped, 4 Idle, …)",
+   "observable": true, "forms": {"href": "?id=nsu=urn:virtual-factory:plant01:line01:plc01;s=PLC01.Status.StateCurrent",
+   "security": ["→ opcua_channel_sc", "→ opcua_authentication_sc"],
+   "uav_browsePath": "/0:Objects/2:PLC01/2:Status/2:StateCurrent"}}
+  ```
 - **Process values (slim AAS, ADR-0019):** every FMI output gets a concept description (unit, definition) and is
   described in the AID, but the AAS stores only **state and slow values**: OperationalData process values and AIMC
   mappings exist for outputs with FMI variability `discrete` (Boolean/Int32/String and per-event Float64 values such
@@ -211,9 +270,19 @@ nominal between min/max).
 - **KLT contents** (KLTA01/KLTB01 `HierarchicalStructures`, archetype OneDown): station → `Box` (KLT on the station,
   CoManagedEntity) → one Node per packed workpiece (`globalAssetId` = the workpiece's GS1 Digital Link) + `HasPart`.
   Cleared on exchange.
-- **Instance PCF** (ISO 14067 terminology, production-based, R9; MES `carbon.py`, `process_energy.py`), computed
-  when a part is packed, static inputs from the AAS, energy from the historian (UNS series are step functions):
-  1. *Material (A1)*: Σ BulkCount × component PCF (component AAS found via the `globalAssetId` of the type's BoM).
+- **Submodel ownership** (ADR-0025): the MES creates the workpiece AAS and writes all its submodels except the
+  CarbonFootprint, which the sustainability service writes (BPMN task `pcf-calculate` after packing) and references
+  from the shell; the MES keeps that reference when it replaces the shell. KLT contents, LINE01 KPIs: MES.
+  EnergyConsumption derived values: sustainability service. OperationalData/OperatingState: bridge (AIMC).
+  GR01 ConditionMonitoring and the observed Reliability sets: maintenance service (§6d, ADR-0029).
+- **Instance PCF** (ISO 14067 terminology, production-based, R9; sustainability service `carbon.py`,
+  `process_energy.py`), computed when a part is packed, static inputs from the AAS, energy from the historian (UNS
+  series are step functions):
+  1. *Material (A1)*: Σ BulkCount × PCF of the component batch built into the part, from a `SupplierFootprints`
+     source per BoM node and batch: first the **supplier batch AAS** (purchased components: GTIN of the component
+     type AAS + lot → batch Digital Link → federated discovery → CarbonFootprint of the batch, primary data,
+     ADR-0028), else the declared PCF of the component type AAS (found via the `globalAssetId` of the type's BoM;
+     in-house components and batches without supplier record, secondary data).
   2. *Assembly cell* (one part at a time): ∫ P_AC01 dt over the part's cycle, from the previous release to its
      release (idle, blocked and held time included, at most 30 min), entirely to this part. AC01 `power` contains
      the compressed-air equivalent, so the air share E_air = ΔAirConsumed in the cycle × `SpecificEnergy` (AC01
@@ -225,16 +294,22 @@ nominal between min/max).
   5. *Production losses* (rejects, packed into KLT B): a reject reports its own footprint (components + energy,
      marked as production loss in the description of its first entry); every good part carries L / G - L =
      cumulative footprint of the session's rejects, G = cumulative good parts including itself, at packing time.
-     Transparent and converges to the exact allocation L_total / G_total for a stationary reject rate; an MES
-     restart resets L and G.
+     Transparent and converges to the exact allocation L_total / G_total for a stationary reject rate; a restart of
+     the sustainability service resets L and G.
   6. *CarbonFootprint* (template-conformant list `ProductCarbonFootprints`): entry 1 `A1-A3` = total, entry 2
      `A1` = components, entry 3 `A3` = energy CO₂e + losses with the extra properties `ElectricalEnergy` (kWh,
      without air), `CompressedAirEnergy` (kWh), `ProductionLossCO2eq` (kg) and `LineResidenceTime` (s) (generated
      concept descriptions with units). Entries 2 and 3 break entry 1 down and must not be added to it.
   7. Without the historian: line energy per part (rolling 5 min of the AAS energy counters), method "fallback".
+  8. *Data quality* (PACT concept; CarbonFootprint 1.0 has no elements for it, so extra properties with generated
+     concept descriptions): `PrimaryDataShare` (%) on entry 1 (A1-A3) and entry 2 (A1) = emissions-weighted share
+     of primary data - per supplier batch its declared primary data share, type averages count 0, A3 (measured
+     energy and losses of LINE01) counts 100; `SupplierSpecificDataShare` (%) on entry 2 = share of A1 taken from
+     supplier batch footprints. Per component the service reports `dataQuality` (`primary`/`secondary`) on
+     `/api/footprints`.
   The declared type PCF (4.2 kg) additionally covers upstream manufacturing at suppliers.
 - **EnergyConsumption** (devices + LINE01 totals): `OperationalCO2eq`, `LastUpdate`, `MeasurementStart` (session
-  start) maintained by the MES; `TimeSeries` references the device's TimeSeries submodel (history in the
+  start) maintained by the sustainability service; `TimeSeries` references the device's TimeSeries submodel (history in the
   historian, see §3; the MES no longer writes time-series records).
 - **LINE01 KPIs** (02066): production, busy, delay (Suspended) and down time from PackML state durations; good,
   inspected, produced, scrap quantities from the PLC counters.
@@ -248,13 +323,19 @@ Every workpiece AAS is a self-contained passport of its part, readable through t
 
 - **Ids:** DPP id = AAS id; `uniqueProductIdentifier` = `globalAssetId` = GS1 Digital Link
   `https://virtual-factory.example/01/04099999032808/21/<serial>` (the DPP API resolves products by globalAssetId);
-  `granularity` Item; `dppStatus` Active, Inactive for rejects and lost parts. The type PC3280_TYPE is the model-level
+  `granularity` Item; `dppStatus` Inactive while in production and for rejects and lost parts, Active once a good
+  part is packed (shipped); Archived reserved for the end of life. The type PC3280_TYPE is the model-level
   passport (DPP id = type AAS id, product id `…/01/04099999032808`, granularity Model).
 - **Content** (`contentSpecificationIds`, only submodels present at the current stage): Nameplate, TechnicalData,
   ContactInformations, HandoverDocumentation, CarbonFootprint, HierarchicalStructures, ProductMaterialComposition,
   ProductCircularity, ExecutedProcesses, QualityInspection. MeasurementValue is not listed (two submodels with
   the same semanticId - the DPP API shows only one per semanticId; the values are in QualityInspection),
-  AssetLocation neither (logistics, not passport data).
+  AssetLocation neither (logistics, not passport data). CarbonFootprint is listed from the packed stage on and
+  written by the sustainability service.
+- **Retention** (LINE01 DataRetentionPolicies, ADR-0025): `ProductPassportShippedUnits` - passports of shipped units
+  stay on the AAS server across sessions (P10Y, served by the DPP API); `ProductInstanceSessionData` - units not
+  shipped (in production, rejected, lost) only for the current session. Serial numbers (and with them AAS ids and
+  Digital Links) are never reused: the AC01 serial counter is retentive in live sessions.
 - **Type data** come from `aas/data/common/product_passport_pc3280.yaml`, included by type and blueprint as named
   fragments (`$include: "common/product_passport_pc3280.yaml#Documents.DS"`), so both stay identical.
 - **TechnicalData (as-built):** the type sections plus section `AsBuilt`: DateOfManufacture, MeasuredLeakRate,
@@ -272,31 +353,76 @@ Every workpiece AAS is a self-contained passport of its part, readable through t
   supplier lot certificate, simulated within ±15 % of the declared average.
 
 **As-built BoM (IDTA 02011-1-1 HierarchicalStructures 1.1, ArcheType Full).** Same node idShorts and BulkCounts as
-the type BoM (`carbon.py` keeps reading the type BoM for the component PCFs):
+the type BoM (the sustainability service reads the type BoM for the component footprints):
 
 ```
 EntryNode (SelfManagedEntity, globalAssetId = Digital Link of the part)
 ├─ Barrel (CoManagedEntity, displayName "Barrel, batch L2609-0419")
 │    BulkCount 1 · BatchId L2609-0419 · SameAs → PC3280_TYPE/HierarchicalStructures/EntryNode.Barrel
+├─ EndCapFront (SelfManagedEntity, globalAssetId …/01/04099991010019/10/DGP-260914-F → supplier batch AAS)
+│    BulkCount 1 · BatchId DGP-260914-F · SameAs → PC3280_TYPE/HierarchicalStructures/EntryNode.EndCapFront
 ├─ …  (9 nodes)
 └─ HasPart_Barrel … (EntryNode → node)
 ```
 
-- A node stands for the **component batch** built into this unit. Batches have no AAS of their own. HS 1.1 uses
-  SelfManagedEntity for assets with their own AAS and CoManagedEntity for parts managed only inside this
-  submodel, so the batch nodes are CoManaged.
-- AASd-014 forbids globalAssetId/specificAssetIds on a CoManagedEntity. The batch id is therefore the statement
-  `BatchId` (generated concept description). The link to the component type is a `SameAs` relationship to the
-  type BoM node, which is SelfManaged with the component type's globalAssetId (CMP_* AAS).
+- A node stands for the **component batch** built into this unit. HS 1.1 uses SelfManagedEntity for assets with
+  their own AAS and CoManagedEntity for parts managed only inside this submodel:
+  - **purchased batches** (EndCapFront, EndCapRear, SealKit, ScrewM5x16, ProtectiveCap) have their own batch AAS
+    in the supplier environment (ADR-0028): **SelfManagedEntity**, globalAssetId = batch Digital Link
+    `https://virtual-factory.example/01/<GTIN of the supplier article>/10/<lot>`. The MES composes it from the
+    GTIN and the lot (like a scan of the container's GS1-128 label), independent of the supplier environment's
+    availability; clients resolve it via federated discovery (inspector: *Open asset AAS*).
+  - **in-house lots** (`L<YYWW>-n`: barrel, piston rod, piston, cushioning screws) have no AAS:
+    **CoManagedEntity**; AASd-014 forbids globalAssetId/specificAssetIds there.
+- Every node keeps the statement `BatchId` (generated concept description) and a `SameAs` relationship to the type
+  BoM node, which is SelfManaged with the component type's globalAssetId (CMP_* AAS).
 - Rejected alternative: SelfManaged nodes with the component type's globalAssetId and specificAssetId `batchId`.
   This would claim that the batch is the asset of the CMP AAS, i.e. a type, not a batch.
 - Traceability query (all parts containing a batch): [services.md](services.md#traceability-which-parts-contain-a-batch).
+
+## 6c. Supplier batch AAS (ADR-0028)
+
+Created by the supplier portal (`services/supplier`) in the supplier environment when a lot is despatched (the ERP
+asks for the despatch advice when the MES reports the lot staged at the line); blueprint
+`aas/data/supplier/blueprints/batch_instance.yaml`, values per lot from `aas/data/supplier/batch_profiles.yaml`.
+
+| Element | Content |
+|---|---|
+| AAS | `<company idBase>/aas/BATCH_<lot>`, assetKind Instance, derivedFrom the supplier's product type, globalAssetId `…/01/<GTIN>/10/<lot>`, specific asset ids `manufacturerPartId`, `batchId`, `customerPartId` |
+| BatchInformation (custom, YAML DSL) | BatchId, ManufacturerPartId, CustomerPartId, ProductType (reference to the type AAS), Quantity, DateOfManufacture, ProductionSite, Customer, DespatchAdviceNumber, DespatchDate, MaterialCertificate, MeanMassPerPiece, RecycledContent (pre/post-consumer %, metal parts only) |
+| CarbonFootprint (IDTA 1.0) | one entry per piece, A1-A3, ISO 14067 + PACT methodology; PcfCO2eq of this batch (declared × (1 ± spread) − credit × Δ recycled share); extra properties `PrimaryDataShare` (%), `BatchId` |
+| ProductMaterialComposition (custom) | composition of the type scaled to the measured mean mass, `MaterialLocation.BatchId` = lot |
+| HandoverDocumentation (IDTA 2.0) | inspection certificate 3.1 (EN 10204) `MC-<lot>` (VDI 2770 02-04), generated PDF (sample `aas/files/supplier/MC-DGP-260914-F.pdf`) |
+
+Recycled shares per lot are computed with `vf_common.lot_values.recycled_share` - the MES writes the same values
+into the passport's ProductCircularity (`RecycledContentInformation`, BatchId), so passport and batch AAS agree.
+
+## 6d. Predictive maintenance (ADR-0029)
+
+Component GR01 (gripper fingers, measured by the robot FMU RB01: `finger_wear`, `grip_force`, `grip_close_time`,
+`grip_cycles`, `grasp_retries`, `gripper_fault`). Ownership: provisioner = manufacturer data, maintenance service =
+condition, prognosis and field data.
+
+| Submodel | Content | Written by |
+|---|---|---|
+| Reliability (IDTA 1.0, IEC 62683) | `NumberOfReliabilitySets`; `ConditionsGripperUnit` / `CharacteristicsGripperUnit` (24 V DC, useful life 10 million operations, MTTF 150 000 h, B10 10 million); `ConditionsFingerSet` / `CharacteristicsFingerSet` (finger set FS-PG85-V50, useful life 2.5 million grips, B10 2 million; end of life = 1.0 mm jaw offset) | provisioner (design) |
+| | `ConditionsFingerSetObserved` / `CharacteristicsFingerSetObserved`: mean achieved grips per finger change (`UsefulLifeInNumberOfOperations`), B10 from a Weibull wear-out model (shape 3 assumed), number of changes in `OtherOperatingConditions`; `NumberOfReliabilitySets` 3 | maintenance service (after each change) |
+| MaintenanceInstructions (IDTA 1.0) | `FingerChange` = MI-PG85-01 "Replace gripper fingers": condition-based (interval value = B10 2 000 000 cycles), alarm values 80 % warning / 100 % limit, safety, 1 technician, 20 min, steps 10 secure cell, 20 remove fingers (hex key), 30 fit FS-PG85-V50 at 6 Nm (torque wrench, spare part), 40 confirm finger change and test; spare part and tool lists | provisioner; read by the maintenance service (task text of the BPMN user tasks) |
+| ConditionMonitoring (custom, `aas/templates/custom/ConditionMonitoring.yaml`) | `HealthState`, `HealthIndex`, `HealthIndicator` (IndicatorName `RB01.finger_wear`, CurrentValue, LimitValue 0.001, IndicatorUnit m, DataSource → RB01/TimeSeries), `RemainingUsefulLife` (RulCycles, RulCyclesLowerBound, RulHours, RulHoursLowerBound, PredictedFailureDate, Confidence, Method TrendFit/DesignRate, DataPoints, Throughput, OrderThreshold), `Symptoms` (GripForce, GripCloseTime, GraspRetries, GripCycles), `Recommendation` (en/de), `MaintenanceInstruction` (→ MaintenanceInstructions#FingerChange), `OpenMaintenanceOrder`, `MaintenanceRecords` (MaintenanceOrderId, MaintenanceID, CompletedAt, Technician, Findings, PartsReplaced, CyclesAtMaintenance, HealthIndexBefore, Downtime), `LastUpdate` | provisioned initial state; values only by the maintenance service (changed values each 10 s, records after an order) |
+
+Executed maintenance is recorded in `MaintenanceRecords`, not in ExecutedProcesses (that template describes the
+production steps a product went through). The history of health index and RUL is in the historian (table
+`maintenance`), not in the AAS (ADR-0019). Line control used by the maintenance order: LineControl `SetUnitMode`
+(revision 1.2) and the skill `Maintain` of PLC01/ControlComponentInstance (endpoint `GripperMaintenanceReset` →
+RB01 AID action `gripper_maintenance_reset`).
 
 ## 7. Asset data format (`aas/data/assets/<TAG>.yaml`)
 
 See `services/vf_common/src/vf_common/aas/environment.py` and `instantiate.py`. In short:
 - `tag`, `idShort`, `kind`, `assetType`, `displayName`, `description`, `derivedFrom`, `thumbnail`,
-  `specificAssetIds`, `globalAssetId` (optional, default `…/ids/asset/<TAG>`; also used by `${asset:TAG}`).
+  `specificAssetIds`, `globalAssetId` (optional, default `…/ids/asset/<TAG>`; also used by `${asset:TAG}`),
+  `idBase` (optional id namespace of another organisation, e.g. a supplier in `aas/data/supplier/`; replaces
+  `https://virtual-factory.example/ids` in the AAS, asset and submodel ids of that asset, ADR-0028).
 - `model3d: {file, preview, title, objectType}` generates Models3D.
 - `device: {modelDescription, energy: {power, energy, air}, operatingHours, state: {variable, map, initial}}`
   generates AID, AIMC, OperationalData, SimulationModels and TimeSeries (LinkedSegment, endpoint and database from

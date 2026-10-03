@@ -1,0 +1,861 @@
+{
+ "uid": "vf-maintenance",
+ "title": "Maintenance",
+ "tags": [
+  "virtual-factory",
+  "maintenance"
+ ],
+ "description": "Predictive maintenance of LINE01 (ADR-0029): health index and remaining useful life of the gripper fingers GR01 (maintenance service, historian table maintenance), the wear symptoms of RB01 and the maintenance alarms",
+ "editable": false,
+ "graphTooltip": 1,
+ "refresh": "10s",
+ "schemaVersion": 41,
+ "version": 1,
+ "time": {
+  "from": "now-30m",
+  "to": "now"
+ },
+ "timezone": "browser",
+ "fiscalYearStartMonth": 0,
+ "timepicker": {
+  "refresh_intervals": [
+   "5s",
+   "10s",
+   "30s",
+   "1m",
+   "5m"
+  ]
+ },
+ "templating": {
+  "list": [
+   {
+    "datasource": {
+     "type": "influxdb",
+     "uid": "vf-historian"
+    },
+    "includeAll": false,
+    "multi": false,
+    "sort": 0,
+    "regex": "",
+    "skipUrlSync": false,
+    "options": [],
+    "name": "session",
+    "label": "Session",
+    "type": "query",
+    "refresh": 2,
+    "hide": 0,
+    "description": "UNS session (one per Godot start); 'latest' follows the newest session",
+    "query": {
+     "query": "SELECT 'latest' AS session UNION ALL SELECT session FROM (SELECT DISTINCT session FROM plc01) ORDER BY session = 'latest' DESC, session DESC",
+     "refId": "session"
+    },
+    "current": {
+     "selected": true,
+     "text": "latest",
+     "value": "latest"
+    }
+   },
+   {
+    "datasource": {
+     "type": "influxdb",
+     "uid": "vf-historian"
+    },
+    "includeAll": false,
+    "multi": false,
+    "sort": 0,
+    "regex": "",
+    "skipUrlSync": false,
+    "options": [],
+    "name": "sid",
+    "label": "Session id",
+    "type": "query",
+    "refresh": 2,
+    "hide": 2,
+    "description": "Resolved session id ('latest' -> newest session)",
+    "query": {
+     "query": "SELECT CASE WHEN '${session}' = 'latest' THEN max(session) ELSE '${session}' END AS sid FROM plc01",
+     "refId": "sid"
+    },
+    "current": {}
+   }
+  ]
+ },
+ "annotations": {
+  "list": []
+ },
+ "links": [
+  {
+   "title": "AAS Web UI",
+   "type": "link",
+   "url": "http://localhost:3001",
+   "targetBlank": true,
+   "icon": "external link",
+   "tooltip": "BaSyx AAS Web UI (device, line and workpiece AAS)",
+   "asDropdown": false,
+   "includeVars": false,
+   "keepTime": false,
+   "tags": []
+  },
+  {
+   "title": "Operaton Cockpit",
+   "type": "link",
+   "url": "http://localhost:8092/operaton/app/cockpit/",
+   "targetBlank": true,
+   "icon": "external link",
+   "tooltip": "BPMN processes (MES)",
+   "asDropdown": false,
+   "includeVars": false,
+   "keepTime": false,
+   "tags": []
+  },
+  {
+   "title": "Operaton Tasklist",
+   "type": "link",
+   "url": "http://localhost:8092/operaton/app/tasklist/",
+   "targetBlank": true,
+   "icon": "external link",
+   "tooltip": "Operator tasks",
+   "asDropdown": false,
+   "includeVars": false,
+   "keepTime": false,
+   "tags": []
+  },
+  {
+   "title": "LINE01 live",
+   "type": "link",
+   "url": "/d/vf-line01-live",
+   "targetBlank": false,
+   "icon": "dashboard",
+   "tooltip": "Live dashboard of the line",
+   "asDropdown": false,
+   "includeVars": false,
+   "keepTime": true,
+   "tags": []
+  }
+ ],
+ "panels": [
+  {
+   "type": "stat",
+   "title": "Health index GR01",
+   "description": "Gripper fingers GR01: 1 - finger wear / wear limit (maintenance service, ADR-0029)",
+   "datasource": {
+    "type": "influxdb",
+    "uid": "vf-historian"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 5,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "influxdb",
+      "uid": "vf-historian"
+     },
+     "rawSql": "SELECT health_index AS \"Health index\" FROM maintenance WHERE component = 'GR01' AND session = '${sid}' AND health_index IS NOT NULL ORDER BY time DESC LIMIT 1",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.25
+       },
+       {
+        "color": "yellow",
+        "value": 0.5
+       },
+       {
+        "color": "green",
+        "value": 0.85
+       }
+      ]
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center"
+   },
+   "id": 1
+  },
+  {
+   "type": "stat",
+   "title": "RUL (90 % lower bound)",
+   "description": "Remaining useful life until the wear limit at the current throughput, conservative one-sided 90 % bound",
+   "datasource": {
+    "type": "influxdb",
+    "uid": "vf-historian"
+   },
+   "gridPos": {
+    "x": 5,
+    "y": 0,
+    "w": 5,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "influxdb",
+      "uid": "vf-historian"
+     },
+     "rawSql": "SELECT rul_hours_low AS \"RUL\" FROM maintenance WHERE component = 'GR01' AND session = '${sid}' AND rul_hours_low IS NOT NULL ORDER BY time DESC LIMIT 1",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "h",
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 8
+       },
+       {
+        "color": "green",
+        "value": 24
+       }
+      ]
+     },
+     "decimals": 2
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center"
+   },
+   "id": 2
+  },
+  {
+   "type": "stat",
+   "title": "RUL in grips",
+   "description": "Remaining useful life in grips (lower bound / median)",
+   "datasource": {
+    "type": "influxdb",
+    "uid": "vf-historian"
+   },
+   "gridPos": {
+    "x": 10,
+    "y": 0,
+    "w": 5,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "influxdb",
+      "uid": "vf-historian"
+     },
+     "rawSql": "SELECT rul_cycles_low AS \"lower bound\", rul_cycles AS \"median\" FROM maintenance WHERE component = 'GR01' AND session = '${sid}' AND rul_cycles IS NOT NULL ORDER BY time DESC LIMIT 1",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "text",
+        "value": null
+       }
+      ]
+     },
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center"
+   },
+   "id": 3
+  },
+  {
+   "type": "stat",
+   "title": "Health state",
+   "description": "Good / Warning (maintenance order due or open) / Alarm (limit reached or gripper fault)",
+   "datasource": {
+    "type": "influxdb",
+    "uid": "vf-historian"
+   },
+   "gridPos": {
+    "x": 15,
+    "y": 0,
+    "w": 4,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "influxdb",
+      "uid": "vf-historian"
+     },
+     "rawSql": "SELECT health_state AS \"State\" FROM maintenance WHERE component = 'GR01' AND session = '${sid}' AND health_state IS NOT NULL ORDER BY time DESC LIMIT 1",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "text",
+        "value": null
+       }
+      ]
+     },
+     "mappings": [
+      {
+       "type": "value",
+       "options": {
+        "Good": {
+         "color": "green",
+         "index": 0
+        },
+        "Warning": {
+         "color": "orange",
+         "index": 1
+        },
+        "Alarm": {
+         "color": "red",
+         "index": 2
+        },
+        "Unknown": {
+         "color": "text",
+         "index": 3
+        }
+       }
+      }
+     ]
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "/.*/",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center"
+   },
+   "id": 4
+  },
+  {
+   "type": "stat",
+   "title": "Maintenance order",
+   "description": "Open maintenance order (BPMN MaintenanceOrder, business key); empty = none",
+   "datasource": {
+    "type": "influxdb",
+    "uid": "vf-historian"
+   },
+   "gridPos": {
+    "x": 19,
+    "y": 0,
+    "w": 5,
+    "h": 5
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "influxdb",
+      "uid": "vf-historian"
+     },
+     "rawSql": "SELECT CASE WHEN \"order\" = '' THEN 'none' ELSE \"order\" END AS \"Order\" FROM maintenance WHERE component = 'GR01' AND session = '${sid}' AND \"order\" IS NOT NULL ORDER BY time DESC LIMIT 1",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "color": {
+      "mode": "thresholds"
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "text",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "/.*/",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "value",
+    "justifyMode": "center"
+   },
+   "id": 5
+  },
+  {
+   "type": "timeseries",
+   "title": "Health index",
+   "description": "Health index of the gripper fingers over time; the maintenance order is opened when the RUL lower bound falls below the threshold (8 h) while HI < 0.85, at the latest at HI < 0.25",
+   "datasource": {
+    "type": "influxdb",
+    "uid": "vf-historian"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 5,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "influxdb",
+      "uid": "vf-historian"
+     },
+     "rawSql": "SELECT time, health_index AS \"Health index\" FROM maintenance WHERE component = 'GR01' AND session = '${sid}' AND $__timeFilter(time) AND health_index IS NOT NULL ORDER BY time",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "spanNulls": true,
+      "showPoints": "auto",
+      "thresholdsStyle": {
+       "mode": "line+area"
+      }
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "transparent",
+        "value": 0.25
+       }
+      ]
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "min": 0,
+     "max": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "showLegend": true,
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 6
+  },
+  {
+   "type": "timeseries",
+   "title": "Remaining useful life (grips)",
+   "description": "Median and 90 % lower bound of the remaining grips until the wear limit (TrendFit; DesignRate shows the design life)",
+   "datasource": {
+    "type": "influxdb",
+    "uid": "vf-historian"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 5,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "influxdb",
+      "uid": "vf-historian"
+     },
+     "rawSql": "SELECT time, rul_cycles AS \"median\", rul_cycles_low AS \"lower bound\" FROM maintenance WHERE component = 'GR01' AND session = '${sid}' AND $__timeFilter(time) AND rul_cycles IS NOT NULL AND rul_cycles < 1000 ORDER BY time",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "spanNulls": true,
+      "showPoints": "auto"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "showLegend": true,
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 7
+  },
+  {
+   "type": "timeseries",
+   "title": "Finger wear (jaw offset)",
+   "description": "RB01.finger_wear - jaw position offset at contact measured by the gripper; wear limit 1.0 mm, parts slip above 0.85 mm",
+   "datasource": {
+    "type": "influxdb",
+    "uid": "vf-historian"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 13,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "influxdb",
+      "uid": "vf-historian"
+     },
+     "rawSql": "SELECT time, finger_wear * 1000 AS \"finger wear\" FROM rb01 WHERE session = '${sid}' AND $__timeFilter(time) AND finger_wear IS NOT NULL ORDER BY time",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "lengthmm",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "spanNulls": true,
+      "showPoints": "auto",
+      "thresholdsStyle": {
+       "mode": "line+area"
+      }
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "transparent",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 0.85
+       },
+       {
+        "color": "red",
+        "value": 1.0
+       }
+      ]
+     },
+     "color": {
+      "mode": "palette-classic"
+     },
+     "min": 0,
+     "max": 1.1
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "showLegend": true,
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 8
+  },
+  {
+   "type": "timeseries",
+   "title": "Grip force and closing time",
+   "description": "Symptoms: clamping force at the last grip (left axis) and closing time of the jaws (right axis)",
+   "datasource": {
+    "type": "influxdb",
+    "uid": "vf-historian"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 13,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "influxdb",
+      "uid": "vf-historian"
+     },
+     "rawSql": "SELECT time, grip_force AS \"grip force\", grip_close_time AS \"closing time\" FROM rb01 WHERE session = '${sid}' AND $__timeFilter(time) AND grip_force IS NOT NULL ORDER BY time",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "spanNulls": true,
+      "showPoints": "auto"
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "grip force"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "none"
+       },
+       {
+        "id": "displayName",
+        "value": "grip force [N]"
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "closing time"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "s"
+       },
+       {
+        "id": "custom.axisPlacement",
+        "value": "right"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "legend": {
+     "showLegend": true,
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 9
+  },
+  {
+   "type": "table",
+   "title": "Maintenance alarms (ISA-18.2)",
+   "description": "Advisory alarm 901 (maintenance service) and robot fault 202 from the alarm journal of the alarms service",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "vf-alarms"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 21,
+    "w": 14,
+    "h": 7
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "vf-alarms"
+     },
+     "rawSql": "SELECT j.time AS \"Time\", j.code AS \"Code\", j.event AS \"Event\", j.state AS \"State\", d.priority AS \"Priority\", d.text_en AS \"Alarm\", j.operator AS \"Operator\" FROM alarm_journal j JOIN alarm_definition d USING (code) WHERE j.code IN (901, 202) AND $__timeFilter(j.time) ORDER BY j.time DESC LIMIT 50",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": []
+   },
+   "options": {
+    "showHeader": true
+   },
+   "id": 10
+  },
+  {
+   "type": "timeseries",
+   "title": "Regrips",
+   "description": "RB01.grasp_retries - parts that slipped and were gripped again since the last finger change (failure precursor)",
+   "datasource": {
+    "type": "influxdb",
+    "uid": "vf-historian"
+   },
+   "gridPos": {
+    "x": 14,
+    "y": 21,
+    "w": 10,
+    "h": 7
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "influxdb",
+      "uid": "vf-historian"
+     },
+     "rawSql": "SELECT time, grasp_retries AS \"regrips\", grip_cycles AS \"grips\" FROM rb01 WHERE session = '${sid}' AND $__timeFilter(time) AND grip_cycles IS NOT NULL ORDER BY time",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 10,
+      "spanNulls": true,
+      "showPoints": "auto"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "showLegend": true,
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   },
+   "id": 11
+  }
+ ],
+ "liveNow": false,
+ "weekStart": ""
+}

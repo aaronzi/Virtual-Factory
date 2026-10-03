@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .lots import COMPONENTS
-from .pdf import Page, render
+from vf_common.pdf import Page, render
 from .quality import Limits
 
 BLUE, GREY, GREEN, RED = (0.1, 0.27, 0.55), (0.43, 0.45, 0.47), (0.1, 0.5, 0.25), (0.7, 0.12, 0.1)

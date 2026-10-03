@@ -6,6 +6,7 @@ extends PanelContainer
 signal command_pressed(command: int)
 signal auto_exchange_toggled(enabled: bool)
 signal exchange_pressed(container: int)
+signal ack_pressed
 
 const C := PackMLStateMachine.Command
 const COMMANDS := [[C.RESET, "HMI_RESET"], [C.START, "HMI_START"], [C.STOP, "HMI_STOP"], [C.HOLD, "HMI_HOLD"],
@@ -16,6 +17,7 @@ var _state: Label
 var _stats: Label
 var _oee: Label
 var _alarm: Label
+var _ack: Button
 var _auto: CheckButton
 var _buttons := {}  # command -> Button
 
@@ -37,13 +39,13 @@ func _init() -> void:
 	_alarm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS  # one line: the layout has no spare row
 	root.add_child(_stats)
 	root.add_child(_oee)
-	root.add_child(_alarm)
+	root.add_child(_alarm_row())
 	root.add_child(_command_grid())
 	root.add_child(_klt_row())
 
 
 ## status: {state:int, state_name, total, ok, nok, klt_a, klt_b, capacity, auto_exchange, alarm,
-##          availability, performance, quality}
+##          availability, performance, quality, unacked (alarms service: unacknowledged alarms, -1 = n/a)}
 func update_status(s: Dictionary) -> void:
 	_state.text = s.get("state_name", "-")
 	_state.add_theme_color_override("font_color", _state_color(s.get("state", 0)))
@@ -56,10 +58,27 @@ func update_status(s: Dictionary) -> void:
 	var q: float = s.get("quality", 0.0)
 	_oee.text = tr("HMI_OEE") % [a * p * q * 100.0, a * 100.0, p * 100.0, q * 100.0]
 	_alarm.text = s.get("alarm", "")
+	var unacked: int = s.get("unacked", -1)
+	_ack.visible = unacked >= 0
+	_ack.disabled = unacked <= 0
+	_ack.text = tr("HMI_ACK") % maxi(unacked, 0)
 	var allowed := PackMLStateMachine.allowed_commands(s.get("state", 0))
 	for cmd: int in _buttons:
 		_buttons[cmd].disabled = cmd not in allowed
 	_auto.set_pressed_no_signal(s.get("auto_exchange", true))
+
+
+## Alarm text (one line, the layout has no spare row) and the acknowledge button of the alarm management.
+func _alarm_row() -> HBoxContainer:
+	var row := HBoxContainer.new()
+	_alarm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(_alarm)
+	_ack = Button.new()
+	_ack.add_theme_font_size_override("font_size", 15)
+	_ack.visible = false
+	_ack.pressed.connect(func() -> void: ack_pressed.emit())
+	row.add_child(_ack)
+	return row
 
 
 func _command_grid() -> GridContainer:

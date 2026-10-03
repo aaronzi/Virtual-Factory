@@ -1,11 +1,11 @@
 name: LineControl
 version: "1"
-revision: "1"
+revision: "2"
 displayName: {en: "Line Control", de: "Liniensteuerung"}
 description:
   en: >-
-    Callable control services of a production line for IT systems, agents and workflows: PackML commands, container
-    exchange, operating options and the execution of the controller's Control Component skills as AAS Operations. The operations are executed by the line controller; the AAS
+    Callable control services of a production line for IT systems, agents and workflows: PackML commands and unit
+    modes, container exchange, operating options and the execution of the controller's Control Component skills as AAS Operations. The operations are executed by the line controller; the AAS
     server forwards invocations to an operations gateway (invocation delegation), which translates them into
     commands on the shop-floor interface: it follows ControlComponent → Control Component Instance endpoints → Asset
     Interfaces Description of the controller to find topics, flags and payload keys. The live state
@@ -13,8 +13,8 @@ description:
     Component Type/Instance 2.0, which describes skills and endpoints but no invocable operations; ExecuteSkill makes
     its skills invocable. Virtual Factory custom template.
   de: >-
-    Aufrufbare Steuerungsdienste einer Fertigungslinie für IT-Systeme, Agenten und Workflows: PackML-Befehle,
-    Behälterwechsel, Betriebsoptionen und die Ausführung der Control-Component-Skills der Steuerung als
+    Aufrufbare Steuerungsdienste einer Fertigungslinie für IT-Systeme, Agenten und Workflows: PackML-Befehle und
+    -Betriebsarten, Behälterwechsel, Betriebsoptionen und die Ausführung der Control-Component-Skills der Steuerung als
     AAS-Operationen. Ausgeführt werden sie von der Liniensteuerung; der
     AAS-Server leitet Aufrufe an ein Operations-Gateway weiter (Invocation Delegation), das sie in Befehle an der
     Shopfloor-Schnittstelle übersetzt: es folgt ControlComponent → Endpunkte der Control Component Instance → Asset
@@ -46,6 +46,17 @@ elements:
     definition: {en: "Sends a PackML unit command to the line controller and returns the state reached. Commands that are not allowed in the current state are rejected without effect.", de: "Sendet einen PackML-Befehl an die Liniensteuerung und liefert den erreichten Zustand. Im aktuellen Zustand unzulässige Befehle werden ohne Wirkung abgelehnt."}
     inputs:
       - {idShort: Command, preferredName: {en: "PackML command", de: "PackML-Befehl"}, definition: {en: "One of Reset, Start, Stop, Hold, Unhold, Suspend, Unsuspend, Abort, Clear (ISA-TR88.00.02).", de: "Einer von Reset, Start, Stop, Hold, Unhold, Suspend, Unsuspend, Abort, Clear (ISA-TR88.00.02)."}}
+    outputs:
+      - {idShort: Accepted, valueType: xs:boolean, preferredName: {en: "accepted", de: "angenommen"}, definition: {en: "True if the controller accepted and executed the request.", de: "Wahr, wenn die Steuerung die Anforderung angenommen und ausgeführt hat."}}
+      - {idShort: State, preferredName: {en: "resulting state", de: "erreichter Zustand"}, definition: {en: "PackML state after the command (name, e.g. EXECUTE).", de: "PackML-Zustand nach dem Befehl (Name, z. B. EXECUTE)."}}
+      - {idShort: Message, preferredName: {en: "message", de: "Meldung"}, definition: {en: "Human-readable result or rejection reason.", de: "Lesbares Ergebnis oder Ablehnungsgrund."}}
+  - idShort: SetUnitMode
+    modelType: Operation
+    cardinality: ZeroToOne
+    preferredName: {en: "set unit mode", de: "Betriebsart setzen"}
+    definition: {en: "Sets the PackML unit mode of the line controller (ISA-TR88.00.02; OPC 30050 SetUnitMode). The controller changes the mode only in a wait state without motion (e.g. STOPPED, IDLE, ABORTED); otherwise the request is rejected without effect.", de: "Setzt die PackML-Betriebsart der Liniensteuerung (ISA-TR88.00.02; OPC 30050 SetUnitMode). Die Steuerung wechselt die Betriebsart nur in einem Wartezustand ohne Bewegung (z. B. STOPPED, IDLE, ABORTED); sonst wird die Anforderung ohne Wirkung abgelehnt."}
+    inputs:
+      - {idShort: Mode, preferredName: {en: "unit mode", de: "Betriebsart"}, definition: {en: "One of Production, Maintenance, Manual.", de: "Eine von Production, Maintenance, Manual."}}
     outputs:
       - {idShort: Accepted, valueType: xs:boolean, preferredName: {en: "accepted", de: "angenommen"}, definition: {en: "True if the controller accepted and executed the request.", de: "Wahr, wenn die Steuerung die Anforderung angenommen und ausgeführt hat."}}
       - {idShort: State, preferredName: {en: "resulting state", de: "erreichter Zustand"}, definition: {en: "PackML state after the command (name, e.g. EXECUTE).", de: "PackML-Zustand nach dem Befehl (Name, z. B. EXECUTE)."}}

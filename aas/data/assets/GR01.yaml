@@ -89,3 +89,131 @@ submodels:
           LifeCyclePhases: [{value: "A1-A3"}]
           GoodsHandoverAddress: {$include: common/address_vf_automation.yaml}
           PublicationDate: "2025-05-12T00:00:00+00:00"
+
+  # Design reliability (IEC 62683 / IDTA Reliability 1.0) of the gripper unit and of the finger set (wear part).
+  # The maintenance service (ADR-0029) appends the observed field data of the finger set (sets ConditionsFingerSetObserved / CharacteristicsFingerSetObserved:
+  # achieved grips per finger change, B10 estimate) after each finger change.
+  - template: Reliability-1.0
+    values:
+      NumberOfReliabilitySets: 2
+      OperatingConditionsOfReliabilityCharacteristics:
+        - _idShort: ConditionsGripperUnit
+          TypeOfVoltage: DC
+          RatedVoltage: 24
+          OtherOperatingConditions: "Gripper unit PG-85 (servo motor, self-locking spindle, jaw guides): grip force up to 150 N, 5-50 °C, IP54, manufacturer data"
+          UsefulLifeInNumberOfOperations: 10000000
+        - _idShort: ConditionsFingerSet
+          OtherOperatingConditions: "Finger set FS-PG85-V50 (aluminium V-jaws with PU pads 90 Shore A): round parts 0.2-0.5 kg, grip force 100 N, dry and non-abrasive environment; end of life = wear limit 1.0 mm jaw position offset; manufacturer data"
+          UsefulLifeInNumberOfOperations: 2500000
+      ReliabilityCharacteristics:
+        - _idShort: CharacteristicsGripperUnit
+          MTTF: 150000
+          B10: 10000000
+        - _idShort: CharacteristicsFingerSet
+          B10: 2000000
+
+  # Maintenance tasks of the manufacturer (IDTA MaintenanceInstructions 1.0). MI-PG85-01 is condition-based: the
+  # maintenance service opens a maintenance order when the predicted remaining useful life of the fingers falls
+  # below its threshold (ConditionMonitoring); the interval value is the B10 life of the finger set.
+  - template: MaintenanceInstructions-1.0
+    values:
+      MaintenanceFreeAsset: false
+      MaintenanceInstructionsForSpecificInterval:
+        - _idShort: FingerChange
+          BasicMaintenanceInformation:
+            # upstream template defect: semanticId is a ModelReference with key type 'Identifiable' (rejected by the
+            # strict build); same IRI re-declared as ExternalReference
+            _semanticId: https://admin-shell.io/idta/maintenanceinstructions/basicmaintenanceinformation/1/0
+            MaintenanceID: MI-PG85-01
+            NameOfMaintenance: {en: Replace gripper fingers, de: Greiferfinger tauschen}
+            SourceOfMaintenanceInstructions: {en: "Operating manual PG-85 (VF Automation Systems), chapter 9 Maintenance; triggered condition-based by the maintenance service of LINE01", de: "Betriebsanleitung PG-85 (VF Automation Systems), Kapitel 9 Wartung; zustandsabhängig ausgelöst durch den Instandhaltungsdienst von LINE01"}
+            IntervalSpecification: {MaintenanceIntervalValue: 2000000, MaintenanceIntervalUnit: cycles}
+            AlarmValues:
+              Alarm:
+                - {AlarmName: {en: Finger wear warning, de: Warnung Fingerverschleiß}, WarningLimitRelativeValue: 80, WarningLimitSeverity: warning}
+                - {AlarmName: {en: Finger wear limit reached, de: Verschleißgrenze der Finger erreicht}, WarningLimitRelativeValue: 100, WarningLimitSeverity: alarm}
+            RelatedStandardsLawsRegulations:
+              - {en: "EN ISO 10218-2 (robot systems and integration)", de: "EN ISO 10218-2 (Robotersysteme und Integration)"}
+            SafetyRegulationsToBeObserved:
+              - {en: "Put LINE01 into maintenance mode and open the fence door only when the robot is at rest. The jaws keep their position when de-energised (self-locking spindle): remove a gripped part by hand.", de: "LINE01 in die Betriebsart Wartung schalten und die Schutztür erst bei stehendem Roboter öffnen. Die Backen halten ihre Position stromlos (selbsthemmende Spindel): ein gegriffenes Teil von Hand entnehmen."}
+          MaintenanceTechnicians:
+            NumberOfRequiredTechnicians: 1
+            RequiredQualification: [{en: "Maintenance technician instructed on the robot cell (OI-UR5E-PP)", de: "Instandhalter, unterwiesen an der Roboterzelle (OI-UR5E-PP)"}]
+            EstimatedTotalWorkingTime: {ValueTotalEstimatedWorkingTime: 20, UnitValueTotalEstimatedWorkingTime: minutes}
+          ListMaintenanceSteps:
+            MaintenanceStep:
+              - _idShort: SecureCell
+                MaintenanceStepID: "10"
+                MaintenanceStepName: {en: Secure the robot cell, de: Roboterzelle sichern}
+                LocalizationDescription: {en: "Robot cell RB01, tool flange", de: "Roboterzelle RB01, Werkzeugflansch"}
+                InstructionMaintenanceStep: {en: "Check that LINE01 is stopped in maintenance mode, open the jaws from the teach pendant, then open the fence door.", de: "Prüfen, dass LINE01 in der Betriebsart Wartung steht, Backen über das Bediengerät öffnen, dann die Schutztür öffnen."}
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 3, UnitEstimatedDurationTimeMaintenanceStep: minutes}
+              - _idShort: RemoveFingers
+                MaintenanceStepID: "20"
+                MaintenanceStepName: {en: Remove the worn fingers, de: Verschlissene Finger abbauen}
+                InstructionMaintenanceStep: {en: "Unscrew the two M5 screws of each finger (hex key 4 mm) and remove both fingers; check the jaw guides for damage.", de: "Je Finger die zwei M5-Schrauben lösen (Innensechskant 4 mm) und beide Finger abnehmen; Backenführungen auf Beschädigung prüfen."}
+                ToolsForMaintenanceStep: [{ref: "sm:GR01/MaintenanceInstructions#MaintenanceToolList.0"}]
+                QuantityOfToolsForMaintenanceStep: 1
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 5, UnitEstimatedDurationTimeMaintenanceStep: minutes}
+              - _idShort: FitNewFingers
+                MaintenanceStepID: "30"
+                MaintenanceStepName: {en: Fit the new finger set, de: Neuen Fingersatz montieren}
+                InstructionMaintenanceStep: {en: "Fit the finger set FS-PG85-V50 on the centring pins and tighten the screws to 6 Nm.", de: "Fingersatz FS-PG85-V50 auf die Zentrierstifte setzen und die Schrauben mit 6 Nm anziehen."}
+                SparePartForMaintenanceStep: [{ref: "sm:GR01/MaintenanceInstructions#MaintenanceSparePartList.0"}]
+                QuantityOfSparePartForMaintenanceStep: 1
+                ToolsForMaintenanceStep: [{ref: "sm:GR01/MaintenanceInstructions#MaintenanceToolList.1"}]
+                QuantityOfToolsForMaintenanceStep: 1
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 7, UnitEstimatedDurationTimeMaintenanceStep: minutes}
+              - _idShort: ConfirmAndTest
+                MaintenanceStepID: "40"
+                MaintenanceStepName: {en: Confirm the finger change and test, de: Fingerwechsel bestätigen und testen}
+                InstructionMaintenanceStep: {en: "Close the fence door and confirm the finger change (resets the wear diagnostics of the gripper: jaw offset 0.00 mm, grip counter 0); the first grip after the restart is the functional test.", de: "Schutztür schließen und den Fingerwechsel bestätigen (setzt die Verschleißdiagnose des Greifers zurück: Backenversatz 0,00 mm, Greifzähler 0); der erste Griff nach dem Wiederanlauf ist die Funktionsprüfung."}
+                DocumentationSignatureMandatory: true
+                EstimatedDurationTimeMaintenanceStep: {ValueEstimatedDurationTimeMaintenanceStep: 5, UnitEstimatedDurationTimeMaintenanceStep: minutes}
+                EndOfMaintenance: true
+      MaintenanceSparePartList:
+        - SparePartID: FS-PG85-V50
+          SparePartName: {en: "Finger set PG-85, V-jaws Ø 32-50 mm with PU pads", de: "Fingersatz PG-85, V-Backen Ø 32-50 mm mit PU-Einlagen"}
+          CompanyNameSupplierSparePart: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+          OrderCodeSparePartOfManufacturer: "5000-0085-FS50"
+          SparePartDescription: [{en: "Pair of aluminium V-jaw fingers with replaceable polyurethane pads (90 Shore A), incl. 4 screws M5 x 12", de: "Paar Aluminium-V-Backenfinger mit austauschbaren Polyurethan-Einlagen (90 Shore A), inkl. 4 Schrauben M5 x 12"}]
+      MaintenanceToolList:
+        - ToolID: TOOL-HEX-4
+          ToolName: {en: Hex key 4 mm, de: Innensechskantschlüssel 4 mm}
+        - ToolID: TOOL-TW-12
+          ToolName: {en: Torque wrench 2-12 Nm, de: Drehmomentschlüssel 2-12 Nm}
+          ToolDescription: [{en: "Click-type torque wrench, 1/4 inch drive, with hex bit 4 mm", de: "Auslösender Drehmomentschlüssel, 1/4 Zoll, mit Innensechskant-Bit 4 mm"}]
+
+  # Condition and prognosis of the fingers (custom template, ADR-0029): values written by the maintenance service
+  # (services/maintenance) from the historian - provisioned here with the initial state.
+  - template: ConditionMonitoring-1.0
+    values:
+      HealthState: Unknown
+      HealthIndex: 1.0
+      HealthIndicator:
+        IndicatorName: RB01.finger_wear
+        CurrentValue: 0.0
+        LimitValue: 0.001
+        IndicatorUnit: m
+        DataSource: {ref: "sm:RB01/TimeSeries"}
+      RemainingUsefulLife:
+        RulCycles: 2500000
+        RulCyclesLowerBound: 2000000
+        RulHours: 0
+        RulHoursLowerBound: 0
+        PredictedFailureDate: "2026-01-01T00:00:00Z"
+        Confidence: 0
+        Method: DesignRate
+        DataPoints: 0
+        Throughput: 0
+        OrderThreshold: 8
+      Symptoms:
+        "+GripForce": {valueType: xs:double, unit: N, value: 100, description: {en: "Clamping force at the last grip (RB01.grip_force)", de: "Greifkraft beim letzten Griff (RB01.grip_force)"}}
+        "+GripCloseTime": {valueType: xs:double, unit: s, value: 0, description: {en: "Closing time of the jaws at the last grip (RB01.grip_close_time)", de: "Schließzeit der Backen beim letzten Griff (RB01.grip_close_time)"}}
+        "+GraspRetries": {valueType: xs:int, value: 0, description: {en: "Regrips since the last finger change (RB01.grasp_retries)", de: "Nachgriffe seit dem letzten Fingerwechsel (RB01.grasp_retries)"}}
+        "+GripCycles": {valueType: xs:int, value: 0, description: {en: "Grips since the last finger change (RB01.grip_cycles)", de: "Griffe seit dem letzten Fingerwechsel (RB01.grip_cycles)"}}
+      Recommendation: {en: "No data yet: waiting for the first grips.", de: "Noch keine Daten: warte auf die ersten Griffe."}
+      MaintenanceInstruction: {ref: "sm:GR01/MaintenanceInstructions#FingerChange"}
+      OpenMaintenanceOrder: ""
+      MaintenanceRecords: []
+      LastUpdate: "2026-01-01T00:00:00Z"

@@ -1,0 +1,49 @@
+# Supplier company AAS (ADR-0028): die caster of the cylinder end caps, published in the supplier environment
+# (port 8191) under the company's own id namespace. Fictional company.
+tag: DRUCKGUSS_PFALZ
+idBase: https://virtual-factory.example/druckguss-pfalz/ids
+idShort: DruckgussPfalz
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/Company
+displayName: {en: "Druckguss Pfalz GmbH (company)", de: "Druckguss Pfalz GmbH (Unternehmen)"}
+description:
+  en: "Aluminium high-pressure die caster with machining, Landstuhl; supplier of the end caps of the PC-32 cylinder. Company data and contacts as published by the supplier."
+  de: "Aluminium-Druckgießerei mit mechanischer Bearbeitung, Landstuhl; Lieferant der Zylinderdeckel des PC-32. Unternehmensdaten und Kontakte, wie vom Lieferanten veröffentlicht."
+specificAssetIds: {gln: "4099991000005"}
+submodels:
+  - template: CompanyData-1.0
+    values:
+      CompanyIdentification:
+        CompanyName: Druckguss Pfalz GmbH
+        CompanyDescription: {en: "Aluminium die-castings (cold-chamber, 400-1600 t), CNC machining and impregnation; fictional company of the Virtual Factory training environment.", de: "Aluminium-Druckguss (Kaltkammer, 400-1600 t), CNC-Bearbeitung und Imprägnierung; fiktives Unternehmen der Schulungsumgebung Virtual Factory."}
+        HomepageURL: {en: "https://virtual-factory.example/druckguss-pfalz"}
+        VATNumber: DE000000011
+        CommercialRegisterNumber: "HRB 00011, Amtsgericht Kaiserslautern"
+        FoundingYear: "1964"
+        MainProductGroups:
+          - {en: "Aluminium die-castings, machined", de: "Aluminium-Druckgussteile, bearbeitet"}
+        Industries:
+          - {en: Pneumatics and hydraulics, de: Pneumatik und Hydraulik}
+          - {en: Automotive supply, de: Automobilzulieferung}
+      CompanyGovernance:
+        IndustryStandards:
+          Certifications:
+            - {CertificationStandard: "IATF 16949:2016", ApprovalAgency: "Fictional certification body (training data)", CertificateNumber: "IATF-0011-2025", IssueDate: "2025-02-01", ExpiryDate: "2028-01-31"}
+            - {CertificationStandard: "ISO 14001:2015", ApprovalAgency: "Fictional certification body (training data)", CertificateNumber: "UM-0011-2024", IssueDate: "2024-06-01", ExpiryDate: "2027-05-31"}
+      DigitalInterfaces:
+        DataExchange:
+          EncryptedDataTransmission: true
+          EDI: true
+          WebEDI: true
+  - template: ContactInformations-1.0
+    values:
+      ContactInformation:
+        - _idShort: Sales
+          RoleOfContactPerson: "0173-1#07-AAS928#001"
+          $include: common/product_address_supplier_druckguss.yaml
+          Department: {en: Sales and customer service, de: Vertrieb und Kundendienst}
+        - _idShort: QualityAssurance
+          RoleOfContactPerson: "0173-1#07-AAS931#001"
+          $include: common/product_address_supplier_druckguss.yaml
+          Department: {en: "Quality assurance (material certificates, 8D reports)", de: "Qualitätssicherung (Werkstoffzeugnisse, 8D-Berichte)"}
+          Email: {EmailAddress: qs@druckguss-pfalz.example}

@@ -8,7 +8,7 @@ displayName: {en: "Socket head cap screw ISO 4762 M5x16-8.8 (component type)", d
 description:
   en: "Hexagon socket head cap screw ISO 4762 M5x16, property class 8.8, zinc plated; fastens the end caps of the cylinder PC-32-80-DA-M (8 per cylinder)."
   de: "Zylinderschraube mit Innensechskant ISO 4762 M5x16, Festigkeitsklasse 8.8, verzinkt; befestigt die Deckel des Zylinders PC-32-80-DA-M (8 je Zylinder)."
-specificAssetIds: {manufacturerPartId: 4762-M5X16-88-ZN, customerPartId: "9001-0516"}
+specificAssetIds: {manufacturerPartId: 4762-M5X16-88-ZN, customerPartId: "9001-0516", gtin: "04099993010017"}
 location: false
 submodels:
   - template: Nameplate-3.0

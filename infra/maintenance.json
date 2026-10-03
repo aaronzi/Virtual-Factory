@@ -1,0 +1,25 @@
+{
+  "_doc": "Condition monitoring and predictive maintenance (services/maintenance, ADR-0029): monitored components, their degradation indicator (FMI output of the device in the historian), limit, symptoms, the maintenance task (MaintenanceInstructions element of the component AAS) and the parameter of the line controller's skill Maintain that confirms the part change. Design reliability (useful life, B10) is read from the component's Reliability submodel (reliability_set). Order policy: a maintenance order is opened when the 90 % lower bound of the remaining useful life falls below rul_hours_threshold while the health index is below health_index_gate (trend fit), or the health index is below health_index_order, or the device reports the fault. Reference: docs/interfaces/services.md#maintenance",
+  "evaluation_interval_s": 10,
+  "history": {"max_points": 200, "min_points": 6, "throughput_points": 20},
+  "order": {"rul_hours_threshold": 8.0, "health_index_gate": 0.85, "health_index_order": 0.25},
+  "components": [
+    {
+      "tag": "GR01",
+      "device": "RB01",
+      "name_en": "Gripper fingers GR01",
+      "name_de": "Greiferfinger GR01",
+      "indicator": "finger_wear",
+      "unit": "m",
+      "limit": 0.001,
+      "cycles": "grip_cycles",
+      "fault": "gripper_fault",
+      "symptoms": {"GripForce": "grip_force", "GripCloseTime": "grip_close_time",
+                   "GraspRetries": "grasp_retries", "GripCycles": "grip_cycles"},
+      "reliability_set": "FingerSet",
+      "maintenance_task": "FingerChange",
+      "reset_parameter": "gripper_maintenance_reset",
+      "alarm": 901
+    }
+  ]
+}

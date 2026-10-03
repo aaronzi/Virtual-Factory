@@ -2,8 +2,9 @@ class_name TrainingUi
 extends Node
 ## Composition of the in-world training UI (part of the composition root): pointer routing, asset picking,
 ## AAS inspector with BaSyx events, and the backend clients. Endpoints: res://config/backend.json,
-## `--vf-aas-url=`, `--vf-bpmn-url=`, `--vf-dpp-url=`, `--vf-aas-events=<broker url|off>` (default: broker of
-## uns.json), `--vf-inspect=<AAS tag>` opens the inspector at start (screenshots, demos);
+## `--vf-aas-url=`, `--vf-bpmn-url=`, `--vf-resolver-url=`, `--vf-alarms-url=`,
+## `--vf-aas-events=<broker url|off>` (default:
+## broker of uns.json), `--vf-inspect=<asset tag | serial | asset id>` opens the inspector at start;
 ## `--vf-estop=1` presses the E-stop.
 
 const BACKEND := "res://config/backend.json"
@@ -33,6 +34,7 @@ func setup(p_factory: Node, p_rig: PlayerRig) -> void:
 	aas = AasClient.new()
 	aas.base_url = DevTools.get_arg("vf-aas-url", config.get("aas_url", "http://localhost:8091"))
 	aas.id_base = config.get("id_base", aas.id_base)
+	aas.registries = config.get("aas_registries", [])
 	add_child(aas)
 	_start_feed()
 	router = PointerRouter.new()
@@ -55,13 +57,14 @@ func setup(p_factory: Node, p_rig: PlayerRig) -> void:
 	_setup_fence_door()
 	dataflow = DataFlowController.new()
 	add_child(dataflow)
-	dataflow.setup(factory.builder, factory.get("uns"), feed)
+	dataflow.setup(factory.builder, factory.get("uns"), feed, factory.get("backplanes"))
 	menu = MenuController.new()
 	add_child(menu)
 	menu.setup(self)
 	var inspect := DevTools.get_arg("vf-inspect")
 	if inspect != "":
-		get_tree().create_timer(1.0).timeout.connect(func() -> void: inspector.open_asset(inspect))
+		get_tree().create_timer(1.0).timeout.connect(func() -> void:
+			inspector.open_asset(asset_id_for(inspect)))
 	if DevTools.get_arg("vf-estop") != "":
 		get_tree().create_timer(1.0).timeout.connect(safety.toggle_estop)
 
@@ -83,7 +86,9 @@ func _exit_tree() -> void:
 func _on_world_pressed(_hit: Dictionary) -> void:
 	var picked := AssetPicker.pick(rig.get_world_3d(), rig.get_pointer_ray())
 	if not picked.is_empty():
-		inspector.open_asset(picked.tag, picked.get("point", Vector3.INF))
+		var item := picked.node as TrackedItem
+		var id := item.get_asset_id() if item and item.get_asset_id() != "" else asset_id_for(picked.tag)
+		inspector.open_asset(id, picked.get("point", Vector3.INF))
 
 
 func set_dataflow(on: bool) -> void:
@@ -96,6 +101,10 @@ func _setup_hmi() -> void:
 			hmi = HmiController.new()
 			add_child(hmi)
 			hmi.setup(factory.builder.master, commands, prop)
+			var client := AlarmsClient.new()
+			client.base_url = DevTools.get_arg("vf-alarms-url", config.get("alarms_url", client.base_url))
+			hmi.add_child(client)
+			hmi.alarms = client
 			return
 
 
@@ -128,11 +137,22 @@ func _setup_tasks() -> void:
 	tasks.tasks_changed.connect(inspector.refresh_actions)
 
 
+## Global asset id of a picked asset: workpieces (tag WP_<serial> or a serial) by their GS1 Digital Link,
+## devices and props by their asset id (`<id_base>/asset/<tag>`); full ids are passed through.
+func asset_id_for(tag: String) -> String:
+	if tag.contains("://"):
+		return tag
+	if tag.begins_with("WP_") or tag.begins_with("PC3280-"):
+		var serial := tag.trim_prefix("WP_").replace("_", "-")
+		return DigitalLink.item(config.get("product_gtin", "04099999032808"), serial)
+	return aas.asset_id(tag)
+
+
 ## Context actions of the inspector: KLT stations offer the exchange (BPMN task or direct command),
-## workpieces open their item-level passport in the BaSyx DPP API (browser).
+## workpieces "scan" their QR code: the Digital Link opens on the GS1 resolver (passport page, browser).
 func _actions_for(tag: String) -> Array:
 	if tag.begins_with("WP_"):
-		return [{"id": "open_passport", "label": tr("INSPECTOR_OPEN_PASSPORT")}]
+		return [{"id": "scan_qr", "label": tr("INSPECTOR_SCAN_QR")}]
 	var container: int = {"KLTA01": 1, "KLTB01": 2}.get(tag, 0)
 	if container == 0:
 		return []
@@ -142,8 +162,9 @@ func _actions_for(tag: String) -> Array:
 
 
 func _on_action(tag: String, action_id: String) -> void:
-	if action_id == "open_passport":
-		OS.shell_open(passport_url(tag))
+	if action_id == "scan_qr":
+		var scanned := inspector.current_asset_id if inspector else ""
+		OS.shell_open(passport_url(scanned if scanned != "" else asset_id_for(tag)))
 		return
 	var container: int = {"KLTA01": 1, "KLTB01": 2}.get(tag, 0)
 	if action_id == "complete_exchange" and tasks.exchange_tasks.has(container):
@@ -153,10 +174,11 @@ func _on_action(tag: String, action_id: String) -> void:
 	inspector.refresh_actions()
 
 
-## DPP API URL of a workpiece passport: the DPP id is the workpiece AAS id (ADR-0021), percent-encoded once.
-func passport_url(tag: String) -> String:
-	var base: String = DevTools.get_arg("vf-dpp-url", config.get("dpp_url", "http://localhost:8093"))
-	return "%s/v1/dpps/%s" % [base.rstrip("/"), aas.aas_id(tag).uri_encode()]
+## Resolver URL of a scanned Digital Link (QR content = globalAssetId): its path re-based onto the
+## configured GS1 resolver, which redirects to the passport page (ADR-0023).
+func passport_url(digital_link: String) -> String:
+	var base: String = DevTools.get_arg("vf-resolver-url", config.get("resolver_url", "http://localhost:8096"))
+	return DigitalLink.rebase(digital_link, base)
 
 
 func _start_feed() -> void:

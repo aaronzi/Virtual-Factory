@@ -78,6 +78,19 @@ func test_estop_aborts_and_blocks_clear_until_released() -> void:
 	assert_eq(_alarm(), [0, S.EXECUTE])
 
 
+func test_active_alarms_lists_every_active_alarm_in_priority_order() -> void:
+	assert_eq(plc.get_value("active_alarms"), "")
+	plc.set_value("rb_protective_stop", true)
+	plc.set_value("estop", true)
+	_run(0.05)
+	assert_eq(plc.get_value("active_alarms"), "100,201", "the consequential protective stop stays visible")
+	assert_eq(plc.get_value("alarm_code"), 100)
+	plc.set_value("estop", false)
+	plc.set_value("rb_protective_stop", false)
+	_run(0.05)
+	assert_eq(plc.get_value("active_alarms"), "")
+
+
 func test_protective_stop_holds_until_released() -> void:
 	plc.set_value("rb_protective_stop", true)
 	_run(0.05)

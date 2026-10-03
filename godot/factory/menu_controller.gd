@@ -48,9 +48,12 @@ func _process(delta: float) -> void:
 	_info_timer = 1.0
 	var uns: Variant = ui.factory.get("uns")
 	var online := "online" if uns != null and uns.is_broker_connected() else "offline"
+	var links: Array = ui.factory.get("backplanes")
+	var linked := links.filter(func(l: PlcBackplane) -> bool: return l.is_linked())
+	var opcua := "-" if links.is_empty() else ("online" if linked.size() == links.size() else "offline")
 	var events: int = ui.feed.events if ui.feed else 0
 	var open_tasks: int = ui.tasks.tasks.size() if ui.tasks else 0
-	menu.set_info(tr("MENU_INFO") % [online, events, open_tasks])
+	menu.set_info(tr("MENU_INFO") % [online, opcua, events, open_tasks])
 	menu.show_state(TranslationServer.get_locale(), tour.active)
 	var runner: Variant = _runner()
 	if runner != null:

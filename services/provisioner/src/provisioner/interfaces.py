@@ -20,7 +20,20 @@ _CORR = {"type": "string", "title": "correlation id (echoed in the acknowledgeme
 _SOURCE = {"type": "string", "title": "sender name"}
 
 
-def aid_values(tag: str, instance: str, md: ModelDescription, uns: dict, title: str) -> dict:
+def aid_values(tag: str, instance: str, md: ModelDescription, uns: dict, title: str,
+               field_types: dict[str, str] | None = None) -> dict:
+    """MQTT interface (UNS) of every device; controllers with a communication module also get the OPC UA
+    interface of their server (interfaces_opcua, ADR-0024). field_types: FMI types of all devices' variables
+    ("QS01.r" -> "Float64", event fields)."""
+    from .interfaces_opcua import opcua_interface
+    values = _mqtt_values(tag, instance, md, uns, title)
+    opcua = opcua_interface(tag, instance, md, uns, field_types or {})
+    if opcua:
+        values["InterfaceTemplateForOPCUA"] = [opcua]
+    return values
+
+
+def _mqtt_values(tag: str, instance: str, md: ModelDescription, uns: dict, title: str) -> dict:
     device = instance.lower()
     root = uns["topic_root"]
     sec = [{"ref": f"sm:{tag}/{AID}#{NOSEC}"}]

@@ -101,6 +101,20 @@ def test_historian_handles_session_and_telemetry():
     assert sent == [["plc01,session=S-1 parts_total=7i 1791021601500"]]
 
 
+def test_maintenance_results_go_into_the_maintenance_table():
+    sent = []
+    h = Historian(_Mqtt(), Uns.load(), variable_types(), BatchWriter(sent.append))
+    h.handle(f"{ROOT}/session", json.dumps({"id": "S-1", "ts": "2026-10-03T10:00:00Z"}).encode())
+    ts = "2026-10-03T10:00:02Z"
+    h.handle(f"{ROOT}/maintenance/gr01/health_index", json.dumps({"v": 0.72, "ts": ts}).encode())
+    h.handle(f"{ROOT}/maintenance/gr01/health_state", json.dumps({"v": "Warning", "ts": ts}).encode())
+    h.handle(f"{ROOT}/maintenance/gr01/unknown", json.dumps({"v": 1, "ts": ts}).encode())
+    h.handle(f"{ROOT}/maintenance/active_alarms", json.dumps({"v": "901", "ts": ts}).encode())
+    h.writer.flush(force=True)
+    assert sent == [['maintenance,component=GR01,session=S-1 health_index=0.72,health_state="Warning" '
+                     '1791021602000']]
+
+
 def test_config_endpoint_and_query():
     config = HistorianConfig.load()
     assert config.endpoint() == "http://localhost:8181/api/v3/query_sql?db=vf&format=json"

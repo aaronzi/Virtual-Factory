@@ -1,7 +1,7 @@
 [project]
 name = "mes"
 version = "0.1.0"
-description = "MES: sessions, workpiece instance AAS, quality, PCF, KPIs and BPMN external-task workers (Operaton)"
+description = "MES: production execution - orders from the ERP, workpiece instance AAS and passports, quality, KLT contents, ISO 22400 KPIs, BPMN external-task workers (Operaton)"
 requires-python = ">=3.12"
 dependencies = ["vf-common", "provisioner"]
 

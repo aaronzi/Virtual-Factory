@@ -113,6 +113,6 @@ func test_invalid_scenarios_are_rejected() -> void:
 
 func test_shipped_scenarios_are_valid() -> void:
 	var loaded := runner.load_directory("res://config/scenarios")
-	assert_eq(loaded, 5, "five training scenarios")
+	assert_eq(loaded, 6, "six training scenarios")
 	for s in runner.list("de"):
 		assert_ne(s.title, "", "German title for %s" % s.id)

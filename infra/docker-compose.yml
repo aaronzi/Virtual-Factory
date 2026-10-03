@@ -13,12 +13,25 @@
 #   8095  ops gateway           – AAS operation delegation target (health: /health)
 #   1880  Node-RED              – optional learner sandbox, only with `--profile sandbox` (no auth)
 #   3002  Grafana               – dashboard "LINE01 live" on the historian; anonymous read-only, login to edit
+#   8096  Digital Link resolver – GS1 /01/<GTIN>/21/<serial>: passport page, linkset (ADR-0023)
+#   8097  sustainability        – product carbon footprints, sustainability KPIs (ADR-0025)
+#   8098  ERP simulator         – production orders, confirmations, batches; status page / (ADR-0025)
+#   8099  alarms & events       – ISA-18.2 alarms, acknowledge/shelve, journal, alarm KPIs (ADR-0026)
+#   8094  maintenance           – condition monitoring, RUL, maintenance orders (ADR-0029)
+#   4840  OPC UA (plc-comm)     – PLC01 communication module, opc.tcp://localhost:4840/vf/plc01, None/Anonymous
+#   4841  PLC backplane         – TCP link of the simulated PLC CPU (Godot) to plc-comm (ADR-0024)
+#   8190  supplier portal       – despatch advices of the component suppliers, creates their batch AAS (ADR-0028)
+#   8191  supplier AAS env.     – second, separately operated BaSyx Go environment of the suppliers (own DB)
 #
 # The database lives on tmpfs: every `up` starts with a fresh DB. The one-shot `provisioner` service builds the
 # static AAS into ./basyx/preload, which BaSyx imports at startup (workpiece instances are ephemeral, ADR-0004).
 # M4 services (ADR-0014..0017): bridge (UNS -> AAS via AIMC), mes (workpiece AAS, BPMN workers), ops-gateway
-# (delegated AAS operations -> UNS commands), bpmn (Operaton). The Godot simulation runs on the host and connects
-# to ws://localhost:9001.
+# (delegated AAS operations -> UNS commands), bpmn (Operaton). Service decomposition (ADR-0025/0026):
+# sustainability (PCF), erp (orders), alarms + alarms-db (ISA-18.2, TimescaleDB), maintenance (predictive
+# maintenance, ADR-0029). The Godot simulation runs on the host and connects
+# to ws://localhost:9001. Supplier side (ADR-0028): supplier-db, supplier-config, supplier-provisioner, supplier-aas-env
+# (port 8191) and the supplier portal; the plant's services reach it only through discovery/registry (VF_AAS_REGISTRIES)
+# and the portal's REST API.
 
 name: vf
 
@@ -27,6 +40,11 @@ networks:
     ipam:
       config:
         - subnet: 172.30.42.0/24   # fixed, because BaSyx checks the resolved delegation address (ops-gateway)
+
+x-supplier-registries: &supplier-registries
+  # federation (ADR-0023/0028): own environment first, then the suppliers'; public descriptor URLs -> compose hosts
+  VF_AAS_REGISTRIES: "vf=http://aas-env:8091,supplier=http://supplier-aas-env:8191"
+  VF_AAS_ENDPOINT_MAP: "http://localhost:8091=http://aas-env:8091,http://localhost:8191=http://supplier-aas-env:8191"
 
 x-postgres-env: &postgres-env
   POSTGRES_HOST: db
@@ -217,6 +235,8 @@ services:
     depends_on:
       influxdb3:
         condition: service_started
+      alarms-db:
+        condition: service_healthy
     restart: unless-stopped
 
   bpmn:
@@ -247,7 +267,9 @@ services:
   mes:
     image: vf-services:dev
     command: ["-m", "mes"]
-    environment: *service-env
+    environment:
+      <<: *service-env
+      VF_ERP_URL: http://erp:8098    # order confirmations (ProductionOrder: order-progress, order-confirm)
     volumes:
       - ..:/repo:ro
     depends_on:
@@ -260,7 +282,9 @@ services:
   ops-gateway:
     image: vf-services:dev
     command: ["-m", "ops_gateway"]
-    environment: *service-env
+    environment:
+      <<: *service-env
+      VF_OPCUA_ENDPOINTS: &opcua-endpoints "opc.tcp://localhost:4840=opc.tcp://plc-comm:4840"
     ports:
       - "8095:8095"
     volumes:
@@ -270,6 +294,290 @@ services:
         ipv4_address: 172.30.42.95
     depends_on:
       mqtt:
+        condition: service_started
+    restart: unless-stopped
+
+  plc-comm:
+    # Communication module of PLC01 (ADR-0024): OPC UA server (address space after OPC 30050 PackML, engineered
+    # from the FMI model description) on 4840; the simulated PLC CPU in Godot connects to the backplane port 4841
+    # and feeds the process image. Without a CPU the values have the status BadNoCommunication.
+    image: vf-services:dev
+    command: ["-m", "plc_comm"]
+    environment:
+      VF_PLC_INSTANCE: PLC01
+      LOG_LEVEL: INFO
+    ports:
+      - "4840:4840"
+      - "4841:4841"
+    volumes:
+      - ..:/repo:ro
+    restart: unless-stopped
+
+  edge:
+    # Edge connector (ADR-0024): subscribes to the OPC UA servers described in the AIDs (PLC01) and publishes their
+    # data to the UNS (topics and payloads of godot/config/uns.json); UNS commands -> OPC UA method calls.
+    image: vf-services:dev
+    command: ["-m", "edge"]
+    environment:
+      <<: *service-env
+      VF_OPCUA_ENDPOINTS: *opcua-endpoints
+    volumes:
+      - ..:/repo:ro
+    depends_on:
+      aas-env:
+        condition: service_started
+      plc-comm:
+        condition: service_started
+      mqtt:
+        condition: service_started
+    restart: unless-stopped
+
+  sustainability:
+    # Product carbon footprint (ADR-0025): BPMN worker pcf-calculate writes the CarbonFootprint submodel of each
+    # packed workpiece (energy from the historian, supplier footprints per component batch: batch AAS in the
+    # supplier environment via federated discovery, ADR-0028), plant energy/CO2e in the EnergyConsumption
+    # submodels every 10 s; KPIs on :8097.
+    image: vf-services:dev
+    command: ["-m", "sustainability"]
+    environment:
+      <<: [*service-env, *supplier-registries]
+    ports:
+      - "8097:8097"
+    volumes:
+      - ..:/repo:ro
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8097/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    depends_on:
+      aas-env:
+        condition: service_started
+      bpmn:
+        condition: service_started
+      influxdb3:
+        condition: service_started
+    restart: unless-stopped
+
+  erp:
+    # ERP order simulator (ADR-0025): production orders released to the MES as BPMN message OrderReleased
+    # (ProductionOrder), confirmations (good, scrap, consumed lots), goods receipts / batch master data. Keeps
+    # a standing order released (VF_ERP_AUTO_RELEASE) so the line always produces against an order. State in
+    # memory (like the BPMN engine). Status page http://localhost:8098/.
+    image: vf-services:dev
+    command: ["-m", "erp"]
+    environment:
+      VF_BPMN_URL: http://bpmn:8080/engine-rest
+      VF_SUPPLIER_URL: http://supplier:8190   # despatch advices for goods receipts (ADR-0028)
+      VF_ERP_AUTO_RELEASE: "true"
+      VF_ERP_STANDING_QTY: "48"
+      LOG_LEVEL: INFO
+    ports:
+      - "8098:8098"
+    volumes:
+      - ..:/repo:ro
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8098/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    depends_on:
+      bpmn:
+        condition: service_started
+    restart: unless-stopped
+
+  alarms-db:
+    # TimescaleDB of the alarms service (ADR-0026): alarm journal, occurrences, current alarm states and the UNS
+    # event journal. Own instance, not the BaSyx PostgreSQL. tmpfs like the historian: survives a container
+    # restart, wiped with `down`. No host port; psql: docker compose -f infra/docker-compose.yml exec alarms-db
+    # psql -U vf_alarms alarms. Grafana reads it with the read-only role grafana.
+    image: timescale/timescaledb:2.30.2-pg17
+    environment:
+      POSTGRES_USER: vf_alarms
+      POSTGRES_PASSWORD: vf-local-only
+      POSTGRES_DB: alarms
+      TIMESCALEDB_TELEMETRY: "off"
+    tmpfs:
+      - /var/lib/postgresql/data:size=512m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vf_alarms -d alarms"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  alarms:
+    # Alarms & events (ADR-0026): ISA-18.2 alarm management of the PLC alarms (UNS), event journal of all UNS
+    # events, REST API :8099 (acknowledge, shelve, journal, KPIs).
+    image: vf-services:dev
+    command: ["-m", "alarms"]
+    environment:
+      VF_MQTT_URL: mqtt://mqtt:1883
+      VF_ALARMS_DB: postgresql://vf_alarms:vf-local-only@alarms-db:5432/alarms
+      LOG_LEVEL: INFO
+    ports:
+      - "8099:8099"
+    volumes:
+      - ..:/repo:ro
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8099/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    depends_on:
+      alarms-db:
+        condition: service_healthy
+      mqtt:
+        condition: service_started
+    restart: unless-stopped
+
+  maintenance:
+    # Predictive maintenance (ADR-0029): health index and remaining useful life of the monitored components
+    # (infra/maintenance.json) from the historian every 10 s -> UNS {root}/maintenance/... (recorded by the
+    # historian) and the ConditionMonitoring submodel; opens MaintenanceOrder processes (BPMN, deployed by the
+    # MES) and executes their service tasks (ERP maintenance window, LineControl Maintain / SetUnitMode,
+    # MaintenanceRecord, observed Reliability). REST :8094.
+    image: vf-services:dev
+    command: ["-m", "maintenance"]
+    environment:
+      <<: *service-env
+      VF_ERP_URL: http://erp:8098
+    ports:
+      - "8094:8094"
+    volumes:
+      - ..:/repo:ro
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8094/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      aas-env:
+        condition: service_started
+      bpmn:
+        condition: service_started
+      influxdb3:
+        condition: service_started
+      erp:
+        condition: service_started
+    restart: unless-stopped
+
+  resolver:
+    # GS1 Digital Link resolver (ADR-0023): the QR codes on the parts encode the canonical Digital Link
+    # https://virtual-factory.example/01/<GTIN>/21/<serial>; clients re-base its path onto this resolver.
+    # Resolves via discovery + registry (aas-env) and the DPP API; links handed to browsers use public URLs.
+    image: vf-services:dev
+    command: ["-m", "resolver"]
+    environment:
+      VF_AAS_URL: http://aas-env:8091
+      VF_AAS_PUBLIC_URL: http://localhost:8091
+      VF_DPP_URL: http://dpp-api:8093
+      VF_DPP_PUBLIC_URL: http://localhost:8093
+      VF_RESOLVER_PUBLIC_URL: http://localhost:8096
+      LOG_LEVEL: INFO
+    ports:
+      - "8096:8096"
+    volumes:
+      - ..:/repo:ro
+    depends_on:
+      aas-env:
+        condition: service_started
+      dpp-api:
+        condition: service_started
+    restart: unless-stopped
+
+  # -- supplier side (ADR-0028): a second, separately operated AAS environment hosting the supplier companies,
+  # their product types and the batch AAS of delivered lots; own database, own preload, own port --------------
+  supplier-db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: vf
+      POSTGRES_PASSWORD: vf-local-only
+      POSTGRES_DB: basyx
+    tmpfs:
+      - /var/lib/postgresql:size=512m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vf -d basyx"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  supplier-config:
+    image: eclipsebasyx/basyxconfigurationservice-go:1.1.0
+    environment:
+      <<: *postgres-env
+      POSTGRES_HOST: supplier-db
+    depends_on:
+      supplier-db:
+        condition: service_healthy
+
+  supplier-provisioner:
+    # One-shot: builds the supplier data set (aas/data/supplier: companies, product types) into
+    # ./basyx/preload-supplier. Batch AAS are created at runtime by the supplier portal.
+    image: vf-services:dev
+    command: ["-m", "provisioner", "build", "--data", "supplier", "--out", "/out",
+              "--env-json", "/tmp/supplier-environment.json"]
+    volumes:
+      - ..:/repo:ro
+      - ./basyx/preload-supplier:/out
+    depends_on:
+      provisioner:
+        condition: service_completed_successfully   # same image, built by the provisioner service
+
+  supplier-aas-env:
+    image: eclipsebasyx/aasenvironment-go:1.1.0
+    command: ["/app/aasenvironmentservice"]
+    ports:
+      - "8191:8191"
+    environment:
+      <<: *postgres-env
+      POSTGRES_HOST: supplier-db
+      SERVER_PORT: "8191"
+      CORS_ALLOWEDORIGINS: "*"
+      CORS_ALLOWEDHEADERS: "*"
+      CORS_ALLOWCREDENTIALS: "true"
+      CORS_ALLOWEDMETHODS: GET,POST,PUT,PATCH,DELETE,OPTIONS
+      ABAC_ENABLED: "false"
+      GENERAL_AASREGISTRYINTEGRATION: "true"
+      GENERAL_SUBMODELREGISTRYINTEGRATION: "true"
+      GENERAL_EXTERNALURL: http://localhost:8191
+      GENERAL_AAS_PRECONFIG_PATHS: /app/preconfiguration
+      LOGGING_LEVEL: info
+    volumes:
+      - ./basyx/preload-supplier:/app/preconfiguration:ro
+    depends_on:
+      supplier-config:
+        condition: service_completed_successfully
+      supplier-provisioner:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  supplier:
+    # Supplier portal (ADR-0028): despatch advices (ASN) of the suppliers; publishes the batch AAS (batch PCF,
+    # recycled content, material certificate EN 10204 3.1) in the supplier environment when a lot is despatched.
+    image: vf-services:dev
+    command: ["-m", "supplier"]
+    environment:
+      VF_AAS_URL: http://supplier-aas-env:8191
+      VF_AAS_PUBLIC_URL: http://localhost:8191
+      LOG_LEVEL: INFO
+    ports:
+      - "8190:8190"
+    volumes:
+      - ..:/repo:ro
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8190/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    depends_on:
+      supplier-aas-env:
         condition: service_started
     restart: unless-stopped
 

@@ -8,7 +8,7 @@ displayName: {en: "Seal kit SK-PC32 (component type)", de: "Dichtungssatz SK-PC3
 description:
   en: "Complete seal kit of the cylinder PC-32-80-DA-M (piston, rod, wiper and cushioning seals, O-rings) with assembly grease; supplied by Dichtungstechnik Süd GmbH."
   de: "Vollständiger Dichtungssatz des Zylinders PC-32-80-DA-M (Kolben-, Stangen-, Abstreif- und Dämpfungsdichtungen, O-Ringe) mit Montagefett; Lieferant Dichtungstechnik Süd GmbH."
-specificAssetIds: {manufacturerPartId: DTS-SK-PC32, customerPartId: "5032-1006"}
+specificAssetIds: {manufacturerPartId: DTS-SK-PC32, customerPartId: "5032-1006", gtin: "04099992010018"}
 location: false
 submodels:
   - template: Nameplate-3.0

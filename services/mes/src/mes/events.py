@@ -19,7 +19,7 @@ from dataclasses import dataclass
 
 from vf_common.uns import Uns
 
-from .bpmn import BpmnClient
+from vf_common.bpmn import BpmnClient
 from .event_topics import EventTopics
 
 log = logging.getLogger("mes.events")

@@ -20,6 +20,11 @@ func configure(p_item_id: String, p_properties: Dictionary) -> void:
 	properties = p_properties
 
 
+## Global asset id the item carries (e.g. the GS1 Digital Link of its QR code); "" if it has none.
+func get_asset_id() -> String:
+	return ""
+
+
 ## Colour a sensor would perceive at `world_point` on the item's surface (override).
 func get_surface_color_at(_world_point: Vector3) -> Color:
 	return Color.GRAY

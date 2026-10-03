@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription fmiVersion="3.0" modelName="UR5e"
     instantiationToken="{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e06}"
-    description="Universal Robots UR5e with 2-finger gripper: analytic IK, URScript-like movej/movel pick &amp; place program, power model"
+    description="Universal Robots UR5e with 2-finger gripper: analytic IK, URScript-like movej/movel pick &amp; place program, power model, gripper finger wear with regrip and smart-gripper diagnostics"
     generationTool="Virtual Factory" version="1.0.0">
   <CoSimulation modelIdentifier="ur5e" canHandleVariableCommunicationStepSize="true"
       canGetAndSetFMUState="true"/>
@@ -17,6 +17,7 @@
     <Unit name="W.s/rad"><BaseUnit kg="1" m="2" s="-2" rad="-1"/></Unit>
     <Unit name="kWh"><BaseUnit kg="1" m="2" s="-2" factor="3600000"/></Unit>
     <Unit name="h"><BaseUnit s="1" factor="3600"/></Unit>
+    <Unit name="N"><BaseUnit kg="1" m="1" s="-2"/></Unit>
   </UnitDefinitions>
   <DefaultExperiment stepSize="0.0166666666666667"/>
   <ModelVariables>
@@ -35,6 +36,8 @@
         description="Physical stimulus: an item is between the fingers"/>
     <Float64 name="object_width" valueReference="7" causality="input" variability="discrete" start="0" unit="m"
         description="Physical stimulus: width of that item"/>
+    <Boolean name="gripper_maintenance_reset" valueReference="8" causality="input" variability="discrete" start="false"
+        description="Finger change done (rising edge): new finger pads, finger_wear, grip_cycles and grasp_retries restart at 0"/>
     <Float64 name="home_x" valueReference="100" causality="parameter" variability="fixed" start="0.0" unit="m"
         description="Home TCP position"/>
     <Float64 name="home_y" valueReference="101" causality="parameter" variability="fixed" start="-0.3" unit="m"/>
@@ -87,6 +90,20 @@
         description="Powered, brakes released"/>
     <Float64 name="motion_power_coefficient" valueReference="137" causality="parameter" variability="fixed" start="45" unit="W.s/rad"
         description="Additional power per rad/s summed over joints"/>
+    <Float64 name="finger_wear_rate" valueReference="138" causality="parameter" variability="tunable" start="4e-10" unit="m"
+        description="Abrasive wear of the finger pads per grip (design: limit after 2.5 million grips)"/>
+    <Float64 name="finger_wear_limit" valueReference="139" causality="parameter" variability="fixed" start="0.001" unit="m"
+        description="Wear allowance of the finger pads; parts start to slip above 85 % of it"/>
+    <Float64 name="finger_wear_start" valueReference="140" causality="parameter" variability="fixed" start="0" unit="m"
+        description="Finger wear at the start of the simulation"/>
+    <Float64 name="grip_force_nominal" valueReference="141" causality="parameter" variability="fixed" start="100" unit="N"
+        description="Clamping force with new fingers"/>
+    <Int32 name="regrip_attempts" valueReference="142" causality="parameter" variability="fixed" start="3"
+        description="Grip attempts before gripper_fault (a slipped part is regripped)"/>
+    <Float64 name="grip_retry_interval" valueReference="143" causality="parameter" variability="fixed" start="10" unit="s"
+        description="Pause before the grip is retried after gripper_fault"/>
+    <Int32 name="seed" valueReference="144" causality="parameter" variability="fixed" start="7"
+        description="Seed of the wear scatter, measurement noise and slip draws (deterministic runs)"/>
     <Float64 name="q1" valueReference="200" causality="output" variability="continuous" initial="exact" start="0" unit="rad"
         description="Base joint angle"/>
     <Float64 name="q2" valueReference="201" causality="output" variability="continuous" initial="exact" start="0" unit="rad"
@@ -117,10 +134,22 @@
     <Int32 name="cycle_count" valueReference="216" causality="output" variability="discrete" initial="exact" start="0"/>
     <Boolean name="protective_stopped" valueReference="217" causality="output" variability="discrete" initial="exact" start="false"/>
     <Boolean name="fault" valueReference="218" causality="output" variability="discrete" initial="exact" start="false"
-        description="Target unreachable (IK failed)"/>
+        description="Robot fault: target unreachable (IK failed) or gripper_fault"/>
     <Float64 name="power" valueReference="219" causality="output" variability="continuous" initial="exact" start="0" unit="W"/>
     <Float64 name="energy" valueReference="220" causality="output" variability="continuous" initial="exact" start="0" unit="kWh"/>
     <Float64 name="operating_hours" valueReference="221" causality="output" variability="continuous" initial="exact" start="0" unit="h"/>
+    <Int32 name="grip_cycles" valueReference="222" causality="output" variability="discrete" initial="exact" start="0"
+        description="Grips on a part since the last finger change (gripper maintenance counter)"/>
+    <Float64 name="finger_wear" valueReference="223" causality="output" variability="discrete" initial="exact" start="0" unit="m"
+        description="Finger pad wear: jaw position offset at contact against the taught part width (smart gripper diagnostics, updated per grip)"/>
+    <Float64 name="grip_force" valueReference="224" causality="output" variability="discrete" initial="exact" start="100" unit="N"
+        description="Clamping force measured at the last grip"/>
+    <Float64 name="grip_close_time" valueReference="225" causality="output" variability="discrete" initial="exact" start="0" unit="s"
+        description="Duration of the last closing movement of the jaws"/>
+    <Int32 name="grasp_retries" valueReference="226" causality="output" variability="discrete" initial="exact" start="0"
+        description="Regrips (part slipped) since the last finger change"/>
+    <Boolean name="gripper_fault" valueReference="227" causality="output" variability="discrete" initial="exact" start="false"
+        description="Part not held after regrip_attempts grips; retried every grip_retry_interval until it holds"/>
   </ModelVariables>
   <ModelStructure>
     <Output valueReference="200"/>
@@ -145,5 +174,11 @@
     <Output valueReference="219"/>
     <Output valueReference="220"/>
     <Output valueReference="221"/>
+    <Output valueReference="222"/>
+    <Output valueReference="223"/>
+    <Output valueReference="224"/>
+    <Output valueReference="225"/>
+    <Output valueReference="226"/>
+    <Output valueReference="227"/>
   </ModelStructure>
 </fmiModelDescription>

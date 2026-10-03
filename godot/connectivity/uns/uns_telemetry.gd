@@ -12,7 +12,8 @@ var _retain := true
 var _interval := 0.1
 
 
-func _init(master: CoSimMaster, config: UnsConfig) -> void:
+## `opcua`: only the devices on the OPC UA path (default: only the directly published ones).
+func _init(master: CoSimMaster, config: UnsConfig, opcua := false) -> void:
 	_config = config
 	var section := config.section("telemetry")
 	_qos = int(section.get("qos", 0))
@@ -20,6 +21,8 @@ func _init(master: CoSimMaster, config: UnsConfig) -> void:
 	_interval = float(section.get("min_interval_s", 0.1))
 	var template: String = section.get("topic", "{root}/{device}/{variable}")
 	for fmu in master.get_instances():
+		if not config.on_path(fmu.instance_name, opcua):
+			continue
 		for v in fmu.model_description.variables:
 			if v.is_output():
 				points.append(Point.new(fmu, v, config.topic(template, fmu.instance_name, v.name)))

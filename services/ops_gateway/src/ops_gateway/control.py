@@ -6,8 +6,9 @@
             -> forms (topic, QoS, retain), payload keys (input/output schema), ackForms (ack topic)
         Skills.<name>: Disabled, Modes, Parameters, UsesEndpoints -> Endpoints.<name>
 
-The endpoint idShorts are the contract with the gateway: PackMLState (property), PackMLCommand,
-ContainerExchange, AutoExchange (actions). Topics, flags and keys come only from the AID.
+The endpoint idShorts are the contract with the gateway: PackMLState, UnitMode (properties), PackMLCommand,
+UnitModeCommand, ContainerExchange, AutoExchange (actions). Topics / OPC UA nodes, flags and keys come only
+from the AID; an affordance of an OPC UA interface is called over OPC UA (ADR-0024).
 """
 
 from __future__ import annotations
@@ -17,6 +18,7 @@ from dataclasses import dataclass, field
 from vf_common.aid import AasSource, Affordance, Resolver, child, value_of
 
 STATE, PACKML, EXCHANGE, AUTO_EXCHANGE = "PackMLState", "PackMLCommand", "ContainerExchange", "AutoExchange"
+UNIT_MODE, UNIT_MODE_COMMAND = "UnitMode", "UnitModeCommand"
 LIMITS = ("Min", "Max", "Default", "Unit")
 
 
@@ -62,6 +64,9 @@ class ControlConfig:
     def describe(self) -> list[str]:
         lines = []
         for name, aff in self.endpoints.items():
+            if aff.protocol == "opcua":
+                lines.append(f"{name} -> {aff.kind} {aff.name}: OPC UA {aff.base} {aff.form.topic}")
+                continue
             ack = f", ack {aff.ack.topic}" if aff.ack else ""
             lines.append(f"{name} -> {aff.kind} {aff.name}: {aff.form.topic} (qos {aff.form.qos}, "
                          f"retain {str(aff.form.retain).lower()}, value key '{aff.key('Value', 'v')}'{ack})")

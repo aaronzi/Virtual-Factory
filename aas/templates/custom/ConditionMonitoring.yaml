@@ -1,0 +1,94 @@
+name: ConditionMonitoring
+version: "1"
+revision: "0"
+displayName: {en: "Condition Monitoring", de: "Zustandsüberwachung"}
+description:
+  en: >-
+    Condition-based and predictive maintenance of one component: health index of a degradation indicator against
+    its limit, remaining useful life (RUL) in operating cycles and hours with confidence and the method used, the
+    current maintenance recommendation, the open maintenance order and the record of executed maintenance.
+    Written by a condition monitoring / maintenance service from the measured history (e.g. a historian
+    referenced by the TimeSeries submodel); the design reliability values are in the Reliability submodel
+    (IEC 62683) and the maintenance tasks in MaintenanceInstructions (IDTA). Neither IDTA template covers the
+    observed condition and prognosis, therefore this Virtual Factory custom template.
+  de: >-
+    Zustandsorientierte und vorausschauende Instandhaltung einer Komponente: Gesundheitsindex eines
+    Verschleißindikators gegenüber seinem Grenzwert, Restnutzungsdauer (RUL) in Arbeitsspielen und Stunden mit
+    Konfidenz und verwendeter Methode, aktuelle Instandhaltungsempfehlung, offener Instandhaltungsauftrag und
+    Nachweis der ausgeführten Instandhaltung. Geschrieben von einem Zustandsüberwachungs- bzw.
+    Instandhaltungsdienst aus dem gemessenen Verlauf (z. B. einem über das TimeSeries-Teilmodell referenzierten
+    Historian); die Auslegungswerte der Zuverlässigkeit stehen im Teilmodell Reliability (IEC 62683), die
+    Wartungsaufgaben in MaintenanceInstructions (IDTA).
+elements:
+  - idShort: HealthState
+    preferredName: {en: "health state", de: "Gesundheitszustand"}
+    definition: {en: "Good (no action), Warning (maintenance planned or due), Alarm (limit reached or failure), Unknown (no data).", de: "Good (keine Maßnahme), Warning (Instandhaltung geplant bzw. fällig), Alarm (Grenzwert erreicht oder Ausfall), Unknown (keine Daten)."}
+  - idShort: HealthIndex
+    valueType: xs:double
+    preferredName: {en: "health index", de: "Gesundheitsindex"}
+    definition: {en: "1 = as new, 0 = degradation limit reached: 1 - indicator value / limit, clipped to 0..1.", de: "1 = neuwertig, 0 = Verschleißgrenze erreicht: 1 - Indikatorwert / Grenzwert, auf 0..1 begrenzt."}
+  - idShort: HealthIndicator
+    modelType: SubmodelElementCollection
+    preferredName: {en: "health indicator", de: "Gesundheitsindikator"}
+    definition: {en: "Measured degradation indicator the health index and the remaining useful life are derived from.", de: "Gemessener Verschleißindikator, aus dem Gesundheitsindex und Restnutzungsdauer abgeleitet werden."}
+    elements:
+      - {idShort: IndicatorName, preferredName: {en: "indicator name", de: "Indikatorname"}, definition: {en: "Data point of the asset interface, e.g. RB01.finger_wear.", de: "Datenpunkt der Asset-Schnittstelle, z. B. RB01.finger_wear."}}
+      - {idShort: CurrentValue, valueType: xs:double, preferredName: {en: "current value", de: "aktueller Wert"}, definition: {en: "Latest measured value in IndicatorUnit.", de: "Zuletzt gemessener Wert in IndicatorUnit."}}
+      - {idShort: LimitValue, valueType: xs:double, preferredName: {en: "limit value", de: "Grenzwert"}, definition: {en: "Value at which the component has reached the end of its useful life (health index 0).", de: "Wert, bei dem die Komponente das Ende ihrer Nutzungsdauer erreicht hat (Gesundheitsindex 0)."}}
+      - {idShort: IndicatorUnit, preferredName: {en: "indicator unit", de: "Einheit des Indikators"}, definition: {en: "Unit of CurrentValue and LimitValue (SI symbol).", de: "Einheit von CurrentValue und LimitValue (SI-Zeichen)."}}
+      - {idShort: DataSource, modelType: ReferenceElement, cardinality: ZeroToOne, preferredName: {en: "data source", de: "Datenquelle"}, definition: {en: "Reference to the time series of the indicator (TimeSeries submodel of the asset providing it).", de: "Verweis auf die Zeitreihe des Indikators (TimeSeries-Teilmodell der liefernden Anlage)."}}
+  - idShort: RemainingUsefulLife
+    modelType: SubmodelElementCollection
+    preferredName: {en: "remaining useful life", de: "Restnutzungsdauer"}
+    definition: {en: "Prognosis of the remaining useful life until the indicator reaches its limit.", de: "Prognose der Restnutzungsdauer, bis der Indikator seinen Grenzwert erreicht."}
+    elements:
+      - {idShort: RulCycles, valueType: xs:double, unit: cycles, preferredName: {en: "remaining useful life in cycles", de: "Restnutzungsdauer in Arbeitsspielen"}, definition: {en: "Expected number of operating cycles until the limit (median estimate).", de: "Erwartete Anzahl Arbeitsspiele bis zum Grenzwert (Medianschätzung)."}}
+      - {idShort: RulCyclesLowerBound, valueType: xs:double, unit: cycles, preferredName: {en: "lower bound of the remaining useful life in cycles", de: "Untergrenze der Restnutzungsdauer in Arbeitsspielen"}, definition: {en: "One-sided 90 % lower bound of RulCycles (conservative value used for planning).", de: "Einseitige 90-%-Untergrenze von RulCycles (konservativer Planungswert)."}}
+      - {idShort: RulHours, valueType: xs:double, unit: h, preferredName: {en: "remaining useful life in hours", de: "Restnutzungsdauer in Stunden"}, definition: {en: "RulCycles at the current throughput.", de: "RulCycles beim aktuellen Durchsatz."}}
+      - {idShort: RulHoursLowerBound, valueType: xs:double, unit: h, preferredName: {en: "lower bound of the remaining useful life in hours", de: "Untergrenze der Restnutzungsdauer in Stunden"}, definition: {en: "RulCyclesLowerBound at the current throughput.", de: "RulCyclesLowerBound beim aktuellen Durchsatz."}}
+      - {idShort: PredictedFailureDate, valueType: xs:dateTime, preferredName: {en: "predicted failure date", de: "prognostizierter Ausfallzeitpunkt"}, definition: {en: "Time at which the limit is reached according to RulHoursLowerBound (time base of the measurements).", de: "Zeitpunkt, zu dem der Grenzwert laut RulHoursLowerBound erreicht wird (Zeitbasis der Messwerte)."}}
+      - {idShort: Confidence, valueType: xs:double, preferredName: {en: "confidence", de: "Konfidenz"}, definition: {en: "0..1: coefficient of determination of the trend fit, weighted with the number of data points; low for the design-rate fallback.", de: "0..1: Bestimmtheitsmaß der Trendanpassung, gewichtet mit der Anzahl der Datenpunkte; niedrig beim Rückfall auf die Auslegungsrate."}}
+      - {idShort: Method, preferredName: {en: "method", de: "Methode"}, definition: {en: "TrendFit (linear degradation trend of the indicator over the cycles since the last maintenance) or DesignRate (no significant trend: rate from the design reliability values).", de: "TrendFit (linearer Verschleißtrend des Indikators über die Arbeitsspiele seit der letzten Instandhaltung) oder DesignRate (kein signifikanter Trend: Rate aus den Auslegungswerten der Zuverlässigkeit)."}}
+      - {idShort: DataPoints, valueType: xs:int, preferredName: {en: "data points", de: "Datenpunkte"}, definition: {en: "Number of measurements since the last maintenance used for the prognosis.", de: "Anzahl der für die Prognose verwendeten Messwerte seit der letzten Instandhaltung."}}
+      - {idShort: Throughput, valueType: xs:double, unit: 1/h, preferredName: {en: "throughput", de: "Durchsatz"}, definition: {en: "Current operating cycles per hour used to convert cycles into hours.", de: "Aktuelle Arbeitsspiele pro Stunde zur Umrechnung von Arbeitsspielen in Stunden."}}
+      - {idShort: OrderThreshold, valueType: xs:double, unit: h, preferredName: {en: "order threshold", de: "Auftragsschwelle"}, definition: {en: "A maintenance order is opened when RulHoursLowerBound falls below this value.", de: "Ein Instandhaltungsauftrag wird eröffnet, wenn RulHoursLowerBound diesen Wert unterschreitet."}}
+  - idShort: Symptoms
+    modelType: SubmodelElementCollection
+    preferredName: {en: "symptoms", de: "Symptome"}
+    definition: {en: "Further observed symptoms of the degradation (component-specific values with their own semantic ids).", de: "Weitere beobachtete Symptome des Verschleißes (komponentenspezifische Werte mit eigenen semantischen Kennungen)."}
+  - idShort: Recommendation
+    modelType: MultiLanguageProperty
+    preferredName: {en: "recommendation", de: "Empfehlung"}
+    definition: {en: "Current maintenance recommendation in plain text.", de: "Aktuelle Instandhaltungsempfehlung im Klartext."}
+  - idShort: MaintenanceInstruction
+    modelType: ReferenceElement
+    cardinality: ZeroToOne
+    preferredName: {en: "maintenance instruction", de: "Wartungsanweisung"}
+    definition: {en: "Reference to the maintenance task recommended when the limit approaches (MaintenanceInstructions submodel).", de: "Verweis auf die Wartungsaufgabe, die bei Annäherung an den Grenzwert empfohlen wird (Teilmodell MaintenanceInstructions)."}
+  - idShort: OpenMaintenanceOrder
+    preferredName: {en: "open maintenance order", de: "offener Instandhaltungsauftrag"}
+    definition: {en: "Number of the open maintenance order (business key of the maintenance workflow); empty if none.", de: "Nummer des offenen Instandhaltungsauftrags (Geschäftsschlüssel des Instandhaltungsablaufs); leer, wenn keiner."}
+  - idShort: MaintenanceRecords
+    modelType: SubmodelElementList
+    preferredName: {en: "maintenance records", de: "Instandhaltungsnachweise"}
+    definition: {en: "Executed maintenance of the component, oldest first.", de: "Ausgeführte Instandhaltung der Komponente, älteste zuerst."}
+    elements:
+      - idShort: MaintenanceRecord
+        modelType: SubmodelElementCollection
+        cardinality: ZeroToMany
+        preferredName: {en: "maintenance record", de: "Instandhaltungsnachweis"}
+        definition: {en: "One executed maintenance order.", de: "Ein ausgeführter Instandhaltungsauftrag."}
+        elements:
+          - {idShort: MaintenanceOrderId, preferredName: {en: "maintenance order", de: "Instandhaltungsauftrag"}, definition: {en: "Number of the maintenance order.", de: "Nummer des Instandhaltungsauftrags."}}
+          - {idShort: MaintenanceID, preferredName: {en: "maintenance identifier", de: "Wartungskennung"}, definition: {en: "MaintenanceID of the executed task (MaintenanceInstructions).", de: "MaintenanceID der ausgeführten Aufgabe (MaintenanceInstructions)."}}
+          - {idShort: CompletedAt, valueType: xs:dateTime, preferredName: {en: "completed at", de: "abgeschlossen am"}, definition: {en: "Time the technician completed the work.", de: "Zeitpunkt, zu dem der Techniker die Arbeit abgeschlossen hat."}}
+          - {idShort: Technician, preferredName: {en: "technician", de: "Techniker"}, definition: {en: "Name or identifier of the technician.", de: "Name oder Kennung des Technikers."}}
+          - {idShort: Findings, preferredName: {en: "findings", de: "Befund"}, definition: {en: "Findings and actions documented by the technician.", de: "Vom Techniker dokumentierter Befund und Maßnahmen."}}
+          - {idShort: PartsReplaced, valueType: xs:boolean, preferredName: {en: "parts replaced", de: "Teile ersetzt"}, definition: {en: "True if the wear parts were replaced (device counters reset).", de: "Wahr, wenn die Verschleißteile ersetzt wurden (Gerätezähler zurückgesetzt)."}}
+          - {idShort: CyclesAtMaintenance, valueType: xs:int, unit: cycles, preferredName: {en: "cycles at maintenance", de: "Arbeitsspiele bei Instandhaltung"}, definition: {en: "Operating cycles of the replaced parts (achieved useful life).", de: "Arbeitsspiele der ersetzten Teile (erreichte Nutzungsdauer)."}}
+          - {idShort: HealthIndexBefore, valueType: xs:double, preferredName: {en: "health index before", de: "Gesundheitsindex vorher"}, definition: {en: "Health index when the order was opened.", de: "Gesundheitsindex bei Eröffnung des Auftrags."}}
+          - {idShort: Downtime, valueType: xs:double, unit: s, preferredName: {en: "downtime", de: "Stillstandszeit"}, definition: {en: "Time the line was in the maintenance window (from the stop to the handback).", de: "Zeit der Linie im Wartungsfenster (vom Halt bis zur Rückgabe)."}}
+  - idShort: LastUpdate
+    valueType: xs:dateTime
+    preferredName: {en: "last update", de: "letzte Aktualisierung"}
+    definition: {en: "Time of the last evaluation.", de: "Zeitpunkt der letzten Auswertung."}

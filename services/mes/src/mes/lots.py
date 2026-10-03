@@ -6,15 +6,16 @@ The lots originate on the shop floor: every feeder of the cell changes its lot a
 (godot/devices/assembly_cell/model/component_lots.gd). Older simulation builds without `last_lots` get lots
 derived from the blueprint lots in blocks of FALLBACK_BLOCK parts (documented fallback, not traceability).
 
-Recycled content per lot: the type declares the average shares per component; the lot-specific shares stand
-for the supplier's material certificate of the lot and are derived deterministically from the lot number
-(simulated, within +-15 % of the declared share).
+Recycled content per lot: the type declares the average shares per component; the lot-specific shares are
+those of the supplier's material certificate of the lot (batch AAS of the supplier environment, ADR-0028) and
+are derived deterministically from the lot number (vf_common.lot_values, within +-15 % of the declared share).
 """
 
 from __future__ import annotations
 
-import hashlib
 import re
+
+from vf_common.lot_values import recycled_share  # noqa: F401 - re-exported for passport.py
 
 # BoM node of PC3280_TYPE -> article number (ComponentId in material composition and circularity)
 COMPONENTS = {"Barrel": "5032-1001", "EndCapFront": "5032-1002", "EndCapRear": "5032-1003",
@@ -60,11 +61,3 @@ def shift(lot: str, block: int) -> str:
         return lot
     digits = match.group(1)
     return lot[:match.start(1)] + str(int(digits) + block).zfill(len(digits)) + match.group(2)
-
-
-def recycled_share(declared: float, lot: str, kind: str) -> float:
-    """Lot-specific recycled share (%) within +-15 % of the declared average (simulated certificate)."""
-    if not declared:
-        return 0.0
-    u = int(hashlib.sha256(f"{lot}/{kind}".encode()).hexdigest()[:8], 16) / 0xFFFFFFFF
-    return float(min(100, max(0, round(declared * (0.85 + 0.3 * u)))))

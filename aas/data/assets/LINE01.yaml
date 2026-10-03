@@ -251,7 +251,7 @@ submodels:
       Policies:
         Policy:
           - _idShort: ProductInstanceSessionData
-            _description: {en: "Process and quality records of product-instance AAS (workpieces PC3280-YYYY-NNNNNN created by the MES) are kept on the line's AAS server only for the current production session and archived by the MES afterwards", de: "Prozess- und Qualitätsdaten der Produktinstanz-VWS (vom MES erzeugte Werkstücke PC3280-YYYY-NNNNNN) werden auf dem AAS-Server der Linie nur für die aktuelle Produktionssitzung gehalten und danach vom MES archiviert"}
+            _description: {en: "Product-instance AAS (workpieces PC3280-YYYY-NNNNNN created by the MES) of units that are not shipped - in production, rejected or lost - are kept on the line's AAS server only for the current production session (rolling window of 500) and removed at the start of the next session; passports of shipped units: policy ProductPassportShippedUnits", de: "Produktinstanz-VWS (vom MES erzeugte Werkstücke PC3280-YYYY-NNNNNN) nicht ausgelieferter Einheiten - in Fertigung, Ausschuss oder verloren - werden auf dem AAS-Server der Linie nur für die aktuelle Produktionssitzung gehalten (rollierend 500) und zu Beginn der nächsten Sitzung entfernt; Pässe ausgelieferter Einheiten: Richtlinie ProductPassportShippedUnits"}
             RetentionTime: PT24H
             SemanticIds:
               - {ref: "global:https://admin-shell.io/idta/ExecutedProcesses/1/0"}
@@ -271,6 +271,35 @@ submodels:
                 Operation: {en: Policy created, de: Richtlinie angelegt}
                 Reason: {en: "Commissioning of LINE01; workpiece records are archived by the MES at the end of each session", de: "Inbetriebnahme von LINE01; Werkstückdaten werden vom MES am Ende jeder Sitzung archiviert"}
                 Signature: "sha256:74567dee57b42a640818e7f7d8f547d4d8f4c94b225c2d9c4973692fe4cc9d24"
+              - Timestamp: "2026-10-03T08:00:00+02:00"
+                Identity: {en: "VF Pneumatics GmbH, Production IT", de: "VF Pneumatics GmbH, Produktions-IT"}
+                Operation: {en: Policy changed, de: Richtlinie geändert}
+                Reason: {en: "Passports of shipped units are kept across sessions (policy ProductPassportShippedUnits, ADR-0025); only units that are not shipped remain session data", de: "Pässe ausgelieferter Einheiten bleiben über Sitzungen erhalten (Richtlinie ProductPassportShippedUnits, ADR-0025); nur nicht ausgelieferte Einheiten bleiben Sitzungsdaten"}
+                Signature: "sha256:87de5b1e17543db1f7b8aac04eff8241a878370caef318a1a24537e4ed6334f8"
+          - _idShort: ProductPassportShippedUnits
+            _description: {en: "Item-level digital product passports of shipped units (packed good parts, dppStatus Active): the workpiece AAS with all passport submodels - including the CarbonFootprint written by the sustainability service - stays on the AAS server across production sessions and is served by the DPP API for the product's lifetime; Archived is set at the end of life (not reached in the simulation)", de: "Digitale Produktpässe ausgelieferter Einheiten (verpackte Gutteile, dppStatus Active): die Werkstück-VWS mit allen Pass-Teilmodellen - einschließlich des vom Nachhaltigkeitsdienst geschriebenen CarbonFootprint - bleibt über Produktionssitzungen hinweg auf dem AAS-Server und wird während der Lebensdauer des Produkts über die DPP-API bereitgestellt; Archived wird am Lebensende gesetzt (in der Simulation nicht erreicht)"}
+            RetentionTime: P10Y
+            SemanticIds:
+              - {ref: "global:https://admin-shell.io/idta/cds/dppMetadata/1"}
+              - {ref: "global:https://admin-shell.io/idta/nameplate/3/0/Nameplate"}
+              - {ref: "global:https://admin-shell.io/idta/CarbonFootprint/CarbonFootprint/1/0"}
+              - {ref: "global:https://admin-shell.io/idta/HierarchicalStructures/1/1/Submodel"}
+              - {ref: "global:https://admin-shell.io/idta/ExecutedProcesses/1/0"}
+              - {ref: "global:https://virtual-factory.example/ids/smt/QualityInspection/1/0/Submodel"}
+            Immutable: false
+            CreatedBy: VF Pneumatics GmbH
+            CreationTime: "2026-10-03T08:00:00+02:00"
+            Issuer: VF Pneumatics GmbH
+            Source:
+              Identifier: VFP-DRP-2025-03
+              Document: repo:aas/files/docs/DRP-LINE01.pdf
+            EffectiveFrom: "2026-10-03T00:00:00+02:00"
+            AuditLog:
+              - Timestamp: "2026-10-03T08:00:00+02:00"
+                Identity: {en: "VF Pneumatics GmbH, Production IT", de: "VF Pneumatics GmbH, Produktions-IT"}
+                Operation: {en: Policy created, de: Richtlinie angelegt}
+                Reason: {en: "ESPR: passports must stay available for the product's lifetime; serial numbers are retentive (never reused)", de: "ESPR: Pässe müssen während der Lebensdauer des Produkts verfügbar bleiben; Seriennummern sind remanent (keine Wiederverwendung)"}
+                Signature: "sha256:1f5ca8a59b1be3aa5ca5c1a37e8ca2e991d3797afd83a14f8e9a54452db5a52f"
 
   - template: EnergyConsumption-1.0
     values:
@@ -286,17 +315,18 @@ submodels:
   # Invocable line services (custom). BaSyx forwards each invocation to the ops gateway (invocationDelegation),
   # which resolves ControlComponent -> Endpoints -> AID of PLC01 (topics, QoS, keys), sends the command via MQTT
   # and waits for the acknowledgement (AID ackForms) / state change (ADR-0020).
-  - template: LineControl-1.1
+  - template: LineControl-1.2
     values:
       Controller: {ref: "aas:PLC01"}
       ControlComponent: {ref: "sm:PLC01/ControlComponentInstance"}
       StateModel: "ISA-TR88.00.02 (PackML)"
       CurrentState: {ref: "sm:PLC01/OperationalData#OperatingState"}
       ExecutePackMLCommand: {_delegation: "http://ops-gateway:8095/operations/ExecutePackMLCommand"}
+      SetUnitMode: {_delegation: "http://ops-gateway:8095/operations/SetUnitMode"}
       ExchangeContainer:
         _delegation: "http://ops-gateway:8095/operations/ExchangeContainer"
         _description: {en: "Exchange a full KLT: 1 = KLTA01 (good parts), 2 = KLTB01 (rejects)", de: "Vollen KLT wechseln: 1 = KLTA01 (Gutteile), 2 = KLTB01 (Ausschuss)"}
       SetAutoExchange: {_delegation: "http://ops-gateway:8095/operations/SetAutoExchange"}
       ExecuteSkill:
         _delegation: "http://ops-gateway:8095/operations/ExecuteSkill"
-        _description: {en: "Execute a skill of PLC01/ControlComponentInstance: Produce (Mode Production, optional {\"auto_exchange\": false}) or ExchangeContainer ({\"container\": 1 | 2})", de: "Einen Skill von PLC01/ControlComponentInstance ausführen: Produce (Mode Production, optional {\"auto_exchange\": false}) oder ExchangeContainer ({\"container\": 1 | 2})"}
+        _description: {en: "Execute a skill of PLC01/ControlComponentInstance: Produce (Mode Production, optional {\"auto_exchange\": false}), ExchangeContainer ({\"container\": 1 | 2}) or Maintain (Mode Maintenance, after a finger change {\"gripper_maintenance_reset\": true})", de: "Einen Skill von PLC01/ControlComponentInstance ausführen: Produce (Mode Production, optional {\"auto_exchange\": false}), ExchangeContainer ({\"container\": 1 | 2}) oder Maintain (Mode Maintenance, nach einem Fingerwechsel {\"gripper_maintenance_reset\": true})"}

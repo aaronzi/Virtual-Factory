@@ -173,3 +173,26 @@ func test_exchange_waits_until_the_last_part_is_placed() -> void:
 	assert_false(plc.get_value("klt_a_exchange"), "neither manual nor automatic while the robot places")
 	_robot_cycle()
 	assert_true(plc.get_value("klt_a_exchange"), "pending manual request honoured after job done")
+
+
+func test_unit_mode_maintenance_blocks_infeed_and_auto_start() -> void:
+	_run(0.2)
+	assert_eq(plc.get_value("unit_mode"), 1, "production after start")
+	plc.set_value("unit_mode_command", 2)
+	_run(0.05)
+	assert_eq(plc.get_value("unit_mode"), 1, "no mode change in EXECUTE")
+	plc.set_value("packml_command", 3)  # Stop
+	_run(0.2)
+	plc.set_value("unit_mode_command", 0)
+	_run(0.05)
+	plc.set_value("unit_mode_command", 2)
+	_run(0.05)
+	assert_eq(plc.get_value("unit_mode"), 2, "maintenance accepted in STOPPED")
+	plc.set_value("packml_command", 1)  # Reset
+	_run(0.3)
+	assert_eq(plc.get_value("packml_state"), PackMLStateMachine.State.IDLE, "no auto start in maintenance")
+	plc.set_value("packml_command", 2)  # Start
+	_run(0.3)
+	assert_eq(plc.get_value("packml_state"), PackMLStateMachine.State.EXECUTE)
+	assert_false(plc.get_value("ac_enable"), "no infeed from AC01 in maintenance")
+	assert_true(plc.get_value("cv_run"), "the belt runs")

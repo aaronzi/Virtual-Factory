@@ -5,6 +5,8 @@ extends PanelContainer
 
 signal submodel_selected(submodel_id: String)
 signal type_requested(aas_id: String)
+## An Entity with a globalAssetId was opened (e.g. a supplier batch of the as-built BoM, ADR-0028).
+signal asset_requested(global_asset_id: String)
 signal action_pressed(action_id: String)
 signal close_requested
 
@@ -16,6 +18,8 @@ var _live: Label
 var _status: Label
 var _thumb: TextureRect
 var _type_button: Button
+var _asset_button: Button
+var _linked_asset := ""  # globalAssetId of the selected Entity element
 var _submodels: ItemList
 var _tree: Tree
 var _actions: HBoxContainer
@@ -49,6 +53,7 @@ func _init() -> void:
 		_tree.set_column_custom_minimum_width(col, 180)
 	_tree.set_column_expand_ratio(1, 2)
 	_tree.item_collapsed.connect(_on_collapsed)
+	_tree.item_selected.connect(_on_item_selected)
 	body.add_child(_tree)
 	root.add_child(body)
 	_actions = HBoxContainer.new()
@@ -72,6 +77,7 @@ func show_shell(shell: Dictionary) -> void:
 	if not derived.get("keys", []).is_empty():
 		_derived_from = derived.keys[0].value
 	_type_button.visible = _derived_from != ""
+	_select_linked("")
 	_thumb.texture = null
 	_tree.clear()
 	_submodels.clear()
@@ -140,6 +146,7 @@ func _add_element(parent: TreeItem, element: Dictionary, path: String) -> void:
 	item.set_custom_color(1, UiTheme.ACCENT.lightened(0.35))
 	item.set_tooltip_text(0, AasFormat.lang_text(element.get("description"), lang))
 	item.set_metadata(0, path)
+	item.set_metadata(1, element.get("globalAssetId", "") if element.get("modelType") == "Entity" else "")
 	var kids := AasFormat.children(element)
 	for i in kids.size():
 		var child: Dictionary = kids[i]
@@ -149,6 +156,17 @@ func _add_element(parent: TreeItem, element: Dictionary, path: String) -> void:
 
 func _on_collapsed(item: TreeItem) -> void:
 	_collapsed[item.get_metadata(0)] = item.collapsed
+
+
+func _on_item_selected() -> void:
+	var item := _tree.get_selected()
+	_select_linked(String(item.get_metadata(1)) if item else "")
+
+
+## Offers to open the AAS of the asset an Entity stands for (found via discovery, any environment).
+func _select_linked(global_asset_id: String) -> void:
+	_linked_asset = global_asset_id
+	_asset_button.visible = global_asset_id != ""
 
 
 func _header() -> HBoxContainer:
@@ -172,6 +190,11 @@ func _header() -> HBoxContainer:
 	_type_button.text = "INSPECTOR_OPEN_TYPE"
 	_type_button.pressed.connect(func() -> void: type_requested.emit(_derived_from))
 	row.add_child(_type_button)
+	_asset_button = Button.new()
+	_asset_button.text = "INSPECTOR_OPEN_LINKED"
+	_asset_button.visible = false
+	_asset_button.pressed.connect(func() -> void: asset_requested.emit(_linked_asset))
+	row.add_child(_asset_button)
 	var close := Button.new()
 	close.text = "✕"
 	close.pressed.connect(func() -> void: close_requested.emit())

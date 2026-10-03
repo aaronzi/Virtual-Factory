@@ -37,13 +37,16 @@ class BatchWriter:
     max_buffer: int = 200_000
     clock: Callable[[], float] = time.monotonic
     stats: Stats = field(default_factory=Stats)
-    _buffer: OrderedDict = field(default_factory=OrderedDict)  # (table, session, ts) -> {field: value}
+    _buffer: OrderedDict = field(default_factory=OrderedDict)  # (table, tags, ts) -> {field: value}
     _next_send: float = 0.0
     _backoff: float = 0.0
 
-    def add(self, table: str, session: str, name: str, value: str, ts_ms: int) -> None:
+    def add(self, table: str, session: str, name: str, value: str, ts_ms: int,
+            tags: dict[str, str] | None = None) -> None:
+        """tags: further tags besides `session` (e.g. component of the maintenance table)."""
         self.stats.samples += 1
-        self._buffer.setdefault((table, session, ts_ms), {})[name] = value
+        key_tags = tuple(sorted({"session": session, **(tags or {})}.items()))
+        self._buffer.setdefault((table, key_tags, ts_ms), {})[name] = value
         while len(self._buffer) > self.max_buffer:
             self._buffer.popitem(last=False)
             self.stats.dropped += 1
@@ -65,7 +68,7 @@ class BatchWriter:
         written = 0
         while self._buffer and (force or self.due()):
             keys = list(self._buffer)[:self.max_lines]
-            lines = [line(t, {"session": s}, self._buffer[(t, s, ts)], ts) for t, s, ts in keys]
+            lines = [line(t, dict(tags), self._buffer[(t, tags, ts)], ts) for t, tags, ts in keys]
             if not self._send(lines):
                 break
             for k in keys:

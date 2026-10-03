@@ -7,7 +7,7 @@ displayName: {en: "Protective cap 53 mm, PE-LD red (component type)", de: "Schut
 description:
   en: "Injection-moulded PE-LD transport protection cap in traffic red, pressed onto the front end of the cylinder PC-32-80-DA-M; supplied by Kunststofftechnik Westrich GmbH."
   de: "Spritzgegossene PE-LD-Transportschutzkappe in Verkehrsrot, auf das vordere Ende des Zylinders PC-32-80-DA-M aufgedrückt; Lieferant Kunststofftechnik Westrich GmbH."
-specificAssetIds: {manufacturerPartId: KTW-SK53-RD, customerPartId: "5032-1009"}
+specificAssetIds: {manufacturerPartId: KTW-SK53-RD, customerPartId: "5032-1009", gtin: "04099994010016"}
 location: false
 submodels:
   - template: Nameplate-3.0

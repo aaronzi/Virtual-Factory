@@ -6,6 +6,7 @@ extends PlcProgram
 ## KLT exchange: automatic after exchange_delay (auto_exchange) or manual via klt_exchange_command.
 ## Alarms (LineAlarms): drive fault -> ABORT, protective stop / stuck light barrier -> HOLD until gone,
 ## robot fault -> HOLD, infeed tracking timeout -> warning; reported as alarm_code/alarm_text.
+## Unit mode (PlcUnitMode): outside PRODUCTION neither auto start nor infeed from AC01.
 
 enum Seq { WAIT_PART, POSITIONING, SETTLING, INSPECTING, WAIT_ROBOT, PICKING }
 const S := PackMLStateMachine.State
@@ -19,6 +20,7 @@ var _lb02_rise := IecRTrig.new()
 var _stop_delay := IecTon.new()
 var _settle := IecTon.new()
 var _alarms := LineAlarms.new()
+var _unit_mode := PlcUnitMode.new()
 var _lb01_stuck: StuckSignal
 var _lb02_stuck: StuckSignal
 var _result_ok := false
@@ -34,7 +36,8 @@ func _on_initialize() -> void:
 
 
 func _scan(dt: float) -> void:
-	if _get_var("auto_start") and packml.state == S.IDLE:
+	_unit_mode.update(_get_var("unit_mode_command"), packml.state)
+	if _get_var("auto_start") and _unit_mode.is_production() and packml.state == S.IDLE:
 		packml.command(C.START)
 	var executing := packml.state == S.EXECUTE
 	_tracker.update(_get_var("ac_release_count"), _get_var("ac_last_serial"), _get_var("lb01_signal"), dt,
@@ -143,7 +146,8 @@ func _update_klts(dt: float) -> void:
 func _write_outputs(executing: bool) -> void:
 	var belt_ok := executing and _seq in [Seq.WAIT_PART, Seq.POSITIONING]
 	var parts_on_belt := _tracker.serials.size()
-	_set_var("ac_enable", executing)
+	_set_var("ac_enable", executing and _unit_mode.is_production())
+	_set_var("unit_mode", _unit_mode.mode)
 	_set_var("ac_infeed_free", not _tracker.infeed_occupied and parts_on_belt < _get_var("max_parts_on_belt"))
 	_set_var("cv_run", belt_ok)
 	_set_var("cv_speed_setpoint", _get_var("belt_speed"))
@@ -160,6 +164,7 @@ func _write_outputs(executing: bool) -> void:
 	_set_var("alarm_code", _alarms.code)
 	_set_var("alarm_text", _alarms.text)
 	_set_var("alarm_count", _alarms.count)
+	_set_var("active_alarms", _alarms.active_list)
 	_set_var("horn", stops)
 	_set_var("light_green", executing)
 	_set_var("light_amber", packml.state in [S.SUSPENDED, S.HELD, S.IDLE] or packml.is_acting()

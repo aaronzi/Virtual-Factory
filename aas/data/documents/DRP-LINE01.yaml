@@ -1,23 +1,24 @@
 title: Data retention policy VFP-DRP-2025-03
 subtitle: Product-instance data on the AAS server of LINE01
 organization: VF Pneumatics GmbH
-version: '1.0'
-date: '2025-09-15'
+version: '1.1'
+date: '2026-10-03'
 sections:
 - heading: Scope
   text: >-
-    Applies to the process and quality records of product-instance Asset Administration Shells (workpieces PC3280-YYYY-NNNNNN)
-    that the MES creates on the AAS server of LINE01: submodels ExecutedProcesses, QualityInspection and MeasurementValue.
+    Applies to the product-instance Asset Administration Shells (workpieces PC3280-YYYY-NNNNNN) that the MES creates on
+    the AAS server of LINE01 - process and quality records (ExecutedProcesses, QualityInspection, MeasurementValue) and the
+    item-level digital product passport (all passport submodels incl. the CarbonFootprint of the sustainability service).
 - heading: Rule
   rows:
-  - [Retention on the line server, '24 hours (one production session), then deletion']
-  - ['', permitted]
-  - [Archive, the MES exports the records to the plant archive at the]
-  - ['', end of each session]
-  - [Product passport data, not affected; handled by the DPP process of VF]
-  - ['', Pneumatics]
+  - [Units not shipped, 'in production, rejected or lost: current session only']
+  - ['', '(rolling 500), deleted when the next session starts']
+  - [Shipped units, 'passport kept across sessions (dppStatus Active),']
+  - ['', '10 years, served by the DPP API; Archived at end of life']
+  - [Serial numbers, 'retentive, never reused (a passport is never']
+  - ['', 'overwritten)']
   - [Immutability, policy may be changed by Production IT]
-  - [Effective from, '2025-09-15']
+  - [Effective from, '2025-09-15 (rev. 1.1: 2026-10-03)']
 - heading: Responsibility
   text: >-
     Issued by VF Pneumatics GmbH, Production IT. Changes are recorded in the audit log of the DataRetentionPolicies

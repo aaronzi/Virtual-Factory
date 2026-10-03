@@ -1,6 +1,7 @@
 keys,en,de
 INSPECTOR_LIVE,● live (BaSyx events),● live (BaSyx-Ereignisse)
 INSPECTOR_OPEN_TYPE,Open type AAS,Typ-AAS öffnen
+INSPECTOR_OPEN_LINKED,Open asset AAS,Asset-AAS öffnen
 INSPECTOR_LOADING,Loading AAS …,AAS wird geladen …
 INSPECTOR_NO_AAS,No AAS found for %s (is the backend running?),Keine AAS für %s gefunden (läuft das Backend?)
 INSPECTOR_HINT,Click a device or a workpiece to inspect its AAS.,Gerät oder Werkstück anklicken um seine AAS zu sehen.
@@ -42,7 +43,7 @@ MENU_HINT,"Esc menu · right mouse + WASD move · click a device, part or panel"
 QUALITY_LOW,Low,Niedrig
 QUALITY_MEDIUM,Medium,Mittel
 QUALITY_HIGH,High,Hoch
-MENU_INFO,"UNS %s · AAS events %d · open tasks %d","UNS %s · AAS-Ereignisse %d · offene Aufgaben %d"
+MENU_INFO,"UNS %s · PLC OPC UA %s · AAS events %d · open tasks %d","UNS %s · SPS OPC UA %s · AAS-Ereignisse %d · offene Aufgaben %d"
 SCENARIO_RUNNING,Running: %s,Läuft: %s
 SCENARIO_NONE,No scenario running.,Kein Szenario aktiv.
 OVERLAY_NOT_RUNNING,Factory not running,Fabrik läuft nicht
@@ -59,4 +60,5 @@ SEQ_WAIT_ROBOT,wait robot,warte auf Roboter
 SEQ_PICKING,picking,greifen
 HOVER_HINT,"%s · click for AAS","%s · Klick für AAS"
 MENU_DASHBOARD,Open dashboard (Grafana),Dashboard öffnen (Grafana)
-INSPECTOR_OPEN_PASSPORT,Open passport (DPP API),Produktpass öffnen (DPP-API)
+INSPECTOR_SCAN_QR,Scan QR code (open passport),QR-Code scannen (Produktpass öffnen)
+HMI_ACK,Ack (%d),Quitt. (%d)

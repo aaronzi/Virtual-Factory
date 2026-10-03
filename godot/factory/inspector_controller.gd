@@ -3,6 +3,7 @@ extends Node
 ## Connects the AAS inspector view with the AAS server: opens a world panel in front of the player for a
 ## picked asset, loads shell, thumbnail and submodels, and refreshes the visible submodel when BaSyx reports a
 ## change for it (MQTT eventing -> fetch, decided in the M4 review). Context actions come from a provider.
+## Assets are opened by their global asset id: discovery -> AAS id -> registry -> endpoints (ADR-0023).
 
 const PREFERRED := ["QualityInspection", "OperationalData", "HierarchicalStructures", "LineControl",
 	"Nameplate"]
@@ -17,6 +18,7 @@ var action_handler: Callable    ## func(tag: String, action_id: String) -> void
 var panel: WorldPanel
 var view: AasInspectorView
 var current_tag := ""
+var current_asset_id := ""  ## globalAssetId of the shown AAS (e.g. the workpiece's Digital Link)
 var _shell_id := ""
 var _submodel_id := ""
 var _refresh_at := -1.0
@@ -30,6 +32,7 @@ func setup(p_aas: AasClient, p_feed: AasEventFeed, p_rig: PlayerRig) -> void:
 	view = AasInspectorView.new()
 	view.submodel_selected.connect(_show_submodel)
 	view.type_requested.connect(func(id: String) -> void: open_aas(id))
+	view.asset_requested.connect(func(id: String) -> void: open_asset(id))  # e.g. supplier batch (ADR-0028)
 	view.close_requested.connect(close)
 	view.action_pressed.connect(func(id: String) -> void:
 		if action_handler.is_valid():
@@ -52,21 +55,27 @@ func _process(_delta: float) -> void:
 		_refresh_submodel()
 
 
-## Opens the AAS of `tag`; `point` (world) is where the asset was clicked - the panel appears between the
-## player and that point, so it never ends up behind the asset.
-func open_asset(tag: String, point := Vector3.INF) -> void:
-	current_tag = tag
-	await open_aas(aas.aas_id(tag), point)
+## Opens the AAS of the asset with this global asset id (found via discovery); `point` (world) is where the
+## asset was clicked - the panel appears between the player and that point, never behind the asset.
+func open_asset(global_asset_id: String, point := Vector3.INF) -> void:
+	_loading += 1
+	var ticket := _loading
+	_show_loading(point)
+	var found := await aas.lookup(global_asset_id)
+	if ticket != _loading:
+		return
+	if found.is_empty():
+		view.show_shell({"idShort": global_asset_id.get_file()})
+		view.set_status(tr("INSPECTOR_NO_AAS") % global_asset_id)
+		return
+	await open_aas(found[0], point)
 
 
 func open_aas(aas_id: String, point := Vector3.INF) -> void:
 	_loading += 1
 	var ticket := _loading
 	var started := Time.get_ticks_msec()
-	_place(point)
-	panel.visible = true
-	view.lang = TranslationServer.get_locale().substr(0, 2)
-	view.set_status(tr("INSPECTOR_LOADING"))
+	_show_loading(point)
 	var shell := await aas.get_shell(aas_id)
 	if ticket != _loading:
 		return
@@ -76,6 +85,7 @@ func open_aas(aas_id: String, point := Vector3.INF) -> void:
 		return
 	_shell_id = aas_id
 	current_tag = aas_id.get_file()
+	current_asset_id = String(shell.get("assetInformation", {}).get("globalAssetId", ""))
 	view.show_shell(shell)
 	view.set_actions(actions_provider.call(current_tag) if actions_provider.is_valid() else [])
 	panel.mark_dirty()
@@ -92,6 +102,7 @@ func close() -> void:
 	_shell_id = ""
 	_submodel_id = ""
 	current_tag = ""
+	current_asset_id = ""
 
 
 ## Re-evaluates the context actions (e.g. when an exchange task appeared).
@@ -150,14 +161,24 @@ func _load_units(submodel: Dictionary) -> bool:
 	return units.values().any(func(u: String) -> bool: return u != "")
 
 
-func _on_submodel_changed(submodel_id: String, _type: String) -> void:
+func _on_submodel_changed(submodel_id: String, type: String) -> void:
+	if not type.ends_with("updated.v1"):
+		aas.forget(submodel_id)  # created / deleted: the endpoint may have changed
 	if panel.visible and submodel_id == _submodel_id and _refresh_at < 0.0:
 		_refresh_at = Time.get_ticks_msec() / 1000.0 + REFRESH_DELAY_S
 
 
 func _on_shell_changed(aas_id: String, _type: String) -> void:
+	aas.forget(aas_id)  # the descriptor (submodel endpoints) may have changed
 	if panel.visible and aas_id == _shell_id:
 		open_aas(aas_id)  # e.g. a workpiece got new submodels
+
+
+func _show_loading(point: Vector3) -> void:
+	_place(point)
+	panel.visible = true
+	view.lang = TranslationServer.get_locale().substr(0, 2)
+	view.set_status(tr("INSPECTOR_LOADING"))
 
 
 func _place(point: Vector3) -> void:

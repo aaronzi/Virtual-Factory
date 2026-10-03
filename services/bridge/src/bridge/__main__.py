@@ -7,8 +7,9 @@ import logging
 import os
 import time
 
-from vf_common.basyx import BasyxClient
 from vf_common.mqtt import MqttClient
+from vf_common.registry_aas import RegistryAas
+from vf_common.resolver import AasResolver
 from vf_common.uns import broker_address
 
 from .service import Bridge
@@ -20,7 +21,9 @@ def main() -> None:
     host, port = broker_address(os.environ.get("VF_MQTT_URL", "mqtt://localhost:1883"))
     mqtt = MqttClient("vf-bridge", host, port)
     mqtt.start()
-    aas = BasyxClient(os.environ.get("VF_AAS_URL", "http://localhost:8091"))
+    # mapping and sink submodels are located via the submodel registry (ADR-0023), not by id convention
+    resolver = AasResolver.from_env()
+    aas = RegistryAas(resolver)
     while True:  # the AAS server may still be importing its preload
         try:
             aas.list_submodels(limit=1)
@@ -29,7 +32,8 @@ def main() -> None:
             logging.getLogger("bridge").info("waiting for AAS server: %s", exc)
             time.sleep(3)
     events = os.environ.get("VF_AAS_EVENTS_TOPIC", "vf/basyx/submodelrepository/#") or None
-    Bridge(aas, mqtt, events, min_interval=float(os.environ.get("VF_BRIDGE_MIN_INTERVAL", "5.0"))).run()
+    Bridge(aas, mqtt, events, min_interval=float(os.environ.get("VF_BRIDGE_MIN_INTERVAL", "5.0")),
+           on_event=resolver.on_event).run()
 
 
 if __name__ == "__main__":

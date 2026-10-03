@@ -7,10 +7,13 @@ extends RefCounted
 var definitions: Array[Definition] = []
 
 
-func _init(master: CoSimMaster, config: UnsConfig) -> void:
+## `opcua`: only the events of devices on the OPC UA path (default: only the directly published ones).
+func _init(master: CoSimMaster, config: UnsConfig, opcua := false) -> void:
 	var section := config.section("events")
 	var template: String = section.get("topic", "{root}/{device}/event/{event}")
 	for raw: Dictionary in section.get("definitions", []):
+		if not config.on_path(raw.get("device", ""), opcua):
+			continue
 		var d := _make_definition(master, raw)
 		if d == null:
 			push_error("UNS: invalid event definition %s" % JSON.stringify(raw))

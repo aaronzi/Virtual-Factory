@@ -79,14 +79,47 @@
     "retain": false,
     "qos": 1,
     "writable": {
-      "PLC01": ["packml_command", "klt_exchange_command", "auto_exchange"],
+      "PLC01": ["packml_command", "klt_exchange_command", "auto_exchange", "unit_mode_command"],
       "AC01": ["defect_rate_missing_cap", "defect_rate_wrong_cap"],
       "CV01": ["motor_fault"],
       "LB01": ["misalignment"],
       "LB02": ["misalignment"],
       "QS01": ["contamination", "drift"],
-      "RB01": ["protective_stop"]
+      "RB01": ["protective_stop", "finger_wear_rate", "gripper_maintenance_reset"]
     },
-    "pulse": ["PLC01.packml_command", "PLC01.klt_exchange_command"]
+    "pulse": ["PLC01.packml_command", "PLC01.klt_exchange_command", "PLC01.unit_mode_command",
+              "RB01.gripper_maintenance_reset"]
+  },
+  "maintenance": {
+    "_doc": "Condition monitoring results of the maintenance service (ADR-0029), published like telemetry ({\"v\", \"ts\"}, retained) and recorded by the historian in table 'maintenance' (tags session, component). {component} = monitored component tag in lower case (gr01). alarm_topic carries the alarm word of the advisory maintenance alarms (codes of infra/alarms.json with source MAINTENANCE), read by the alarms service like PLC01.active_alarms.",
+    "topic": "{root}/maintenance/{component}/{indicator}",
+    "alarm_topic": "{root}/maintenance/active_alarms",
+    "retain": true,
+    "qos": 1,
+    "indicators": {
+      "health_index": "Float64", "wear": "Float64", "rul_cycles": "Float64", "rul_cycles_low": "Float64",
+      "rul_hours": "Float64", "rul_hours_low": "Float64", "confidence": "Float64", "throughput": "Float64",
+      "health_state": "String", "order": "String"
+    }
+  },
+  "opcua": {
+    "_doc": "OT path of controllers with an OPC UA server (ADR-0024). enabled: the Godot UNS gateway leaves the telemetry, events and commands of these devices to the OPC UA path (simulated CPU -> backplane -> communication module plc-comm -> OPC UA -> edge connector -> UNS); false (or --vf-backplane=off): Godot publishes them directly as before. packml_tags/packml_commands map FMI variables onto the OPC 30050 PackML structure of the address space; all other FMI variables appear under Program (docs/interfaces/uns.md).",
+    "enabled": true,
+    "servers": {
+      "PLC01": {
+        "endpoint": "opc.tcp://localhost:4840/vf/plc01",
+        "namespace": "urn:virtual-factory:plant01:line01:plc01",
+        "backplane": "tcp://localhost:4841",
+        "publishing_interval_ms": 100,
+        "packml_tags": {
+          "Status.StateCurrent": "packml_state", "Status.UnitModeCurrent": "unit_mode",
+          "Status.MachSpeed": "belt_speed", "Status.CurMachSpeed": "cv_speed_setpoint",
+          "Admin.ProdProcessedCount": "parts_total", "Admin.ProdGoodCount": "parts_ok",
+          "Admin.ProdDefectiveCount": "parts_nok", "Admin.AlarmCode": "alarm_code",
+          "Admin.AlarmText": "alarm_text", "Admin.AlarmCount": "alarm_count"
+        },
+        "packml_commands": {"BaseStateMachine": "packml_command", "SetUnitMode": "unit_mode_command"}
+      }
+    }
   }
 }

@@ -20,11 +20,15 @@ from . import device_models as dm
 from . import time_series as ts
 from .fmi import read_model_description
 from .interfaces import aid_values, aimc_values
+from .interfaces_opcua import device_models, field_types
 from .location import layout_positions, location_values
 from .models3d import models3d_values
 
 REPO = Path(os.environ.get("VF_REPO", Path(__file__).resolve().parents[4]))
 DATA_ROOT = REPO / "aas" / "data"
+# data sets with their own upload target: the plant (main AAS environment) and the supplier environment
+# (ADR-0028); `$include` paths are relative to DATA_ROOT in both
+DATA_SETS = {"main": DATA_ROOT, "supplier": DATA_ROOT / "supplier"}
 
 
 @dataclass
@@ -97,9 +101,10 @@ def load_assets(data_dir: Path, only: set[str] | None = None, blueprints: bool =
 
 class BuildContext:
     """Template library, layout positions and UNS registry, loaded once; builds environments from asset specs
-    (used by `build` and at runtime by the MES for workpiece instance AAS)."""
+    (used by `build` and at runtime by the MES for workpiece instance AAS and by the supplier portal for batch
+    AAS). `data_dir`: data set whose asset names are known to Entity elements (default: the plant's)."""
 
-    def __init__(self, repo: Path = REPO):
+    def __init__(self, repo: Path = REPO, data_dir: Path | None = None):
         self.repo = repo
         self.library = TemplateLibrary(repo / "aas" / "templates")
         layout = json.loads((repo / "godot" / "config" / "layouts" / "line1.layout.json").read_text())
@@ -109,7 +114,9 @@ class BuildContext:
         capabilities = yaml.safe_load((repo / "aas" / "data" / "capabilities.yaml").read_text())
         self.library.concept_descriptions.update(capability_cds(capabilities))
         # names of all static assets, for BoM nodes referring to assets outside a (runtime) build
-        self.names = asset_names(load_assets(repo / "aas" / "data"))
+        assets = load_assets(repo / "aas" / "data")
+        self.names = asset_names(load_assets(data_dir) if data_dir else assets)
+        self.field_types = field_types(device_models(repo, assets))  # event fields of the OPC UA interface
 
     def build(self, specs: list[dict], validate: bool = True) -> BuildResult:
         builder = EnvironmentBuilder(self.library, self.names)
@@ -123,8 +130,10 @@ class BuildContext:
         return BuildResult(env, builder)
 
 
-def build(repo: Path = REPO, only: set[str] | None = None, blueprints: bool = False) -> BuildResult:
-    return BuildContext(repo).build(load_assets(repo / "aas" / "data", only, blueprints))
+def build(repo: Path = REPO, only: set[str] | None = None, blueprints: bool = False,
+          data_dir: Path | None = None) -> BuildResult:
+    data_dir = data_dir or repo / "aas" / "data"
+    return BuildContext(repo, data_dir).build(load_assets(data_dir, only, blueprints))
 
 
 def capability_cds(dictionary: dict) -> dict[str, dict]:
@@ -168,8 +177,8 @@ def _apply_generators(spec: dict, ctx: BuildContext, positions: dict) -> None:
         library.concept_descriptions.update({cd["id"]: cd for cd in dm.process_value_cds(md)})
         mappings, energy_vars = dm.aimc_mappings(device, md)
         instance = device.get("instance", tag)
-        generated["AssetInterfacesDescription-1.1"] = aid_values(tag, instance, md, uns,
-                                                                 f"{tag} shop-floor data (UNS)")
+        generated["AssetInterfacesDescription-1.1"] = aid_values(
+            tag, instance, md, uns, f"{tag} shop-floor data (UNS)", ctx.field_types)
         generated["AssetInterfacesMappingConfiguration-2.0"] = aimc_values(tag, mappings)
         generated["OperationalData-1.0"] = dm.operational_data_values(md, device, energy_vars)
         generated["SimulationModels-1.0"] = dm.simulation_model_values(tag, md, model_path)

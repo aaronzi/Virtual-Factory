@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ERP simulator</title>
+<style>
+  :root { --bg: #f6f7f9; --fg: #1d2330; --muted: #5d6675; --line: #d9dde4; --accent: #2457c5; --card: #fff; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #15181e; --fg: #e5e8ee; --muted: #9aa3b2; --line: #2c323d; --accent: #7aa2ff; --card: #1c2028; }
+  }
+  body { margin: 0; padding: 16px; font: 14px/1.45 system-ui, sans-serif; background: var(--bg); color: var(--fg); }
+  h1 { font-size: 20px; margin: 0 0 4px; } h2 { font-size: 16px; margin: 20px 0 8px; }
+  p.sub { color: var(--muted); margin: 0 0 16px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 12px;
+            margin-bottom: 16px; overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  button, input { font: inherit; padding: 4px 8px; }
+  button { border: 1px solid var(--accent); background: transparent; color: var(--accent); border-radius: 4px;
+           cursor: pointer; }
+  .state { font-weight: 600; } .Completed { color: #2e8b57; } .Aborted { color: #c0392b; }
+  .Released, .InProcess { color: var(--accent); }
+  form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  #msg { color: var(--muted); min-height: 1.4em; }
+</style>
+</head>
+<body>
+<h1>ERP simulator – LINE01</h1>
+<p class="sub">Production orders released to the MES (BPMN ProductionOrder), confirmations and component batches.
+  REST API: <code>/api/orders</code>, <code>/api/batches</code>, <code>/api/settings</code>.</p>
+<section>
+  <form id="create">
+    <label>Quantity <input id="qty" type="number" min="1" value="24" style="width:6em"></label>
+    <label>Due date <input id="due" type="date"></label>
+    <button type="submit">Create order</button>
+    <button type="button" id="createRelease">Create and release</button>
+    <label><input id="auto" type="checkbox"> Auto release (standing order)</label>
+  </form>
+  <div id="msg"></div>
+</section>
+<h2>Production orders</h2>
+<section><table id="orders"><thead><tr><th>Order</th><th>Kind</th><th>Material</th><th>Qty</th><th>Due</th>
+  <th>State</th><th>Good</th><th>Scrap</th><th>Released</th><th>Completed</th><th></th></tr></thead><tbody></tbody>
+</table></section>
+<h2>Component batches</h2>
+<section><table id="batches"><thead><tr><th>Material</th><th>Lot</th><th>Supplier</th><th>Received</th>
+  <th>Consumed</th><th>Source</th><th>Supplier batch</th></tr></thead><tbody></tbody></table></section>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (v) => String(v ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+async function call(method, url, body) {
+  const r = await fetch(url, {method, headers: {"Content-Type": "application/json"},
+                              body: body ? JSON.stringify(body) : undefined});
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || r.status);
+  return data;
+}
+function say(text) { $("#msg").textContent = text; }
+function supplierBatch(s) {
+  if (!s) return "";
+  const cert = s.MaterialCertificate ? ` · <a href="${esc(s.MaterialCertificate.Href)}">3.1 certificate</a>` : "";
+  return `<a href="${esc(s.Shell)}" title="${esc(s.GlobalAssetId)}">${esc(s.DespatchAdviceNumber)}</a>`
+    + ` · ${esc(s.PcfCO2eqPerPiece)} kg CO2e/pc${cert}`;
+}
+async function refresh() {
+  try {
+    const [orders, batches, settings] = await Promise.all([call("GET", "/api/orders"), call("GET", "/api/batches"),
+                                                           call("GET", "/api/settings")]);
+    $("#auto").checked = settings.autoRelease;
+    $("#orders tbody").innerHTML = orders.slice().reverse().map((o) => {
+      const req = o.SegmentRequirement.MaterialRequirement[0];
+      const btn = o.RequestState === "Created" ? `<button data-release="${esc(o.ID)}">Release</button>` : "";
+      return `<tr><td>${esc(o.ID)}</td><td>${esc(o.OrderKind)}</td><td>${esc(req.MaterialDefinitionID)}</td>
+        <td class="num">${esc(req.Quantity.QuantityString)}</td><td>${esc(o.EndTime)}</td>
+        <td class="state ${esc(o.RequestState)}">${esc(o.RequestState)}</td><td class="num">${o.Progress.Good}</td>
+        <td class="num">${o.Progress.Scrap}</td><td>${esc(o.Released)}</td><td>${esc(o.Completed)}</td><td>${btn}</td></tr>`;
+    }).join("");
+    $("#batches tbody").innerHTML = batches.map((b) => `<tr><td>${esc(b.MaterialDefinitionID)}</td>
+      <td>${esc(b.MaterialLotID)}</td><td>${esc(b.Supplier)}</td><td class="num">${b.Received}</td>
+      <td class="num">${b.Consumed}</td><td>${esc(b.Source)}</td><td>${supplierBatch(b.SupplierBatch)}</td></tr>`).join("");
+  } catch (e) { say("ERP not reachable: " + e.message); }
+}
+async function create(release) {
+  try {
+    const o = await call("POST", "/api/orders", {quantity: Number($("#qty").value), dueDate: $("#due").value || null,
+                                                 release});
+    say(`Order ${o.ID} ${o.RequestState.toLowerCase()}`);
+  } catch (e) { say("Failed: " + e.message); }
+  refresh();
+}
+$("#create").addEventListener("submit", (e) => { e.preventDefault(); create(false); });
+$("#createRelease").addEventListener("click", () => create(true));
+$("#auto").addEventListener("change", (e) => call("PUT", "/api/settings", {autoRelease: e.target.checked}).then(refresh));
+document.addEventListener("click", async (e) => {
+  const id = e.target.dataset && e.target.dataset.release;
+  if (!id) return;
+  try { await call("POST", `/api/orders/${id}/release`); say(`Order ${id} released`); }
+  catch (err) { say("Release failed: " + err.message); }
+  refresh();
+});
+refresh();
+setInterval(refresh, 3000);
+</script>
+</body>
+</html>

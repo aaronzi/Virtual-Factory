@@ -1,0 +1,37 @@
+# Product type AAS of the supplier (ADR-0028): seal kit as published by Dichtungstechnik Süd in the supplier
+# environment. VF Pneumatics' purchased-part view: CMP_SEAL_KIT (customer part 5032-1006).
+tag: DTS_SK_PC32
+idBase: https://virtual-factory.example/dichtungstechnik-sued/ids
+idShort: DTS_SK_PC32
+kind: Type
+assetType: https://virtual-factory.example/ids/assettype/CylinderComponent
+globalAssetId: https://virtual-factory.example/01/04099992010018
+displayName: {en: "Seal kit DTS-SK-PC32 (product type)", de: "Dichtungssatz DTS-SK-PC32 (Produkttyp)"}
+description:
+  en: "Seal kit for ISO 15552 cylinders Ø32 (8 parts: TPU piston and rod seals, wiper, NBR cushioning seals and O-rings), product type of Dichtungstechnik Süd GmbH."
+  de: "Dichtungssatz für ISO-15552-Zylinder Ø32 (8 Teile: TPU-Kolben- und Stangendichtungen, Abstreifer, NBR-Dämpfungsdichtungen und O-Ringe), Produkttyp der Dichtungstechnik Süd GmbH."
+specificAssetIds: {manufacturerPartId: DTS-SK-PC32, gtin: "04099992010018"}
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: Dichtungstechnik Süd GmbH, de: Dichtungstechnik Süd GmbH}
+      ManufacturerProductDesignation: {en: "Seal kit for ISO 15552 cylinder Ø32, TPU/NBR, 8 parts", de: "Dichtungssatz für ISO-15552-Zylinder Ø32, TPU/NBR, 8-teilig"}
+      ManufacturerProductRoot: {en: Seal kits, de: Dichtungssätze}
+      ManufacturerProductType: DTS-SK-PC32
+      OrderCodeOfManufacturer: DTS-SK-PC32
+      ProductArticleNumberOfManufacturer: "SK-203217"
+      URIOfTheProduct: https://virtual-factory.example/dichtungstechnik-sued/products/DTS-SK-PC32
+      CountryOfOrigin: DE
+      AddressInformation: {$include: common/product_address_supplier_dichtungstechnik.yaml}
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - {_description: {en: "Declared average PCF of the product type (reference year 2025). Each delivered batch has its own PCF in its batch AAS.", de: "Deklarierter durchschnittlicher PCF des Produkttyps (Bezugsjahr 2025). Jede gelieferte Charge hat einen eigenen PCF in ihrer Chargen-VWS."}, PcfCalculationMethods: [{value: "ISO 14067"}], PcfCO2eq: 0.06, ReferenceImpactUnitForCalculation: piece, QuantityOfMeasureForCalculation: 1, LifeCyclePhases: [{value: "A1-A3"}], PublicationDate: "2025-05-15T00:00:00+00:00"}
+  - template: ProductMaterialComposition-1.0
+    values:
+      TotalMass: 0.011
+      Materials:
+        - {MaterialLocation: {ComponentName: "Piston seals, rod seal, wiper"}, MaterialIdentifier: "TPU (ISO 18064), 93 Shore A", MaterialName: "Thermoplastic polyurethane", MaterialMass: 0.007, IsCriticalRawMaterial: false, RecyclabilityClass: EnergyRecovery}
+        - {MaterialLocation: {ComponentName: "Cushioning seals, O-rings"}, MaterialIdentifier: "NBR (ISO 1629), 70 Shore A", MaterialName: "Acrylonitrile butadiene rubber", MaterialMass: 0.004, IsCriticalRawMaterial: false, RecyclabilityClass: EnergyRecovery}
+      HazardousSubstances: []
+      DeclarationDate: "2025-05-15"

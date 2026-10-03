@@ -1,5 +1,5 @@
 """Configuration life cycle: AAS unreachable at start (no uns.json fallback), reload on a BaSyx change event
-of a configuration submodel (here: a changed AID action href), unrelated events ignored."""
+of a configuration submodel (here: a changed OPC UA href of an AID action), unrelated events ignored."""
 
 from __future__ import annotations
 
@@ -53,18 +53,18 @@ def test_change_event_reloads_changed_href():
     gateway = LineGateway(mqtt)
     watcher = ConfigWatcher(InMemoryAas(env), LINE_CONTROL, gateway, EVENTS, debounce_s=0.0)
     assert watcher.reload()
-    assert gateway.config.endpoints["PackMLCommand"].form.topic.endswith("/cmd/packml_command")
+    assert gateway.config.endpoints["PackMLCommand"].form.topic.endswith(";s=PLC01.Commands.packml_command")
+    assert all("/rb01/cmd-resp/" in t for t in mqtt.subscribed), \
+        "OPC UA endpoints: nothing to subscribe on the broker (only the robot's MQTT acknowledgement)"
 
     watcher.on_message(_event(ids.submodel_id("QS01", "EnergyConsumption", "1")))
     assert watcher.due > time.monotonic() + 60  # unrelated submodel: no reload
 
     ref = {"keys": [{"type": "Submodel", "value": AID}] + [
         {"type": "SubmodelElementCollection", "value": v}
-        for v in ("InterfaceMQTT", "InteractionMetadata", "actions", "packml_command", "ackForms", "href")]}
-    Resolver(InMemoryAas(env)).element(ref)["value"] = "/vf/test/plc01/cmd-resp/packml_command"
+        for v in ("InterfaceOPCUA", "InteractionMetadata", "actions", "packml_command", "forms", "href")]}
+    Resolver(InMemoryAas(env)).element(ref)["value"] = "?id=nsu=urn:test;s=Moved.packml_command"
     watcher.on_message(_event(AID))
     assert watcher.due <= time.monotonic()
     assert watcher.reload() and watcher.reloads == 2
-    assert gateway.config.endpoints["PackMLCommand"].ack.topic == "vf/test/plc01/cmd-resp/packml_command"
-    assert "vf/test/plc01/cmd-resp/packml_command" in mqtt.subscribed
-    assert not any(t.endswith("line01/plc01/cmd-resp/packml_command") for t in mqtt.subscribed)
+    assert gateway.config.endpoints["PackMLCommand"].form.topic == "?id=nsu=urn:test;s=Moved.packml_command"

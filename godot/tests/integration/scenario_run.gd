@@ -17,6 +17,7 @@ const EXPECT := {
 	"conveyor_motor_fault": {"min_nok": 0, "alarms": [101], "states": [ABORTED], "recovers": true,
 		"min_inspected": 12},
 	"robot_protective_stop": {"min_nok": 0, "alarms": [201], "states": [HELD], "recovers": true},
+	"gripper_wear": {"min_nok": 0, "alarms": [], "states": [], "recovers": true, "min_finger_wear": 4e-4},
 }
 
 var _alarms := {}
@@ -62,7 +63,8 @@ func _check(f: Node, id: String, seconds: float) -> int:
 		"alarm_count": f.read("PLC01.alarm_count"), "final_state": f.read("PLC01.packml_state"),
 		"max_delta_e": snappedf(_max_delta_e, 0.1), "lb02_switches": f.read("LB02.switch_count"),
 		"stack_light": [f.read("SL01.green_on"), f.read("SL01.amber_on"), f.read("SL01.red_on")],
-		"alarm_history": _history,
+		"alarm_history": _history, "finger_wear_mm": snappedf(f.read("RB01.finger_wear") * 1000.0, 0.001),
+		"grip_force": snappedf(f.read("RB01.grip_force"), 0.1), "grasp_retries": f.read("RB01.grasp_retries"),
 	}
 	print("SCENARIO RUN REPORT ", JSON.stringify(report))
 	var problems := _problems(runner, id, report)
@@ -88,6 +90,8 @@ func _problems(runner: ScenarioRunner, id: String, report: Dictionary) -> Array[
 	for state: int in expect.states:
 		if not _states.has(state):
 			problems.append("PackML state %d not reached" % state)
+	if report.finger_wear_mm < expect.get("min_finger_wear", 0.0) * 1000.0:
+		problems.append("finger wear did not reach %.2f mm" % (expect.min_finger_wear * 1000.0))
 	if expect.recovers and report.final_state != EXECUTE:
 		problems.append("line did not return to EXECUTE")
 	return problems

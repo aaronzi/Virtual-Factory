@@ -122,3 +122,21 @@ def test_environment_builder_resolves_element_references_and_validates():
     assert [k["type"] for k in link["value"]["keys"]] == ["Submodel", "SubmodelElementCollection", "Property"]
     assert env["assetAdministrationShells"][0]["derivedFrom"]["keys"][0]["value"] == ids.aas_id("T0")
     to_object_store(env)  # strict metamodel validation
+
+
+def test_assets_of_another_organisation_get_ids_in_its_namespace():
+    base = "https://virtual-factory.example/druckguss-pfalz/ids"
+    builder = EnvironmentBuilder(_Library())
+    for tag, derived in (("TYPE", None), ("LOT1", "TYPE")):
+        builder.add_asset({"tag": tag, "idShort": tag, "idBase": base, "derivedFrom": derived, "submodels": [
+            {"template": "Demo-1.0", "values": {"Name": "${aas:TYPE}", "Title": "x",
+                                                "Link": {"ref": "aas:TYPE"}}}]})
+    env = builder.build()
+    lot = env["assetAdministrationShells"][1]
+    assert lot["id"] == f"{base}/aas/LOT1"
+    assert lot["assetInformation"]["globalAssetId"] == f"{base}/asset/LOT1"
+    assert lot["derivedFrom"]["keys"][0]["value"] == f"{base}/aas/TYPE"
+    sm = env["submodels"][1]
+    assert sm["id"] == f"{base}/sm/LOT1/Demo/1"
+    assert {e["idShort"]: e.get("value") for e in sm["submodelElements"]}["Name"] == f"{base}/aas/TYPE"
+    to_object_store(env)

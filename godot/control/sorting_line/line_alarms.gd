@@ -25,6 +25,7 @@ const C := PackMLStateMachine.Command
 var code := 0
 var text := ""
 var count := 0  ## alarms raised since start (rising edges)
+var active_list := ""  ## all active alarm codes in priority order, comma-separated (alarm word for ISA-18.2)
 var _active := {}
 var _auto_held := false
 
@@ -33,6 +34,7 @@ var _auto_held := false
 func update(conditions: Dictionary, packml: PackMLStateMachine) -> void:
 	code = 0
 	text = ""
+	var active := PackedStringArray()
 	for c: int in ALARMS:
 		var on: bool = conditions.get(c, false)
 		if on and not _active.get(c, false):
@@ -40,9 +42,12 @@ func update(conditions: Dictionary, packml: PackMLStateMachine) -> void:
 			if ALARMS[c][1] == Reaction.HOLD:
 				packml.command(C.HOLD)
 		_active[c] = on
+		if on:
+			active.append(str(c))
 		if on and code == 0:
 			code = c
 			text = ALARMS[c][0]
+	active_list = ",".join(active)
 	_react(packml)
 
 

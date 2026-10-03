@@ -4,11 +4,8 @@ which state and which state it finally leads to. Numbers match the controller
 
 from __future__ import annotations
 
-STATES = ["UNDEFINED", "CLEARING", "STOPPED", "STARTING", "IDLE", "SUSPENDED", "EXECUTE", "STOPPING",
-          "ABORTING", "ABORTED", "HOLDING", "HELD", "UNHOLDING", "SUSPENDING", "UNSUSPENDING", "RESETTING",
-          "COMPLETING", "COMPLETE"]
-COMMANDS = {"Reset": 1, "Start": 2, "Stop": 3, "Hold": 4, "Unhold": 5, "Suspend": 6, "Unsuspend": 7,
-            "Abort": 8, "Clear": 9}
+from vf_common.packml import COMMANDS, STATES, state_name  # noqa: F401 - re-exported
+
 _STOPPABLE = {"IDLE", "STARTING", "EXECUTE", "HOLDING", "HELD", "UNHOLDING", "SUSPENDING", "SUSPENDED",
               "UNSUSPENDING", "RESETTING", "COMPLETING", "COMPLETE"}
 ALLOWED = {
@@ -20,10 +17,6 @@ ALLOWED = {
 # Suspend/Unsuspend may also be issued by the controller itself
 TARGET = {"Reset": "IDLE", "Start": "EXECUTE", "Stop": "STOPPED", "Hold": "HELD", "Unhold": "EXECUTE",
           "Suspend": "SUSPENDED", "Unsuspend": "EXECUTE", "Abort": "ABORTED", "Clear": "STOPPED"}
-
-
-def state_name(number: int | None) -> str:
-    return STATES[number] if number is not None and 0 <= number < len(STATES) else "UNKNOWN"
 
 
 def check(command: str, state: str) -> str | None:

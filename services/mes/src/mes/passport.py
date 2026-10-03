@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from functools import lru_cache
+from urllib.parse import quote
 
 from provisioner.build import DATA_ROOT, load_yaml
 from vf_common import ids
@@ -59,6 +60,9 @@ def apply_lots(spec: dict, lots: dict[str, str]) -> None:
     for node in bom_nodes(spec):
         batch = node["statements"]["+BatchId"]
         old, batch["value"] = batch["value"], lots[node["_idShort"]]
+        if node.get("globalAssetId"):  # purchased batch: Digital Link .../10/<lot> of the supplier batch AAS
+            node["globalAssetId"] = node["globalAssetId"].replace(f"/10/{quote(old, safe='')}",
+                                                                  f"/10/{quote(batch['value'], safe='')}")
         if isinstance(node.get("_displayName"), dict):  # e.g. "Seal kit, batch DTS-2608-1173"
             names = node["_displayName"]
             node["_displayName"] = {lang: text.replace(old, batch["value"]) for lang, text in names.items()}

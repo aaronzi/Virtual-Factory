@@ -7,10 +7,12 @@ displayName: {en: "Line controller PLC01 (LINE01)", de: "Liniensteuerung PLC01 (
 description:
   en: >-
     LC-10 in the control cabinet of LINE01 running the SortingLine PLC program. Coordinates AC01, CV01, LB01/LB02, QS01,
-    RB01 and the KLT stations according to the PackML state model; state and command are exposed via MQTT (UNS).
+    RB01 and the KLT stations according to the PackML state model; its communication module exposes state, unit mode,
+    counters and commands on an OPC UA server (PackML structure after OPC 30050), published to the UNS by the edge.
   de: >-
     LC-10 im Schaltschrank von LINE01 mit dem SPS-Programm SortingLine. Koordiniert AC01, CV01, LB01/LB02, QS01, RB01
-    und die KLT-Stationen nach dem PackML-Zustandsmodell; Zustand und Befehl sind per MQTT (UNS) zugänglich.
+    und die KLT-Stationen nach dem PackML-Zustandsmodell; das Kommunikationsmodul stellt Zustand, Betriebsart, Zähler und
+    Befehle auf einem OPC-UA-Server bereit (PackML-Struktur nach OPC 30050), der Edge-Konnektor veröffentlicht sie im UNS.
 thumbnail: repo:docs/screenshots/assets/props.png
 specificAssetIds: {serialNumber: LC10-2508-00042, manufacturerPartId: LC-10-24DC-M}
 location: [-1.9, 0.0, -1.3]
@@ -77,21 +79,33 @@ submodels:
       Endpoints:
         Endpoint:
           - _idShort: PackMLState
-            _description: {en: "Current PackML state (MQTT/UNS property, retained)", de: "Aktueller PackML-Zustand (MQTT/UNS-Property, retained)"}
+            _description: {en: "Current PackML state (OPC UA variable Status.StateCurrent, monitored item)", de: "Aktueller PackML-Zustand (OPC-UA-Variable Status.StateCurrent, Monitored Item)"}
             InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.PackML"}
-            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.properties.packml_state"}
+            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceOPCUA.InteractionMetadata.properties.packml_state"}
           - _idShort: PackMLCommand
-            _description: {en: "PackML command input (MQTT/UNS action, QoS 1, acknowledged)", de: "PackML-Befehlseingang (MQTT/UNS-Action, QoS 1, quittiert)"}
+            _description: {en: "PackML command input (OPC UA method Commands.packml_command, result = status code)", de: "PackML-Befehlseingang (OPC-UA-Methode Commands.packml_command, Ergebnis = Statuscode)"}
             InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.PackML"}
-            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.actions.packml_command"}
+            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceOPCUA.InteractionMetadata.actions.packml_command"}
+          - _idShort: UnitMode
+            _description: {en: "Current PackML unit mode (OPC UA variable Status.UnitModeCurrent; 1 Production, 2 Maintenance, 3 Manual)", de: "Aktuelle PackML-Betriebsart (OPC-UA-Variable Status.UnitModeCurrent; 1 Produktion, 2 Wartung, 3 Hand)"}
+            InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.PackML"}
+            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceOPCUA.InteractionMetadata.properties.unit_mode"}
+          - _idShort: UnitModeCommand
+            _description: {en: "Unit mode request (OPC UA method Commands.unit_mode_command; accepted in STOPPED, IDLE, ABORTED)", de: "Betriebsartanforderung (OPC-UA-Methode Commands.unit_mode_command; angenommen in STOPPED, IDLE, ABORTED)"}
+            InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.PackML"}
+            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceOPCUA.InteractionMetadata.actions.unit_mode_command"}
           - _idShort: ContainerExchange
-            _description: {en: "KLT exchange request (MQTT/UNS action, QoS 1, acknowledged)", de: "KLT-Wechselanforderung (MQTT/UNS-Action, QoS 1, quittiert)"}
+            _description: {en: "KLT exchange request (OPC UA method Commands.klt_exchange_command)", de: "KLT-Wechselanforderung (OPC-UA-Methode Commands.klt_exchange_command)"}
             InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.ContainerHandling"}
-            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.actions.klt_exchange_command"}
+            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceOPCUA.InteractionMetadata.actions.klt_exchange_command"}
           - _idShort: AutoExchange
-            _description: {en: "Automatic KLT exchange on/off (MQTT/UNS action, QoS 1, acknowledged)", de: "Automatischer KLT-Wechsel ein/aus (MQTT/UNS-Action, QoS 1, quittiert)"}
+            _description: {en: "Automatic KLT exchange on/off (OPC UA method Commands.auto_exchange)", de: "Automatischer KLT-Wechsel ein/aus (OPC-UA-Methode Commands.auto_exchange)"}
             InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.ContainerHandling"}
-            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.actions.auto_exchange"}
+            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceOPCUA.InteractionMetadata.actions.auto_exchange"}
+          - _idShort: GripperMaintenanceReset
+            _description: {en: "Finger change of gripper GR01 done: resets its wear diagnostics (action gripper_maintenance_reset of robot RB01, MQTT/UNS); used by the skill Maintain", de: "Fingerwechsel des Greifers GR01 erledigt: setzt seine Verschleißdiagnose zurück (Aktion gripper_maintenance_reset des Roboters RB01, MQTT/UNS); verwendet vom Skill Maintain"}
+            InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.Maintenance"}
+            EndpointReference: {ref: "sm:RB01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.actions.gripper_maintenance_reset"}
       Skills:
         Skill:
           - _idShort: Produce
@@ -142,6 +156,29 @@ submodels:
               $include: common/control_uses_endpoints.yaml
               value:
                 - {modelType: ReferenceElement, value: {ref: "sm:PLC01/ControlComponentInstance#Endpoints.ContainerExchange"}}
+          - _idShort: Maintain
+            _description: {en: "Put LINE01 into maintenance: stop the line if it runs and switch to the unit mode Maintenance (no infeed, no auto start); optional parameters confirm maintenance work on line components after it is done", de: "LINE01 in Wartung nehmen: Linie anhalten, falls sie läuft, und in die Betriebsart Wartung schalten (keine Zuführung, kein Autostart); optionale Parameter bestätigen danach ausgeführte Wartungsarbeiten an Linienkomponenten"}
+            Disabled: false
+            Modes:
+              Mode: [{_idShort: Maintenance, value: Maintenance}]
+            Parameters:
+              Parameter:
+                - _idShort: gripper_maintenance_reset
+                  _description: {en: "true = the fingers of gripper GR01 were replaced: reset its wear diagnostics (endpoint GripperMaintenanceReset)", de: "true = die Finger des Greifers GR01 wurden getauscht: Verschleißdiagnose zurücksetzen (Endpunkt GripperMaintenanceReset)"}
+                  Direction: In
+                  Type: xs:boolean
+                  Values:
+                    "+Default": {valueType: xs:boolean, value: "false"}
+            Errors:
+              ErrorReference: [{ref: "sm:LC10_TYPE/ControlComponentType#Errors.RobotFault"}]
+            "+UsesEndpoints":
+              $include: common/control_uses_endpoints.yaml
+              value:
+                - {modelType: ReferenceElement, value: {ref: "sm:PLC01/ControlComponentInstance#Endpoints.PackMLCommand"}}
+                - {modelType: ReferenceElement, value: {ref: "sm:PLC01/ControlComponentInstance#Endpoints.PackMLState"}}
+                - {modelType: ReferenceElement, value: {ref: "sm:PLC01/ControlComponentInstance#Endpoints.UnitModeCommand"}}
+                - {modelType: ReferenceElement, value: {ref: "sm:PLC01/ControlComponentInstance#Endpoints.UnitMode"}}
+                - {modelType: ReferenceElement, value: {ref: "sm:PLC01/ControlComponentInstance#Endpoints.GripperMaintenanceReset"}}
 
   - template: CapabilityDescription-1.0
     values:

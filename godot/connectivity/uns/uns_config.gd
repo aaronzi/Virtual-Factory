@@ -2,12 +2,15 @@ class_name UnsConfig
 extends RefCounted
 ## Typed view of the UNS registry (godot/config/uns.json): topic templates, payload keys, QoS/retain,
 ## and timestamps on the simulation time base (session start wall clock + simulation time).
+## `opcua_devices`: controllers on the OPC UA path (`opcua.servers` while `opcua.enabled`, ADR-0024); the
+## UNS gateway leaves their telemetry, events and commands to the backplane link (PlcBackplane).
 
 var data: Dictionary
 var root := ""
 var value_key := "v"
 var timestamp_key := "ts"
 var start_unix := 0.0
+var opcua_devices: Array = []
 
 
 func _init(p_data: Dictionary, p_start_unix := -1.0) -> void:
@@ -17,6 +20,14 @@ func _init(p_data: Dictionary, p_start_unix := -1.0) -> void:
 	value_key = payload.get("value_key", "v")
 	timestamp_key = payload.get("timestamp_key", "ts")
 	start_unix = p_start_unix if p_start_unix >= 0.0 else Time.get_unix_time_from_system()
+	var opcua: Dictionary = data.get("opcua", {})
+	if opcua.get("enabled", false):
+		opcua_devices = (opcua.get("servers", {}) as Dictionary).keys()
+
+
+## True if `device` belongs to the selected path: OPC UA (`opcua`) or direct MQTT publishing.
+func on_path(device: String, opcua: bool) -> bool:
+	return (device in opcua_devices) == opcua
 
 
 ## Section of the registry ("session", "telemetry", "events", "commands").

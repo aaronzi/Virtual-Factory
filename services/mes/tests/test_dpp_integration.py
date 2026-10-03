@@ -1,6 +1,6 @@
 """Item-level passports through the BaSyx Go DPP API (ADR-0021) against the running stack
 (`uv run pytest -m integration`). Needs produced parts: the factory (Godot) must have packed at least one good
-part in the current session, otherwise the item tests are skipped."""
+part, otherwise the item tests are skipped; the retention test needs a shipped part of an earlier session."""
 
 from __future__ import annotations
 
@@ -11,10 +11,13 @@ import pytest
 
 from mes.passport import CONTENT
 from vf_common.basyx import BasyxClient
+from vf_common.mqtt import MqttClient
+from vf_common.uns import Uns
 
 pytestmark = pytest.mark.integration
 AAS_URL, DPP_URL = "http://localhost:8091", "http://localhost:8093"
 TYPE_PRODUCT_ID = "https://virtual-factory.example/01/04099999032808"
+DPP_METADATA = "https://admin-shell.io/idta/cds/dppMetadata/1"
 
 
 def _get(path: str, **params) -> httpx.Response:
@@ -89,3 +92,37 @@ def test_model_level_passport_of_the_type():
     assert doc["granularity"] == "Model" and doc["digitalProductPassportId"].endswith("/aas/PC3280_TYPE")
     by_id = _get(f"/v1/dpps/{_enc(doc['digitalProductPassportId'])}")
     assert by_id.status_code == 200 and CONTENT["ContactInformations"] in by_id.json()
+
+
+
+def test_shipped_passports_of_earlier_sessions_are_still_served():
+    """Retention (ADR-0025): passports of shipped parts survive new sessions; their last update lies before
+    the start of the current session (retained session birth on the UNS)."""
+    started = _session_start()
+    try:
+        metadata = BasyxClient(AAS_URL).list_submodels(semantic_id=DPP_METADATA, semantic_key_type="Submodel")
+    except httpx.HTTPError:
+        pytest.skip("compose stack not running")
+    earlier = []
+    for sm in metadata:
+        values = {e["idShort"]: e.get("value") for e in sm.get("submodelElements", [])}
+        shipped = values.get("dppStatus") == "Active"
+        if "/sm/WP_" in sm["id"] and shipped and values.get("lastUpdate", "") < started:
+            earlier.append(sm["id"].split("/")[5])
+    if not earlier:
+        pytest.skip("no shipped part from an earlier session (run two factory sessions)")
+    response = _get(f"/v1/dpps/{_enc('https://virtual-factory.example/ids/aas/' + earlier[-1])}")
+    assert response.status_code == 200 and response.json()["dppStatus"] == "Active"
+
+
+def _session_start() -> str:
+    uns, client = Uns.load(), MqttClient("vf-test-dpp", "localhost", 1883)
+    client.subscribe(uns.session_topic, qos=1)
+    if not client.start(5):
+        pytest.skip("MQTT broker not reachable")
+    birth = client.get(timeout=3)
+    client.stop()
+    started = (birth.json() or {}).get("started") if birth else None
+    if not started:
+        pytest.skip("no factory session yet")
+    return started

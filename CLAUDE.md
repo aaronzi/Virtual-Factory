@@ -3,9 +3,17 @@
 Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` (arc42) + `docs/adr/`.
 
 ## Commands
-- Backend: `docker compose -f infra/docker-compose.yml up -d [--build]` (project `vf`; ports 8091 AAS env, 3001 UI,
-  1883/9001 MQTT, 8092 Operaton BPMN (demo/demo), 8095 ops gateway, 8093 BaSyx DPP API, 8181 InfluxDB 3, 3002 Grafana (anonymous read-only; admin/editor: virtualfactory)).
-  Services: bridge, mes, ops-gateway, historian (`services/`). Grafana dashboards: infra/grafana/dashboards/*.json.
+- Backend: `docker compose -f infra/docker-compose.yml up -d [--build]` (project `vf`). Ports: 8091 AAS env,
+  3001 UI, 1883/9001 MQTT, 8092 Operaton BPMN (demo/demo), 8093 BaSyx DPP API, 8094 maintenance, 8095 ops
+  gateway, 8096 GS1 resolver, 8097 sustainability, 8098 ERP (status page), 8099 alarms, 8181 InfluxDB 3,
+  3002 Grafana (anonymous read-only; admin/editor: virtualfactory), 4840 PLC01 OPC UA
+  (`opc.tcp://localhost:4840/vf/plc01`), 4841 PLC backplane, 8190 supplier portal, 8191 supplier AAS env.
+  Services in `services/`: bridge, mes, ops-gateway, historian, resolver, sustainability, erp, alarms (+ alarms-db
+  TimescaleDB: `docker compose exec alarms-db psql -U vf_alarms alarms`), maintenance, plc-comm (PLC OPC UA server
+  fed by Godot via the backplane; `--vf-backplane=off` = direct MQTT), edge (OPC UA → UNS), supplier (portal) +
+  supplier-aas-env (second BaSyx environment; data in aas/data/supplier with `idBase` per company;
+  `uv run -m provisioner check|build|upload --data supplier`).
+  Grafana dashboards: infra/grafana/dashboards/*.json.
   Do NOT touch the separate `rebac-*` containers (other project on 8080/8082/3000).
 - GDScript tests: `tools/run_godot_tests.sh` (also compiles every script) · line run: `tools/run_line_simulation.sh [s]`
   · training scenarios: `tools/run_scenarios.sh` · Node-RED sandbox: `--profile sandbox`
@@ -38,5 +46,10 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
   `factory/`. Static UI texts are translation keys (`ui/i18n/ui.csv`, en+de). Panels re-render only when dirty.
 - UNS contract: `godot/config/uns.json` (Godot gateway, AID generation and all services read it). BPMN models in
   `bpmn/` (deployed by the MES). Line commands only via LINE01 LineControl operations (delegated to ops-gateway).
+- Clients resolve AAS via discovery + registry (ADR-0023, `vf_common.resolver`); `vf_common.ids` only mints ids.
+- Service ownership (ADR-0025): the workpiece CarbonFootprint is written only by the sustainability service
+  (`pcf-calculate`); orders are released only by the ERP (BPMN `OrderReleased`); `infra/alarms.json` mirrors
+  `line_alarms.gd` (test). Shipped passports persist across sessions; serials never repeat (retentive counter,
+  `--vf-serial-start`, `--vf-retain=off`).
 - AAS data: use IDTA templates (aas/templates/idta) where they exist; custom templates only in the YAML DSL with en/de
   texts. Quote YAML texts containing ',' or ':' in flow maps. Device interfaces (AID/AIMC) are generated - never hand-write.

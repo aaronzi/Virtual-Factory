@@ -1,0 +1,17 @@
+[project]
+name = "erp"
+version = "0.1.0"
+description = "ERP order simulator: production orders (ISA-95/B2MML-like), release to the MES via BPMN, confirmations, goods receipts and batch master data"
+requires-python = ">=3.12"
+dependencies = ["vf-common", "provisioner"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/erp"]
+
+[tool.uv.sources]
+vf-common = { workspace = true }
+provisioner = { workspace = true }

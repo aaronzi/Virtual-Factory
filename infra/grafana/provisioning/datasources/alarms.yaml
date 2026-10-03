@@ -1,0 +1,26 @@
+# Alarms & events data source (ADR-0026): TimescaleDB of the alarms service (built-in PostgreSQL data source,
+# TimescaleDB mode for time_bucket), read-only role grafana created by the alarms service (schema.sql).
+apiVersion: 1
+
+deleteDatasources:
+  - name: Alarms & events (TimescaleDB)
+    orgId: 1
+
+datasources:
+  - name: Alarms & events (TimescaleDB)
+    uid: vf-alarms
+    orgId: 1
+    type: grafana-postgresql-datasource
+    access: proxy
+    url: alarms-db:5432
+    user: grafana
+    isDefault: false
+    editable: false
+    jsonData:
+      database: alarms
+      sslmode: disable
+      postgresVersion: 1700
+      timescaledb: true
+      maxOpenConns: 5
+    secureJsonData:
+      password: grafana-local-only

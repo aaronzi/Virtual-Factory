@@ -179,26 +179,44 @@ submodels:
                     "+Unit": {value: s}
             Errors:
               ErrorReference: [{ref: "sm:LC10_TYPE/ControlComponentType#Errors.ContainerFull"}]
+          - _idShort: Maintain
+            _description: {en: "Take the line into maintenance: stop it and switch to the unit mode Maintenance; parameters confirm maintenance work on line components (e.g. a finger change of the robot gripper)", de: "Linie in Wartung nehmen: anhalten und in die Betriebsart Wartung schalten; Parameter bestätigen Wartungsarbeiten an Linienkomponenten (z. B. einen Fingerwechsel am Robotergreifer)"}
+            Disabled: false
+            Modes:
+              Mode: [{_idShort: Maintenance, value: Maintenance}]
+            Errors:
+              ErrorReference: [{ref: "sm:LC10_TYPE/ControlComponentType#Errors.RobotFault"}]
       Interfaces:
         Interface:
           - _idShort: PackML
             _description: {en: "Machine state model and commands of the line", de: "Maschinenzustandsmodell und Befehle der Linie"}
             InterfaceProfile: "ISA-TR88.00.02 PackML (state model, commands 1-9)"
             InterfaceProfileSupplement: >-
-              MQTT/UNS, see AssetInterfacesDescription of the instance. State: property packml_state (Int32; 1 Clearing,
-              2 Stopped, 3 Starting, 4 Idle, 5 Suspended, 6 Execute, 7 Stopping, 8 Aborting, 9 Aborted, 10 Holding, 11 Held,
-              12 Unholding, 13 Suspending, 14 Unsuspending, 15 Resetting, 16 Completing, 17 Complete). Command: action
-              packml_command (Int32; 1 Reset, 2 Start, 3 Stop, 4 Hold, 5 Unhold, 6 Suspend, 7 Unsuspend, 8 Abort, 9 Clear),
-              edge-triggered on change, QoS 1, not retained, acknowledged on the cmd-resp topic (form ackForms of the
-              action). Unit mode (Production, Maintenance, Manual) = skill mode.
+              OPC UA server of the communication module (PackML structure after OPC 30050) and MQTT/UNS (published by the
+              edge connector), see the two interfaces of the AssetInterfacesDescription of the instance. State: property
+              packml_state (Int32; 1 Clearing, 2 Stopped, 3 Starting, 4 Idle, 5 Suspended, 6 Execute, 7 Stopping, 8 Aborting,
+              9 Aborted, 10 Holding, 11 Held, 12 Unholding, 13 Suspending, 14 Unsuspending, 15 Resetting, 16 Completing,
+              17 Complete). Command: action packml_command (Int32; 1 Reset, 2 Start, 3 Stop, 4 Hold, 5 Unhold, 6 Suspend,
+              7 Unsuspend, 8 Abort, 9 Clear), edge-triggered; OPC UA: method call with status code (also the OPC 30050
+              methods BaseStateMachine.Reset ... Clear), MQTT: QoS 1, acknowledged on the cmd-resp topic (form ackForms).
+              Unit mode (1 Production, 2 Maintenance, 3 Manual) = skill mode: property unit_mode, action
+              unit_mode_command (method SetUnitMode), accepted in STOPPED, IDLE, ABORTED.
           - _idShort: ContainerHandling
             _description: {en: "Exchange of the output containers (KLT) and the automatic exchange option", de: "Wechsel der Ausgangsbehälter (KLT) und Option für den automatischen Wechsel"}
             InterfaceProfile: "VF KLT exchange (container 1 = KLT A, 2 = KLT B; automatic exchange on/off)"
             InterfaceProfileSupplement: >-
-              MQTT/UNS, see AssetInterfacesDescription of the instance. Action klt_exchange_command (Int32 pulse; 1 = KLT A,
-              2 = KLT B; only if the KLT holds parts, waits for a running robot job), action auto_exchange (Boolean; true =
-              full KLTs are exchanged automatically after exchange_delay). Both acknowledged on the cmd-resp topic (form
-              ackForms of the action).
+              OPC UA and MQTT/UNS, see AssetInterfacesDescription of the instance. Action klt_exchange_command (Int32 pulse;
+              1 = KLT A, 2 = KLT B; only if the KLT holds parts, waits for a running robot job), action auto_exchange
+              (Boolean; true = full KLTs are exchanged automatically after exchange_delay). OPC UA: methods
+              Commands.klt_exchange_command / Commands.auto_exchange (status code); MQTT: acknowledged on the cmd-resp
+              topic (form ackForms of the action).
+          - _idShort: Maintenance
+            _description: {en: "Confirmation of maintenance work on components of the line (wear diagnostics reset after a part change)", de: "Bestätigung von Wartungsarbeiten an Komponenten der Linie (Rücksetzen der Verschleißdiagnose nach einem Teiletausch)"}
+            InterfaceProfile: "VF maintenance confirmation (Boolean pulse per component, rising edge = part replaced)"
+            InterfaceProfileSupplement: >-
+              Actions of the component interfaces (AssetInterfacesDescription of the component, e.g. RB01 action
+              gripper_maintenance_reset over MQTT/UNS, acknowledged on the cmd-resp topic); the line controller's skill
+              Maintain sends them only while the line is stopped in the unit mode Maintenance.
       Errors:
         Error:
           - _idShort: InfeedTrackingTimeout

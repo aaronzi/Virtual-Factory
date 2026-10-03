@@ -28,6 +28,7 @@ Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robo
 | 15 | `cv_fault` | input | discrete | Boolean |  | false | CV01 drive fault (alarm 101, line aborts) |
 | 16 | `rb_protective_stop` | input | discrete | Boolean |  | false | RB01 in protective stop, e.g. fence door open (alarm 201, line held until released) |
 | 17 | `estop` | input | discrete | Boolean |  | false | Emergency stop circuit open (E-stop button on the HMI stand latched): abort, alarm 100 |
+| 18 | `unit_mode_command` | input | discrete | Int32 |  | 0 | Unit mode request (1 Production, 2 Maintenance, 3 Manual); edge-triggered on change, accepted only in STOPPED, IDLE, ABORTED |
 | 50 | `scan_time` | parameter | fixed | Float64 | s | 0.01 | PLC cycle time |
 | 51 | `auto_start` | parameter | fixed | Boolean |  | true | Reset and start automatically |
 | 52 | `belt_speed` | parameter | tunable | Float64 | m/s | 0.25 | Conveyor speed setpoint (recipe) |
@@ -69,6 +70,8 @@ Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robo
 | 127 | `alarm_text` | output | discrete | String |  | "" | Text of alarm_code (empty when no alarm is active) |
 | 128 | `alarm_count` | output | discrete | Int32 |  | 0 | Number of alarms raised since start |
 | 129 | `horn` | output | discrete | Boolean |  | false | Stack light buzzer: an alarm stops the line |
+| 130 | `unit_mode` | output | discrete | Int32 |  | 1 | PackML unit mode (1 Production, 2 Maintenance: no infeed from AC01, no auto start, 3 Manual: like Maintenance) |
+| 131 | `active_alarms` | output | discrete | String |  | "" | All active alarms in priority order, comma-separated codes (e.g. 100,201; empty: none) - alarm word for the alarm management (ISA-18.2) |
 
 ## AssemblyCell
 
@@ -237,7 +240,7 @@ Signal tower with green/amber/red LED segments and buzzer (24 V DC), driven by t
 
 ## UR5e
 
-Universal Robots UR5e with 2-finger gripper: analytic IK, URScript-like movej/movel pick & place program, power model
+Universal Robots UR5e with 2-finger gripper: analytic IK, URScript-like movej/movel pick & place program, power model, gripper finger wear with regrip and smart-gripper diagnostics
 
 - Model description: `godot/devices/ur5e/model/modelDescription.xml`
 - modelIdentifier: `ur5e` · instantiationToken: `{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e06}`
@@ -251,6 +254,7 @@ Universal Robots UR5e with 2-finger gripper: analytic IK, URScript-like movej/mo
 | 5 | `protective_stop` | input | discrete | Boolean |  | false | Safety input (e.g. fence door open) |
 | 6 | `object_in_grip` | input | discrete | Boolean |  | false | Physical stimulus: an item is between the fingers |
 | 7 | `object_width` | input | discrete | Float64 | m | 0 | Physical stimulus: width of that item |
+| 8 | `gripper_maintenance_reset` | input | discrete | Boolean |  | false | Finger change done (rising edge): new finger pads, finger_wear, grip_cycles and grasp_retries restart at 0 |
 | 100 | `home_x` | parameter | fixed | Float64 | m | 0.0 | Home TCP position |
 | 101 | `home_y` | parameter | fixed | Float64 | m | -0.3 |  |
 | 102 | `home_z` | parameter | fixed | Float64 | m | 0.45 |  |
@@ -289,6 +293,13 @@ Universal Robots UR5e with 2-finger gripper: analytic IK, URScript-like movej/mo
 | 135 | `gripper_speed` | parameter | fixed | Float64 | m/s | 0.1 |  |
 | 136 | `idle_power` | parameter | fixed | Float64 | W | 90 | Powered, brakes released |
 | 137 | `motion_power_coefficient` | parameter | fixed | Float64 | W.s/rad | 45 | Additional power per rad/s summed over joints |
+| 138 | `finger_wear_rate` | parameter | tunable | Float64 | m | 4e-10 | Abrasive wear of the finger pads per grip (design: limit after 2.5 million grips) |
+| 139 | `finger_wear_limit` | parameter | fixed | Float64 | m | 0.001 | Wear allowance of the finger pads; parts start to slip above 85 % of it |
+| 140 | `finger_wear_start` | parameter | fixed | Float64 | m | 0 | Finger wear at the start of the simulation |
+| 141 | `grip_force_nominal` | parameter | fixed | Float64 | N | 100 | Clamping force with new fingers |
+| 142 | `regrip_attempts` | parameter | fixed | Int32 |  | 3 | Grip attempts before gripper_fault (a slipped part is regripped) |
+| 143 | `grip_retry_interval` | parameter | fixed | Float64 | s | 10 | Pause before the grip is retried after gripper_fault |
+| 144 | `seed` | parameter | fixed | Int32 |  | 7 | Seed of the wear scatter, measurement noise and slip draws (deterministic runs) |
 | 200 | `q1` | output | continuous | Float64 | rad | 0 | Base joint angle |
 | 201 | `q2` | output | continuous | Float64 | rad | 0 | Shoulder joint angle |
 | 202 | `q3` | output | continuous | Float64 | rad | 0 | Elbow joint angle |
@@ -307,10 +318,16 @@ Universal Robots UR5e with 2-finger gripper: analytic IK, URScript-like movej/mo
 | 215 | `program_step` | output | discrete | Int32 |  | 0 | 0 = idle, 1..9 = job step |
 | 216 | `cycle_count` | output | discrete | Int32 |  | 0 |  |
 | 217 | `protective_stopped` | output | discrete | Boolean |  | false |  |
-| 218 | `fault` | output | discrete | Boolean |  | false | Target unreachable (IK failed) |
+| 218 | `fault` | output | discrete | Boolean |  | false | Robot fault: target unreachable (IK failed) or gripper_fault |
 | 219 | `power` | output | continuous | Float64 | W | 0 |  |
 | 220 | `energy` | output | continuous | Float64 | kWh | 0 |  |
 | 221 | `operating_hours` | output | continuous | Float64 | h | 0 |  |
+| 222 | `grip_cycles` | output | discrete | Int32 |  | 0 | Grips on a part since the last finger change (gripper maintenance counter) |
+| 223 | `finger_wear` | output | discrete | Float64 | m | 0 | Finger pad wear: jaw position offset at contact against the taught part width (smart gripper diagnostics, updated per grip) |
+| 224 | `grip_force` | output | discrete | Float64 | N | 100 | Clamping force measured at the last grip |
+| 225 | `grip_close_time` | output | discrete | Float64 | s | 0 | Duration of the last closing movement of the jaws |
+| 226 | `grasp_retries` | output | discrete | Int32 |  | 0 | Regrips (part slipped) since the last finger change |
+| 227 | `gripper_fault` | output | discrete | Boolean |  | false | Part not held after regrip_attempts grips; retried every grip_retry_interval until it holds |
 
 ## Line layout `LINE01`
 

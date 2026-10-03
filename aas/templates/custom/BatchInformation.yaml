@@ -1,0 +1,78 @@
+name: BatchInformation
+version: "1"
+revision: "0"
+displayName: {en: "Batch Information", de: "Chargeninformationen"}
+description:
+  en: >-
+    Facts of one production batch (lot) of a trade item as published by its manufacturer in the batch AAS: batch
+    number, article numbers, quantity, production and despatch data, the material certificate of the batch and the
+    recycled content measured for it. Used by the supplier environment of the Virtual Factory (ADR-0028); no IDTA
+    template covers batches yet. Virtual Factory custom template, prescribed to the suppliers as part of the data
+    exchange agreement of VF Pneumatics GmbH.
+  de: >-
+    Angaben zu einer Fertigungscharge (Los) eines Handelsartikels, wie sie der Hersteller in der Chargen-VWS
+    veröffentlicht: Chargennummer, Artikelnummern, Menge, Fertigungs- und Versanddaten, das Werkstoffzeugnis der
+    Charge und der für sie ermittelte Rezyklatanteil. Verwendet von der Lieferantenumgebung der Virtual Factory
+    (ADR-0028); für Chargen gibt es noch kein IDTA-Template. Eigenes Template der Virtual Factory, den Lieferanten
+    im Rahmen der Datenaustauschvereinbarung der VF Pneumatics GmbH vorgegeben.
+elements:
+  - idShort: BatchId
+    preferredName: {en: "batch identifier", de: "Chargennummer"}
+    definition: {en: "Batch (lot) number assigned by the manufacturer; GS1 application identifier 10.", de: "Vom Hersteller vergebene Chargen- bzw. Losnummer; GS1-Datenbezeichner 10."}
+  - idShort: ManufacturerPartId
+    preferredName: {en: "manufacturer part identifier", de: "Herstellerartikelnummer"}
+    definition: {en: "Article (order code) of the manufacturer the batch consists of.", de: "Artikel (Bestellnummer) des Herstellers, aus dem die Charge besteht."}
+  - idShort: CustomerPartId
+    cardinality: ZeroToOne
+    preferredName: {en: "customer part identifier", de: "Kundenartikelnummer"}
+    definition: {en: "Article number of the customer the batch was delivered to.", de: "Artikelnummer des Kunden, an den die Charge geliefert wurde."}
+  - idShort: ProductType
+    modelType: ReferenceElement
+    cardinality: ZeroToOne
+    preferredName: {en: "product type", de: "Produkttyp"}
+    definition: {en: "Reference to the AAS of the product type the batch was produced to.", de: "Verweis auf die VWS des Produkttyps, nach dem die Charge gefertigt wurde."}
+  - idShort: Quantity
+    valueType: xs:unsignedInt
+    preferredName: {en: "batch quantity", de: "Chargenmenge"}
+    definition: {en: "Number of pieces in the batch.", de: "Anzahl Stück in der Charge."}
+  - idShort: DateOfManufacture
+    valueType: xs:date
+    preferredName: {en: "date of manufacture", de: "Herstelldatum"}
+    definition: {en: "Date on which the batch was produced (cast, moulded, formed).", de: "Datum, an dem die Charge gefertigt wurde (gegossen, gespritzt, umgeformt)."}
+  - idShort: ProductionSite
+    modelType: MultiLanguageProperty
+    cardinality: ZeroToOne
+    preferredName: {en: "production site", de: "Fertigungsstandort"}
+    definition: {en: "Plant in which the batch was produced.", de: "Werk, in dem die Charge gefertigt wurde."}
+  - idShort: Customer
+    cardinality: ZeroToOne
+    preferredName: {en: "customer", de: "Kunde"}
+    definition: {en: "Company the batch was delivered to.", de: "Unternehmen, an das die Charge geliefert wurde."}
+  - idShort: DespatchAdviceNumber
+    cardinality: ZeroToOne
+    preferredName: {en: "despatch advice number", de: "Lieferavisnummer"}
+    definition: {en: "Number of the despatch advice (ASN, delivery note) the batch was shipped with.", de: "Nummer des Lieferavis (ASN, Lieferschein), mit dem die Charge versandt wurde."}
+  - idShort: DespatchDate
+    valueType: xs:date
+    cardinality: ZeroToOne
+    preferredName: {en: "despatch date", de: "Versanddatum"}
+    definition: {en: "Date on which the batch was shipped to the customer.", de: "Datum, an dem die Charge an den Kunden versandt wurde."}
+  - idShort: MaterialCertificate
+    cardinality: ZeroToOne
+    preferredName: {en: "material certificate", de: "Werkstoffzeugnis"}
+    definition: {en: "Document identifier of the inspection certificate of the batch (EN 10204 type 3.1, see Handover Documentation).", de: "Dokumentenkennung des Prüfzeugnisses der Charge (EN 10204 Typ 3.1, siehe Handover Documentation)."}
+  - idShort: MeanMassPerPiece
+    valueType: xs:double
+    unit: kg
+    cardinality: ZeroToOne
+    preferredName: {en: "mean mass per piece", de: "mittlere Stückmasse"}
+    definition: {en: "Mean mass of one piece measured on a sample of the batch.", de: "An einer Stichprobe der Charge gemessene mittlere Masse eines Stücks."}
+  - idShort: RecycledContent
+    modelType: SubmodelElementCollection
+    cardinality: ZeroToOne
+    preferredName: {en: "recycled content", de: "Rezyklatanteil"}
+    definition: {en: "Recycled content of the material of this batch (from the material certificate of the raw material lot).", de: "Rezyklatanteil des Werkstoffs dieser Charge (aus dem Werkstoffzeugnis des Rohstoffloses)."}
+    elements:
+      - {idShort: RecycledMaterial, preferredName: {en: "recycled material", de: "rezykliertes Material"}, definition: {en: "Material the shares refer to.", de: "Material, auf das sich die Anteile beziehen."}}
+      - {idShort: PreConsumerShare, valueType: xs:double, unit: "%", preferredName: {en: "pre-consumer share", de: "Pre-Consumer-Anteil"}, definition: {en: "Share of pre-consumer recycled material (w/w).", de: "Anteil Pre-Consumer-Rezyklat (Massenanteil)."}}
+      - {idShort: PostConsumerShare, valueType: xs:double, unit: "%", preferredName: {en: "post-consumer share", de: "Post-Consumer-Anteil"}, definition: {en: "Share of post-consumer recycled material (w/w).", de: "Anteil Post-Consumer-Rezyklat (Massenanteil)."}}

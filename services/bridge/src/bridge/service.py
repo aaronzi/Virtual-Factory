@@ -9,7 +9,9 @@ import logging
 import time
 from collections import defaultdict
 
-from vf_common.basyx import BasyxClient
+from collections.abc import Callable
+
+from vf_common.aid import AasSource
 from vf_common.mqtt import MqttClient
 
 from .aimc import AID_SEMANTIC_ID, AIMC_SEMANTIC_ID, Mapping, mappings, referenced_submodels
@@ -19,8 +21,8 @@ log = logging.getLogger("bridge")
 WATCHED = {AIMC_SEMANTIC_ID, AID_SEMANTIC_ID}
 
 
-def load_all(aas: BasyxClient) -> list[Mapping]:
-    """Mappings of every AIMC submodel on the server."""
+def load_all(aas: AasSource) -> list[Mapping]:
+    """Mappings of every AIMC submodel (registered in the submodel registries, or on one server)."""
     out: list[Mapping] = []
     for listed in aas.list_submodels(semantic_id=AIMC_SEMANTIC_ID):
         aimc = aas.get_submodel(listed["id"], blobs=True) or listed  # transformations are Blob values
@@ -33,9 +35,11 @@ def load_all(aas: BasyxClient) -> list[Mapping]:
 
 
 class Bridge:
-    def __init__(self, aas: BasyxClient, mqtt: MqttClient, events_topic: str | None, reload_s: float = 300.0,
-                 min_interval: float = 1.0):
+    def __init__(self, aas, mqtt: MqttClient, events_topic: str | None, reload_s: float = 300.0,
+                 min_interval: float = 1.0, on_event: Callable[[str, bytes], None] | None = None):
+        """aas: `RegistryAas` (or a `BasyxClient`); on_event: e.g. the resolver's cache invalidation."""
         self.aas, self.mqtt, self.events_topic, self.reload_s = aas, mqtt, events_topic, reload_s
+        self.on_event = on_event
         self.writer = SinkWriter(aas.set_value, min_interval=min_interval)
         self.by_topic: dict[str, list[Mapping]] = {}
         self._reload_due = 0.0
@@ -53,6 +57,8 @@ class Bridge:
 
     def handle(self, topic: str, payload: bytes, now: float) -> None:
         if self.events_topic and topic.startswith(self.events_topic.rstrip("#")):
+            if self.on_event:
+                self.on_event(topic, payload)
             self._on_aas_event(payload)
             return
         targets = self.by_topic.get(topic)

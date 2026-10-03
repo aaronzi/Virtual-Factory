@@ -50,13 +50,13 @@ def _build(ctx, type_spec, spec):
                       "HierarchicalStructures", "ProductMaterialComposition", "ProductCircularity"}),
     ("inspected", INSPECTED,
      {"QualityInspection", "MeasurementValue_CapColour", "MeasurementValue_LeakRate", "TechnicalData"}),
-    ("packed", {**INSPECTED, **SORTED}, {"CarbonFootprint", "QualityInspection", "HandoverDocumentation"}),
+    ("packed", {**INSPECTED, **SORTED}, {"QualityInspection", "HandoverDocumentation"}),
     ("lost", {}, {"ExecutedProcesses"}),
 ])
 def test_workpiece_stages_build_valid_aas(ctx, specs, type_spec, stage, extra, expected):
     v = {**V, **extra}
     verdict = evaluate(v, Limits()) if "deltaE" in v else None
-    spec = specs.build(v, stage, verdict, pcf=3.91 if stage == "packed" else None)
+    spec = specs.build(v, stage, verdict)
     assert spec["tag"] == tag_of(SERIAL)
     _, shell, names = _build(ctx, type_spec, spec)
     assert expected <= names
@@ -65,7 +65,7 @@ def test_workpiece_stages_build_valid_aas(ctx, specs, type_spec, stage, extra, e
 
 def test_packed_run_has_all_processes_with_real_times(ctx, specs, type_spec):
     v = {**V, **INSPECTED, **SORTED}
-    spec = specs.build(v, "packed", evaluate(v, Limits()), pcf=3.91)
+    spec = specs.build(v, "packed", evaluate(v, Limits()))
     run = next(s for s in spec["submodels"]
                if s["template"].startswith("ExecutedProcesses"))["values"]["Run"][0]
     ops = [p["_idShort"] for p in run["Process"]]

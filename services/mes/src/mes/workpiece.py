@@ -6,9 +6,14 @@ passport.py). The AAS grows with the life cycle (stages):
                lots), contacts, as-built BoM, material composition, circularity (recycled content per lot),
                location
     inspected  + OP75/OP80, QualityInspection, measurement values, as-built technical data
-    packed     + OP90, run completed, carbon footprint (actual), handover documents (good parts: inspection
-               certificate), location in the KLT
+    packed     + OP90, run completed, handover documents (good parts: inspection certificate), location in
+               the KLT; the CarbonFootprint submodel is added by the sustainability service (pcf-calculate)
     lost       run aborted (part did not reach the next station), passport inactive
+
+DPP status (DppMetadata.dppStatus, EN 18223): Inactive while the unit is in production and for rejected or
+lost units (never placed on the market), Active once a good unit is packed (shipped); Archived is reserved for
+the end of the product's life and not reached in the simulation. Shipped passports survive new sessions
+(store.py).
 """
 
 from __future__ import annotations
@@ -19,7 +24,6 @@ from datetime import datetime, timedelta, timezone
 from provisioner.build import REPO, load_yaml
 
 from . import cell_data, passport
-from .carbon import PartFootprint
 from .lots import lots_for
 from .passport import values_of as _submodel
 from .quality import Verdict
@@ -31,12 +35,8 @@ STAGES = ("released", "inspected", "packed", "lost")
 RELEASED = {"Nameplate", "DppMetadata", "ExecutedProcesses", "ContactInformations", "HierarchicalStructures",
             "ProductMaterialComposition", "ProductCircularity"}
 INSPECTED = {"QualityInspection", "MeasurementValue_LeakRate", "MeasurementValue_CapColour", "TechnicalData"}
-REJECT_NOTE = {"en": "Footprint of this rejected unit (production loss, A1-A3): components and energy. It "
-                     "is allocated to the good units of the session (their ProductionLossCO2eq) - do not "
-                     "count it again.",
-               "de": "Fußabdruck dieser Ausschuss-Einheit (Produktionsverlust, A1-A3): Bauteile und Energie. "
-                     "Er wird den Gut-Einheiten der Sitzung zugeordnet (deren ProductionLossCO2eq) - nicht "
-                     "nochmals zählen."}
+# passport content provided by another service: listed in the DPP content of the stage, not written by the MES
+PROVIDED = {"packed": {"CarbonFootprint"}}  # sustainability service, task pcf-calculate
 
 
 def load_blueprint() -> dict:
@@ -54,8 +54,7 @@ class WorkpieceSpec:
         self.blueprint, self.positions, self.thumbnail = blueprint, positions, thumbnail
         self.base_lots = passport.lots_of(blueprint)  # fallback lots for cells that report none
 
-    def build(self, v: dict, stage: str, verdict: Verdict | None = None,
-              pcf: PartFootprint | float | None = None) -> dict:
+    def build(self, v: dict, stage: str, verdict: Verdict | None = None) -> dict:
         serial = v["serial"]
         spec = _replace_serial(copy.deepcopy(self.blueprint), serial)
         spec["thumbnail"] = self.thumbnail
@@ -74,12 +73,9 @@ class WorkpieceSpec:
         if stage == "packed":
             keep.add("HandoverDocumentation")
             passport.apply_handover(spec, v, bool(verdict and verdict.passed))
-        if stage == "packed" and pcf is not None:
-            keep.add("CarbonFootprint")
-            self._carbon_footprint(spec, v, pcf)
         spec["submodels"] = [s for s in spec["submodels"]
                              if s.get("idShort", s["template"].split("-")[0]) in keep]
-        self._dpp(spec, v, stage, verdict, keep)
+        self._dpp(spec, v, stage, verdict, keep | PROVIDED.get(stage, set()))
         spec["description"] = _description(serial, released, stage, verdict, v)
         return spec
 
@@ -96,10 +92,10 @@ class WorkpieceSpec:
 
     @staticmethod
     def _dpp(spec: dict, v: dict, stage: str, verdict: Verdict | None, keep: set[str]) -> None:
-        """Content list of the stage; rejects and lost parts are never placed on the market: Inactive."""
-        rejected = stage == "lost" or (stage == "packed" and not (verdict and verdict.passed))
+        """Content list of the stage; Active only for a packed good unit (placed on the market)."""
+        shipped = stage == "packed" and bool(verdict and verdict.passed)
         last = _iso(_parse(v.get("sortedAt") or v.get("inspectedAt") or v["releasedAt"]))
-        passport.apply_metadata(spec, keep, "Inactive" if rejected else "Active", last)
+        passport.apply_metadata(spec, keep, "Active" if shipped else "Inactive", last)
 
     def _processes(self, spec: dict, v: dict, stage: str, verdict: Verdict | None,
                    lots: dict[str, str]) -> None:
@@ -141,20 +137,6 @@ class WorkpieceSpec:
     def _quality(self, spec: dict, v: dict, verdict: Verdict) -> None:
         values = _submodel(spec, "QualityInspection")
         verdict.apply(values, spec, v)
-
-    def _carbon_footprint(self, spec: dict, v: dict, pcf: PartFootprint | float) -> None:
-        """Blueprint entries: total A1-A3, A1 purchased components, A3 manufacturing (+ energy details)."""
-        fp = pcf if isinstance(pcf, PartFootprint) else PartFootprint(float(pcf), 0.0, 0.0, 0.0)
-        total, material, manufacturing = _submodel(spec, "CarbonFootprint")["ProductCarbonFootprints"]
-        for entry, value in ((total, fp.total), (material, fp.material), (manufacturing, fp.manufacturing)):
-            entry["PcfCO2eq"] = round(value, 4)
-            entry["PublicationDate"] = _parse(v["sortedAt"]).isoformat(timespec="seconds")
-        for key, value in (("ElectricalEnergy", fp.electricity_kwh), ("CompressedAirEnergy", fp.air_kwh),
-                           ("ProductionLossCO2eq", fp.loss_share), ("LineResidenceTime", fp.residence_s)):
-            manufacturing["+" + key]["value"] = round(value, 6)
-        if fp.rejected:
-            total["_description"] = REJECT_NOTE
-
 
 
 def _replace_serial(node, serial: str):

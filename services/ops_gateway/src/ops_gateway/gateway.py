@@ -3,7 +3,9 @@ for PackML commands, for the resulting state.
 
 Topics, QoS/retain flags and payload keys are not configured here: they come from the AAS (`ControlConfig`,
 resolved via Control Component endpoints -> AID, see control.py). Until a configuration has been resolved,
-every operation is rejected - there is deliberately no fallback to the UNS registry (ADR-0020)."""
+every operation is rejected - there is deliberately no fallback to the UNS registry (ADR-0020).
+Endpoints whose AID affordance is in an OPC UA interface use the OPC UA path (method call, monitored item,
+opcua_link.py, ADR-0024); MQTT command/ack remains for the others."""
 
 from __future__ import annotations
 
@@ -19,6 +21,7 @@ from vf_common.uns import telemetry_value
 
 from . import packml
 from .control import AUTO_EXCHANGE, PACKML, STATE, ControlConfig
+from .opcua_link import OpcUaLink
 
 log = logging.getLogger("ops-gateway")
 NOT_CONFIGURED = "ops gateway not configured: endpoints not yet resolved from the AAS (see gateway log)"
@@ -33,13 +36,14 @@ class Result:
 
 class LineGateway:
     def __init__(self, mqtt: MqttClient, config: ControlConfig | None = None, ack_timeout: float = 3.0,
-                 state_timeout: float = 10.0, source: str = "ops-gateway"):
-        self.mqtt, self.source = mqtt, source
+                 state_timeout: float = 10.0, source: str = "ops-gateway", opcua: OpcUaLink | None = None):
+        self.mqtt, self.source, self.opcua = mqtt, source, opcua
         self.ack_timeout, self.state_timeout = ack_timeout, state_timeout
         self.config: ControlConfig | None = None
         self.state: int | None = None
         self.history: list[int] = []  # recent states, so transient states (IDLE after Reset) are not missed
         self._history_base = 0        # absolute index of history[0]
+        self.values: dict[str, object] = {}  # last value per property endpoint (e.g. UnitMode)
         self._acks: dict[str, dict] = {}
         self._changed = threading.Condition()
         self._subscribed: dict[str, int] = {}
@@ -51,9 +55,15 @@ class LineGateway:
         threading.Thread(target=self._consume, daemon=True, name="mqtt-consumer").start()
 
     def configure(self, config: ControlConfig) -> None:
-        """(Re)configures topics; subscriptions follow the AID forms (state property, ack forms)."""
-        topics = {a.form.topic: a.form.qos for a in config.endpoints.values() if a.kind == "property"}
-        topics |= {a.ack.topic: a.ack.qos for a in config.endpoints.values() if a.ack}
+        """(Re)configures topics; subscriptions follow the AID forms (state property, ack forms); OPC UA
+        properties are observed by the OPC UA link."""
+        mqtt = {n: a for n, a in config.endpoints.items() if a.protocol == "mqtt"}
+        topics = {a.form.topic: a.form.qos for a in mqtt.values() if a.kind == "property"}
+        topics |= {a.ack.topic: a.ack.qos for a in mqtt.values() if a.ack}
+        observed = {n: a for n, a in config.endpoints.items()
+                    if a.protocol == "opcua" and a.kind == "property"}
+        if self.opcua is not None:
+            self.opcua.configure(observed)
         with self._changed:
             for topic in set(self._subscribed) - set(topics):
                 self.mqtt.unsubscribe(topic)
@@ -84,11 +94,22 @@ class LineGateway:
             return Result(False, f"{command} sent, but state is {state} instead of {target}", state)
         return Result(True, f"{command} executed", state)
 
+    def on_value(self, endpoint: str, value) -> None:
+        """New value of a property endpoint (OPC UA monitored item or MQTT telemetry)."""
+        with self._changed:
+            if endpoint == STATE and isinstance(value, (int, float)):
+                self._record(int(value))
+            self.values[endpoint] = value
+            self._changed.notify_all()
+
     def set_auto_exchange(self, enabled: bool) -> Result:
         return self.send(AUTO_EXCHANGE, bool(enabled))
 
     def wait_state(self, predicate: Callable[[str], bool], timeout: float) -> bool:
         return self._wait_for(lambda: predicate(packml.state_name(self.state)), timeout)
+
+    def wait_value(self, endpoint: str, predicate: Callable[[object], bool], timeout: float) -> bool:
+        return self._wait_for(lambda: predicate(self.values.get(endpoint)), timeout)
 
     # -- MQTT ----------------------------------------------------------------------------------------
 
@@ -101,6 +122,10 @@ class LineGateway:
         if action is None or action.kind != "action":
             return Result(False, f"{config.controller}/ControlComponentInstance has no command endpoint "
                                  f"{endpoint}")
+        if action.protocol == "opcua":
+            if self.opcua is None:
+                return Result(False, f"{endpoint} is an OPC UA endpoint, but the OPC UA link is disabled")
+            return Result(*self.opcua.call(action, value))
         corr = uuid.uuid4().hex[:12]
         payload = {action.key("Value", "v"): value, action.key("CorrelationId", "corr"): corr,
                    action.key("Source", "source"): self.source}
@@ -151,11 +176,13 @@ class LineGateway:
         config = self.config
         if config is None:
             return False
-        state = config.endpoints.get(STATE)
-        if state and msg.topic == state.form.topic:
-            value = telemetry_value(msg.payload, state.key("Value", "v"))
-            if isinstance(value, (int, float)):
+        prop = next((n for n, a in config.endpoints.items() if a.kind == "property" and a.protocol == "mqtt"
+                     and a.form.topic == msg.topic), None)
+        if prop is not None:
+            value = telemetry_value(msg.payload, config.endpoints[prop].key("Value", "v"))
+            if prop == STATE and isinstance(value, (int, float)):
                 self._record(int(value))
+            self.values[prop] = value
             return True
         action = next((a for a in config.endpoints.values() if a.ack and a.ack.topic == msg.topic), None)
         if action is None:

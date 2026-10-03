@@ -40,6 +40,8 @@
         description="RB01 in protective stop, e.g. fence door open (alarm 201, line held until released)"/>
     <Boolean name="estop" valueReference="17" causality="input" variability="discrete" start="false"
         description="Emergency stop circuit open (E-stop button on the HMI stand latched): abort, alarm 100"/>
+    <Int32 name="unit_mode_command" valueReference="18" causality="input" variability="discrete" start="0"
+        description="Unit mode request (1 Production, 2 Maintenance, 3 Manual); edge-triggered on change, accepted only in STOPPED, IDLE, ABORTED"/>
     <Float64 name="scan_time" valueReference="50" causality="parameter" variability="fixed" start="0.01" unit="s"
         description="PLC cycle time"/>
     <Boolean name="auto_start" valueReference="51" causality="parameter" variability="fixed" start="true"
@@ -99,8 +101,12 @@
         description="Text of alarm_code (empty when no alarm is active)"><Start value=""/></String>
     <Int32 name="alarm_count" valueReference="128" causality="output" variability="discrete" initial="exact" start="0"
         description="Number of alarms raised since start"/>
+    <String name="active_alarms" valueReference="131" causality="output" variability="discrete" initial="exact"
+        description="All active alarms in priority order, comma-separated codes (e.g. 100,201; empty: none) - alarm word for the alarm management (ISA-18.2)"><Start value=""/></String>
     <Boolean name="horn" valueReference="129" causality="output" variability="discrete" initial="exact" start="false"
         description="Stack light buzzer: an alarm stops the line"/>
+    <Int32 name="unit_mode" valueReference="130" causality="output" variability="discrete" initial="exact" start="1"
+        description="PackML unit mode (1 Production, 2 Maintenance: no infeed from AC01, no auto start, 3 Manual: like Maintenance)"/>
   </ModelVariables>
   <ModelStructure>
     <Output valueReference="100"/>
@@ -133,5 +139,7 @@
     <Output valueReference="127"/>
     <Output valueReference="128"/>
     <Output valueReference="129"/>
+    <Output valueReference="130"/>
+    <Output valueReference="131"/>
   </ModelStructure>
 </fmiModelDescription>

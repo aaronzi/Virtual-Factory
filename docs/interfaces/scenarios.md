@@ -14,6 +14,7 @@ scenario, a human and an automated test all use one interface.
 | `LB01/LB02.misalignment` | input | Float64 0..1 | Marginal received light: random beam dropouts (Poisson rate value · `dropout_rate` 1.5/s, each `dropout_duration` 0.06 s, seeded RNG `seed`, deterministic) → false triggers; at 1 the beam is lost permanently (signal stuck). `stability_ok` (IO-Link excess-gain diagnostics) is false from 0.2 |
 | `AC01.defect_rate_missing_cap`, `AC01.defect_rate_wrong_cap` | tunable parameters | Float64 0..1 | Probability per part (layout defaults 0.05 / 0.03) |
 | `RB01.protective_stop` | input | Boolean | Robot freezes in its current pose (job continues after release), output `protective_stopped`. Meant to be driven by the fence door (world interaction) |
+| `RB01.finger_wear_rate` | tunable parameter | Float64 ≥ 0 (m per grip) | Wear of the gripper finger pads (design 4e-10). Symptoms: `finger_wear` (jaw offset, limit `finger_wear_limit` 1 mm), `grip_force` (-30 % at the limit), `grip_close_time` rises; above 85 % of the limit parts slip and are regripped (`grasp_retries`), after `regrip_attempts` (3) slipped grips `gripper_fault` → `fault` → alarm 202; reset by `RB01.gripper_maintenance_reset` (finger change, ADR-0029) |
 
 All fault variables are listed in `commands.writable` of [`godot/config/uns.json`](../../godot/config/uns.json):
 `{root}/{device}/cmd/{variable}` with `{"v": value}` (see [uns.md](uns.md)). Default values = no fault.
@@ -22,7 +23,8 @@ All fault variables are listed in `commands.writable` of [`godot/config/uns.json
 
 Inputs wired in the layout: `CV01.fault → PLC01.cv_fault`, `RB01.protective_stopped → PLC01.rb_protective_stop`
 (plus the existing `rb_fault`, light barrier signals and the infeed tracking). Outputs: `alarm_code` (highest-priority
-active alarm, 0 = none), `alarm_text`, `alarm_count` (alarms raised since start), `horn`.
+active alarm, 0 = none), `alarm_text`, `alarm_count` (alarms raised since start), `active_alarms` (alarm word: all
+active codes in priority order, e.g. `100,201` - input of the ISA-18.2 alarm management, ADR-0026), `horn`.
 Implementation: `godot/control/sorting_line/line_alarms.gd`.
 
 | Code | Text | Condition | PackML reaction |
@@ -85,6 +87,7 @@ scenarios end with a reset). Dev argument `--vf-scenario=<id>` starts a scenario
 | `light_barrier_misalignment` | Misaligned light barrier / Dejustierte Lichtschranke | t=20 s LB02 0.3, +60 s 1.0, +20 s reset | false triggers (45 LB02 switchings for 22 parts, 9 NOK), alarm 302 (once the belt runs again in WAIT_PART), HELD, automatic resume |
 | `conveyor_motor_fault` | Conveyor drive fault / Störung Förderbandantrieb | when 3 parts inspected: motor fault, +20 s reset, +3 s Clear, +2 s Reset | alarm 101, ABORTED, recovery to EXECUTE (16 parts in 240 s) |
 | `robot_protective_stop` | Safety fence door opened / Schutzzauntür geöffnet | when robot program step ≥ 5: protective stop, +20 s reset | alarm 201, HELD, robot resumes its job, automatic resume |
+| `gripper_wear` | Gripper finger wear (predictive maintenance) / Verschleiß der Greiferfinger (vorausschauende Instandhaltung) | t=5 s finger wear rate 4.5e-5 m/grip, when 6 grips: message, +90 s reset (normal wear, the fingers stay worn) | finger wear ≥ 0.4 mm without fault (240 s run: 0.60 mm after 13 grips, grip force 81 N, no regrip, line in EXECUTE). With the IT stack: maintenance order after ~5 grips (RUL lower bound ≈ 16 grips ≈ 4 min), advisory alarm 901, maintenance at the order boundary ([user guide](../user-guide.md#predictive-maintenance)) |
 
 Run: `tools/run_scenarios.sh [id …]` (headless, 240 s simulated per scenario, `VF_SCENARIO_SECONDS` overrides;
 `godot/tests/integration/scenario_run.gd` prints a report with alarm history and stack light state).

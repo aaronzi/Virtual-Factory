@@ -1,0 +1,36 @@
+# Product type AAS of the supplier (ADR-0028): screw ISO 4762 M5x16-8.8 as published by Normteile Rhein-Neckar in
+# the supplier environment. VF Pneumatics' purchased-part view: CMP_SCREW_M5 (customer part 9001-0516).
+tag: NRN_4762_M5X16
+idBase: https://virtual-factory.example/normteile-rhein-neckar/ids
+idShort: NRN_4762_M5X16_88_ZN
+kind: Type
+assetType: https://virtual-factory.example/ids/assettype/StandardPart
+globalAssetId: https://virtual-factory.example/01/04099993010017
+displayName: {en: "Socket head cap screw ISO 4762 M5x16-8.8 zinc plated (product type)", de: "Zylinderschraube ISO 4762 M5x16-8.8 verzinkt (Produkttyp)"}
+description:
+  en: "Cold-formed socket head cap screw ISO 4762 M5x16, property class 8.8, zinc plated; product type of Normteile Rhein-Neckar GmbH. Values per piece."
+  de: "Kaltumgeformte Zylinderschraube ISO 4762 M5x16, Festigkeitsklasse 8.8, galvanisch verzinkt; Produkttyp der Normteile Rhein-Neckar GmbH. Werte je Stück."
+specificAssetIds: {manufacturerPartId: 4762-M5X16-88-ZN, gtin: "04099993010017"}
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: Normteile Rhein-Neckar GmbH, de: Normteile Rhein-Neckar GmbH}
+      ManufacturerProductDesignation: {en: "Socket head cap screw ISO 4762 M5x16, property class 8.8, zinc plated", de: "Zylinderschraube ISO 4762 M5x16, Festigkeitsklasse 8.8, galvanisch verzinkt"}
+      ManufacturerProductRoot: {en: Screws, de: Schrauben}
+      ManufacturerProductType: ISO 4762 M5x16-8.8
+      OrderCodeOfManufacturer: 4762-M5X16-88-ZN
+      ProductArticleNumberOfManufacturer: "476205016"
+      URIOfTheProduct: https://virtual-factory.example/normteile-rhein-neckar/products/4762-M5X16-88-ZN
+      CountryOfOrigin: DE
+      AddressInformation: {$include: common/product_address_supplier_normteile.yaml}
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - {_description: {en: "Declared average PCF per piece (reference year 2025). Each delivered batch has its own PCF in its batch AAS.", de: "Deklarierter durchschnittlicher PCF je Stück (Bezugsjahr 2025). Jede gelieferte Charge hat einen eigenen PCF in ihrer Chargen-VWS."}, PcfCalculationMethods: [{value: "ISO 14067"}], PcfCO2eq: 0.0113, ReferenceImpactUnitForCalculation: piece, QuantityOfMeasureForCalculation: 1, LifeCyclePhases: [{value: "A1-A3"}], PublicationDate: "2025-04-01T00:00:00+00:00"}
+  - template: ProductMaterialComposition-1.0
+    values:
+      TotalMass: 0.0037
+      Materials:
+        - {MaterialLocation: {ComponentName: Screw ISO 4762 M5x16}, MaterialIdentifier: "1.5525 (20MnB4, EN 10263-4), property class 8.8, zinc plated", MaterialName: "Quenched and tempered boron steel", MaterialMass: 0.0037, IsCriticalRawMaterial: false, RecyclabilityClass: Recyclable}
+      HazardousSubstances: []
+      DeclarationDate: "2025-04-01"

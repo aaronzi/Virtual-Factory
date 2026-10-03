@@ -1,0 +1,39 @@
+# Supplier company AAS (ADR-0028): injection moulder, supplier of the protective caps. Fictional company.
+tag: KUNSTSTOFFTECHNIK_WESTRICH
+idBase: https://virtual-factory.example/kunststofftechnik-westrich/ids
+idShort: KunststofftechnikWestrich
+kind: Instance
+assetType: https://virtual-factory.example/ids/assettype/Company
+displayName: {en: "Kunststofftechnik Westrich GmbH (company)", de: "Kunststofftechnik Westrich GmbH (Unternehmen)"}
+description:
+  en: "Injection moulder of technical plastic parts, Zweibrücken; supplier of the protective caps. Company data and contacts as published by the supplier."
+  de: "Spritzgießer technischer Kunststoffteile, Zweibrücken; Lieferant der Schutzkappen. Unternehmensdaten und Kontakte, wie vom Lieferanten veröffentlicht."
+specificAssetIds: {gln: "4099994000002"}
+submodels:
+  - template: CompanyData-1.0
+    values:
+      CompanyIdentification:
+        CompanyName: Kunststofftechnik Westrich GmbH
+        CompanyDescription: {en: "Injection-moulded caps, plugs and covers made of PE, PP and TPE; fictional company of the Virtual Factory training environment.", de: "Spritzgegossene Kappen, Stopfen und Abdeckungen aus PE, PP und TPE; fiktives Unternehmen der Schulungsumgebung Virtual Factory."}
+        HomepageURL: {en: "https://virtual-factory.example/kunststofftechnik-westrich"}
+        VATNumber: DE000000014
+        CommercialRegisterNumber: "HRB 00014, Amtsgericht Zweibrücken"
+        FoundingYear: "1992"
+        MainProductGroups:
+          - {en: "Protective caps and plugs", de: "Schutzkappen und Stopfen"}
+      CompanyGovernance:
+        IndustryStandards:
+          Certifications:
+            - {CertificationStandard: "ISO 9001:2015", ApprovalAgency: "Fictional certification body (training data)", CertificateNumber: "QM-0014-2025", IssueDate: "2025-01-01", ExpiryDate: "2027-12-31"}
+      DigitalInterfaces:
+        DataExchange:
+          EncryptedDataTransmission: true
+          EDI: false
+          WebEDI: true
+  - template: ContactInformations-1.0
+    values:
+      ContactInformation:
+        - _idShort: Sales
+          RoleOfContactPerson: "0173-1#07-AAS928#001"
+          $include: common/product_address_supplier_kunststofftechnik.yaml
+          Department: {en: Sales, de: Vertrieb}
