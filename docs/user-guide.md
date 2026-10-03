@@ -54,6 +54,7 @@ or `--vf-uns=ws://host:9001` selects another broker, `--vf-uns=off` disables MQT
 | Q / E | Down / up |
 | Shift | Move faster |
 | Left click | Press buttons on panels; click a device, a workpiece or the control cabinet to open its AAS |
+| Mouse wheel / trackpad | Scroll the panel under the pointer (AAS inspector, MES terminal) |
 | Esc / F1 | Open/close the menu (language, quality, speed, scenarios, demo tour, data flow) |
 
 ## What you see

@@ -1,9 +1,12 @@
 class_name XRRig
 extends PlayerRig
 ## OpenXR player rig (ADR-0003): XROrigin3D with head camera and two controllers. The right controller's ray
-## is the pointer (trigger = press), the left thumbstick moves smoothly, the right thumbstick snap-turns.
+## is the pointer (trigger = press), the left thumbstick moves smoothly, the right thumbstick snap-turns
+## (left/right) and scrolls the panel under the ray (up/down).
 ## Built in code so the rig has no scene dependencies; `try_start()` returns false without an XR runtime, and
 ## the composition root then keeps the DesktopRig (--vf-xr enables the attempt).
+
+const SCROLL_STEPS_PER_S := 12.0
 
 @export var move_speed := 1.5
 @export var snap_turn_deg := 30.0
@@ -57,6 +60,9 @@ func _process(delta: float) -> void:
 		_turn_ready = false
 	elif absf(turn) < 0.3:
 		_turn_ready = true
+	var scroll := right.get_vector2("primary").y
+	if absf(scroll) > 0.3:  # right thumbstick up/down scrolls the panel under the ray
+		pointer_scrolled.emit(Vector2(0.0, -scroll * SCROLL_STEPS_PER_S * delta))
 
 
 func get_pointer_ray() -> Dictionary:

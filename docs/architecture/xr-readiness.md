@@ -23,6 +23,8 @@ Decision: VR is not implemented now, but the architecture must allow adding it w
 3. Add an XR export preset (Android for standalone headsets needs the OpenXR vendors plugin).
 
 ## Open points
-- Mouse-wheel scrolling of long inspector trees has no XR equivalent yet (thumbstick scrolling, O32).
+- Scrolling uses `PlayerRig.pointer_scrolled` (wheel steps): desktop mouse wheel/trackpad, XR right thumbstick
+  up/down (the left thumbstick moves, right left/right snap-turns); the PointerRouter forwards it to the panel
+  under the ray (O32).
 - The F1 menu is screen-space: an XR menu panel on the left controller is needed for scenario/tour control.
 - Not tested on a headset (no OpenXR runtime on macOS) - R10.

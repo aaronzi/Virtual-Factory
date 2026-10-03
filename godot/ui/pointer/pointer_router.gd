@@ -24,10 +24,12 @@ func set_rig(value: PlayerRig) -> void:
 	if rig:
 		rig.pointer_pressed.disconnect(_on_pressed)
 		rig.pointer_released.disconnect(_on_released)
+		rig.pointer_scrolled.disconnect(_on_scrolled)
 	rig = value
 	if rig:
 		rig.pointer_pressed.connect(_on_pressed)
 		rig.pointer_released.connect(_on_released)
+		rig.pointer_scrolled.connect(_on_scrolled)
 
 
 func _physics_process(_delta: float) -> void:
@@ -60,6 +62,14 @@ func _on_released(_rig_hit: Dictionary) -> void:
 	if is_instance_valid(_pressed):
 		_pressed.pointer_released(_cast())
 	_pressed = null
+
+
+## Scrolling goes to the interactable under the pointer (panels); elsewhere it is ignored.
+func _on_scrolled(amount: Vector2) -> void:
+	var hit := _cast()
+	var target: Interactable = Interactable.find(hit.collider) if hit else null
+	if target:
+		target.pointer_scrolled(hit, amount)
 
 
 func _cast() -> Dictionary:

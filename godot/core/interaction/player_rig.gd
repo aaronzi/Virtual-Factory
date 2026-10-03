@@ -8,6 +8,9 @@ extends Node3D
 signal pointer_pressed(hit: Dictionary)
 ## Emitted when the pointer button / trigger is released (hit may be empty).
 signal pointer_released(hit: Dictionary)
+## Emitted when the user scrolls at the pointer (mouse wheel, trackpad, XR thumbstick), in wheel steps:
+## y > 0 scrolls the content down, x > 0 to the right.
+signal pointer_scrolled(amount: Vector2)
 
 
 ## True while the pointer can be used for UI (e.g. not while the desktop camera is being rotated).

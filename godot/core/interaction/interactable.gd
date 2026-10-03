@@ -36,6 +36,11 @@ func pointer_released(_hit: Dictionary) -> void:
 	pass
 
 
+## Scrolling at the pointer, in wheel steps (y > 0 = down), see PlayerRig.pointer_scrolled.
+func pointer_scrolled(_hit: Dictionary, _amount: Vector2) -> void:
+	pass
+
+
 ## The interactable registered on `collider` or one of its ancestors, or null.
 static func find(collider: Object) -> Interactable:
 	var node := collider as Node

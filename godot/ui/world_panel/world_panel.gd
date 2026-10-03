@@ -154,7 +154,6 @@ class _PanelInput:
 		_last = pos
 		panel.viewport.push_input(event)
 		panel.mark_dirty()
-		panel.mark_dirty()
 
 	func pointer_pressed(hit: Dictionary) -> void:
 		_button_down = true
@@ -167,6 +166,26 @@ class _PanelInput:
 	func pointer_exited() -> void:
 		if _button_down:
 			pointer_released({})
+
+	## Wheel events at the pointer position: ScrollContainer, Tree etc. scroll by page/8 per step.
+	func pointer_scrolled(hit: Dictionary, amount: Vector2) -> void:
+		var pos := panel.to_viewport(hit.position)
+		for axis: int in 2:
+			var steps := amount[axis]
+			if is_zero_approx(steps):
+				continue
+			var button := MOUSE_BUTTON_WHEEL_DOWN if steps > 0.0 else MOUSE_BUTTON_WHEEL_UP
+			if axis == 0:
+				button = MOUSE_BUTTON_WHEEL_RIGHT if steps > 0.0 else MOUSE_BUTTON_WHEEL_LEFT
+			for pressed: bool in [true, false]:
+				var event := InputEventMouseButton.new()
+				event.button_index = button
+				event.pressed = pressed
+				event.factor = absf(steps)
+				event.position = pos
+				event.global_position = pos
+				panel.viewport.push_input(event)
+		panel.mark_dirty()
 
 	func _click(pos: Vector2, pressed: bool) -> void:
 		var event := InputEventMouseButton.new()

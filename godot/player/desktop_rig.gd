@@ -1,7 +1,10 @@
 class_name DesktopRig
 extends PlayerRig
 ## Mouse/keyboard fly camera. Hold right mouse button to look around, WASD to move,
-## Q/E down/up, Shift for fast movement, left click to point at things.
+## Q/E down/up, Shift for fast movement, left click to point at things, wheel/trackpad scrolls panels.
+
+const WHEEL := {MOUSE_BUTTON_WHEEL_UP: Vector2.UP, MOUSE_BUTTON_WHEEL_DOWN: Vector2.DOWN,
+	MOUSE_BUTTON_WHEEL_LEFT: Vector2.LEFT, MOUSE_BUTTON_WHEEL_RIGHT: Vector2.RIGHT}
 
 @export var move_speed := 3.0
 @export var fast_multiplier := 4.0
@@ -34,6 +37,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			pointer_pressed.emit(_raycast_pointer())
 		else:
 			pointer_released.emit(_raycast_pointer())
+	elif event is InputEventMouseButton and event.pressed and event.button_index in WHEEL:
+		pointer_scrolled.emit(WHEEL[event.button_index] * (event.factor if event.factor > 0.0 else 1.0))
+	elif event is InputEventPanGesture:  # macOS trackpad two-finger scroll
+		pointer_scrolled.emit(event.delta)
 
 
 func _process(delta: float) -> void:
