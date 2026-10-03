@@ -1,0 +1,12 @@
+{
+  "_doc": "Historian (ADR-0019) - single source for the historian service, the provisioner (TimeSeries LinkedSegment of every device AAS) and the MES (production-based PCF). InfluxDB 3 Core, one table per device (lower-case FMI instance name = UNS device segment), one field per FMI output, tag 'session'. public_url is the host view written into the AAS; services inside compose use VF_INFLUX_URL. Reference: docs/interfaces/services.md#historian",
+  "database": "vf",
+  "public_url": "http://localhost:8181",
+  "query_format": "json",
+  "query_window": "1 hour",
+  "batch": {
+    "interval_s": 0.5,
+    "max_lines": 1000,
+    "max_buffer_lines": 200000
+  }
+}

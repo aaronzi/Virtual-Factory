@@ -1,6 +1,8 @@
 # ADR-0012: Control Components with PackML state on the asset interface
 
-- Status: accepted
+- Status: accepted; runtime use refined by [ADR-0020](0020-control-component-and-aid-drive-commands.md) (the ops
+  gateway resolves its endpoints from the Control Component Instance, skills are executable via `ExecuteSkill`,
+  additional endpoints `ContainerExchange`/`AutoExchange`, skill → endpoint references `UsesEndpoints`)
 - Date: 2026-10-03
 
 ## Context

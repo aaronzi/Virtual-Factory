@@ -29,7 +29,7 @@ def main() -> None:
             logging.getLogger("bridge").info("waiting for AAS server: %s", exc)
             time.sleep(3)
     events = os.environ.get("VF_AAS_EVENTS_TOPIC", "vf/basyx/submodelrepository/#") or None
-    Bridge(aas, mqtt, events, min_interval=float(os.environ.get("VF_BRIDGE_MIN_INTERVAL", "1.0"))).run()
+    Bridge(aas, mqtt, events, min_interval=float(os.environ.get("VF_BRIDGE_MIN_INTERVAL", "5.0"))).run()
 
 
 if __name__ == "__main__":

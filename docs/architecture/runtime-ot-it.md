@@ -13,16 +13,44 @@ sequenceDiagram
   participant B as bridge
   participant A as BaSyx AAS env
   B->>A: GET AIMC submodels (extent=withBlobValue) + referenced AID / sink submodels
-  B->>M: SUBSCRIBE mapped topics (93)
-  G->>M: PUBLISH {root}/cv01/belt_speed {"v":0.25,"ts":...} (retained)
+  B->>M: SUBSCRIBE mapped topics (94)
+  G->>M: PUBLISH {root}/cv01/running {"v":true,"ts":...} (retained)
   M->>B: message
-  B->>B: Lua aimc_main (if any), convert to sink valueType, deadband / 1 s rate
-  B->>A: PATCH .../OperationalData/.../ProcessValues.belt_speed/$value "0.25"
+  B->>B: Lua aimc_main (if any), convert to sink valueType, deadband / 5 s rate for numbers
+  B->>A: PATCH .../OperationalData/.../ProcessValues.running/$value "true"
   A-->>M: CloudEvent vf/basyx/submodelrepository/submodel/updated (submodel id, semanticId)
   M->>B: event (AIMC/AID changed?) -> reload mappings
 ```
 
-About 175 UNS messages/s in real time; the bridge writes ~15 values/s (102 mappings).
+Only state and slow values reach the AAS (ADR-0019): 104 mappings (discrete outputs, OperatingState/Hours,
+EnergyConsumption). Measured with a 240 s real-time run (incl. a 45 s hold): about 175 UNS telemetry messages/s,
+the bridge writes 8.2 values/s (replaying the same traffic through the old policy - every output, numbers ≤ 1/s -
+gives 19.4/s, the new policy 6.9/s); the MES no longer PUTs time-series segments.
+
+## 1a. Telemetry into the historian (ADR-0019)
+
+```mermaid
+sequenceDiagram
+  participant G as Godot UNS gateway
+  participant M as Mosquitto
+  participant H as historian
+  participant I as InfluxDB 3
+  participant C as Client (MES, user, agent)
+  participant A as BaSyx AAS env
+  H->>M: SUBSCRIBE {root}/session, {root}/+/+
+  G->>M: PUBLISH {root}/rb01/q1 {"v":0.71,"ts":"...Z"} (10 Hz while moving)
+  M->>H: message
+  H->>H: FMI type -> field type, merge samples of one tick, batch 0.5 s / 1000 lines
+  H->>I: POST /api/v3/write_lp?db=vf (rb01,session=S-... q1=0.71,q2=... <ms>)
+  C->>A: GET RB01 TimeSeries Segments.Historian ($value)
+  A-->>C: Endpoint + Query (SQL)
+  C->>I: GET Endpoint &q=Query
+  I-->>C: rows (time, q1, ..., power)
+```
+
+The historian stores ~210 samples/s as ~90 rows/s in 2 batched write requests/s (0.5 s batches); the TimeSeries
+submodel is static, so recording causes no AAS traffic. The MES reads the series of a part (cell cycle, release →
+sort) with ~20 small SQL queries when the part is packed.
 
 ## 2. Life cycle of one workpiece (UNS events → BPMN → AAS)
 
@@ -49,7 +77,13 @@ sequenceDiagram
 ```
 
 Measured: every part of a 4-minute run ended in `End_Completed`, no incidents; a workpiece AAS has 8 submodels
-when packed. The instance PCF is ≈ 3.905 kg CO₂e (BoM components 3.9004 + line energy ≈ 4 Wh × 0.363 kg/kWh).
+when packed. The instance PCF is production-based (aas-model.md §6a). Verification run (240 s real time,
+AC01 missing-cap rate 0.25 → 7 of 14 packed parts rejected, line held 45 s via LineControl): a normally produced
+part gets 4.7 Wh electricity + 0.6 Wh compressed air → 0.0019 kg CO₂e (A3 without losses); the part that waited
+on the held line (residence 69 s instead of ~24 s) 6.1 Wh (+29 %), the part assembled during the hold (cell cycle
+incl. 45 s idle) 8.5 Wh (+80 %). Rejects report 3.902 kg (components 3.9004 + energy); good parts carry the
+session's losses per good part (3.90 kg at the end of the run, 11.7 kg for the first good part after three
+rejects), so A1-A3 of good parts is 7.80–15.61 kg.
 
 ## 3. Agent / workflow operation through the AAS
 
@@ -60,6 +94,10 @@ sequenceDiagram
   participant O as ops-gateway
   participant M as Mosquitto
   participant G as Godot PLC01
+  Note over O,A: start-up and on BaSyx change events of the configuration submodels
+  O->>A: GET LINE01/LineControl → ControlComponent → PLC01/ControlComponentInstance
+  O->>A: GET PLC01/AssetInterfacesDescription (EndpointReference targets)
+  O->>M: subscribe AID property packml_state + ackForms topics
   C->>A: POST LINE01/LineControl/ExecutePackMLCommand/invoke {Command: Hold}
   A->>O: POST /operations/ExecutePackMLCommand [OperationVariables]  (invocationDelegation)
   O->>O: PackML check (Hold allowed in EXECUTE?)
@@ -72,7 +110,11 @@ sequenceDiagram
 ```
 
 Round trip < 50 ms. A disallowed command (e.g. Start in EXECUTE) returns `Accepted=false` with the allowed commands
-and is not sent to the PLC.
+and is not sent to the PLC. The command topic, QoS, payload keys and the ack topic are those of the AID action behind
+the Control Component endpoint `PackMLCommand` (`forms`, `input`, `ackForms`, `output`), the state topic that of
+the property behind `PackMLState` (ADR-0020); editing them in BaSyx re-routes the next command.
+`ExecuteSkill(Produce)` runs the same path for each PackML command needed to reach EXECUTE (e.g. Reset → Start),
+after validating skill, mode and parameters against the Control Component Instance.
 
 ## 4. Production order with operator tasks
 

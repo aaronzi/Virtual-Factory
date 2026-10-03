@@ -36,6 +36,7 @@ func setup(p_aas: AasClient, p_feed: AasEventFeed, p_rig: PlayerRig) -> void:
 			action_handler.call(current_tag, id))
 	panel = WorldPanel.new()
 	panel.size_m = Vector2(1.0, 0.68)
+	panel.always_on_top = true
 	panel.refresh_hz = 2.0
 	panel.set_content(view)
 	panel.visible = false
@@ -51,15 +52,18 @@ func _process(_delta: float) -> void:
 		_refresh_submodel()
 
 
-func open_asset(tag: String) -> void:
+## Opens the AAS of `tag`; `point` (world) is where the asset was clicked - the panel appears between the
+## player and that point, so it never ends up behind the asset.
+func open_asset(tag: String, point := Vector3.INF) -> void:
 	current_tag = tag
-	await open_aas(aas.aas_id(tag))
+	await open_aas(aas.aas_id(tag), point)
 
 
-func open_aas(aas_id: String) -> void:
+func open_aas(aas_id: String, point := Vector3.INF) -> void:
 	_loading += 1
 	var ticket := _loading
-	_place_in_front()
+	var started := Time.get_ticks_msec()
+	_place(point)
 	panel.visible = true
 	view.lang = TranslationServer.get_locale().substr(0, 2)
 	view.set_status(tr("INSPECTOR_LOADING"))
@@ -74,9 +78,12 @@ func open_aas(aas_id: String) -> void:
 	current_tag = aas_id.get_file()
 	view.show_shell(shell)
 	view.set_actions(actions_provider.call(current_tag) if actions_provider.is_valid() else [])
-	view.set_thumbnail(await aas.get_thumbnail(aas_id))
 	panel.mark_dirty()
 	await _load_submodels(shell, ticket)
+	print("[Inspector] %s ready in %d ms" % [current_tag, Time.get_ticks_msec() - started])
+	if ticket == _loading:
+		view.set_thumbnail(await aas.get_thumbnail(aas_id))
+		panel.mark_dirty()
 
 
 func close() -> void:
@@ -96,10 +103,11 @@ func refresh_actions() -> void:
 func _load_submodels(shell: Dictionary, ticket: int) -> void:
 	var first := ""
 	var best := 999
-	for ref: Dictionary in shell.get("submodels", []):
-		var sm := await aas.get_submodel(ref.keys[0].value)
-		if ticket != _loading or sm.is_empty():
-			continue
+	var ids: Array = shell.get("submodels", []).map(func(ref: Dictionary) -> String: return ref.keys[0].value)
+	var submodels := await aas.get_submodels(ids)  # parallel
+	if ticket != _loading:
+		return
+	for sm: Dictionary in submodels:
 		view.add_submodel(sm)
 		var order := PREFERRED_KLT if current_tag.begins_with("KLT") else PREFERRED
 		var rank := order.find(sm.get("idShort", ""))
@@ -133,12 +141,13 @@ func _refresh_submodel() -> void:
 
 ## Fetches the units of the submodel's concepts (cached in the client); true if new units were found.
 func _load_units(submodel: Dictionary) -> bool:
-	var added := false
-	for sem: String in AasFormat.value_semantic_ids(submodel.get("submodelElements", [])):
-		if not view.units.has(sem):
-			view.units[sem] = await aas.get_unit(sem)
-			added = added or view.units[sem] != ""
-	return added
+	var wanted: Array = AasFormat.value_semantic_ids(submodel.get("submodelElements", [])).keys().filter(
+		func(sem: String) -> bool: return not view.units.has(sem))
+	if wanted.is_empty():
+		return false
+	var units := await aas.get_units(wanted)  # parallel, cached
+	view.units.merge(units)
+	return units.values().any(func(u: String) -> bool: return u != "")
 
 
 func _on_submodel_changed(submodel_id: String, _type: String) -> void:
@@ -151,10 +160,14 @@ func _on_shell_changed(aas_id: String, _type: String) -> void:
 		open_aas(aas_id)  # e.g. a workpiece got new submodels
 
 
-func _place_in_front() -> void:
+func _place(point: Vector3) -> void:
 	var cam := rig.get_view_camera()
-	var forward := -cam.global_basis.z
-	forward.y = 0.0
-	forward = forward.normalized() if forward.length() > 0.01 else Vector3.FORWARD
-	panel.global_position = cam.global_position + forward * 1.1 + Vector3(0, -0.12, 0)
+	var direction := -cam.global_basis.z
+	var distance := 1.1
+	if point.is_finite():
+		direction = (point - cam.global_position).normalized()
+		distance = clampf(cam.global_position.distance_to(point) * 0.6, 0.55, 1.1)
+	direction.y = clampf(direction.y, -0.35, 0.2)
+	panel.global_position = cam.global_position + direction.normalized() * distance + Vector3(0, -0.05, 0)
+	panel.scale = Vector3.ONE * (distance / 1.1)  # same apparent size at any distance
 	panel.face(cam.global_position)

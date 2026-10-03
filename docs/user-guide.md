@@ -13,10 +13,14 @@ docker compose -f infra/docker-compose.yml up -d
 - MQTT: `localhost:1883` (TCP), `ws://localhost:9001` (WebSocket); BaSyx change events on `vf/basyx/#`
 - BPMN engine (Operaton): Cockpit http://localhost:8092/operaton/app/cockpit/, Tasklist
   http://localhost:8092/operaton/app/tasklist/ (local user `demo` / `demo`), REST `/engine-rest`
-- Services: `bridge` (UNS → AAS), `mes` (workpiece AAS, BPMN workers), `ops-gateway` (AAS operations → PLC),
+- Historian (InfluxDB 3 Core): http://localhost:8181, database `vf`, no token - every UNS value of the session,
+  one table per device (`cv01`, `rb01`, …); see *Query the history* below
+- Services: `bridge` (UNS → AAS), `historian` (UNS → InfluxDB), `mes` (workpiece AAS, BPMN workers),
+  `ops-gateway` (AAS operations → PLC),
   see [interfaces/services.md](interfaces/services.md). Logs: `docker compose -f infra/docker-compose.yml logs -f mes`
 
-Stop it with `docker compose -f infra/docker-compose.yml down`. The database and the BPMN engine are ephemeral.
+Stop it with `docker compose -f infra/docker-compose.yml down`. The databases (AAS, InfluxDB) and the BPMN engine
+are ephemeral.
 After changing code in `services/`, rebuild with `docker compose -f infra/docker-compose.yml up -d --build`.
 
 ## Desktop builds
@@ -46,7 +50,7 @@ or `--vf-uns=ws://host:9001` selects another broker, `--vf-uns=off` disables MQT
 | Q / E | Down / up |
 | Shift | Move faster |
 | Left click | Press buttons on panels; click a device, a workpiece or the control cabinet to open its AAS |
-| F1 / Esc | Menu (language, quality, speed, scenarios, demo tour, data flow) / close |
+| Esc / F1 | Open/close the menu (language, quality, speed, scenarios, demo tour, data flow) |
 
 ## What you see
 The line runs automatically (PackML auto-start). The overlay shows the line state, the inspection results, KLT fill
@@ -55,7 +59,9 @@ levels, robot step and line power. Full KLTs are exchanged automatically 4 s aft
 
 ## Factory and AAS together (M4)
 With the backend and the factory running:
-- Live values appear in the AAS of every device (OperationalData, EnergyConsumption, PowerTimeSeries).
+- Live state values appear in the AAS of every device (OperationalData: states, counters, per-part measurements;
+  EnergyConsumption). High-rate signals (robot joints, belt position, …) are only in the historian; the device's
+  TimeSeries submodel tells which variables are recorded and how to query them (LinkedSegment `Historian`).
 - Each released cylinder gets its own AAS (`PC3280_2026_<number>`), filled at inspection and packing: executed
   processes, quality inspection, measurement values, actual carbon footprint, location in the KLT. The KLT AAS list
   their contents (HierarchicalStructures). A new factory start begins a new session and removes the old instances.
@@ -65,6 +71,23 @@ With the backend and the factory running:
 - **Command the line through its AAS:** LINE01 → LineControl → `ExecutePackMLCommand` (Start, Stop, Hold, Unhold,
   Reset, Suspend, Unsuspend, Abort, Clear), `ExchangeContainer`, `SetAutoExchange` - e.g. with curl, see
   [interfaces/services.md](interfaces/services.md#starting-a-production-order).
+
+## Query the history (historian)
+Every UNS value of the running session is stored in InfluxDB 3 (http://localhost:8181, database `vf`, no token):
+one table per device, one column per FMI output, column `time` (UTC, simulation time base) and tag `session`.
+The SQL statement for a device is in its AAS: TimeSeries → Segments → Historian → `Query`, sent to `Endpoint`:
+
+```bash
+curl -s -G 'http://localhost:8181/api/v3/query_sql?db=vf&format=json' \
+  --data-urlencode "q=SELECT time, q1, q2, power FROM rb01 WHERE time >= now() - INTERVAL '1 minute' ORDER BY time"
+curl -s -G 'http://localhost:8181/api/v3/query_sql?db=vf&format=json' \
+  --data-urlencode "q=SELECT date_bin(INTERVAL '10 seconds', time) AS t, (max(energy) - min(energy)) * 360000 AS w
+  FROM ac01 GROUP BY 1 ORDER BY 1"   # mean power per 10 s from the energy counter
+```
+
+Rows are sparse: a column only has a value in the rows where it changed (power, for example, only when the
+state changes - use the `energy` counter or the step function for averages). The workpiece carbon footprint uses the
+same data (energy of the part's time on the line, see [interfaces/aas-model.md](interfaces/aas-model.md) §6a).
 
 ## Training UI (M5)
 Everything an operator needs is in the 3D scene (world-space panels, ready for VR later):
@@ -80,12 +103,16 @@ Everything an operator needs is in the 3D scene (world-space panels, ready for V
 - **Stack light** on the control cabinet: green = EXECUTE, amber = held/suspended/acting, red = stopped/aborted/fault.
 - **Safety fence door** (right side of the robot cell): click to open - the robot stops (protective stop), the line
   holds with alarm 201; click again to close and the line resumes.
-- **Menu (F1):** language English/Deutsch, render quality Low/Medium/High, simulation speed 1×/2×/4×, training
+- **Emergency stop** (red button on the HMI stand): click to press - it latches, the safety circuit stops the robot
+  and the line aborts with alarm 100. Click again to release (like twisting a real E-stop), then *Clear* and
+  *Reset* on the HMI. While it is latched nothing (door, scenario, MQTT command) can release the robot.
+- **Menu (Esc or F1):** language English/Deutsch, render quality Low/Medium/High, simulation speed 1×/2×/4×, training
   scenarios (start/stop), demo tour (camera flies through the line with captions and opens AAS), data-flow view
-  (IT layer above the line; packets follow real UNS events and BaSyx change events).
+  (IT layer above the line; packets follow real UNS events and BaSyx change events; violet packets = telemetry
+  stored by the historian).
 
 Developer options (after `--`): `--vf-lang=de`, `--vf-quality=0|1|2`, `--vf-tour`, `--vf-dataflow`,
-`--vf-inspect=<AAS tag>`, `--vf-scenario=<id>`, `--vf-ui=off`, `--vf-xr` (OpenXR headset, see
+`--vf-inspect=<AAS tag>`, `--vf-estop=1` (press the E-stop), `--vf-scenario=<id>`, `--vf-ui=off`, `--vf-xr` (OpenXR headset, see
 [xr-readiness](architecture/xr-readiness.md)), `--vf-aas-url=…`, `--vf-bpmn-url=…`,
 `--vf-aas-events=<broker url|off>`. Endpoints: `godot/config/backend.json`.
 

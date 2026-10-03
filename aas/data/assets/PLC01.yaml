@@ -81,9 +81,17 @@ submodels:
             InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.PackML"}
             EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.properties.packml_state"}
           - _idShort: PackMLCommand
-            _description: {en: "PackML command input (MQTT/UNS action, QoS 1)", de: "PackML-Befehlseingang (MQTT/UNS-Action, QoS 1)"}
+            _description: {en: "PackML command input (MQTT/UNS action, QoS 1, acknowledged)", de: "PackML-Befehlseingang (MQTT/UNS-Action, QoS 1, quittiert)"}
             InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.PackML"}
             EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.actions.packml_command"}
+          - _idShort: ContainerExchange
+            _description: {en: "KLT exchange request (MQTT/UNS action, QoS 1, acknowledged)", de: "KLT-Wechselanforderung (MQTT/UNS-Action, QoS 1, quittiert)"}
+            InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.ContainerHandling"}
+            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.actions.klt_exchange_command"}
+          - _idShort: AutoExchange
+            _description: {en: "Automatic KLT exchange on/off (MQTT/UNS action, QoS 1, acknowledged)", de: "Automatischer KLT-Wechsel ein/aus (MQTT/UNS-Action, QoS 1, quittiert)"}
+            InterfaceReference: {ref: "sm:LC10_TYPE/ControlComponentType#Interfaces.ContainerHandling"}
+            EndpointReference: {ref: "sm:PLC01/AssetInterfacesDescription#InterfaceMQTT.InteractionMetadata.actions.auto_exchange"}
       Skills:
         Skill:
           - _idShort: Produce
@@ -101,6 +109,12 @@ submodels:
               SkillReference:
                 - {ref: "sm:PLC01/ControlComponentInstance#Skills.ExchangeContainer"}
                 - {ref: "sm:RB01/ControlComponentInstance#Skills.PickAndPlace"}
+            "+UsesEndpoints":
+              $include: common/control_uses_endpoints.yaml
+              value:
+                - {modelType: ReferenceElement, value: {ref: "sm:PLC01/ControlComponentInstance#Endpoints.PackMLCommand"}}
+                - {modelType: ReferenceElement, value: {ref: "sm:PLC01/ControlComponentInstance#Endpoints.PackMLState"}}
+                - {modelType: ReferenceElement, value: {ref: "sm:PLC01/ControlComponentInstance#Endpoints.AutoExchange"}}
           - _idShort: ExchangeContainer
             _description: {en: "Exchange a full KLT at station KLTA01 or KLTB01", de: "Vollen KLT an Station KLTA01 oder KLTB01 wechseln"}
             Disabled: false
@@ -124,6 +138,10 @@ submodels:
                     "+Unit": {value: s}
             Errors:
               ErrorReference: [{ref: "sm:LC10_TYPE/ControlComponentType#Errors.ContainerFull"}]
+            "+UsesEndpoints":
+              $include: common/control_uses_endpoints.yaml
+              value:
+                - {modelType: ReferenceElement, value: {ref: "sm:PLC01/ControlComponentInstance#Endpoints.ContainerExchange"}}
 
   - template: CapabilityDescription-1.0
     values:

@@ -9,16 +9,19 @@ import time
 from provisioner.build import BuildContext, load_assets
 from vf_common import ids
 from vf_common.basyx import BasyxClient, b64
+from vf_common.historian import HistorianConfig, InfluxClient
 from vf_common.mqtt import MqttClient
 from vf_common.uns import Uns, broker_address, telemetry_value
 
 from .bpmn import BpmnClient
-from .carbon import EnergyIntensity, component_footprint
+from .carbon import EnergyIntensity, FootprintCalculator, PartFootprint
+from .event_topics import EventTopics
 from .events import EventRouter
 from .handlers import OrderHandlers, WorkpieceHandlers
 from .klt import CONTAINERS, KltContents
 from .kpi import KpiTracker
 from .plant_data import PlantData
+from .process_energy import ProcessEnergy, power_tables
 from .quality import Limits
 from .store import WorkpieceStore
 from .workers import Worker
@@ -39,8 +42,10 @@ class Mes:
         self.plant = PlantData(BasyxClient(self.aas_url), self.intensity)
         self.kpi = KpiTracker()
         self.klt = KltContents(BasyxClient(self.aas_url))
-        self._components: float | None = None
-        self._factor: float | None = None
+        historian = HistorianConfig.load()
+        influx = InfluxClient(ENV("VF_INFLUX_URL", "http://localhost:8181"), historian.database)
+        energy = ProcessEnergy(influx, power_tables(load_assets(self.ctx.repo / "aas" / "data")))
+        self.pcf = FootprintCalculator(self.aas_url, energy, self.intensity)
 
     def wait_for_backends(self) -> None:
         """Waits for the engine and until the AAS server has finished its preload (shell count stable)."""
@@ -71,15 +76,9 @@ class Mes:
         Worker(BpmnClient(str(self.bpmn.http.base_url)), "order",
                OrderHandlers(BasyxClient(self.aas_url)).topics()).start()
 
-    def footprint(self) -> float:
-        """Instance PCF: BoM component PCFs (read once from the AAS) + line energy per part x grid factor."""
-        if self._components is None:
-            self._components = component_footprint(BasyxClient(self.aas_url))
-            line_energy = ids.submodel_id("LINE01", "EnergyConsumption", "1")
-            self._factor = float(BasyxClient(self.aas_url).get_value(line_energy, "EmissionFactor"))
-            log.info("BoM component PCF %.4f kg CO2e, grid factor %.3f kg/kWh",
-                     self._components, self._factor)
-        return self._components + self.intensity.kwh_per_part * (self._factor or 0.0)
+    def footprint(self, v: dict) -> PartFootprint:
+        """Production-based instance PCF of a sorted part (carbon.py; energy from the historian)."""
+        return self.pcf.part(v)
 
     def on_session(self, session: str, birth: dict) -> None:
         removed = self.store.clear_session()
@@ -101,10 +100,14 @@ class Mes:
         self.start_workers()
         host, port = broker_address(ENV("VF_MQTT_URL", "mqtt://localhost:1883"))
         mqtt = MqttClient("vf-mes", host, port)
-        router = EventRouter(self.bpmn, self.uns, self.on_session, self.on_exchange)
+        # event topics from the AID event affordances (reloaded on AID changes), session from the registry
+        topics = EventTopics(BasyxClient(self.aas_url), mqtt,
+                             ENV("VF_AAS_EVENTS_TOPIC", "vf/basyx/submodelrepository/#") or None)
+        topics.reload()
+        router = EventRouter(self.bpmn, self.uns, self.on_session, self.on_exchange, topics=topics)
         kpi_topics = {self.uns.telemetry("PLC01", v): v for v in ("packml_state", "parts_total", "parts_ok",
                                                                     "parts_nok")}
-        for topic in [self.uns.all_events(), self.uns.session_topic, *kpi_topics]:
+        for topic in [self.uns.session_topic, *kpi_topics]:
             mqtt.subscribe(topic, qos=1)
         mqtt.start()
         self._loop(mqtt, router, kpi_topics)

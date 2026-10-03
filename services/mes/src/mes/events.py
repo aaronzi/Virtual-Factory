@@ -7,8 +7,10 @@
     container_exchanged  -> KLT contents cleared in the AAS
     session birth        -> new session: workpiece AAS, workpiece processes and KLT contents reset
 
-A message can arrive before the process instance waits for it (the previous task is still running), so failed
-correlations are retried for up to `retry_s` seconds."""
+Event topics and names come from the AID event affordances on the AAS server (event_topics.py, ADR-0020); only
+the session birth topic is taken from the UNS registry (a namespace topic of the Godot gateway, not an asset
+affordance). A message can arrive before the process instance waits for it (the previous task is still
+running), so failed correlations are retried for up to `retry_s` seconds."""
 
 from __future__ import annotations
 
@@ -18,6 +20,7 @@ from dataclasses import dataclass
 from vf_common.uns import Uns
 
 from .bpmn import BpmnClient
+from .event_topics import EventTopics
 
 log = logging.getLogger("mes.events")
 CONTAINER_TAG = {1: "KLTA01", 2: "KLTB01"}
@@ -34,9 +37,10 @@ class _Pending:
     next_try: float
 
 
-def message_for(event: dict) -> tuple[str, str | None, dict, bool] | None:
-    """(message name, business key, process variables, correlate to all) for a UNS event, or None."""
-    name, ts = event.get("event"), event.get("ts")
+def message_for(event: dict, name: str | None = None) -> tuple[str, str | None, dict, bool] | None:
+    """(message name, business key, process variables, correlate to all) for a UNS event, or None.
+    name: event name of the AID affordance (default: the payload's `event` field)."""
+    name, ts = name or event.get("event"), event.get("ts")
     if name == "part_released":
         return "PartReleased", event["serial"], {
             "serial": event["serial"], "releasedAt": ts, "session": event.get("session"),
@@ -58,8 +62,10 @@ def message_for(event: dict) -> tuple[str, str | None, dict, bool] | None:
 
 
 class EventRouter:
-    def __init__(self, bpmn: BpmnClient, uns: Uns, on_session, on_exchange, retry_s: float = 60.0):
+    def __init__(self, bpmn: BpmnClient, uns: Uns, on_session, on_exchange, retry_s: float = 60.0,
+                 topics: EventTopics | None = None):
         self.bpmn, self.uns, self.on_session, self.on_exchange = bpmn, uns, on_session, on_exchange
+        self.topics = topics  # None: every topic, event name from the payload (tests)
         self.retry_s = retry_s
         self.pending: list[_Pending] = []
         self.session: str | None = None
@@ -69,14 +75,22 @@ class EventRouter:
         if topic == self.uns.session_topic:
             self._session(event)
             return
-        if event.get("event") == "container_exchanged":
+        if self.topics and self.topics.is_aas_event(topic):
+            self.topics.on_aas_event(event)
+            return
+        name = self.topics.name(topic) if self.topics else event.get("event")
+        if name is None:
+            return
+        if name == "container_exchanged":
             self.on_exchange(event.get("device"), int(event.get("exchange_count", 0)))
             return
-        message = message_for(event)
+        message = message_for(event, name)
         if message:
             self._correlate(_Pending(message[0], message[1], message[2], message[3], now, now), now)
 
     def retry(self, now: float) -> None:
+        if self.topics:
+            self.topics.tick(now)  # reload the event topics when due (AID change event / fallback period)
         due, self.pending = [p for p in self.pending if p.next_try <= now], [p for p in self.pending
                                                                               if p.next_try > now]
         for p in due:

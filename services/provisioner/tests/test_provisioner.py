@@ -37,25 +37,52 @@ def test_every_shell_references_existing_submodels(result):
 
 
 def test_device_interfaces_match_fmi_outputs(result):
-    """Every FMI output of every device is described in the AID and mapped by the AIMC."""
-    env = result.environment
-    specs = {p.stem: p for p in (REPO / "aas" / "data" / "assets").glob("*.yaml")}
+    """The AID describes every FMI output (the interface is unchanged); the AIMC maps exactly what the AAS
+    stores (slim AAS rule, ADR-0019): discrete outputs + energy/hours/state variables; the TimeSeries record
+    lists every output (history in the historian)."""
     from provisioner.build import load_yaml
-    for tag, path in specs.items():
+    from provisioner.device_models import is_state_value
+    env = result.environment
+    for tag, path in {p.stem: p for p in (REPO / "aas" / "data" / "assets").glob("*.yaml")}.items():
         device = load_yaml(path).get("device")
         if not device:
             continue
-        outputs = {v.name for v in
-                   read_model_description(REPO / device["modelDescription"]).by_causality("output")}
-        aid = _sm(env, tag, "AssetInterfacesDescription")
-        interface = aid["submodelElements"][0]
-        meta = next(e for e in interface["value"] if e["idShort"] == "InteractionMetadata")
-        props = next(e for e in meta["value"] if e["idShort"] == "properties")
-        assert {p["idShort"] for p in props["value"]} == outputs, tag
-        aimc = _sm(env, tag, "AssetInterfacesMappingConfiguration")
-        configs = aimc["submodelElements"][0]["value"]
+        md = read_model_description(REPO / device["modelDescription"])
+        outputs = {v.name for v in md.by_causality("output")}
+        stored = {v.name for v in md.by_causality("output") if is_state_value(v)}
+        mapped_extra = {device.get("operatingHours"), (device.get("state") or {}).get("variable"),
+                        *(device.get("energy") or {}).values()} - {None}
+        assert {p["idShort"] for p in _aid_properties(env, tag)} == outputs, tag
+        configs = _sm(env, tag, "AssetInterfacesMappingConfiguration")["submodelElements"][0]["value"]
         sources = {_child(_child(c, "Sources")["value"][0], "SourceId")["value"] for c in configs}
-        assert sources == outputs, tag
+        assert sources == stored | mapped_extra, tag
+        values = _child(_sm(env, tag, "OperationalData")["submodelElements"], "ProcessValues")["value"]
+        assert {v["idShort"] for v in values} == stored - set((device.get("energy") or {}).values()) \
+            - {device.get("operatingHours")}, tag
+        metadata = _child(_sm(env, tag, "TimeSeries")["submodelElements"], "Metadata")
+        record = [e["idShort"] for e in _child(metadata, "Record")["value"]]
+        assert record == ["Time", *[v.name for v in md.by_causality("output")]], tag
+
+
+def test_time_series_links_the_historian(result):
+    from provisioner.time_series import UTC_TIME
+    ts = _sm(result.environment, "RB01", "TimeSeries")["submodelElements"]
+    record = _child(_child(ts, "Metadata")["value"], "Record")["value"]
+    assert record[0]["valueType"] == "xs:dateTime" and record[0]["semanticId"]["keys"][0]["value"] == UTC_TIME
+    q1 = next(e for e in record if e["idShort"] == "q1")
+    assert q1["semanticId"]["keys"][0]["value"].endswith("/cd/fmi/UR5e/q1") and "value" not in q1
+    segment = _child(_child(ts, "Segments")["value"], "Historian")["value"]
+    values = {e["idShort"]: e.get("value") for e in segment}
+    assert values["Endpoint"] == "http://localhost:8181/api/v3/query_sql?db=vf&format=json"
+    assert values["Query"].startswith('SELECT "time", "q1"') and 'FROM "rb01"' in values["Query"]
+    energy = _sm(result.environment, "RB01", "EnergyConsumption")["submodelElements"]
+    assert _child(energy, "TimeSeries")["value"]["keys"][0]["value"].endswith("/RB01/TimeSeries/1")
+
+
+def _aid_properties(env: dict, tag: str) -> list[dict]:
+    interface = _sm(env, tag, "AssetInterfacesDescription")["submodelElements"][0]
+    meta = next(e for e in interface["value"] if e["idShort"] == "InteractionMetadata")
+    return next(e for e in meta["value"] if e["idShort"] == "properties")["value"]
 
 
 def test_aasx_packages_are_conformant(result, tmp_path: Path):
@@ -69,8 +96,8 @@ def test_aasx_packages_are_conformant(result, tmp_path: Path):
         assert data.get("conceptDescriptions"), f"{path.name}: concept descriptions must be packaged"
 
 
-def _child(el: dict, id_short: str) -> dict:
-    return next(e for e in el["value"] if e.get("idShort") == id_short)
+def _child(el: dict | list, id_short: str) -> dict:
+    return next(e for e in (el["value"] if isinstance(el, dict) else el) if e.get("idShort") == id_short)
 
 
 def _has_blueprints(result) -> bool:

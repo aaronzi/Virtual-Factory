@@ -38,7 +38,7 @@ MENU_START,Start,Starten
 MENU_STOP,Stop,Beenden
 MENU_TOUR,Demo tour,Demo-Rundgang
 MENU_DATAFLOW,Show data flow,Datenfluss anzeigen
-MENU_HINT,"F1 menu · right mouse + WASD move · click a device, part or panel","F1 Menü · rechte Maustaste + WASD bewegen · Gerät, Teil oder Panel anklicken"
+MENU_HINT,"Esc menu · right mouse + WASD move · click a device, part or panel","Esc Menü · rechte Maustaste + WASD bewegen · Gerät, Teil oder Panel anklicken"
 QUALITY_LOW,Low,Niedrig
 QUALITY_MEDIUM,Medium,Mittel
 QUALITY_HIGH,High,Hoch
@@ -57,3 +57,4 @@ SEQ_SETTLING,settling,beruhigen
 SEQ_INSPECTING,inspecting,prüfen
 SEQ_WAIT_ROBOT,wait robot,warte auf Roboter
 SEQ_PICKING,picking,greifen
+HOVER_HINT,"%s · click for AAS","%s · Klick für AAS"

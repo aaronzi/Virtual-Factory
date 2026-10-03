@@ -23,7 +23,7 @@ Or run a desktop build (`tools/export_builds.sh` → `build/VirtualFactory-{maco
 
 | What | Where |
 |---|---|
-| Factory (click devices/parts for their AAS, F1 menu) | Godot app |
+| Factory (click devices/parts for their AAS, Esc menu) | Godot app |
 | AAS Web UI / AAS API | http://localhost:3001 · http://localhost:8091 |
 | BPMN Cockpit / Tasklist (demo/demo) | http://localhost:8092/operaton/app/ |
 | MQTT (UNS) | localhost:1883, ws://localhost:9001 |

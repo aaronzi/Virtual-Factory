@@ -27,12 +27,13 @@ Implementation: `godot/control/sorting_line/line_alarms.gd`.
 
 | Code | Text | Condition | PackML reaction |
 |---:|---|---|---|
+| 100 | E-stop pressed: release it, then Clear and Reset | `estop` (emergency-stop button on the HMI stand latched; the safety circuit also stops the robot via `RB01.protective_stop`) | ABORT while active (Clear is refused until the button is released); operator: release, Clear, Reset |
 | 101 | CV01 conveyor drive fault | `cv_fault` | ABORT while active (Clear is refused until the fault is gone); operator: Clear, Reset (auto_start then starts) |
 | 202 | RB01 robot fault | `rb_fault` (rising edge) | HOLD; operator Unhold |
 | 201 | RB01 protective stop (safety fence door open) | `rb_protective_stop` | HOLD while active, automatic Unhold when released |
 | 302 | LB02 inspection light barrier blocked (signal stuck) | LB02 blocked > `sensor_blocked_timeout` (1.5 s) while the belt runs in WAIT_PART; latched until the beam is free | HOLD, automatic Unhold when the beam is free |
 | 301 | LB01 infeed light barrier blocked (signal stuck) | LB01 blocked > `sensor_blocked_timeout` while the belt runs; latched until free | HOLD, automatic Unhold when free |
-| 401 | Infeed tracking timeout: released part not detected at LB01 | no LB01 detection within `infeed_timeout` (8 s) of belt running time after a release (also counts `infeed_faults`) | warning only; cleared by the next LB01 detection |
+| 401 | Infeed timeout: released part not seen at LB01 | no LB01 detection within `infeed_timeout` (8 s) of belt running time after a release (also counts `infeed_faults`) | warning only; cleared by the next LB01 detection |
 
 Priority = table order. Only automatic holds are released automatically; an operator Hold stays.
 The PLC sequence keeps running in every PackML state, so work in progress (measurement, robot job handshake)

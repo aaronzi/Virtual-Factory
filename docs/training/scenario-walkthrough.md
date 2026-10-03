@@ -20,7 +20,7 @@ What happens: the MES worker `line-start` invokes **LINE01 / LineControl / SetAu
 *Learning goal: IT systems command the line through its AAS, not through PLC addresses.*
 
 ## 2. Start the fault (trainer)
-F1 → *Training scenarios* → **Missing protective caps** → *Start* (or `--vf-scenario=missing_cap_burst`). The cap
+Esc → *Training scenarios* → **Missing protective caps** → *Start* (or `--vf-scenario=missing_cap_burst`). The cap
 feeder of AC01 "jams": 60 % of the cylinders leave without the red cap for two minutes.
 The same fault can be injected over MQTT (`.../ac01/cmd/defect_rate_missing_cap`), i.e. also by an agent.
 
@@ -30,7 +30,7 @@ The same fault can be injected over MQTT (`.../ac01/cmd/defect_rate_missing_cap`
 - Click **QS01** → its AAS opens; OperationalData updates live (`delta_e`, `result_ok`) via BaSyx events.
 - Click a cylinder in **KLT B** → its own AAS: QualityInspection *Fail / Rejected*, CapColour ΔE ≈ 60–80, the
   measured colour in CIELAB, CarbonFootprint, ExecutedProcesses OP10–OP90.
-- F1 → *Show data flow*: orange packets for UNS events (device → gateway → broker → MES → BPMN), blue for device
+- Esc → *Show data flow*: orange packets for UNS events (device → gateway → broker → MES → BPMN), blue for device
   data going through the AIMC bridge into the AAS, green for workpiece AAS written by the MES.
 
 ## 4. The workflow reacts

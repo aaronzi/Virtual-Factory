@@ -62,6 +62,22 @@ func test_conveyor_fault_aborts_until_cleared_and_reset() -> void:
 	assert_eq(plc.get_value("packml_state"), S.EXECUTE, "auto_start after reset")
 
 
+func test_estop_aborts_and_blocks_clear_until_released() -> void:
+	plc.set_value("estop", true)
+	plc.set_value("rb_protective_stop", true)  # the safety circuit also stops the robot
+	_run(0.05)
+	assert_eq(_alarm(), [100, S.ABORTED], "E-stop has the highest priority")
+	_command(C.CLEAR)
+	assert_eq(_alarm(), [100, S.ABORTED], "cannot clear while the button is latched")
+	plc.set_value("estop", false)
+	plc.set_value("rb_protective_stop", false)
+	_run(0.05)
+	_command(C.CLEAR)
+	_command(C.RESET)
+	_run(0.05)
+	assert_eq(_alarm(), [0, S.EXECUTE])
+
+
 func test_protective_stop_holds_until_released() -> void:
 	plc.set_value("rb_protective_stop", true)
 	_run(0.05)

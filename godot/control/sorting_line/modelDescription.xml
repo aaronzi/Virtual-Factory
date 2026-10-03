@@ -38,6 +38,8 @@
         description="CV01 drive fault (alarm 101, line aborts)"/>
     <Boolean name="rb_protective_stop" valueReference="16" causality="input" variability="discrete" start="false"
         description="RB01 in protective stop, e.g. fence door open (alarm 201, line held until released)"/>
+    <Boolean name="estop" valueReference="17" causality="input" variability="discrete" start="false"
+        description="Emergency stop circuit open (E-stop button on the HMI stand latched): abort, alarm 100"/>
     <Float64 name="scan_time" valueReference="50" causality="parameter" variability="fixed" start="0.01" unit="s"
         description="PLC cycle time"/>
     <Boolean name="auto_start" valueReference="51" causality="parameter" variability="fixed" start="true"

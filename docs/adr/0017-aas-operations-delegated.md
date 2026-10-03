@@ -1,6 +1,8 @@
 # ADR-0017: Line commands as AAS Operations delegated to an operations gateway
 
-- Status: accepted
+- Status: accepted; refined by [ADR-0020](0020-control-component-and-aid-drive-commands.md): the gateway takes topics,
+  flags and payload keys from LineControl → Control Component Instance → AID (no longer from `uns.json`);
+  `ExecuteSkill` added
 - Date: 2026-10-03
 
 ## Context

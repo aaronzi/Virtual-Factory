@@ -23,17 +23,22 @@ static func pick(world: World3D, ray: Dictionary, length := 30.0) -> Dictionary:
 	var hit := space.intersect_ray(query)
 	var item: TrackedItem = _ancestor_item(hit.collider) if hit else null
 	if item:
-		return {"tag": AasClient.workpiece_tag(item.item_id), "kind": "workpiece", "node": item}
-	var area := _most_specific_volume(space, query)
+		return {"tag": AasClient.workpiece_tag(item.item_id), "kind": "workpiece", "node": item,
+			"point": hit.position}
+	var surface: Vector3 = hit.position if hit else Vector3.INF
+	var area := _most_specific_volume(space, query, surface)
 	if area:
-		return {"tag": area.get_meta("asset_tag"), "kind": "device", "node": area.get_parent()}
+		var point := surface if surface.is_finite() and _contains(area, surface) else area.global_position
+		return {"tag": area.get_meta("asset_tag"), "kind": "device", "node": area.get_parent(),
+			"point": _box_center(area) if not surface.is_finite() else point, "volume": area}
 	return {}
 
 
 ## Selection volumes overlap (the robot's box covers the QA station): of all volumes along the ray, pick the
 ## one the ray passes through most centrally (distance of the ray to the box centre relative to its size).
+## Prefers the smallest volume that contains the clicked surface point (what the user actually hit).
 static func _most_specific_volume(space: PhysicsDirectSpaceState3D,
-		query: PhysicsRayQueryParameters3D) -> Area3D:
+		query: PhysicsRayQueryParameters3D, surface := Vector3.INF) -> Area3D:
 	query.collision_mask = Interactable.SELECTION_LAYER
 	query.collide_with_areas = true
 	query.collide_with_bodies = false
@@ -55,11 +60,25 @@ static func _most_specific_volume(space: PhysicsDirectSpaceState3D,
 		var center := shape.global_position
 		var to_center := center - origin
 		var miss := (to_center - direction * to_center.dot(direction)).length()
-		var score := miss / maxf((shape.shape as BoxShape3D).size.length() * 0.5, 0.01)
+		var size: Vector3 = (shape.shape as BoxShape3D).size
+		var score := miss / maxf(size.length() * 0.5, 0.01)
+		if surface.is_finite() and _contains(area, surface):
+			score = -1.0 / maxf(size.x * size.y * size.z, 1e-6)  # containing boxes win, smallest first
 		if score < best_score:
 			best_score = score
 			best = area
 	return best
+
+
+static func _contains(area: Area3D, point: Vector3) -> bool:
+	var shape := area.get_child(0) as CollisionShape3D
+	var local := shape.global_transform.affine_inverse() * point
+	var half: Vector3 = (shape.shape as BoxShape3D).size * 0.5 + Vector3.ONE * 0.02
+	return absf(local.x) <= half.x and absf(local.y) <= half.y and absf(local.z) <= half.z
+
+
+static func _box_center(area: Area3D) -> Vector3:
+	return (area.get_child(0) as Node3D).global_position
 
 
 static func _ancestor_item(collider: Object) -> TrackedItem:

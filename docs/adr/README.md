@@ -16,10 +16,12 @@ Format: short [MADR](https://adr.github.io/madr/)-style records. New ADR = next 
 | [0009](0009-physical-transport-and-items.md) | Physical transport with Jolt rigid bodies | accepted |
 | [0010](0010-compatibility-renderer-indoor-lighting.md) | Compatibility renderer as default; indoor lighting without baking | accepted |
 | [0011](0011-template-based-aas-generation.md) | Template-based AAS generation from vendored IDTA templates | accepted |
-| [0012](0012-control-component-packml-on-interface.md) | Control Components with PackML state on the asset interface | accepted |
+| [0012](0012-control-component-packml-on-interface.md) | Control Components with PackML state on the asset interface | accepted, runtime use refined by 0020 |
 | [0013](0013-aas-interfaces-generated-from-fmi.md) | AAS interface descriptions generated from FMI model descriptions | accepted |
 | [0014](0014-godot-uns-gateway.md) | Godot UNS gateway with its own MQTT client | accepted |
 | [0015](0015-aimc-bridge.md) | Own AIMC-driven bridge instead of the BaSyx DataBridge or Node-RED | accepted |
 | [0016](0016-bpmn-orchestration.md) | BPMN orchestration on MES level with Operaton | accepted |
-| [0017](0017-aas-operations-delegated.md) | Line commands as AAS Operations delegated to an operations gateway | accepted |
+| [0017](0017-aas-operations-delegated.md) | Line commands as AAS Operations delegated to an operations gateway | accepted, topic resolution refined by 0020 |
 | [0018](0018-in-world-training-ui.md) | In-world training UI: world-space panels, passive views, live AAS via events | accepted |
+| [0019](0019-historian-timeseries-linked-segment.md) | Historian (InfluxDB 3 Core) referenced by IDTA TimeSeries LinkedSegments; slim AAS | accepted |
+| [0020](0020-control-component-and-aid-drive-commands.md) | Control Component and AID configure the command and event paths | accepted |

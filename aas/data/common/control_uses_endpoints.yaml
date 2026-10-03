@@ -1,0 +1,8 @@
+# Extra element of a Control Component Instance 2.0 skill: the endpoints (Endpoints.*) through which the skill is
+# executed and observed. Control Component 2.0 relates skills only to skills (Uses) and endpoints only to interfaces;
+# this list makes the skill -> endpoint relation explicit for the ops gateway (ExecuteSkill, ADR-0020).
+# Usage: "+UsesEndpoints": {$include: common/control_uses_endpoints.yaml, value: [{modelType: ReferenceElement, value: {ref: ...}}]}
+modelType: SubmodelElementList
+typeValueListElement: ReferenceElement
+semanticId: "https://virtual-factory.example/ids/cd/ControlComponent/UsesEndpoints"
+description: {en: "Endpoints through which the skill is executed and observed", de: "Endpunkte, über die der Skill ausgeführt und beobachtet wird"}

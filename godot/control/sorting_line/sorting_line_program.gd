@@ -54,6 +54,7 @@ func _scan(dt: float) -> void:
 func _update_alarms(dt: float) -> void:
 	var belt_on: bool = _get_var("cv_run")
 	_alarms.update({
+		100: _get_var("estop"),
 		101: _get_var("cv_fault"),
 		202: _get_var("rb_fault"),
 		201: _get_var("rb_protective_stop"),

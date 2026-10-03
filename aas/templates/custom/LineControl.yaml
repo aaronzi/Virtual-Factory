@@ -1,24 +1,27 @@
 name: LineControl
 version: "1"
-revision: "0"
+revision: "1"
 displayName: {en: "Line Control", de: "Liniensteuerung"}
 description:
   en: >-
     Callable control services of a production line for IT systems, agents and workflows: PackML commands, container
-    exchange and operating options as AAS Operations. The operations are executed by the line controller; the AAS
+    exchange, operating options and the execution of the controller's Control Component skills as AAS Operations. The operations are executed by the line controller; the AAS
     server forwards invocations to an operations gateway (invocation delegation), which translates them into
-    commands on the shop-floor interface described in the controller's Asset Interfaces Description. The live state
+    commands on the shop-floor interface: it follows ControlComponent → Control Component Instance endpoints → Asset
+    Interfaces Description of the controller to find topics, flags and payload keys. The live state
     (PackML state, counters) is published on that interface and mapped into OperationalData. Complements Control
-    Component Type/Instance 2.0, which describes skills and endpoints but no invocable operations.
-    Virtual Factory custom template.
+    Component Type/Instance 2.0, which describes skills and endpoints but no invocable operations; ExecuteSkill makes
+    its skills invocable. Virtual Factory custom template.
   de: >-
     Aufrufbare Steuerungsdienste einer Fertigungslinie für IT-Systeme, Agenten und Workflows: PackML-Befehle,
-    Behälterwechsel und Betriebsoptionen als AAS-Operationen. Ausgeführt werden sie von der Liniensteuerung; der
+    Behälterwechsel, Betriebsoptionen und die Ausführung der Control-Component-Skills der Steuerung als
+    AAS-Operationen. Ausgeführt werden sie von der Liniensteuerung; der
     AAS-Server leitet Aufrufe an ein Operations-Gateway weiter (Invocation Delegation), das sie in Befehle an der
-    in der Asset Interfaces Description der Steuerung beschriebenen Shopfloor-Schnittstelle übersetzt. Der aktuelle
+    Shopfloor-Schnittstelle übersetzt: es folgt ControlComponent → Endpunkte der Control Component Instance → Asset
+    Interfaces Description der Steuerung, um Topics, Flags und Payload-Schlüssel zu ermitteln. Der aktuelle
     Zustand (PackML-Zustand, Zähler) wird über diese Schnittstelle veröffentlicht und in OperationalData abgebildet.
     Ergänzt Control Component Type/Instance 2.0, das Skills und Endpunkte, aber keine aufrufbaren Operationen
-    beschreibt.
+    beschreibt; ExecuteSkill macht dessen Skills aufrufbar.
 elements:
   - idShort: Controller
     modelType: ReferenceElement
@@ -28,7 +31,7 @@ elements:
     modelType: ReferenceElement
     cardinality: ZeroToOne
     preferredName: {en: "control component", de: "Control Component"}
-    definition: {en: "Reference to the Control Component Instance submodel of the controller (skills, endpoints).", de: "Verweis auf das Control-Component-Instance-Teilmodell der Steuerung (Skills, Endpunkte)."}
+    definition: {en: "Reference to the Control Component Instance submodel of the controller (skills, endpoints). The operations are executed through its endpoints; ExecuteSkill offers its skills.", de: "Verweis auf das Control-Component-Instance-Teilmodell der Steuerung (Skills, Endpunkte). Die Operationen werden über dessen Endpunkte ausgeführt; ExecuteSkill bietet dessen Skills an."}
   - idShort: StateModel
     preferredName: {en: "state model", de: "Zustandsmodell"}
     definition: {en: "State model followed by the line, e.g. ISA-TR88.00.02 (PackML).", de: "Von der Linie verwendetes Zustandsmodell, z. B. ISA-TR88.00.02 (PackML)."}
@@ -65,4 +68,17 @@ elements:
       - {idShort: Enabled, valueType: xs:boolean, preferredName: {en: "enabled", de: "aktiviert"}, definition: {en: "True: full containers are exchanged automatically.", de: "Wahr: volle Behälter werden automatisch gewechselt."}}
     outputs:
       - {idShort: Accepted, valueType: xs:boolean, preferredName: {en: "accepted", de: "angenommen"}, definition: {en: "True if the controller accepted and executed the request.", de: "Wahr, wenn die Steuerung die Anforderung angenommen und ausgeführt hat."}}
+      - {idShort: Message, preferredName: {en: "message", de: "Meldung"}, definition: {en: "Human-readable result or rejection reason.", de: "Lesbares Ergebnis oder Ablehnungsgrund."}}
+  - idShort: ExecuteSkill
+    modelType: Operation
+    cardinality: ZeroToOne
+    preferredName: {en: "execute skill", de: "Skill ausführen"}
+    definition: {en: "Executes a skill of the Control Component Instance referenced by ControlComponent (e.g. Produce: bring the line into production; ExchangeContainer: exchange a container). Skill, modes and parameters are checked against the skill description; the result reports the state reached.", de: "Führt einen Skill der über ControlComponent referenzierten Control Component Instance aus (z. B. Produce: Linie in Produktion bringen; ExchangeContainer: Behälter wechseln). Skill, Modi und Parameter werden gegen die Skill-Beschreibung geprüft; das Ergebnis meldet den erreichten Zustand."}
+    inputs:
+      - {idShort: Skill, preferredName: {en: "skill", de: "Skill"}, definition: {en: "idShort of the skill in the Control Component Instance (Skills), e.g. Produce.", de: "idShort des Skills in der Control Component Instance (Skills), z. B. Produce."}}
+      - {idShort: Mode, preferredName: {en: "operation mode", de: "Betriebsart"}, definition: {en: "One of the skill's modes (Modes); empty = the first mode.", de: "Eine der Betriebsarten des Skills (Modes); leer = die erste Betriebsart."}}
+      - {idShort: Parameters, preferredName: {en: "skill parameters", de: "Skill-Parameter"}, definition: {en: "JSON object of input parameters of the skill (Parameters with Direction In), e.g. {\"container\": 1}; empty = none.", de: "JSON-Objekt der Eingangsparameter des Skills (Parameters mit Direction In), z. B. {\"container\": 1}; leer = keine."}}
+    outputs:
+      - {idShort: Accepted, valueType: xs:boolean, preferredName: {en: "accepted", de: "angenommen"}, definition: {en: "True if the controller accepted and executed the request.", de: "Wahr, wenn die Steuerung die Anforderung angenommen und ausgeführt hat."}}
+      - {idShort: State, preferredName: {en: "resulting state", de: "erreichter Zustand"}, definition: {en: "PackML state after the command (name, e.g. EXECUTE).", de: "PackML-Zustand nach dem Befehl (Name, z. B. EXECUTE)."}}
       - {idShort: Message, preferredName: {en: "message", de: "Meldung"}, definition: {en: "Human-readable result or rejection reason.", de: "Lesbares Ergebnis oder Ablehnungsgrund."}}

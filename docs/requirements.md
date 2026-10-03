@@ -40,12 +40,12 @@ that mirror a genuine manufacturing environment.
 |---|---|---|---|---|
 | FR-20 | A local BaSyx Go environment (v1.1.0) runs via docker compose. | M0 | T | ☑ |
 | FR-21 | AAS exist for: **product type**, **workpiece instances**, **robot**, **light barriers**, **conveyor**, plus the QA station, assembly cell, PLC, KLTs and the line. *(27 static AAS incl. stack light; workpiece instance AAS created per part by the MES since M4)* | M3/M4 | T | ☑ |
-| FR-22 | Machine AAS contain at least a Digital Nameplate, technical data, **energy consumption** (static rating + live), **CO₂ footprint**, operational data and an interface description. *(live energy/CO₂e since M4; for Type/Instance pairs technical data and CO₂ footprint sit on the type AAS)* | M3/M4 | T | ☑ |
+| FR-22 | Machine AAS contain at least a Digital Nameplate, technical data, **energy consumption** (static rating + live), **CO₂ footprint**, operational data and an interface description. *(live energy/CO₂e since M4; for Type/Instance pairs technical data and CO₂ footprint sit on the type AAS; M7: operational data limited to state and slow values, history via the TimeSeries LinkedSegment to the historian, ADR-0019)* | M3/M4 | T | ☑ |
 | FR-23 | The product-type AAS contains a **recipe** and a **bill of materials**, plus nameplate, technical data and declared PCF. | M3 | T | ☑ |
 | FR-24 | Each workpiece-instance AAS contains its **quality** results, its **CO₂ footprint** (actual) and its production log/genealogy. It is created when the product is created and updated along the process. | M4 | T | ☑ |
 | FR-25 | IDTA submodel templates are used wherever one exists, with exact semantic IDs. Deviations are documented. | M3 | T, I | ☑ |
 | FR-26 | Dynamic data (power, energy, states, counters) is synchronised from the shop floor to the AAS by an edge data bridge, not by the devices themselves. | M4 | T | ☑ |
-| FR-27 | External clients (AI agents) can control the line through standard AAS Operations, delegated to a gateway. | M4 | T | ☑ |
+| FR-27 | External clients (AI agents) can control the line through standard AAS Operations, delegated to a gateway. *(M7: the gateway resolves its endpoints from Control Component → AID; Control Component skills are executable via ExecuteSkill, ADR-0020)* | M4 | T | ☑ |
 | FR-28 | Workpiece-instance AAS are ephemeral per factory session. Static AAS are preloaded on stack start. | M4 | T | ☑ |
 
 ### 2.4 Visualisation and interaction

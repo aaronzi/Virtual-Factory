@@ -13,8 +13,10 @@ import yaml
 from vf_common.aas.aasx import to_object_store, write_aasx_per_shell
 from vf_common.aas.environment import EnvironmentBuilder
 from vf_common.aas.templates import TemplateLibrary
+from vf_common.historian import HistorianConfig
 
 from . import device_models as dm
+from . import time_series as ts
 from .fmi import read_model_description
 from .interfaces import aid_values, aimc_values
 from .location import layout_positions, location_values
@@ -95,6 +97,7 @@ class BuildContext:
         self.library = TemplateLibrary(repo / "aas" / "templates")
         layout = json.loads((repo / "godot" / "config" / "layouts" / "line1.layout.json").read_text())
         self.uns = json.loads((repo / "godot" / "config" / "uns.json").read_text())
+        self.historian = HistorianConfig.load(repo / "infra" / "historian.json")
         self.positions = layout_positions(layout)
         capabilities = yaml.safe_load((repo / "aas" / "data" / "capabilities.yaml").read_text())
         self.library.concept_descriptions.update(capability_cds(capabilities))
@@ -103,7 +106,7 @@ class BuildContext:
         builder = EnvironmentBuilder(self.library)
         for spec in specs:
             spec = copy.deepcopy(spec)
-            _apply_generators(spec, self.library, self.repo, self.uns, self.positions)
+            _apply_generators(spec, self, self.positions)
             builder.add_asset(spec)
         env = builder.build()
         if validate:
@@ -140,8 +143,8 @@ def capability_cds(dictionary: dict) -> dict[str, dict]:
     return cds
 
 
-def _apply_generators(spec: dict, library: TemplateLibrary, repo: Path, uns: dict, positions: dict) -> None:
-    tag = spec["tag"]
+def _apply_generators(spec: dict, ctx: BuildContext, positions: dict) -> None:
+    tag, library, repo, uns = spec["tag"], ctx.library, ctx.repo, ctx.uns
     generated: dict[str, dict] = {}
     if spec.get("location") is not False and (tag in positions or spec.get("location")):
         pos = spec.get("location") if isinstance(spec.get("location"), list) else positions.get(tag)
@@ -161,9 +164,10 @@ def _apply_generators(spec: dict, library: TemplateLibrary, repo: Path, uns: dic
         generated["AssetInterfacesMappingConfiguration-2.0"] = aimc_values(tag, mappings)
         generated["OperationalData-1.0"] = dm.operational_data_values(md, device, energy_vars)
         generated["SimulationModels-1.0"] = dm.simulation_model_values(tag, md, model_path)
+        library.concept_descriptions[ts.UTC_TIME] = ts.utc_time_cd()
+        generated["TimeSeries-1.1"] = ts.time_series_values(tag, instance, md, ctx.historian)
         if device.get("energy", {}).get("power"):
             generated["EnergyConsumption-1.0"] = dm.energy_dynamic_values(tag, device)
-            generated["TimeSeries-1.1:PowerTimeSeries"] = dm.time_series_values(tag)
     _merge_generated(spec, generated)
 
 

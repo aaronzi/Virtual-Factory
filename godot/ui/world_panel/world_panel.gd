@@ -13,6 +13,8 @@ static var _frame_owner := {}  # frame number -> true: at most one panel re-rend
 @export var max_fps := 15.0
 ## Periodic refresh even without changes (0 = only when dirty), e.g. for the live indicator fade.
 @export var refresh_hz := 0.0
+## Drawn over the scene (no depth test): pop-up panels must never disappear inside an asset.
+@export var always_on_top := false
 
 var viewport: SubViewport
 var content: Control
@@ -20,6 +22,7 @@ var _quad: MeshInstance3D
 var _input := _PanelInput.new()
 var _dirty := true
 var _since_render := 0.0
+var _body: StaticBody3D
 
 
 func _ready() -> void:
@@ -31,6 +34,7 @@ func _ready() -> void:
 	add_child(viewport)
 	_build_quad()
 	_build_body()
+	visibility_changed.connect(_update_collision)
 	_input.panel = self
 	add_child(_input)
 	if content:
@@ -93,6 +97,9 @@ func _build_quad() -> void:
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.albedo_texture = viewport.get_texture()
 	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	if always_on_top:
+		mat.no_depth_test = true
+		mat.render_priority = 10
 	_quad.material_override = mat
 	_quad.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_quad)
@@ -103,22 +110,32 @@ func _build_quad() -> void:
 	back.position.z = -0.009
 	var frame := StandardMaterial3D.new()
 	frame.albedo_color = Color(0.13, 0.14, 0.16)
+	if always_on_top:
+		frame.no_depth_test = true
+		frame.render_priority = 9
 	back.material_override = frame
 	back.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF  # draw-call budget (shadow pass)
 	add_child(back)
 
 
 func _build_body() -> void:
-	var body := StaticBody3D.new()
-	body.collision_layer = Interactable.UI_LAYER
-	body.collision_mask = 0
+	_body = StaticBody3D.new()
+	_body.collision_layer = Interactable.UI_LAYER
+	_body.collision_mask = 0
 	var shape := CollisionShape3D.new()
 	var box := BoxShape3D.new()
 	box.size = Vector3(size_m.x, size_m.y, 0.01)
 	shape.shape = box
-	body.add_child(shape)
-	add_child(body)
-	_input.register(body)
+	_body.add_child(shape)
+	add_child(_body)
+	_input.register(_body)
+	_update_collision()
+
+
+## A hidden panel must not swallow clicks (its collider would stay in the scene otherwise).
+func _update_collision() -> void:
+	if _body:
+		_body.collision_layer = Interactable.UI_LAYER if is_visible_in_tree() else 0
 
 
 class _PanelInput:

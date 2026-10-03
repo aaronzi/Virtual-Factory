@@ -27,6 +27,7 @@ Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robo
 | 14 | `klt_exchange_command` | input | discrete | Int32 |  | 0 | Manual container exchange (1 KLT A, 2 KLT B, 0 none); edge-triggered on change, only if the KLT holds parts |
 | 15 | `cv_fault` | input | discrete | Boolean |  | false | CV01 drive fault (alarm 101, line aborts) |
 | 16 | `rb_protective_stop` | input | discrete | Boolean |  | false | RB01 in protective stop, e.g. fence door open (alarm 201, line held until released) |
+| 17 | `estop` | input | discrete | Boolean |  | false | Emergency stop circuit open (E-stop button on the HMI stand latched): abort, alarm 100 |
 | 50 | `scan_time` | parameter | fixed | Float64 | s | 0.01 | PLC cycle time |
 | 51 | `auto_start` | parameter | fixed | Boolean |  | true | Reset and start automatically |
 | 52 | `belt_speed` | parameter | tunable | Float64 | m/s | 0.25 | Conveyor speed setpoint (recipe) |

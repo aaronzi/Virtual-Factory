@@ -24,12 +24,15 @@ def cv01():
 
 
 def test_mappings_point_from_uns_topics_to_typed_sinks(cv01):
-    speed = next(m for m in cv01["CV01"] if m.source_id == "belt_speed")
-    assert speed.topic == f"{ROOT}/cv01/belt_speed" and speed.value_key == "v"
-    assert speed.sink_path == "ProcessValues.belt_speed" and speed.sink_type == "xs:double"
-    assert speed.sink_submodel.endswith("/CV01/OperationalData/1")
+    fault = next(m for m in cv01["CV01"] if m.source_id == "fault")
+    assert fault.topic == f"{ROOT}/cv01/fault" and fault.value_key == "v"
+    assert fault.sink_path == "ProcessValues.fault" and fault.sink_type == "xs:boolean"
+    assert fault.sink_submodel.endswith("/CV01/OperationalData/1")
     power = next(m for m in cv01["CV01"] if m.source_id == "power")
-    assert power.sink_path == "ActualPower" and power.sink_submodel.endswith("/CV01/EnergyConsumption/1")
+    assert power.sink_path == "ActualPower" and power.sink_type == "xs:double"
+    assert power.sink_submodel.endswith("/CV01/EnergyConsumption/1")
+    # slim AAS (ADR-0019): continuous signals are history-only - not mapped into the AAS
+    assert not any(m.source_id in ("belt_speed", "belt_position") for m in cv01["CV01"])
 
 
 def test_lookup_transformation_and_conversion(cv01):

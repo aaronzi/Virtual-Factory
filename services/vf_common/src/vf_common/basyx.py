@@ -58,9 +58,12 @@ class BasyxClient:
         """blobs: include Blob values (omitted by default, extent=withoutBlobValue)."""
         return self._get_or_none(f"/submodels/{b64(sm_id)}" + ("?extent=withBlobValue" if blobs else ""))
 
-    def list_submodels(self, semantic_id: str | None = None, limit: int = 500) -> list[dict]:
-        # BaSyx Go expects the semantic id as base64url-encoded Reference JSON
-        reference = {"type": "ExternalReference", "keys": [{"type": "GlobalReference", "value": semantic_id}]}
+    def list_submodels(self, semantic_id: str | None = None, limit: int = 500,
+                       semantic_key_type: str = "GlobalReference") -> list[dict]:
+        # BaSyx Go expects the semantic id as base64url-encoded Reference JSON and matches the reference type
+        # too (some IDTA templates, e.g. AID 1.1, use a ModelReference with key type Submodel)
+        ref_type = "ExternalReference" if semantic_key_type == "GlobalReference" else "ModelReference"
+        reference = {"type": ref_type, "keys": [{"type": semantic_key_type, "value": semantic_id}]}
         params = {"semanticId": b64(json.dumps(reference, separators=(",", ":")))} if semantic_id else {}
         return self._paged("/submodels", limit, params)
 

@@ -15,12 +15,19 @@ from datetime import datetime, timedelta, timezone
 from provisioner.build import REPO, load_yaml
 
 from . import cell_data
+from .carbon import PartFootprint
 from .quality import Verdict
 
 BLUEPRINT_SERIAL = "PC3280-2026-000123"
 BLUEPRINT_RELEASE = "2026-10-01T06:24:48.090Z"  # end of OP70 in the blueprint = release from the cell
 CELL_OPS = ["OP10", "OP20", "OP30", "OP40", "OP50", "OP60", "OP70"]
 STAGES = ("released", "inspected", "packed", "lost")
+REJECT_NOTE = {"en": "Footprint of this rejected unit (production loss, A1-A3): components and energy. It "
+                     "is allocated to the good units of the session (their ProductionLossCO2eq) - do not "
+                     "count it again.",
+               "de": "Fußabdruck dieser Ausschuss-Einheit (Produktionsverlust, A1-A3): Bauteile und Energie. "
+                     "Er wird den Gut-Einheiten der Sitzung zugeordnet (deren ProductionLossCO2eq) - nicht "
+                     "nochmals zählen."}
 
 
 def load_blueprint() -> dict:
@@ -37,7 +44,8 @@ class WorkpieceSpec:
     def __init__(self, blueprint: dict, positions: dict[str, list[float]], thumbnail: dict | str):
         self.blueprint, self.positions, self.thumbnail = blueprint, positions, thumbnail
 
-    def build(self, v: dict, stage: str, verdict: Verdict | None = None, pcf: float | None = None) -> dict:
+    def build(self, v: dict, stage: str, verdict: Verdict | None = None,
+              pcf: PartFootprint | float | None = None) -> dict:
         serial = v["serial"]
         spec = _replace_serial(copy.deepcopy(self.blueprint), serial)
         spec["thumbnail"] = self.thumbnail
@@ -110,10 +118,18 @@ class WorkpieceSpec:
         values = _submodel(spec, "QualityInspection")
         verdict.apply(values, spec, v)
 
-    def _carbon_footprint(self, spec: dict, v: dict, pcf: float) -> None:
-        footprint = _submodel(spec, "CarbonFootprint")["ProductCarbonFootprints"][0]
-        footprint["PcfCO2eq"] = round(pcf, 3)
-        footprint["PublicationDate"] = _parse(v["sortedAt"]).isoformat(timespec="seconds")
+    def _carbon_footprint(self, spec: dict, v: dict, pcf: PartFootprint | float) -> None:
+        """Blueprint entries: total A1-A3, A1 purchased components, A3 manufacturing (+ energy details)."""
+        fp = pcf if isinstance(pcf, PartFootprint) else PartFootprint(float(pcf), 0.0, 0.0, 0.0)
+        total, material, manufacturing = _submodel(spec, "CarbonFootprint")["ProductCarbonFootprints"]
+        for entry, value in ((total, fp.total), (material, fp.material), (manufacturing, fp.manufacturing)):
+            entry["PcfCO2eq"] = round(value, 4)
+            entry["PublicationDate"] = _parse(v["sortedAt"]).isoformat(timespec="seconds")
+        for key, value in (("ElectricalEnergy", fp.electricity_kwh), ("CompressedAirEnergy", fp.air_kwh),
+                           ("ProductionLossCO2eq", fp.loss_share), ("LineResidenceTime", fp.residence_s)):
+            manufacturing["+" + key]["value"] = round(value, 6)
+        if fp.rejected:
+            total["_description"] = REJECT_NOTE
 
 
 def _submodel(spec: dict, id_short: str) -> dict:

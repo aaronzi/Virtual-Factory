@@ -4,7 +4,8 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
 
 ## Commands
 - Backend: `docker compose -f infra/docker-compose.yml up -d [--build]` (project `vf`; ports 8091 AAS env, 3001 UI,
-  1883/9001 MQTT, 8092 Operaton BPMN (demo/demo), 8095 ops gateway). Services: bridge, mes, ops-gateway (`services/`).
+  1883/9001 MQTT, 8092 Operaton BPMN (demo/demo), 8095 ops gateway, 8181 InfluxDB 3). Services: bridge, mes, ops-gateway, historian
+  (`services/`).
   Do NOT touch the separate `rebac-*` containers (other project on 8080/8082/3000).
 - GDScript tests: `tools/run_godot_tests.sh` (also compiles every script) · line run: `tools/run_line_simulation.sh [s]`
   · training scenarios: `tools/run_scenarios.sh` · Node-RED sandbox: `--profile sandbox`

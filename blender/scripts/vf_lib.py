@@ -125,6 +125,7 @@ def decal_material(image_name: str) -> bpy.types.Material:
     links.new(tex.outputs["Alpha"], bsdf.inputs["Alpha"])
     bsdf.inputs["Roughness"].default_value = 0.45
     mat.surface_render_method = "DITHERED"
+    mat.use_backface_culling = True  # single-sided: not visible mirrored through thin parts
     return mat
 
 

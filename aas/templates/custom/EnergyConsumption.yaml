@@ -78,8 +78,8 @@ elements:
     cardinality: ZeroToOne
     preferredName: {en: "last update", de: "letzte Aktualisierung"}
     definition: {en: "Time of the last update of the dynamic values.", de: "Zeitpunkt der letzten Aktualisierung der dynamischen Werte."}
-  - idShort: PowerTimeSeries
+  - idShort: TimeSeries
     modelType: ReferenceElement
     cardinality: ZeroToOne
-    preferredName: {en: "power time series", de: "Leistungszeitreihe"}
-    definition: {en: "Reference to the Time Series submodel holding the power history.", de: "Referenz auf das Zeitreihen-Teilmodell mit dem Leistungsverlauf."}
+    preferredName: {en: "time series", de: "Zeitreihe"}
+    definition: {en: "Reference to the Time Series submodel that links the recorded history of power, energy and the other outputs (historian).", de: "Referenz auf das Zeitreihen-Teilmodell, das den aufgezeichneten Verlauf von Leistung, Energie und den übrigen Ausgängen verknüpft (Historian)."}

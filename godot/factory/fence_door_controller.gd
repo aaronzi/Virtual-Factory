@@ -10,6 +10,7 @@ const SWING_DEG_PER_S := 180.0
 
 var master: CoSimMaster
 var commands: LocalCommands
+var safety: SafetyCircuit
 var door: Node3D
 var _closed_rotation := 0.0
 var _angle := 0.0
@@ -42,11 +43,14 @@ func setup(p_master: CoSimMaster, p_commands: LocalCommands, fence: Node3D) -> b
 
 
 func toggle() -> void:
-	commands.write(INPUT, not is_open())
+	if safety:
+		safety.toggle_door()
+	else:
+		commands.write(INPUT, not is_open())
 
 
 func is_open() -> bool:
-	return bool(master.read(INPUT))
+	return safety.is_door_open() if safety else bool(master.read(INPUT))
 
 
 func _process(delta: float) -> void:

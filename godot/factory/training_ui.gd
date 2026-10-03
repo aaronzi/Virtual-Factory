@@ -3,7 +3,8 @@ extends Node
 ## Composition of the in-world training UI (part of the composition root): pointer routing, asset picking,
 ## AAS inspector with BaSyx events, and the backend clients. Endpoints: res://config/backend.json,
 ## `--vf-aas-url=`, `--vf-bpmn-url=`, `--vf-aas-events=<broker url|off>` (default: broker of uns.json),
-## `--vf-inspect=<AAS tag>` opens the inspector at start (screenshots, demos).
+## `--vf-inspect=<AAS tag>` opens the inspector at start (screenshots, demos);
+## `--vf-estop=1` presses the E-stop.
 
 const BACKEND := "res://config/backend.json"
 const UNS := "res://config/uns.json"
@@ -21,6 +22,8 @@ var tasks: TaskController
 var menu: MenuController
 var dataflow: DataFlowController
 var fence_door: FenceDoorController
+var safety: SafetyCircuit
+var hover: HoverHighlight
 
 
 func setup(p_factory: Node, p_rig: PlayerRig) -> void:
@@ -37,6 +40,9 @@ func setup(p_factory: Node, p_rig: PlayerRig) -> void:
 	router.rig = rig
 	router.world_pressed.connect(_on_world_pressed)
 	AssetPicker.add_volumes(factory.builder)
+	hover = HoverHighlight.new()
+	add_child(hover)
+	hover.setup(rig, router)
 	inspector = InspectorController.new()
 	add_child(inspector)
 	inspector.setup(aas, feed, rig)
@@ -56,6 +62,8 @@ func setup(p_factory: Node, p_rig: PlayerRig) -> void:
 	var inspect := DevTools.get_arg("vf-inspect")
 	if inspect != "":
 		get_tree().create_timer(1.0).timeout.connect(func() -> void: inspector.open_asset(inspect))
+	if DevTools.get_arg("vf-estop") != "":
+		get_tree().create_timer(1.0).timeout.connect(safety.toggle_estop)
 
 
 func _process(_delta: float) -> void:
@@ -75,7 +83,7 @@ func _exit_tree() -> void:
 func _on_world_pressed(_hit: Dictionary) -> void:
 	var picked := AssetPicker.pick(rig.get_world_3d(), rig.get_pointer_ray())
 	if not picked.is_empty():
-		inspector.open_asset(picked.tag)
+		inspector.open_asset(picked.tag, picked.get("point", Vector3.INF))
 
 
 func set_dataflow(on: bool) -> void:
@@ -92,9 +100,16 @@ func _setup_hmi() -> void:
 
 
 func _setup_fence_door() -> void:
+	safety = SafetyCircuit.new()
+	add_child(safety)
+	safety.setup(factory.builder.master, commands)
+	for prop: Node3D in factory.builder.props:
+		if prop.scene_file_path.ends_with("hmi_stand.glb"):
+			safety.add_estop(prop)
 	for prop: Node3D in factory.builder.props:
 		if prop.scene_file_path.ends_with("safety_fence.glb"):
 			fence_door = FenceDoorController.new()
+			fence_door.safety = safety
 			add_child(fence_door)
 			if not fence_door.setup(factory.builder.master, commands, prop):
 				push_warning("TrainingUi: safety fence has no Door object")
@@ -108,8 +123,8 @@ func _setup_tasks() -> void:
 	tasks = TaskController.new()
 	tasks.poll_s = config.get("task_poll_s", 2.0)
 	add_child(tasks)
-	var pos: Array = config.get("terminal_position", [2.3, 0.0, 0.9])
-	tasks.setup(bpmn, factory, Vector3(pos[0], pos[1], pos[2]), config.get("terminal_yaw_deg", 35.0))
+	var pos: Array = config.get("terminal_position", [2.25, 0.0, -1.05])
+	tasks.setup(bpmn, factory, Vector3(pos[0], pos[1], pos[2]), config.get("terminal_yaw_deg", -10.0))
 	tasks.tasks_changed.connect(inspector.refresh_actions)
 
 

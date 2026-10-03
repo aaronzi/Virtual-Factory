@@ -1,6 +1,12 @@
 """Generates the dynamic-data submodels of a device from its FMI model description:
 OperationalData (process values with generated concept descriptions), EnergyConsumption (dynamic part),
-TimeSeries (power), SimulationModels (ports and model file) and the AIMC mapping list."""
+SimulationModels (ports and model file) and the AIMC mapping list (TimeSeries: time_series.py).
+
+Slim AAS rule (ADR-0019): the AAS keeps state and slow values only - FMI outputs with variability `discrete`
+(Boolean/Int32/String, and Float64 values that change per event such as QS01 delta_e) plus OperatingState,
+OperatingHours and the EnergyConsumption values. Continuous signals (joint angles, belt position, ...) are
+described in the AID and recorded by the historian, but neither stored in OperationalData nor mapped by the
+AIMC."""
 
 from __future__ import annotations
 
@@ -12,7 +18,11 @@ from vf_common.aas.templates import IEC61360, DATA_TYPES
 from .fmi import FmiVariable, ModelDescription
 
 AID_NOTE = "Published via the asset interface (see AssetInterfacesDescription)."
-COMMISSIONING = "2025-09-15T00:00:00Z"  # placeholder until the MES starts a session
+
+
+def is_state_value(var: FmiVariable) -> bool:
+    """True for outputs the AAS stores (FMI 3.0: Float64 defaults to continuous, other types to discrete)."""
+    return (var.variability or ("continuous" if var.type == "Float64" else "discrete")) != "continuous"
 
 
 def process_value_cd_id(md: ModelDescription, var: FmiVariable) -> str:
@@ -46,7 +56,7 @@ def process_value_cds(md: ModelDescription) -> list[dict]:
 def operational_data_values(md: ModelDescription, device: dict, excluded: set[str]) -> dict:
     values = []
     for var in md.by_causality("output"):
-        if var.name in excluded:
+        if var.name in excluded or not is_state_value(var):
             continue
         values.append({"_idShort": var.name, "valueType": var.xsd_type, "value": var.start or _zero(var),
                        "semanticId": process_value_cd_id(md, var),
@@ -61,15 +71,15 @@ def operational_data_values(md: ModelDescription, device: dict, excluded: set[st
 
 
 def energy_dynamic_values(tag: str, device: dict) -> dict:
-    out = {"ActualPower": 0.0, "EnergyConsumed": 0.0, "PowerTimeSeries": {"ref": f"sm:{tag}/PowerTimeSeries"}}
+    out = {"ActualPower": 0.0, "EnergyConsumed": 0.0, "TimeSeries": {"ref": f"sm:{tag}/TimeSeries"}}
     if device.get("energy", {}).get("air"):
         out["CompressedAir"] = {"AirConsumed": 0.0}
     return out
 
 
 def aimc_mappings(device: dict, md: ModelDescription) -> tuple[list[tuple], set[str]]:
-    """(FMI output, sink path, lookup) for all outputs; returns the mapping list and the energy-mapped
-    outputs."""
+    """(FMI output, sink path, lookup) for the energy/hours/state outputs and every discrete output (slim AAS
+    rule); returns the mapping list and the energy-mapped outputs."""
     energy = device.get("energy", {})
     targets = {energy.get("power"): "EnergyConsumption#ActualPower",
                energy.get("energy"): "EnergyConsumption#EnergyConsumed",
@@ -81,24 +91,9 @@ def aimc_mappings(device: dict, md: ModelDescription) -> tuple[list[tuple], set[
     if state:
         mappings.append((state["variable"], "OperationalData#OperatingState", state.get("map")))
     for var in md.by_causality("output"):
-        if var.name not in targets:
+        if var.name not in targets and is_state_value(var):
             mappings.append((var.name, f"OperationalData#ProcessValues.{var.name}", None))
     return mappings, set(targets)
-
-
-def time_series_values(tag: str) -> dict:
-    return {"Metadata": {"Name": {"en": f"Electrical power {tag}", "de": f"Elektrische Leistung {tag}"},
-                         "Description": {
-                             "en": "Power samples of the current session, recorded every 10 s by the MES.",
-                             "de": "Leistungswerte der aktuellen Sitzung, alle 10 s vom MES erfasst."},
-                         "Record": {"Time": [{"value": 0, "_idShort": "Time"}],
-                                    "+Power": {"valueType": "xs:double", "value": 0,
-                                               "semanticId": f"{ids.ID_BASE}/cd/EnergyConsumption/"
-                                                             "ActualPower/1/0"}}},
-            "Segments": {"InternalSegment": [{"_idShort": "Session", "Name": {"en": "Current session"},
-                                              "RecordCount": 0, "StartTime": COMMISSIONING,
-                                              "SamplingInterval": 10, "State": "in progress",
-                                              "LastUpdate": COMMISSIONING, "Records": {}}]}}
 
 
 def simulation_model_values(tag: str, md: ModelDescription, model_path: str) -> dict:

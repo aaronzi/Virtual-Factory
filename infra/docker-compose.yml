@@ -130,6 +130,35 @@ services:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
     restart: unless-stopped
 
+  influxdb3:
+    # Historian time-series database (ADR-0019): InfluxDB 3 Core, open source. No authentication (local use only);
+    # data on tmpfs like the AAS DB - survives a container restart, wiped with `down`. SQL: /api/v3/query_sql,
+    # writes: /api/v3/write_lp. Database "vf" is created by the first write of the historian.
+    image: influxdb:3.12.0-core
+    command: ["influxdb3", "serve", "--node-id", "vf", "--object-store", "file",
+              "--data-dir", "/var/lib/influxdb3", "--without-auth"]
+    ports:
+      - "8181:8181"
+    tmpfs:
+      - /var/lib/influxdb3:size=2g,uid=1500,gid=1500,mode=0750
+    restart: unless-stopped
+
+  historian:
+    image: vf-services:dev
+    command: ["-m", "historian"]
+    environment:
+      VF_MQTT_URL: mqtt://mqtt:1883
+      VF_INFLUX_URL: http://influxdb3:8181
+      LOG_LEVEL: INFO
+    volumes:
+      - ..:/repo:ro
+    depends_on:
+      mqtt:
+        condition: service_started
+      influxdb3:
+        condition: service_started
+    restart: unless-stopped
+
   bpmn:
     image: operaton/operaton:2.1.5
     ports:
@@ -146,6 +175,7 @@ services:
       VF_MQTT_URL: mqtt://mqtt:1883
       VF_BPMN_URL: http://bpmn:8080/engine-rest
       VF_AAS_PUBLIC_URL: http://localhost:8091
+      VF_INFLUX_URL: http://influxdb3:8181
       LOG_LEVEL: INFO
     volumes:
       - ..:/repo:ro
@@ -206,6 +236,11 @@ services:
       - ./nodered/flows.json:/vf/flows.json:ro
       - ./nodered/settings.js:/vf/settings.js:ro
       - nodered-data:/data
+    healthcheck:  # the image's default check expects /data/settings.js; ours is /vf/settings.js
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:1880/', r => process.exit(r.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     depends_on:
       mqtt:
         condition: service_started

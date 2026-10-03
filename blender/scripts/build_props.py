@@ -61,7 +61,9 @@ def safety_fence():
     parts += fence_panel("Left", xl, yf, xl, yb)
     parts += fence_panel("Right", xr, yf, xr, 0.15)
     parts.append(L.box("SwitchBox", (0.04, 0.06, 0.1), (xr + 0.05, 0.19, 1.1), yellow(), bevel=0.004))
-    parts.append(L.decal("Warning", "warning_robot.png", 0.2, 0.18, (xr + 0.012, -0.08, 1.5), (90, 0, 90)))
+    # warning sign: plate clamped to the outside of the mesh infill, decal 1 mm in front of the plate
+    parts.append(L.box("SignPlate", (0.004, 0.22, 0.2), (xr + 0.014, -0.08, 1.5), dark()))
+    parts.append(L.decal("Warning", "warning_robot.png", 0.2, 0.18, (xr + 0.0171, -0.08, 1.5), (90, 0, 90)))
     L.join(parts, "Fence")
     door = fence_panel("Door", xr, 0.15, xr, yb)
     door.append(L.box("DoorHandle", (0.03, 0.12, 0.03), (xr + 0.03, 0.22, 1.05), L.material("plastic_black")))
@@ -96,8 +98,8 @@ def hmi_stand():
              L.cylinder("Pole", 0.03, 1.15, (0, 0.05, 0.595), L.material("alu_profile"), segments=12),
              L.box("Panel", (0.5, 0.08, 0.36), (0, 0, 1.3), dark(), bevel=0.012),
              L.box("Keys", (0.5, 0.12, 0.05), (0, -0.06, 1.1), dark(), bevel=0.008),
-             L.box("EStop", (0.07, 0.04, 0.07), (0.18, -0.13, 1.12), L.material("paint_yellow"), bevel=0.005),
-             L.cylinder("EStopKnob", 0.025, 0.03, (0.18, -0.16, 1.12), L.material("cap_red"), axis="Y", segments=14)]
+             # E-stop housing; the (clickable, latching) red knob is added in Godot (factory/safety_circuit.gd)
+             L.box("EStop", (0.07, 0.04, 0.07), (0.18, -0.13, 1.12), L.material("paint_yellow"), bevel=0.005)]
     for i, mat in enumerate(("led_green", "cap_red", "paint_white")):
         parts.append(L.cylinder("Button", 0.014, 0.012, (-0.18 + i * 0.06, -0.125, 1.11), L.material(mat), axis="Y",
                                 segments=12))

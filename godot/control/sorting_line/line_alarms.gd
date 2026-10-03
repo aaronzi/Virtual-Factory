@@ -11,12 +11,13 @@ extends RefCounted
 enum Reaction { NONE, HOLD, HOLD_AUTO, ABORT }
 
 const ALARMS := {
+	100: ["E-stop pressed: release it, then Clear and Reset", Reaction.ABORT],
 	101: ["CV01 conveyor drive fault", Reaction.ABORT],
 	202: ["RB01 robot fault", Reaction.HOLD],
 	201: ["RB01 protective stop (safety fence door open)", Reaction.HOLD_AUTO],
 	302: ["LB02 inspection light barrier blocked (signal stuck)", Reaction.HOLD_AUTO],
 	301: ["LB01 infeed light barrier blocked (signal stuck)", Reaction.HOLD_AUTO],
-	401: ["Infeed tracking timeout: released part not detected at LB01", Reaction.NONE],
+	401: ["Infeed timeout: released part not seen at LB01", Reaction.NONE],
 }
 const S := PackMLStateMachine.State
 const C := PackMLStateMachine.Command

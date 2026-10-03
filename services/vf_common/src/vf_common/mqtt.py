@@ -56,6 +56,10 @@ class MqttClient:
         if self.connected.is_set():
             self._client.subscribe(topic, qos)
 
+    def unsubscribe(self, topic: str) -> None:
+        if self._subscriptions.pop(topic, None) is not None and self.connected.is_set():
+            self._client.unsubscribe(topic)
+
     def publish(self, topic: str, payload: Any, qos: int = 1, retain: bool = False) -> None:
         data = payload if isinstance(payload, (bytes, str)) else json.dumps(payload, separators=(",", ":"))
         self._client.publish(topic, data, qos=qos, retain=retain)

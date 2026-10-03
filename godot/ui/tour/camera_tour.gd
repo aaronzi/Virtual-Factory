@@ -63,7 +63,8 @@ func _next() -> void:
 	var stop: Dictionary = stops[_index]
 	_target = _vec(stop.target)
 	var lang := TranslationServer.get_locale().substr(0, 2)
-	caption_changed.emit(stop.get("caption_" + lang, stop.get("caption_en", "")))
+	caption_changed.emit("%d/%d  ·  %s" % [_index + 1, stops.size(),
+		stop.get("caption_" + lang, stop.get("caption_en", ""))])
 	stop_reached.emit(stop)
 	if cam == null:
 		push_warning("CameraTour: rig has no camera")

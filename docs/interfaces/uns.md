@@ -1,8 +1,10 @@
 # Unified Namespace (UNS) – MQTT interface of the shop floor
 
 The registry [`godot/config/uns.json`](../../godot/config/uns.json) is the single source for the Godot UNS
-gateway (`godot/connectivity/uns/`), the AAS Asset Interfaces Description (provisioner), the AIMC data bridge,
-the MES and the operation gateway (ADR-0005). This page describes how the Godot gateway implements it.
+gateway (`godot/connectivity/uns/`) and the AAS Asset Interfaces Description (provisioner, ADR-0005/0013). The
+edge services read the topics from the AAS at runtime (bridge: AIMC/AID properties; ops gateway: Control Component
+→ AID actions; MES: AID events - ADR-0015/0020); only the MES still uses the registry directly for the session
+birth and its KPI topics. This page describes how the Godot gateway implements it.
 
 - Broker: Mosquitto, MQTT 3.1.1, `mqtt://localhost:1883` (TCP) and `ws://localhost:9001` (WebSocket, subprotocol
   `mqtt`). Godot uses its own GDScript client (`godot/connectivity/mqtt/`, no addon).
@@ -100,9 +102,10 @@ Fault variables and the resulting PLC alarms (`PLC01.alarm_code/alarm_text`): [s
 | Consumer | Uses |
 |---|---|
 | AAS (provisioner) | AID properties/actions/events generated from this registry and the FMI model descriptions (ADR-0013) |
-| bridge | telemetry topics as configured by the AIMC in the AAS (ADR-0015) |
-| mes | events (→ BPMN messages), session birth, PLC01 `packml_state` and counters (KPIs) |
-| ops-gateway | commands + acks, PLC01 `packml_state` (ADR-0017) |
+| bridge | telemetry topics as configured by the AIMC in the AAS - state and slow values only (ADR-0015, ADR-0019) |
+| historian | all telemetry `{root}/+/+` (every FMI output of every device) + session birth → InfluxDB 3 (ADR-0019) |
+| mes | events (→ BPMN messages; topics discovered from the AID event affordances in the AAS, ADR-0020), session birth and PLC01 `packml_state`/counters (KPIs) from this registry |
+| ops-gateway | commands + acks, PLC01 `packml_state`; topics, QoS and keys resolved from LINE01 LineControl → PLC01 Control Component endpoints → AID actions (`forms`, `ackForms`) / property, not from this registry (ADR-0017, ADR-0020) |
 | BaSyx Go | publishes its own CloudEvents under `vf/basyx/...` (not part of this registry) |
 | Godot training UI | `vf/basyx/#` (inspector live values, data-flow view) |
 | Node-RED sandbox | events; publishes `{root}/sandbox/alert` (outside the registry, consumed by nobody) |

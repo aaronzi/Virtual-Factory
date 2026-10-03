@@ -42,11 +42,11 @@ class WorkpieceHandlers:
 
     def record_packing(self, v: dict) -> dict:
         verdict = evaluate(v, self.limits)
-        pcf = self.footprint()
-        self.store.publish(self.specs.build(v, "packed", verdict, pcf))
+        footprint = self.footprint(v)  # production-based PCF (carbon.FootprintCalculator)
+        self.store.publish(self.specs.build(v, "packed", verdict, footprint))
         container = int(v["container"])
         self.klt.add(container, v["serial"], int(v["slot"]))
-        return {"correctContainer": container == verdict.planned_container, "pcf": round(pcf, 4)}
+        return {"correctContainer": container == verdict.planned_container, "pcf": round(footprint.total, 4)}
 
     def mark_lost(self, v: dict) -> dict:
         verdict = evaluate(v, self.limits) if v.get("deltaE") is not None else None

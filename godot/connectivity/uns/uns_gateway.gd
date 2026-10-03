@@ -10,6 +10,7 @@ extends RefCounted
 
 ## Emitted for every domain event published to the broker (e.g. for the data-flow visualisation).
 signal event_published(device: String, event: String)
+signal command_acked(ack_topic: String, ack: Dictionary)
 
 var session_id := ""
 var layout_name := ""
@@ -131,6 +132,7 @@ func _publish_ack(topic: String, ack: Dictionary) -> void:
 	if _client.publish(topic, UnsConfig.encode(ack), int(section.get("qos", 1)),
 			section.get("retain", false)):
 		stats.acks += 1
+		command_acked.emit(topic, ack)
 
 
 func _status_topic() -> String:

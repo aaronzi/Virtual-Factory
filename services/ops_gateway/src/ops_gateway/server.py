@@ -11,16 +11,35 @@ import logging
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from .gateway import LineGateway, Result
+from .skills import SkillExecutor
 
 log = logging.getLogger("ops-gateway")
 
 
+WITH_STATE = {"ExecutePackMLCommand", "ExecuteSkill"}
+
+
 def operations(gw: LineGateway) -> dict:
+    skills = SkillExecutor(gw)
     return {
         "ExecutePackMLCommand": lambda a: gw.packml_command(str(a.get("Command", ""))),
-        "ExchangeContainer": lambda a: gw.exchange_container(_int(a.get("Container"))),
+        # the operation is a shortcut for the skill: container checked against the skill's parameter values
+        "ExchangeContainer": lambda a: skills.execute("ExchangeContainer", "",
+                                                      {"container": a.get("Container") or ""}),
         "SetAutoExchange": lambda a: gw.set_auto_exchange(str(a.get("Enabled", "")).lower() in ("true", "1")),
+        "ExecuteSkill": lambda a: skills.execute(str(a.get("Skill") or ""), str(a.get("Mode") or ""),
+                                                 a.get("Parameters")),
     }
+
+
+def health(gw: LineGateway) -> dict:
+    config = gw.config
+    return {"status": "ok" if config else "unconfigured", "packml_state": gw.state,
+            "controller": config.controller if config else None,
+            "endpoints": {k: {"kind": a.kind, "affordance": a.name, "topic": a.form.topic,
+                              "ack": a.ack.topic if a.ack else None}
+                          for k, a in (config.endpoints.items() if config else [])},
+            "skills": sorted(config.skills) if config else []}
 
 
 def output_variables(result: Result, with_state: bool) -> list[dict]:
@@ -45,7 +64,7 @@ def make_handler(gw: LineGateway) -> type[BaseHTTPRequestHandler]:
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self) -> None:  # noqa: N802
             if self.path == "/health":
-                self._send(200, {"status": "ok", "packml_state": gw.state})
+                self._send(200, health(gw))
             else:
                 self._send(404, {"error": "not found"})
 
@@ -61,7 +80,7 @@ def make_handler(gw: LineGateway) -> type[BaseHTTPRequestHandler]:
                 return
             result = ops[name](args)
             log.info("%s(%s) -> accepted=%s %s", name, args, result.accepted, result.message)
-            self._send(200, output_variables(result, with_state=name == "ExecutePackMLCommand"))
+            self._send(200, output_variables(result, with_state=name in WITH_STATE))
 
         def _send(self, status: int, body) -> None:
             data = json.dumps(body).encode()
@@ -84,9 +103,3 @@ def serve(gw: LineGateway, port: int) -> ThreadingHTTPServer:
 def _prop(id_short: str, value_type: str, value: str) -> dict:
     return {"modelType": "Property", "idShort": id_short, "valueType": value_type, "value": value}
 
-
-def _int(value) -> int:
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return 0

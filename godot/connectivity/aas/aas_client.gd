@@ -39,6 +39,34 @@ func get_unit(concept_id: String) -> String:
 	return unit
 
 
+## Several submodels in parallel (missing ones are omitted).
+func get_submodels(ids: Array) -> Array:
+	var urls := ids.map(func(id: String) -> String: return "%s/submodels/%s" % [base_url, b64url(id)])
+	var out := []
+	for r: Dictionary in await request_many(urls):
+		if r.ok and r.data is Dictionary:
+			out.append(r.data)
+	return out
+
+
+## Units of several concept descriptions in parallel (cached): {concept id: unit}.
+func get_units(concept_ids: Array) -> Dictionary:
+	var missing := concept_ids.filter(func(id: String) -> bool: return not _units.has(id))
+	var urls := missing.map(func(id: String) -> String:
+		return "%s/concept-descriptions/%s" % [base_url, b64url(id)])
+	var results := await request_many(urls)
+	for i in missing.size():
+		var unit := ""
+		if results[i].ok and results[i].data is Dictionary:
+			for spec: Dictionary in results[i].data.get("embeddedDataSpecifications", []):
+				unit = String(spec.get("dataSpecificationContent", {}).get("unit", ""))
+		_units[missing[i]] = unit
+	var out := {}
+	for id: String in concept_ids:
+		out[id] = _units[id]
+	return out
+
+
 ## The shell's default thumbnail as an Image, or null.
 func get_thumbnail(id: String) -> Image:
 	var r := await request("%s/shells/%s/asset-information/thumbnail" % [base_url, b64url(id)])

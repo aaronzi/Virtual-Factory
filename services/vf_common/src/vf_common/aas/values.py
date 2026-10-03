@@ -52,3 +52,16 @@ def file_value(value: Any) -> dict:
         suffix = "." + path.rsplit(".", 1)[-1].lower() if "." in path else ""
         mime = MIME_OVERRIDES.get(suffix) or mimetypes.guess_type(path)[0] or "application/octet-stream"
     return {"value": path, "contentType": mime}
+
+
+def resolve_refs(spec: Any, resolver) -> Any:
+    """Extra elements reference model elements like template ReferenceElements do: `{"ref": key}` as the value
+    of an extra ReferenceElement, or of the ReferenceElement items of an extra SubmodelElementList."""
+    if not isinstance(spec, dict):
+        return spec
+    value = spec.get("value")
+    if spec.get("modelType") == "ReferenceElement" and isinstance(value, dict) and "ref" in value:
+        return {**spec, "value": resolver(value["ref"])}
+    if spec.get("modelType") == "SubmodelElementList" and isinstance(value, list):
+        return {**spec, "value": [resolve_refs(v, resolver) for v in value]}
+    return spec

@@ -34,7 +34,7 @@ func _init() -> void:
 	_stats = UiTheme.label("", 17)
 	_oee = UiTheme.label("", 17, UiTheme.ACCENT.lightened(0.3))
 	_alarm = UiTheme.label("", 17, UiTheme.ALARM)
-	_alarm.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_alarm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS  # one line: the layout has no spare row
 	root.add_child(_stats)
 	root.add_child(_oee)
 	root.add_child(_alarm)

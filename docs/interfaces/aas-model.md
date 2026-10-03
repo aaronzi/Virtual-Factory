@@ -72,7 +72,7 @@ the FMI model description, the layout or the UNS registry.
 | AssetInterfacesMappingConfiguration | I 2.0 (G) | | | | | | ● | ● | / ● | ● | / ● | | / ● | / ● |
 | OperationalData | C (G) | | | | | | ● | ● | / ● | ● | / ● | | / ● | / ● |
 | EnergyConsumption | C (G + static) | | ● | | | | ● | ● | / ● | ● | / ● | | | / ● |
-| TimeSeries (PowerTimeSeries) | I 1.1 (G) | | | | | | ● | ● | / ● | ● | / ● | | | |
+| TimeSeries (LinkedSegment → historian) | I 1.1 (G) | | | | | | ● | ● | / ● | ● | / ● | | / ● | / ● |
 | SimulationModels | I 1.0 (G) | | | | | | ● | ● | / ● | ● | / ● | | / ● | / ● |
 | Reliability | I 1.0 | | | | | | | | ● / | ● | | | | |
 | FunctionalSafety | I 1.0 | | | | | | ● | | | | ● / | | | |
@@ -96,13 +96,45 @@ Rationale for the main choices:
     action `packml_command`.
   - The Control Component Instance references these via `Endpoints`. This follows Control Component 2.0, which keeps
     runtime state out of the submodel.
+  - PLC01 endpoints (contract with the ops gateway, ADR-0020): `PackMLState` → AID property `packml_state`,
+    `PackMLCommand` → action `packml_command` (interface PackML); `ContainerExchange` → action
+    `klt_exchange_command`, `AutoExchange` → action `auto_exchange` (interface `ContainerHandling` of LC10_TYPE).
+  - Each skill instance has an extra list `UsesEndpoints` (ReferenceElements → `Endpoints.<name>`), because Control
+    Component 2.0 has no skill → endpoint relation: Produce → PackMLCommand, PackMLState, AutoExchange;
+    ExchangeContainer → ContainerExchange. Skills, modes and parameters are enforced at runtime by
+    `LINE01/LineControl/ExecuteSkill` (services.md).
 - **Interfaces:** the AID (MQTT, UNS topics from `godot/config/uns.json`) and the AIMC mapping (AID property →
   OperationalData/EnergyConsumption element, with JSON lookup transformations) are *generated* from the FMI model
-  descriptions. The edge data bridge (M4) reads exactly this AIMC from BaSyx.
-- **Process values:** every FMI output becomes an OperationalData process value with its own concept description
-  (unit, definition), generated from the model description.
+  descriptions. At runtime the AAS is the configuration: the bridge reads AIMC + AID properties, the ops gateway
+  the AID actions behind the Control Component endpoints, the MES the AID events (ADR-0015, ADR-0020).
+- **AID actions and events** (open collections, generated, ADR-0020):
+
+  | Element | Content |
+  |---|---|
+  | `title`, `synchronous` | description; `false` (the result arrives on the ack topic, not on the request) |
+  | `input` (td:hasInputSchema) | object schema, `properties.Value/CorrelationId/Source` with `key` = `v` / `corr` / `source` |
+  | `output` (td:hasOutputSchema) | acknowledgement payload: `CorrelationId/Accepted/Reason/Value/Timestamp` → `corr` / `accepted` / `reason` / `v` / `ts` |
+  | `forms` | `op` = `invokeaction`, `href` = `/{root}/{device}/cmd/{variable}`, contentType, security, `mqv_qos` 1, `mqv_retain` false, `mqv_controlPacket` publish |
+  | `ackForms` | second TD form (semanticId td:hasForm): `op` = `queryaction`, `href` = `/{root}/{device}/cmd-resp/{variable}`, QoS 1, not retained, `mqv_controlPacket` subscribe |
+  | event `forms` | `op` = `subscribeevent`, `href` = `/{root}/{device}/event/{event}`, QoS 1, subscribe |
+
+  AID 1.1 maps a single form per affordance; `ackForms` is the documented extension for the second form (TD 1.1
+  allows several forms told apart by `op`). Consumers that ignore it still see a valid `forms`.
+- **Process values (slim AAS, ADR-0019):** every FMI output gets a concept description (unit, definition) and is
+  described in the AID, but the AAS stores only **state and slow values**: OperationalData process values and AIMC
+  mappings exist for outputs with FMI variability `discrete` (Boolean/Int32/String and per-event Float64 values such
+  as QS01 `r/g/b/hue/delta_e`, AC01 `last_leak_rate`), plus OperatingState, OperatingHours and the
+  EnergyConsumption values. Continuous signals (UR5e joints/TCP/gripper width, CV01 belt speed/position, AC01
+  cycle progress) live only in the historian.
+- **History:** one IDTA TimeSeries 1.1 per device, generated from the model description: `Metadata.Record` =
+  `Time` (semanticId `https://admin-shell.io/idta/TimeSeries/UtcTime/1/1`, `xs:dateTime`) + one Property per FMI
+  output (idShort = variable = database column, semanticId = its FMI concept description with unit), without
+  values; `Segments.LinkedSegment` `Historian` with `Endpoint` (InfluxDB SQL endpoint, host view) and `Query`
+  (SQL, last hour). The UtcTime concept description is added by the provisioner with the texts of IDTA 02008-1-1
+  Table 10 (not published in the SMT repository). Static: nothing writes into it at runtime.
 - **Energy:** no IDTA template exists for measured consumption, hence the custom EnergyConsumption (rating, actual
-  power, energy, compressed air, operational CO₂e with an emission factor), with the history in TimeSeries.
+  power, energy, compressed air, operational CO₂e with an emission factor); its `TimeSeries` element references the
+  device's TimeSeries submodel.
 
 ## 4. Process steps (shared by recipe, process parameters, executed processes)
 
@@ -178,12 +210,31 @@ nominal between min/max).
 - **KLT contents** (KLTA01/KLTB01 `HierarchicalStructures`, archetype OneDown): station → `Box` (KLT on the station,
   CoManagedEntity) → one Node per packed workpiece (`globalAssetId` = workpiece asset id) + `HasPart`. Cleared on
   exchange.
-- **Instance PCF** (ISO 14067 terminology, simplified, R9): Σ BulkCount × component PCF (A1–A3, read from the
-  component AAS found via the type's BoM) + line energy per part (rolling 5 min, from EnergyConsumption) × emission
-  factor (0.363 kg/kWh). The declared type PCF (4.2 kg) additionally covers upstream manufacturing at suppliers.
+- **Instance PCF** (ISO 14067 terminology, production-based, R9; MES `carbon.py`, `process_energy.py`), computed
+  when a part is packed, static inputs from the AAS, energy from the historian (UNS series are step functions):
+  1. *Material (A1)*: Σ BulkCount × component PCF (component AAS found via the `globalAssetId` of the type's BoM).
+  2. *Assembly cell* (one part at a time): ∫ P_AC01 dt over the part's cycle, from the previous release to its
+     release (idle, blocked and held time included, at most 30 min), entirely to this part. AC01 `power` contains
+     the compressed-air equivalent, so the air share E_air = ΔAirConsumed in the cycle × `SpecificEnergy` (AC01
+     EnergyConsumption, 0.12 Wh/Nl) is split off and reported separately (not added twice).
+  3. *Downstream devices* (CV01, LB01, LB02, QS01, RB01, SL01): ∫ P_d(t) / n(t) dt from release to sort, with
+     n(t) = AC01 `release_count` − PLC01 `sorted_count` (parts in process). Energy while no part is on the line
+     is allocated to no part (it remains in LINE01 `OperationalCO2eq`).
+  4. *Energy CO₂e* = (electricity + compressed air) × emission factor of LINE01 (0.363 kg/kWh).
+  5. *Production losses* (rejects, packed into KLT B): a reject reports its own footprint (components + energy,
+     marked as production loss in the description of its first entry); every good part carries L / G - L =
+     cumulative footprint of the session's rejects, G = cumulative good parts including itself, at packing time.
+     Transparent and converges to the exact allocation L_total / G_total for a stationary reject rate; an MES
+     restart resets L and G.
+  6. *CarbonFootprint* (template-conformant list `ProductCarbonFootprints`): entry 1 `A1-A3` = total, entry 2
+     `A1` = components, entry 3 `A3` = energy CO₂e + losses with the extra properties `ElectricalEnergy` (kWh,
+     without air), `CompressedAirEnergy` (kWh), `ProductionLossCO2eq` (kg) and `LineResidenceTime` (s) (generated
+     concept descriptions with units). Entries 2 and 3 break entry 1 down and must not be added to it.
+  7. Without the historian: line energy per part (rolling 5 min of the AAS energy counters), method "fallback".
+  The declared type PCF (4.2 kg) additionally covers upstream manufacturing at suppliers.
 - **EnergyConsumption** (devices + LINE01 totals): `OperationalCO2eq`, `LastUpdate`, `MeasurementStart` (session
-  start) maintained by the MES; **PowerTimeSeries**: segment `Session` with `StartTime`, `SamplingInterval` 10 s,
-  records `Time` (s since start) / `Power` (W), ring buffer of 180 records.
+  start) maintained by the MES; `TimeSeries` references the device's TimeSeries submodel (history in the
+  historian, see §3; the MES no longer writes time-series records).
 - **LINE01 KPIs** (02066): production, busy, delay (Suspended) and down time from PackML state durations; good,
   inspected, produced, scrap quantities from the PLC counters.
 - **AIMC transformations** are Lua (`aimc_main(sources)`, template-conformant), e.g. PackML state number →
@@ -196,14 +247,18 @@ See `services/vf_common/src/vf_common/aas/environment.py` and `instantiate.py`. 
   `specificAssetIds`.
 - `model3d: {file, preview, title, objectType}` generates Models3D.
 - `device: {modelDescription, energy: {power, energy, air}, operatingHours, state: {variable, map, initial}}`
-  generates AID, AIMC, OperationalData and SimulationModels; EnergyConsumption (dynamic part) and PowerTimeSeries
-  only when `energy.power` names a live power output (PLC01 and the KLT stands have none).
+  generates AID, AIMC, OperationalData, SimulationModels and TimeSeries (LinkedSegment, endpoint and database from
+  `infra/historian.json`); EnergyConsumption (dynamic part) only when `energy.power` names a live power output
+  (PLC01 and the KLT stands have none).
 - `location: false | [x, y, z]` (default: the position from the layout), `locationDescription` (text or en/de),
   `locationTime` (ISO 8601; default commissioning date) generate AssetLocation.
 - `thumbnail: repo:<path>` (embedded) or `{path: <absolute URL>, contentType}` (runtime AAS linking an existing image).
 - Tag `SELF` in `${asset:SELF}` / `sm:SELF/...` refers to the asset being built (shared files such as
   `common/machine_klt_instance.yaml`).
 - Operations: `{_delegation: <URL>}` adds the BaSyx `invocationDelegation` qualifier (LINE01 LineControl → ops gateway).
+- Extra ReferenceElements (`"+X": {modelType: ReferenceElement, value: {ref: <key>}}`) and extra SubmodelElementLists
+  of them resolve `ref` keys like template ReferenceElements (e.g. `UsesEndpoints`,
+  `common/control_uses_endpoints.yaml`).
 - Extra elements `"+Name": {valueType, value, unit, description, conceptName?, semanticId?}`: the **unit belongs in
   `unit`, never in the description text**. Without an explicit `semanticId` the builder generates an IEC 61360
   concept description `<ID_BASE>/cd/property/<Name>` (preferred name/definition from the description, data type
@@ -220,6 +275,8 @@ See `services/vf_common/src/vf_common/aas/environment.py` and `instantiate.py`. 
   - repeated/placeholder elements (`X__00__`) are lists, with an optional `_idShort` per item
   - `+Name: {...}` adds an element that is not in the template
   - `{ref: "aas:TAG" | "sm:TAG/IdShort#path" | "global:IRI"}` for references
+  - `_noValue: true` in a Property dict (`{valueType, semanticId, _noValue: true}`) or an extra element gives a
+    Property without value (structure only, e.g. the TimeSeries `Metadata.Record` definition)
   - `${asset:TAG}` / `${aas:TAG}` / `${sm:TAG/IdShort}` in strings
   - `repo:<path>` embeds a file
   - `$include: common/<file>.yaml` merges a shared fragment

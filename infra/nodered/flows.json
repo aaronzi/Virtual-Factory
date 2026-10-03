@@ -315,7 +315,7 @@
         "type": "tab",
         "label": "3 Read the AAS",
         "disabled": false,
-        "info": "Reads the live counters of the PLC from its digital twin (AAS) via the AAS REST API.\n\n- Submodel id: `https://virtual-factory.example/ids/sm/PLC01/OperationalData/1`\n- In URLs, ids are **base64url** encoded (RFC 4648, `-` and `_` instead of `+` and `/`, no `=` padding)\n- `GET http://aas-env:8091/submodels/{base64url id}/$value` returns the values only (ValueOnly format, numbers as strings)\n- `aas-env` is the compose service name; from the host use `http://localhost:8091` (Swagger UI: `/swagger`)\n\nThe counters are written into the AAS by the bridge service from the UNS telemetry (at most once per second).\nIdeas: add a repeat interval to the inject node; read another submodel (e.g. LINE01 EnergyConsumption)."
+        "info": "Reads the live counters of the PLC from its digital twin (AAS) via the AAS REST API.\n\n- Submodel id: `https://virtual-factory.example/ids/sm/PLC01/OperationalData/1`\n- In URLs, ids are **base64url** encoded (RFC 4648, `-` and `_` instead of `+` and `/`, no `=` padding)\n- `GET http://aas-env:8091/submodels/{base64url id}/$value` returns the values only (ValueOnly format, numbers as strings)\n- `aas-env` is the compose service name; from the host use `http://localhost:8091` (Swagger UI: `/swagger`)\n\nThe counters are written into the AAS by the bridge service from the UNS telemetry (counters are discrete: written on change).\nIdeas: add a repeat interval to the inject node; read another submodel (e.g. LINE01 EnergyConsumption)."
     },
     {
         "id": "aas_c1",

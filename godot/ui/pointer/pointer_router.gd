@@ -15,6 +15,11 @@ var _pressed: Interactable
 var _last_hit := {}
 
 
+## The interactable currently under the pointer (null if none).
+func hovered() -> Interactable:
+	return _hovered if is_instance_valid(_hovered) else null
+
+
 func set_rig(value: PlayerRig) -> void:
 	if rig:
 		rig.pointer_pressed.disconnect(_on_pressed)

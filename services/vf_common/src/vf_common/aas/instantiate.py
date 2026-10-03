@@ -12,7 +12,7 @@ Data is a nested dict keyed by idShort (see docs/interfaces/aas-model.md, "Asset
     Capability               {} (only "_idShort"/"_description")
     Operation                {"_delegation": "<URL>"} (BaSyx invocationDelegation qualifier) or {}
     Blob                     {"contentType": ..., "value": str | bytes | JSON object}
-    extra element            "+Name": {modelType, valueType, value, unit, semanticId, description, ...}
+    extra element            "+Name": {modelType, valueType, value | _noValue, unit, semanticId, description}
                              (no semanticId: a concept description <ID_BASE>/cd/property/<Name> is generated)
     any element              "_idShort" / "_description" / "_semanticId" override the template values
 
@@ -30,9 +30,9 @@ from dataclasses import dataclass, field
 from typing import Any, Callable
 
 from ..ids import ID_BASE
-from .values import convert_property_value, file_value, mlp_value
+from .values import convert_property_value, file_value, mlp_value, resolve_refs
 
-EXTRA_META = ("semanticId", "description", "value", "unit", "conceptName")
+EXTRA_META = ("semanticId", "description", "value", "unit", "conceptName", "_noValue")
 CONCEPT_TYPES = ("Property", "MultiLanguageProperty", "Range")
 PLACEHOLDER = re.compile(r"__\d\d__|\{\d\d\}")
 OPTIONAL = {"ZeroToOne", "ZeroToMany"}
@@ -89,7 +89,7 @@ class _Ctx:
                                          f"{path}.{name}"))
         for key, value in data.items():
             if key.startswith("+"):
-                out.append(_extra_element(key[1:], value, self.result.concepts))
+                out.append(_extra_element(key[1:], resolve_refs(value, self.resolver), self.result.concepts))
             elif key not in used and not key.startswith("_"):
                 self.result.unknown.append(f"{path}.{key}")
         return out
@@ -140,12 +140,14 @@ class _Ctx:
                                  "valueType": "xs:string", "value": value["_delegation"]}]
 
     def _fill_Property(self, el: dict, value: Any, path: str) -> None:
-        if isinstance(value, dict):  # {value, valueType, semanticId, _idShort, ...} for repeated properties
+        if isinstance(value, dict):  # {value | _noValue: true, valueType, semanticId, _idShort, ...}
             if value.get("valueType"):
                 el["valueType"] = value["valueType"]
             if value.get("semanticId"):
                 el["semanticId"] = {"type": "ExternalReference",
                                     "keys": [{"type": "GlobalReference", "value": value["semanticId"]}]}
+            if value.get("_noValue"):  # structure only (e.g. TimeSeries Metadata.Record): no value
+                return
             value = value.get("value")
         if value is None:
             el["value"] = ""
@@ -289,7 +291,8 @@ def _extra_element(id_short: str, spec: dict, concepts: dict | None = None) -> d
         el["description"] = mlp_value(spec["description"])
     if el["modelType"] == "Property":
         el.setdefault("valueType", "xs:string")
-        el["value"] = convert_property_value(el["valueType"], spec.get("value"))
+        if not spec.get("_noValue"):
+            el["value"] = convert_property_value(el["valueType"], spec.get("value"))
     elif el["modelType"] == "MultiLanguageProperty":
         el["value"] = mlp_value(spec.get("value", ""))
     elif "value" in spec:

@@ -41,7 +41,7 @@ flowchart LR
 | Block | Path | Responsibility |
 |---|---|---|
 | Godot simulation | `godot/` | 3D world, device models, virtual PLC, MQTT gateway, AAS inspector |
-| Edge/IT services | `services/` | `vf_common` (IDs, AAS template engine, BaSyx/MQTT clients, UNS registry), `provisioner` (static AAS → AASX preload), `bridge` (UNS → AAS via AIMC), `mes` (workpiece AAS, BPMN workers), `ops_gateway` (delegated AAS operations) – see [services.md](../interfaces/services.md) |
+| Edge/IT services | `services/` | `vf_common` (IDs, AAS template engine, BaSyx/MQTT clients, UNS registry), `provisioner` (static AAS → AASX preload), `bridge` (UNS → AAS via AIMC), `mes` (workpiece AAS, BPMN workers), `ops_gateway` (delegated AAS operations, configured from Control Component + AID) – see [services.md](../interfaces/services.md) |
 | BPMN models | `bpmn/` | WorkpieceLifecycle (procedure model of the master recipe), ProductionOrder (ADR-0016) |
 | AAS master data | `aas/` | Vendored IDTA templates + CDs, custom templates (YAML DSL), asset data, capability dictionary, documents (PDF) |
 | 3D asset sources | `blender/` | .blend files and the generator scripts that produce them |
@@ -77,7 +77,8 @@ Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 | basyx-config | `eclipsebasyx/basyxconfigurationservice-go:1.1.0` (one-shot) | – |
 | mqtt | `eclipse-mosquitto:2` | 1883, 9001 (ws) |
 | provisioner | `vf-services:dev` (built from `services/Dockerfile`), one-shot before aas-env | – |
-| bridge, mes, ops-gateway | `vf-services:dev` | 8095 (ops-gateway, fixed IP 172.30.42.95 for the delegation allow-list) |
+| bridge, mes, ops-gateway, historian | `vf-services:dev` | 8095 (ops-gateway, fixed IP 172.30.42.95 for the delegation allow-list) |
+| influxdb3 | `influxdb:3.12.0-core` (historian time-series DB, tmpfs, no auth, ADR-0019) | 8181 (HTTP: write_lp, query_sql) |
 | bpmn | `operaton/operaton:2.1.5` (in-memory H2) | 8092 (REST, Cockpit, Tasklist) |
 | nodered (optional, profile `sandbox`) | `nodered/node-red:4.1.15-22`, learner sandbox outside the core data path; flows from `infra/nodered/`, edits in volume `vf_nodered-data`, no auth | 1880 |
 
@@ -101,10 +102,13 @@ Desktop builds (macOS universal, Windows/Linux x86_64) come from `tools/export_b
   ([ADR-0011](../adr/0011-template-based-aas-generation.md)), Control Components with PackML on the interface
   ([ADR-0012](../adr/0012-control-component-packml-on-interface.md)), interfaces generated from FMI
   ([ADR-0013](../adr/0013-aas-interfaces-generated-from-fmi.md))
-- **UNS topics**: `godot/config/uns.json` (single source for the Godot gateway, AID generation, bridge, MES and ops
-  gateway), [interfaces/uns.md](../interfaces/uns.md), [ADR-0014](../adr/0014-godot-uns-gateway.md)
-- **AAS-driven integration**: AIMC bridge ([ADR-0015](../adr/0015-aimc-bridge.md)), BaSyx MQTT eventing for mapping
-  reloads, line commands as delegated AAS operations ([ADR-0017](../adr/0017-aas-operations-delegated.md))
+- **UNS topics**: `godot/config/uns.json` (single source for the Godot gateway and the AID generation; the edge
+  services read the topics from the AAS), [interfaces/uns.md](../interfaces/uns.md),
+  [ADR-0014](../adr/0014-godot-uns-gateway.md)
+- **AAS-driven integration**: AIMC bridge ([ADR-0015](../adr/0015-aimc-bridge.md)), BaSyx MQTT eventing for
+  reloads, line commands as delegated AAS operations ([ADR-0017](../adr/0017-aas-operations-delegated.md)); the
+  ops gateway resolves its endpoints via Control Component → AID, skills are executable, the MES discovers its
+  event topics from the AID ([ADR-0020](../adr/0020-control-component-and-aid-drive-commands.md))
 - **Orchestration**: BPMN on MES level, PLC keeps real-time control ([ADR-0016](../adr/0016-bpmn-orchestration.md))
 
 ## 9. Architecture decisions

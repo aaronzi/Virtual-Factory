@@ -40,16 +40,37 @@ submodels:
       lastUpdate: "2026-10-01T06:25:07Z"
       uniqueProductIdentifier: https://virtual-factory.example/01/04099999032808/21/PC3280-2026-000123
 
+  # Production-based PCF (MES, docs/interfaces/aas-model.md §6a): entry 1 = total A1-A3 of this unit, entries 2
+  # and 3 break it down (A1 purchased components, A3 manufacturing on LINE01) - they must not be added to entry 1.
   - template: CarbonFootprint-1.0
     values:
       ProductCarbonFootprints:
-        - PcfCalculationMethods: [{value: "ISO 14067"}]
-          PcfCO2eq: 4.21
+        - _description: {en: "Cradle-to-gate footprint of this unit (A1-A3) = purchased components (A1) + manufacturing on LINE01 (A3). The following entries break it down and must not be added to this one.", de: "Cradle-to-Gate-Fußabdruck dieser Einheit (A1-A3) = Zukaufteile (A1) + Fertigung auf LINE01 (A3). Die folgenden Einträge schlüsseln ihn auf und dürfen nicht hinzuaddiert werden."}
+          PcfCalculationMethods: [{value: "ISO 14067"}]
+          PcfCO2eq: 3.9112
           ReferenceImpactUnitForCalculation: piece
           QuantityOfMeasureForCalculation: 1
           LifeCyclePhases: [{value: "A1-A3"}]
           GoodsHandoverAddress: {$include: common/address_vf_pneumatics.yaml}
           PublicationDate: "2026-10-01T06:25:07+00:00"
+        - _description: {en: "Purchased components: sum of BulkCount x PCF of the component (from the component AAS, bill of material of the product type).", de: "Zukaufteile: Summe aus Stückzahl x PCF des Bauteils (aus der Bauteil-AAS, Stückliste des Produkttyps)."}
+          PcfCalculationMethods: [{value: "ISO 14067"}]
+          PcfCO2eq: 3.9004
+          ReferenceImpactUnitForCalculation: piece
+          QuantityOfMeasureForCalculation: 1
+          LifeCyclePhases: [{value: "A1"}]
+          PublicationDate: "2026-10-01T06:25:07+00:00"
+        - _description: {en: "Manufacturing on LINE01: electrical energy and compressed air allocated to this unit from the recorded power (historian) x grid emission factor, plus the allocated production losses (rejects).", de: "Fertigung auf LINE01: dieser Einheit zugeordnete elektrische Energie und Druckluft aus der aufgezeichneten Leistung (Historian) x Netz-Emissionsfaktor, zuzüglich der zugeordneten Produktionsverluste (Ausschuss)."}
+          PcfCalculationMethods: [{value: "ISO 14067"}]
+          PcfCO2eq: 0.0108
+          ReferenceImpactUnitForCalculation: piece
+          QuantityOfMeasureForCalculation: 1
+          LifeCyclePhases: [{value: "A3"}]
+          PublicationDate: "2026-10-01T06:25:07+00:00"
+          "+ElectricalEnergy": {unit: kWh, valueType: xs:double, value: 0.0213, description: {en: "Electrical energy allocated to the unit (assembly cell cycle without compressed air, share of the downstream devices while the unit was on the line)", de: "Der Einheit zugeordnete elektrische Energie (Takt der Montagezelle ohne Druckluft, Anteil der nachgelagerten Geräte während die Einheit auf der Linie war)"}}
+          "+CompressedAirEnergy": {unit: kWh, valueType: xs:double, value: 0.0006, description: {en: "Electrical energy of the compressed air consumed in the unit's assembly cycle (air consumed x specific energy)", de: "Elektrische Energie der im Montagetakt der Einheit verbrauchten Druckluft (Luftverbrauch x spezifische Energie)"}}
+          "+ProductionLossCO2eq": {unit: kg, valueType: xs:double, value: 0.0029, description: {en: "Share of the production losses (rejects of the session) allocated to this good unit", de: "Dieser Gut-Einheit zugeordneter Anteil der Produktionsverluste (Ausschuss der Sitzung)"}}
+          "+LineResidenceTime": {unit: s, valueType: xs:double, value: 19.2, description: {en: "Time from release by the assembly cell to packing", de: "Zeit von der Freigabe durch die Montagezelle bis zum Verpacken"}}
 
   # One Run with all processes of the master recipe MR-PC3280. Measured values are recorded as resource
   # parameters (values reported by the executing resource); component lots in the process BoM.

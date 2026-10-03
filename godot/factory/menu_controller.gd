@@ -46,6 +46,7 @@ func _process(delta: float) -> void:
 	var events: int = ui.feed.events if ui.feed else 0
 	var open_tasks: int = ui.tasks.tasks.size() if ui.tasks else 0
 	menu.set_info(tr("MENU_INFO") % [online, events, open_tasks])
+	menu.show_state(TranslationServer.get_locale(), tour.active)
 	var runner: Variant = _runner()
 	if runner != null:
 		menu.set_scenario_status(tr("SCENARIO_RUNNING") % _scenario_title(runner, runner.active_id)
@@ -109,6 +110,8 @@ func _apply_dev_args() -> void:
 	var quality := DevTools.get_arg("vf-quality")
 	if quality != "":
 		QualitySettings.apply(ui.get_parent(), int(quality))
+	if DevTools.get_arg("vf-menu") != "":
+		menu.open()
 	if DevTools.get_arg("vf-dataflow") != "":
 		ui.set_dataflow(true)
 	if DevTools.get_arg("vf-tour") != "":

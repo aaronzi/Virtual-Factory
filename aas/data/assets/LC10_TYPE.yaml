@@ -189,7 +189,16 @@ submodels:
               2 Stopped, 3 Starting, 4 Idle, 5 Suspended, 6 Execute, 7 Stopping, 8 Aborting, 9 Aborted, 10 Holding, 11 Held,
               12 Unholding, 13 Suspending, 14 Unsuspending, 15 Resetting, 16 Completing, 17 Complete). Command: action
               packml_command (Int32; 1 Reset, 2 Start, 3 Stop, 4 Hold, 5 Unhold, 6 Suspend, 7 Unsuspend, 8 Abort, 9 Clear),
-              edge-triggered on change, QoS 1, not retained. Unit mode (Production, Maintenance, Manual) = skill mode.
+              edge-triggered on change, QoS 1, not retained, acknowledged on the cmd-resp topic (form ackForms of the
+              action). Unit mode (Production, Maintenance, Manual) = skill mode.
+          - _idShort: ContainerHandling
+            _description: {en: "Exchange of the output containers (KLT) and the automatic exchange option", de: "Wechsel der Ausgangsbehälter (KLT) und Option für den automatischen Wechsel"}
+            InterfaceProfile: "VF KLT exchange (container 1 = KLT A, 2 = KLT B; automatic exchange on/off)"
+            InterfaceProfileSupplement: >-
+              MQTT/UNS, see AssetInterfacesDescription of the instance. Action klt_exchange_command (Int32 pulse; 1 = KLT A,
+              2 = KLT B; only if the KLT holds parts, waits for a running robot job), action auto_exchange (Boolean; true =
+              full KLTs are exchanged automatically after exchange_delay). Both acknowledged on the cmd-resp topic (form
+              ackForms of the action).
       Errors:
         Error:
           - _idShort: InfeedTrackingTimeout
@@ -197,6 +206,11 @@ submodels:
             "+Description": {modelType: MultiLanguageProperty, value: {en: "Infeed tracking timeout: a part released by AC01 was not detected by LB01 within infeed_timeout (8 s); counter infeed_faults is incremented and the serial number assignment may be lost", de: "Timeout der Einlaufverfolgung: ein von AC01 freigegebenes Teil wurde nicht innerhalb von infeed_timeout (8 s) von LB01 erkannt; der Zähler infeed_faults wird erhöht und die Seriennummernzuordnung kann verloren gehen"}}
             "+Remedy": {modelType: MultiLanguageProperty, value: {en: "Check the transfer point AC01/CV01 and the alignment of LB01; remove misplaced parts", de: "Übergabestelle AC01/CV01 und Ausrichtung von LB01 prüfen; verlegte Teile entfernen"}}
             "+Severity": {value: Warning}
+          - _idShort: EmergencyStop
+            ErrorCode: PLC-004
+            "+Description": {modelType: MultiLanguageProperty, value: {en: "Emergency stop pressed on the HMI stand (alarm 100): the safety circuit stops the robot and the line is aborted", de: "Not-Halt am Bedienpult betätigt (Alarm 100): der Sicherheitskreis stoppt den Roboter und die Linie wird abgebrochen"}}
+            "+Remedy": {modelType: MultiLanguageProperty, value: {en: "Remove the cause, release the E-stop button (twist), then Clear and Reset the line", de: "Ursache beseitigen, Not-Halt-Taster entriegeln (drehen), dann Linie quittieren (Clear) und zurücksetzen (Reset)"}}
+            "+Severity": {value: Error}
           - _idShort: RobotFault
             ErrorCode: PLC-002
             "+Description": {modelType: MultiLanguageProperty, value: {en: "Robot fault reported by RB01 (input rb_fault, e.g. RB-001 target unreachable); red stack light, no further pick jobs are issued", de: "Roboterstörung von RB01 gemeldet (Eingang rb_fault, z. B. RB-001 Ziel nicht erreichbar); rote Signalleuchte, keine weiteren Greifaufträge"}}

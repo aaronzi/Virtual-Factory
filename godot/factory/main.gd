@@ -21,6 +21,9 @@ func _ready() -> void:
 	($DesktopRig as DesktopRig).bounds = AABB(hall.to_global(interior.position) + Vector3(0, 0.3, 0),
 		interior.size - Vector3(0, 0.3, 0))
 	_apply_camera_arg(DevTools.get_arg("vf-camera"))
+	var mouse := DevTools.get_arg("vf-mouse").split_floats(",")  # --vf-mouse=x,y (screenshots of hover)
+	if mouse.size() == 2:
+		Input.warp_mouse.call_deferred(Vector2(mouse[0], mouse[1]))
 	var rig := _select_rig()
 	if not _factory.builder.devices.is_empty() and DevTools.get_arg("vf-ui", "on") != "off":
 		training_ui = TrainingUi.new()
