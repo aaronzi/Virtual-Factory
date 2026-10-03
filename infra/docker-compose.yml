@@ -67,7 +67,7 @@ services:
     tmpfs:
       - /var/lib/postgresql:size=1g
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vf -d basyx"]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U vf -d basyx"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -402,7 +402,7 @@ services:
     tmpfs:
       - /var/lib/postgresql/data:size=512m
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vf_alarms -d alarms"]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U vf_alarms -d alarms"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -501,7 +501,7 @@ services:
     tmpfs:
       - /var/lib/postgresql:size=512m
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vf -d basyx"]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U vf -d basyx"]
       interval: 5s
       timeout: 5s
       retries: 10
