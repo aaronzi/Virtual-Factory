@@ -8,6 +8,7 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
   Do NOT touch the separate `rebac-*` containers (other project on 8080/8082/3000).
 - GDScript tests: `tools/run_godot_tests.sh` (also compiles every script) · line run: `tools/run_line_simulation.sh [s]`
   · training scenarios: `tools/run_scenarios.sh` · Node-RED sandbox: `--profile sandbox`
+  · desktop builds: `tools/export_builds.sh [macOS|Windows|Linux]` → build/ (needs Godot 4.7.2 export templates)
 - Python tests: `uv run pytest` (`-m integration` needs the stack) · interface docs: `uv run tools/gen_interface_docs.py`
 - Checks (must pass before commit): `uv run tools/arch_check.py`, `uv run tools/complexity_check.py`,
   `(cd godot && uv run gdlint .)`

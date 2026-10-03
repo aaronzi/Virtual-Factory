@@ -81,7 +81,8 @@ Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 | bpmn | `operaton/operaton:2.1.5` (in-memory H2) | 8092 (REST, Cockpit, Tasklist) |
 | nodered (optional, profile `sandbox`) | `nodered/node-red:4.1.15-22`, learner sandbox outside the core data path; flows from `infra/nodered/`, edits in volume `vf_nodered-data`, no auth | 1880 |
 
-The Godot application runs natively on the host and connects to `ws://localhost:9001` and `http://localhost:8091`.
+Desktop builds (macOS universal, Windows/Linux x86_64) come from `tools/export_builds.sh`
+(`godot/export_presets.cfg`). The Godot application runs natively on the host and connects to `ws://localhost:9001` and `http://localhost:8091`.
 
 ## 8. Crosscutting concepts
 - **ID scheme**: `services/vf_common/src/vf_common/ids.py` (base `https://virtual-factory.example/ids`).

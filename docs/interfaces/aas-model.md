@@ -35,6 +35,7 @@
 | GR01 | 2-finger parallel gripper PG-85 | Instance | – | VF Automation Systems GmbH |
 | KLT_TYPE / KLTA01, KLTB01 | Small load carrier KLT 6428 on stand | Type / Instance | KLT_TYPE | VF Automation Systems GmbH (stand), VDA 4500 box |
 | LC10_TYPE / PLC01 | Line controller LC-10 running the "SortingLine" PLC program | Type / Instance | LC10_TYPE | VF Automation Systems GmbH |
+| SL01 | Stack light SL3-RAG-B on the control cabinet (driven by PLC01) | Instance | – | Lumetra Sensortechnik GmbH (fictional) |
 
 Companies other than Universal Robots are **fictional**. The UR5e AAS is maintained by the plant operator and
 uses public data sheet values nominatively; no logos are reproduced.

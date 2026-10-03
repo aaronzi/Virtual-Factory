@@ -21,11 +21,30 @@ func _ready() -> void:
 	($DesktopRig as DesktopRig).bounds = AABB(hall.to_global(interior.position) + Vector3(0, 0.3, 0),
 		interior.size - Vector3(0, 0.3, 0))
 	_apply_camera_arg(DevTools.get_arg("vf-camera"))
+	var rig := _select_rig()
 	if not _factory.builder.devices.is_empty() and DevTools.get_arg("vf-ui", "on") != "off":
 		training_ui = TrainingUi.new()
 		training_ui.name = "TrainingUi"
 		add_child(training_ui)
-		training_ui.setup(_factory, $DesktopRig as PlayerRig)
+		training_ui.setup(_factory, rig)
+
+
+## --vf-xr: use the OpenXR rig if a runtime is available (ADR-0003), otherwise keep the desktop rig.
+func _select_rig() -> PlayerRig:
+	var desktop := $DesktopRig as PlayerRig
+	if DevTools.get_arg("vf-xr") == "":
+		return desktop
+	var xr := XRRig.new()
+	xr.name = "XRRig"
+	add_child(xr)
+	if not xr.try_start():
+		push_warning("XR requested but no OpenXR runtime available - using the desktop rig")
+		xr.queue_free()
+		return desktop
+	xr.teleport_to(desktop.global_position, desktop.global_position - desktop.global_basis.z)
+	desktop.get_view_camera().current = false
+	desktop.process_mode = Node.PROCESS_MODE_DISABLED
+	return xr
 
 
 ## --vf-camera=x,y,z,tx,ty,tz places the player rig (review screenshots).

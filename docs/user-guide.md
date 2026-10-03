@@ -19,6 +19,16 @@ docker compose -f infra/docker-compose.yml up -d
 Stop it with `docker compose -f infra/docker-compose.yml down`. The database and the BPMN engine are ephemeral.
 After changing code in `services/`, rebuild with `docker compose -f infra/docker-compose.yml up -d --build`.
 
+## Desktop builds
+```bash
+tools/export_builds.sh            # all three, or: tools/export_builds.sh macOS
+```
+Produces `build/VirtualFactory-macos.zip` (universal .app, ad-hoc signed - on first start use right-click → Open),
+`build/VirtualFactory-windows.zip` (x86_64 .exe) and `build/VirtualFactory-linux.zip` (x86_64). The builds contain
+the complete simulation and training UI; the backend (`docker compose`) is optional and is found on localhost.
+Developer options are passed after `--`, e.g. `VirtualFactory.exe -- --vf-lang=de --vf-quality=0`. Requires the
+Godot 4.7.2 export templates (Editor → Manage Export Templates).
+
 ## Start the factory
 Open `godot/project.godot` in Godot 4.7 and press Play, or run:
 ```bash
@@ -68,12 +78,15 @@ Everything an operator needs is in the 3D scene (world-space panels, ready for V
 - **MES terminal** (right of the robot cell): the open BPMN user tasks (same as Operaton Tasklist) with their form
   fields; *Complete task* finishes them.
 - **Stack light** on the control cabinet: green = EXECUTE, amber = held/suspended/acting, red = stopped/aborted/fault.
+- **Safety fence door** (right side of the robot cell): click to open - the robot stops (protective stop), the line
+  holds with alarm 201; click again to close and the line resumes.
 - **Menu (F1):** language English/Deutsch, render quality Low/Medium/High, simulation speed 1×/2×/4×, training
   scenarios (start/stop), demo tour (camera flies through the line with captions and opens AAS), data-flow view
   (IT layer above the line; packets follow real UNS events and BaSyx change events).
 
 Developer options (after `--`): `--vf-lang=de`, `--vf-quality=0|1|2`, `--vf-tour`, `--vf-dataflow`,
-`--vf-inspect=<AAS tag>`, `--vf-scenario=<id>`, `--vf-ui=off`, `--vf-aas-url=…`, `--vf-bpmn-url=…`,
+`--vf-inspect=<AAS tag>`, `--vf-scenario=<id>`, `--vf-ui=off`, `--vf-xr` (OpenXR headset, see
+[xr-readiness](architecture/xr-readiness.md)), `--vf-aas-url=…`, `--vf-bpmn-url=…`,
 `--vf-aas-events=<broker url|off>`. Endpoints: `godot/config/backend.json`.
 
 ## Node-RED sandbox (optional)

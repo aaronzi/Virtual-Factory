@@ -108,8 +108,8 @@ func _setup_tasks() -> void:
 	tasks = TaskController.new()
 	tasks.poll_s = config.get("task_poll_s", 2.0)
 	add_child(tasks)
-	var pos: Array = config.get("terminal_position", [1.65, 0.0, 0.25])
-	tasks.setup(bpmn, factory, Vector3(pos[0], pos[1], pos[2]), config.get("terminal_yaw_deg", 40.0))
+	var pos: Array = config.get("terminal_position", [2.3, 0.0, 0.9])
+	tasks.setup(bpmn, factory, Vector3(pos[0], pos[1], pos[2]), config.get("terminal_yaw_deg", 35.0))
 	tasks.tasks_changed.connect(inspector.refresh_actions)
 
 

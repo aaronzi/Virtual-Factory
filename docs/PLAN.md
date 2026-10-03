@@ -27,6 +27,8 @@
 | D15 | Operator tasks (M4 review) | BPMN user tasks in the Operaton Tasklist **and** on the in-scene MES terminal / at the KLT. |
 | D16 | Inspector data (M4 review) | In-world AAS inspector refreshes via BaSyx MQTT events, then fetch (no polling). |
 | D17 | Sandbox (M4 review) | Node-RED as optional learner sandbox (compose profile `sandbox`). |
+| D18 | Builds (M5 review) | Desktop builds for macOS, Windows and Linux; no measurement on low-end hardware (budgets suffice). |
+| D19 | Scope M6 (M5 review) | Interactive fence door with protective stop and an AAS for the stack light. |
 | D14 | Recipe (M3 review) | ISA-88 recipe leads (structure, limits, BPMN procedure model), IDTA ProcessParameters holds the setpoints; referenced, not duplicated. |
 
 ---

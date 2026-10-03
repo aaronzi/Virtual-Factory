@@ -6,9 +6,9 @@
   "bpmn_url": "http://localhost:8092/engine-rest",
   "task_poll_s": 2.0,
   "terminal_position": [
-    1.65,
+    2.3,
     0.0,
-    0.25
+    0.9
   ],
-  "terminal_yaw_deg": 40.0
+  "terminal_yaw_deg": 35.0
 }
