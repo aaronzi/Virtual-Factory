@@ -1,0 +1,9 @@
+# ContactInformation structure (IDTA 02002) of the machine builder (fictional company)
+Company: {en: VF Automation Systems GmbH, de: VF Automation Systems GmbH}
+Street: {de: Fabrikstraße 3}
+Zipcode: {de: "67655"}
+CityTown: {en: Kaiserslautern, de: Kaiserslautern}
+NationalCode: {en: DE}
+Phone: {TelephoneNumber: {en: "+49 631 000000-300"}}
+Email: {EmailAddress: service@vf-automation.example}
+AddressOfAdditionalLink: https://virtual-factory.example/vf-automation

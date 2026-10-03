@@ -4,6 +4,7 @@ requires-python = ">=3.12"
 
 [manifest]
 members = [
+    "provisioner",
     "vf-common",
     "virtual-factory",
 ]
@@ -670,6 +671,23 @@ wheels = [
 ]
 
 [[package]]
+name = "provisioner"
+version = "0.1.0"
+source = { editable = "services/provisioner" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pyyaml" },
+    { name = "vf-common" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "httpx", specifier = ">=0.28" },
+    { name = "pyyaml", specifier = ">=6" },
+    { name = "vf-common", editable = "services/vf_common" },
+]
+
+[[package]]
 name = "pyecma376-2"
 version = "1.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -952,6 +970,7 @@ source = { editable = "services/vf_common" }
 dependencies = [
     { name = "basyx-python-sdk" },
     { name = "httpx" },
+    { name = "pillow" },
     { name = "pyyaml" },
 ]
 
@@ -959,6 +978,7 @@ dependencies = [
 requires-dist = [
     { name = "basyx-python-sdk", specifier = ">=2.2.0" },
     { name = "httpx", specifier = ">=0.28" },
+    { name = "pillow", specifier = ">=11" },
     { name = "pyyaml", specifier = ">=6" },
 ]
 
@@ -967,6 +987,7 @@ name = "virtual-factory"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "provisioner" },
     { name = "vf-common" },
 ]
 
@@ -982,7 +1003,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "vf-common", editable = "services/vf_common" }]
+requires-dist = [
+    { name = "provisioner", editable = "services/provisioner" },
+    { name = "vf-common", editable = "services/vf_common" },
+]
 
 [package.metadata.requires-dev]
 dev = [

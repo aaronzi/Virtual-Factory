@@ -1,0 +1,4652 @@
+{
+ "administration": {
+  "revision": "0",
+  "templateId": "https://admin-shell.io/IDTA_02068",
+  "version": "1"
+ },
+ "description": [
+  {
+   "language": "en",
+   "text": "Contains information about a company"
+  }
+ ],
+ "displayName": [
+  {
+   "language": "en",
+   "text": "Company Data"
+  }
+ ],
+ "id": "https://admin-shell.io/idta/SubmodelTemplate/CompanyData/1/0",
+ "idShort": "CompanyData",
+ "kind": "Template",
+ "modelType": "Submodel",
+ "semanticId": {
+  "keys": [
+   {
+    "type": "GlobalReference",
+    "value": "https://admin-shell.io/idta/CompanyData/1/0/CompanyData"
+   }
+  ],
+  "type": "ExternalReference"
+ },
+ "submodelElements": [
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "Bank account information to facilitate payment"
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Bank Accounts"
+    }
+   ],
+   "idShort": "BankAccounts",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "ZeroToOne",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "https://admin-shell.io/idta/CompanyData/BankAccounts/1/0"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "value": [
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "The main bank account of the company"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Main Account"
+      }
+     ],
+     "idShort": "MainAccount",
+     "modelType": "ReferenceElement",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "One",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/MainAccount/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": {
+      "keys": [
+       {
+        "type": "Submodel",
+        "value": "admin-shell.io/idta/SubmodelTemplate/CompanyData/1/0"
+       },
+       {
+        "type": "SubmodelElementCollection",
+        "value": "BankAccounts"
+       },
+       {
+        "type": "SubmodelElementCollection",
+        "value": "BankAccount__00__"
+       }
+      ],
+      "type": "ModelReference"
+     }
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "A bank account of the company for customer payments"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Bank Account 00"
+      }
+     ],
+     "idShort": "BankAccount__00__",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "OneToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/BankAccount/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The individual or entity that owns and manages the bank account"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Account Holder"
+        }
+       ],
+       "idShort": "AccountHolder",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/AccountHolder/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The classification of a bank account, such as accounts for domestic and foreign customers"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Bank Account Type"
+        }
+       ],
+       "idShort": "BankAccountType",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/BankAccountType/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The International Bank Account Number, a unique identifier for a specific bank account"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "IBAN"
+        }
+       ],
+       "idShort": "IBAN",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/IBAN/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The Bank Identifier Code, also known as the SWIFT code, which uniquely identifies a bank for international transactions"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "BIC"
+        }
+       ],
+       "idShort": "BIC",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/BIC/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "List of annual business reports"
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Business Report Figures"
+    }
+   ],
+   "idShort": "BusinessReportFigures",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "ZeroToOne",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "https://admin-shell.io/idta/CompanyData/BusinessReportFigures/1/0"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "value": [
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Reference to the most recent business report published by the company"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Last Report"
+      }
+     ],
+     "idShort": "LastReport",
+     "modelType": "ReferenceElement",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "One",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/LastReport/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": {
+      "keys": [
+       {
+        "type": "Submodel",
+        "value": "admin-shell.io/idta/SubmodelTemplate/CompanyData/1/0"
+       },
+       {
+        "type": "SubmodelElementCollection",
+        "value": "BusinessReportFigures"
+       },
+       {
+        "type": "SubmodelElementCollection",
+        "value": "BusinessReportFigure__00__"
+       }
+      ],
+      "type": "ModelReference"
+     }
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Groups related information for Business Report Figure 00."
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Business Report Figure 00"
+      }
+     ],
+     "idShort": "BusinessReportFigure__00__",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "OneToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/BusinessReportFigure/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The 12-month period used for accounting and financial reporting of the business report"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Financial Year"
+        }
+       ],
+       "idShort": "FinancialYear",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/FinancialYear/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:gYear"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The start date of the period covered by the business report"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Begin of Reporttime Frame"
+        }
+       ],
+       "idShort": "BeginOfReporttimeFrame",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/BeginOfReporttimeFrame/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:date"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The end date of the period covered by the business report"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "End of Reporttime Frame"
+        }
+       ],
+       "idShort": "EndOfReporttimeFrame",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/EndOfReporttimeFrame/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:date"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The year in which the business report was published"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Year of Publication"
+        }
+       ],
+       "idShort": "YearOfPublication",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/YearOfPublication/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:gYear"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The total revenue generated by the company during the reporting period"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Turnover"
+        }
+       ],
+       "idShort": "Turnover",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/Turnover/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The total amount of money invested by the company during the reporting period"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Investment Volume"
+        }
+       ],
+       "idShort": "InvestmentVolume",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/InvestmentVolume/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The proportion of equity to total assets, indicating financial stability"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Equity Ratio"
+        }
+       ],
+       "idShort": "EquityRatio",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/EquityRatio/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Groups related information for Customers."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Customers"
+        }
+       ],
+       "idShort": "Customers",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/Customers/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "The total count of customers served by the company"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Total Number Customers"
+          }
+         ],
+         "idShort": "TotalNumberCustomers",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/TotalNumberCustomers/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:positiveInteger"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Groups related information for Reference Customer 00."
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Reference Customer 00"
+          }
+         ],
+         "idShort": "ReferenceCustomer__00__",
+         "modelType": "SubmodelElementCollection",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/ReferenceCustomer/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "value": [
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "Reference to the company AAS of the customer"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Reference to Customer"
+            }
+           ],
+           "idShort": "ReferenceToCustomer",
+           "modelType": "ReferenceElement",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToOne",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/ReferenceToCustomer/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           }
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "The website of a customer"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Customer Website"
+            }
+           ],
+           "idShort": "CustomerWebsite",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToOne",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/CustomerWebsite/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:anyURI"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The total number of employees working for the company"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Total Employees"
+        }
+       ],
+       "idShort": "TotalEmployees",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/TotalEmployees/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:positiveInteger"
+      },
+      {
+       "contentType": "application/unknown",
+       "description": [
+        {
+         "language": "en",
+         "text": "A file containing aggregated data of the business report"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Consolidated Data File"
+        }
+       ],
+       "idShort": "ConsolidatedDataFile",
+       "modelType": "File",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/ConsolidatedDataFile/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "Contains information on the company's environmental, social and compliance policies"
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Company Governance"
+    }
+   ],
+   "idShort": "CompanyGovernance",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "ZeroToOne",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "https://admin-shell.io/idta/CompanyData/CompanyGovernance/1/0"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "value": [
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Groups related information for Corporate Policies."
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Corporate Policies"
+      }
+     ],
+     "idShort": "CorporatePolicies",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/CorporatePolicies/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Reference to a code of conduct document"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Code of Conduct"
+        }
+       ],
+       "idShort": "CodeOfConduct",
+       "modelType": "ReferenceElement",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/CodeOfConduct/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Reference to a contractual terms and conditions document"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "General Terms and Conditions"
+        }
+       ],
+       "idShort": "GeneralTermsAndConditions",
+       "modelType": "ReferenceElement",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/GeneralTermsAndConditions/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Reference to a quality assurance agreement document"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Quality Assurance Agreements"
+        }
+       ],
+       "idShort": "QualityAssuranceAgreements",
+       "modelType": "ReferenceElement",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/QualityAssuranceAgreements/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      }
+     ]
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Groups related information for Industry Standards."
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Industry Standards"
+      }
+     ],
+     "idShort": "IndustryStandards",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/IndustryStandards/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Affiliations with industry organizations or associations"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Memberships"
+        }
+       ],
+       "idShort": "Memberships",
+       "modelType": "SubmodelElementList",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/Memberships/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "typeValueListElement": "Property",
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "An industry association which the company is a member of"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Membership"
+          }
+         ],
+         "idShort": "Membership",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "OneToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/Association/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:string"
+        }
+       ],
+       "valueTypeListElement": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Certifications which the company has acquired"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Certifications"
+        }
+       ],
+       "idShort": "Certifications",
+       "modelType": "SubmodelElementList",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/Certifications/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "typeValueListElement": "SubmodelElementCollection",
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "A certification the company has acquired"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Certification"
+          }
+         ],
+         "idShort": "Certification",
+         "modelType": "SubmodelElementCollection",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "OneToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/Certification/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "value": [
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "The identifier of the certification standard"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Certification Standard"
+            }
+           ],
+           "idShort": "CertificationStandard",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToOne",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/CertificationStandard/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "The organization which granted the certification"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Approval Agency"
+            }
+           ],
+           "idShort": "ApprovalAgency",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToOne",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/ApprovalAgency/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "The identifier of the certification"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Certificate Number"
+            }
+           ],
+           "idShort": "CertificateNumber",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToOne",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/CertificateNumber/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "The date on which the certification was granted"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Issue Date"
+            }
+           ],
+           "idShort": "IssueDate",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToOne",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/IssueDate/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:date"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "The date on which the certification expires"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Expiry Date"
+            }
+           ],
+           "idShort": "ExpiryDate",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToOne",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/ExpiryDate/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:date"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "Reference to the certification document"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Certification Document 00"
+            }
+           ],
+           "idShort": "CertificationDocument__00__",
+           "modelType": "ReferenceElement",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToMany",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/CertificationDocument/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           }
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "The web address where the certification details can be verified"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Certification URL"
+            }
+           ],
+           "idShort": "CertificationURL",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToOne",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/CertificationURL/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:anyURI"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Groups related information for Risk Management."
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Risk Management"
+      }
+     ],
+     "idShort": "RiskManagement",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/RiskManagement/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Flag if the company has set up a business continuity plan"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Business Continuity Plan"
+        }
+       ],
+       "idShort": "BusinessContinuityPlan",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/BusinessContinuityPlan/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:boolean"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "List of programs designed to enhance employees' skills and knowledge"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Employee Trainings"
+        }
+       ],
+       "idShort": "EmployeeTrainings",
+       "modelType": "SubmodelElementList",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/EmployeeTrainings/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "typeValueListElement": "SubmodelElementCollection",
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Contains information on a corporate employee training program"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Employee Training"
+          }
+         ],
+         "idShort": "EmployeeTraining",
+         "modelType": "SubmodelElementCollection",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "OneToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/EmployeeTraining/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "value": [
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "Type of the training program"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Type of Training"
+            }
+           ],
+           "idShort": "TypeOfTraining",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/TypeOfTraining/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "Reference to training program documentation"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Training Documentation"
+            }
+           ],
+           "idShort": "TrainingDocumentation",
+           "modelType": "ReferenceElement",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToOne",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/TrainingDocumentation/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           }
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Groups related information for Security Policies."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Security Policies"
+        }
+       ],
+       "idShort": "SecurityPolicies",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/SecurityPolicies/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Indication if the company has implemented an information security policy"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Information Security Policy"
+          }
+         ],
+         "idShort": "InformationSecurityPolicy",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/InformationSecurityPolicy/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:boolean"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Indication if the company has implemented a data security policy"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Data Protection Policy"
+          }
+         ],
+         "idShort": "DataProtectionPolicy",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/DataProtectionPolicy/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:boolean"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Flag if the company enforces a password policy"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Password Policy"
+          }
+         ],
+         "idShort": "PasswordPolicy",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/PasswordPolicy/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:boolean"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Flag if the company has implemented an authorization concept"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Authorization Concept"
+          }
+         ],
+         "idShort": "AuthorizationConcept",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/AuthorizationConcept/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:boolean"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Flag if the company has implemented an access control process"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Access Control Process"
+          }
+         ],
+         "idShort": "AccessControlProcess",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/AccessControlProcess/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:boolean"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Flag if the company has implemented an user access inventory"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "User Access Inventory"
+          }
+         ],
+         "idShort": "UserAccessInventory",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/UserAccessInventory/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:boolean"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Flag if the company has implemented documentation of granted permissions"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Permission Documentation"
+          }
+         ],
+         "idShort": "PermissionDocumentation",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/PermissionDocumentation/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:boolean"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Flag if the company has implemented a locking system"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Locking System"
+          }
+         ],
+         "idShort": "LockingSystem",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/LockingSystem/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:boolean"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Flag if the company has implemented a key allocation system"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Key Allocation"
+          }
+         ],
+         "idShort": "KeyAllocation",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/KeyAllocation/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:boolean"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Flag if the company has implemented a visitor log"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Visitor Log"
+          }
+         ],
+         "idShort": "VisitorLog",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/VisitorLog/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:boolean"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Flag if the company enforces escorting of visitors on the premises"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Visitor Escort"
+          }
+         ],
+         "idShort": "VisitorEscort",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/VisitorEscort/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:boolean"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Flag if the company hands out badges to visitors"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Visitor Badge"
+          }
+         ],
+         "idShort": "VisitorBadge",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/VisitorBadge/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:boolean"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Flag if the company allows announced customer audits"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Customer Audits"
+          }
+         ],
+         "idShort": "CustomerAudits",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/CustomerAudits/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:string"
+        }
+       ]
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "List of active insurances"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Insurances"
+        }
+       ],
+       "idShort": "Insurances",
+       "modelType": "SubmodelElementList",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/Insurances/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "typeValueListElement": "SubmodelElementCollection",
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Collection on information about an insurance"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Insurance"
+          }
+         ],
+         "idShort": "Insurance",
+         "modelType": "SubmodelElementCollection",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "OneToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/Insurance/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "value": [
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "The provider of the insurance policy"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Insurance Company"
+            }
+           ],
+           "idShort": "InsuranceCompany",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToOne",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/InsuranceCompany/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "The specific category of insurance coverage"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Insurance Type"
+            }
+           ],
+           "idShort": "InsuranceType",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/InsuranceType/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "The amount of coverage provided by the insurance policy"
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Insurance Sum"
+            }
+           ],
+           "idShort": "InsuranceSum",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToOne",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/CompanyData/InsuranceSum/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:positiveInteger"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Lists entries for Legal Compliance."
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Legal Compliance"
+      }
+     ],
+     "idShort": "LegalCompliance",
+     "modelType": "SubmodelElementList",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/LegalCompliance/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "typeValueListElement": "SubmodelElementCollection",
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Contains information about the company's compliance with a regulation"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Regulation"
+        }
+       ],
+       "idShort": "Regulation",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "OneToMany",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/Regulation/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Flag if the company has ensured compliance with the regulation, or if the regulation does not apply"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Compliance Status"
+          }
+         ],
+         "idShort": "ComplianceStatus",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "One",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/ComplianceStatus/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:string"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "A declaration of relevancy and compliance by the company"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Compliance Statement"
+          }
+         ],
+         "idShort": "ComplianceStatement",
+         "modelType": "MultiLanguageProperty",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/ComplianceStatement/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         }
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "The web address where documentation can be accessed"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Documentation URI 00"
+          }
+         ],
+         "idShort": "DocumentationURI__00__",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/DocumentationURI /1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:anyURI"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Reference to regulation compliance documentation"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Documentation Reference 00"
+          }
+         ],
+         "idShort": "DocumentationReference__00__",
+         "modelType": "ReferenceElement",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/DocumentationReference/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         }
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Official name of the regulation"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Regulation Name"
+          }
+         ],
+         "idShort": "RegulationName",
+         "modelType": "MultiLanguageProperty",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "One",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/RegulationName/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "Identifiers of a company, corporation, branch, or division"
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Company Identification"
+    }
+   ],
+   "idShort": "CompanyIdentification",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "ConceptDescription",
+      "value": "https://admin-shell.io/idta/CompanyData/CompanyIdentification/1/0"
+     }
+    ],
+    "type": "ModelReference"
+   },
+   "value": [
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Legally valid name under which a company or organization is registered and conducts business"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Company Name"
+      }
+     ],
+     "idShort": "CompanyName",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "One",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/CompanyName/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:string"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "A short summary of the company's main activities, products or services, and its mission or vision"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Company Description"
+      }
+     ],
+     "idShort": "CompanyDescription",
+     "modelType": "MultiLanguageProperty",
+     "qualifiers": [
+      {
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/CompanyDescription/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     }
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Web address of the company's official website, for customers and interested parties"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Homepage URL"
+      }
+     ],
+     "idShort": "HomepageURL",
+     "modelType": "MultiLanguageProperty",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/HomepageURL/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     }
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Value Added Tax identification number required by companies in the European Union for handling VAT transactions"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "VAT Number"
+      }
+     ],
+     "idShort": "VATNumber",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/VATNumber/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:string"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Identifier assigned to a company by the tax authority"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Tax Number"
+      }
+     ],
+     "idShort": "TaxNumber",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/TaxNumber/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:string"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Data Universal Numbering System number, a unique nine-digit identifier assigned by Dun & Bradstreet to identify companies globally"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "DUNS"
+      }
+     ],
+     "idShort": "DUNS",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/DUNS/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:string"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "The number under which a company is registered in the commercial register"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Commercial Register Number"
+      }
+     ],
+     "idShort": "CommercialRegisterNumber",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/CommercialRegisterNumber/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:string"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "The year in which the company was established"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Founding Year"
+      }
+     ],
+     "idShort": "FoundingYear",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/FoundingYear/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:gYear"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "The currency in which the company processes its orders and transactions"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Order Currency"
+      }
+     ],
+     "idShort": "OrderCurrency",
+     "modelType": "MultiLanguageProperty",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/OrderCurrency/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     }
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "The primary categories of products that the company offers"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Main Product Groups"
+      }
+     ],
+     "idShort": "MainProductGroups",
+     "modelType": "SubmodelElementList",
+     "orderRelevant": false,
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/MainProductGroups/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "typeValueListElement": "MultiLanguageProperty",
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "A category of products that the company offers"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Main Product Group"
+        }
+       ],
+       "idShort": "MainProductGroup",
+       "modelType": "MultiLanguageProperty",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "OneToMany",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/MainProductGroup/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      }
+     ]
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "The sectors in which the company operates"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Industries"
+      }
+     ],
+     "idShort": "Industries",
+     "modelType": "SubmodelElementList",
+     "orderRelevant": false,
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/Industries/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "typeValueListElement": "MultiLanguageProperty",
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "An industry sector"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Industry"
+        }
+       ],
+       "idShort": "Industry",
+       "modelType": "MultiLanguageProperty",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "OneToMany",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/Industry/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      }
+     ]
+    },
+    {
+     "contentType": "image/png",
+     "description": [
+      {
+       "language": "en",
+       "text": "Imagefile for logo of the company provided in common format (.png, .jpg)"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Company Logo"
+      }
+     ],
+     "idShort": "CompanyLogo",
+     "modelType": "File",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0173-1#02-ABI776#002"
+       }
+      ],
+      "type": "ExternalReference"
+     }
+    }
+   ]
+  },
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "Collection of information about digital interfaces with the company"
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Digital Interfaces"
+    }
+   ],
+   "idShort": "DigitalInterfaces",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "ZeroToOne",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "https://admin-shell.io/idta/CompanyData/DigitalInterfaces/1/0"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "value": [
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Groups related information for Company Systems."
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Company Systems"
+      }
+     ],
+     "idShort": "CompanySystems",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/CompanySystems/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Groups related information for ERP System."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "ERP System"
+        }
+       ],
+       "idShort": "ERPSystem",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/ERPSystem/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "The specific name of the enterprise resource planning system"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "ERP Name"
+          }
+         ],
+         "idShort": "ERPName",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/ERPName/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:string"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "The version number of the enterprise resource planning software in use"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "ERP Version"
+          }
+         ],
+         "idShort": "ERPVersion",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/ERPVersion/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:string"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Reference to the Software Nameplate Submodel of the enterprise resource planning system"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "ERP Reference"
+          }
+         ],
+         "idShort": "ERPReference",
+         "modelType": "ReferenceElement",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/ERPReference/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         }
+        }
+       ]
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Groups related information for Email System."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Email System"
+        }
+       ],
+       "idShort": "EmailSystem",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/EmailSystem/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "The specific name of the email software used by the company"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Email System Name"
+          }
+         ],
+         "idShort": "EmailSystemName",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/EmailSystemName/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:string"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Reference to the Software Nameplate submodel of the email system"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Email System Reference"
+          }
+         ],
+         "idShort": "EmailSystemReference",
+         "modelType": "ReferenceElement",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/EmailSystemReference/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         }
+        }
+       ]
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Lists entries for CAD Tools."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "CAD Tools"
+        }
+       ],
+       "idShort": "CADTools",
+       "modelType": "SubmodelElementList",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/CADTools/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "typeValueListElement": "Property",
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Computer-aided design tool"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Tool"
+          }
+         ],
+         "idShort": "Tool",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "OneToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/CADTool/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:string"
+        }
+       ],
+       "valueTypeListElement": "xs:string"
+      }
+     ]
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Groups related information for Data Exchange."
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Data Exchange"
+      }
+     ],
+     "idShort": "DataExchange",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToOne",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/CompanyData/DataExchange/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Indication if the company supports encrypted data transmission"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Encrypted Data Transmission"
+        }
+       ],
+       "idShort": "EncryptedDataTransmission",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/EncryptedDataTransmission/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:boolean"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The format used by a company to send electronic invoices"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Outgoing E Invoice Format"
+        }
+       ],
+       "idShort": "OutgoingEInvoiceFormat",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/OutgoingEInvoiceFormat/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Indication if the company supports electronic data transfer"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "EDI"
+        }
+       ],
+       "idShort": "EDI",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/EDI/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:boolean"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Indication if the company supports web-based electronic data transfer"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Web EDI"
+        }
+       ],
+       "idShort": "WebEDI",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/WebEDI/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:boolean"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The file formats used for computer-aided design drawings and models at the company"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "CAD Formats"
+        }
+       ],
+       "idShort": "CADFormats",
+       "modelType": "SubmodelElementList",
+       "orderRelevant": false,
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/CompanyData/CADFormats/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "typeValueListElement": "Property",
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Computer-aided design tool file format"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "CAD Format"
+          }
+         ],
+         "idShort": "CADFormat",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "OneToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CompanyData/CADFormat/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:string"
+        }
+       ],
+       "valueTypeListElement": "xs:string"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

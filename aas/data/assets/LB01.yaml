@@ -1,0 +1,12 @@
+_extends: common/light_barrier_instance.yaml
+tag: LB01
+idShort: LB01_LightBarrierInfeed
+displayName: {en: "Light barrier LB01 (conveyor infeed)", de: "Lichtschranke LB01 (Bandeinlauf)"}
+description:
+  en: Detects parts released by the assembly cell onto the conveyor infeed (part tracking, infeed interlock).
+  de: Erkennt die von der Montagezelle auf den Bandeinlauf abgegebenen Teile (Teileverfolgung, Einlaufverriegelung).
+locationDescription: "LINE01, conveyor CV01 infeed, 0.4 m after the transfer point"
+specificAssetIds: {serialNumber: LX12R-2504-18311, manufacturerPartId: LX12-R-P4M8}
+submodels:
+  - template: Nameplate-3.0
+    values: {SerialNumber: LX12R-2504-18311, DateOfManufacture: "2025-04-14"}

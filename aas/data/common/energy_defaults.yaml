@@ -1,0 +1,6 @@
+# Shared values of the EnergyConsumption submodel (location-based grid emission factor, Germany)
+EmissionFactor: 0.363
+EmissionFactorSource:
+  en: "German electricity mix 2024 (location-based), Umweltbundesamt, provisional value; assumption for training purposes"
+  de: "Strommix Deutschland 2024 (standortbasiert), Umweltbundesamt, vorläufiger Wert; Annahme für Schulungszwecke"
+MeasurementStart: "2026-10-01T06:00:00+00:00"

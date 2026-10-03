@@ -1,0 +1,21 @@
+title: "LX12-R retro-reflective photoelectric sensor"
+subtitle: "Data sheet"
+organization: Lumetra Sensortechnik GmbH
+version: "2.1"
+date: "2025-03-01"
+sections:
+  - heading: Description
+    text: >-
+      Compact retro-reflective photoelectric sensor with polarisation filter for the detection of shiny and matt
+      objects on conveyors. Red light LED, PNP output switchable light-on/dark-on, IO-Link 1.1, M8 connector.
+  - heading: Optical data
+    rows: [[Sensing principle, retro-reflective with polarisation filter], [Sensing range (reflector R50), "0.05 ... 6 m"],
+           [Light source, "LED, red, 640 nm"], [Light spot at 1 m, "Ø 35 mm"]]
+  - heading: Electrical data
+    rows: [[Supply voltage, "10 ... 30 V DC"], [Current consumption, "≤ 40 mA (typ. 25 mA)"], [Power consumption, "≈ 1.2 W at 24 V incl. load"],
+           [Switching output, "PNP, NO/NC selectable, 100 mA"], [Response time, "≤ 0.5 ms"], [Switching frequency, "1000 Hz"]]
+  - heading: Mechanical data
+    rows: [[Dimensions, "32 × 20 × 12 mm"], [Housing, "ABS, PMMA front screen"], [Enclosure rating, IP67],
+           [Connection, "M8, 4-pin"], [Weight, "10 g"], [Ambient temperature, "-25 ... +55 °C"]]
+  - heading: Reliability
+    rows: [[MTTF, "1 500 000 h (SN 29500, 40 °C)"]]

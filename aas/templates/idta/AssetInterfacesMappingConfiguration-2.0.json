@@ -1,0 +1,629 @@
+{
+ "administration": {
+  "revision": "0",
+  "templateId": "https://admin-shell.io/IDTA 02027-2-0",
+  "version": "2"
+ },
+ "description": [
+  {
+   "language": "en",
+   "text": "The AIMC 2.0 is used to describe how data is mapped from asset to AAS or from AAS to AAS."
+  }
+ ],
+ "displayName": [
+  {
+   "language": "en",
+   "text": "Asset interfaces mapping configuration"
+  }
+ ],
+ "id": "https://admin-shell.io/idta/SubmodelTemplate/AssetInterfacesMappingConfiguration/2/0",
+ "idShort": "AssetInterfacesMappingConfiguration",
+ "kind": "Template",
+ "modelType": "Submodel",
+ "semanticId": {
+  "keys": [
+   {
+    "type": "GlobalReference",
+    "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/Submodel"
+   }
+  ],
+  "type": "ExternalReference"
+ },
+ "submodelElements": [
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "List of MappingConfigurations that each map and transform data from their sources to their sinks."
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Mapping configurations"
+    }
+   ],
+   "idShort": "MappingConfigurations",
+   "modelType": "SubmodelElementList",
+   "orderRelevant": false,
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/1/0/MappingConfigurations"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "semanticIdListElement": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "typeValueListElement": "SubmodelElementCollection",
+   "value": [
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "A MappingConfiguration defines one logical unit of sources (inputs) and sinks (outputs) that are in relation to one another. The relation can be expressed via a transformation."
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Mapping configuration"
+      }
+     ],
+     "idShort": "MappingConfiguration",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "The DefaultPollingInterval defines the default time interval in seconds for fetching new data from the synchronous data sources defined in this MappingConfiguration. It must be greater than zero for synchronous protocols (e.g. HTTP) that need polling and is ignored for asynchronous protocols (e.g. MQTT)."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Default polling interval"
+        }
+       ],
+       "idShort": "DefaultPollingInterval",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/DefaultPollingInterval"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:double"
+      },
+      {
+       "contentType": "text/plain",
+       "description": [
+        {
+         "language": "en",
+         "text": "The transformation allows for transforming incoming data before writing it to the sinks. The transformation must contain an \"aimc_main(sources)\" entrypoint function in Lua."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Transformation"
+        }
+       ],
+       "idShort": "Transformation",
+       "modelType": "Blob",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/Transformation"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "This list includes all data sources that are used in this MappingConfiguration."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Sources"
+        }
+       ],
+       "idShort": "Sources",
+       "modelType": "SubmodelElementList",
+       "orderRelevant": false,
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/Sources"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "semanticIdListElement": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/Source"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "typeValueListElement": "SubmodelElementCollection",
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "A data source is defined by a Source reference, PollingInterval and SourceId."
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Source"
+          }
+         ],
+         "idShort": "Source",
+         "modelType": "SubmodelElementCollection",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "OneToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/Source"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "value": [
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "This holds a reference to the respective SubmodelElement used as data source. A data source can be any SubmodelElement including those defined in the InteractionMetadata of AID Submodels for fetching live-data from assets."
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Source"
+            }
+           ],
+           "idShort": "Source",
+           "modelType": "ReferenceElement",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/Source/Source"
+             }
+            ],
+            "type": "ExternalReference"
+           }
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "The PollingInterval defines the time interval in seconds for fetching new data from the given synchronous data source. It must be greater than zero for synchronous protocols (e.g. HTTP) that need polling and is ignored for asynchronous protocols (e.g. MQTT). It overwrites the DefaultPollingInterval of the respective MappingConfiguration of this source."
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Polling interval"
+            }
+           ],
+           "idShort": "PollingInterval",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "ZeroToOne",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/Source/PollingInterval"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:double"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "This is a unique and non-empty identifier that facilitates data access in the Lua transformation or establishes a relationship to a corresponding sink when no transformation is given. It must only be unique with respect to the Sources-list of the parent MappingConfiguration and not globally."
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Source ID"
+            }
+           ],
+           "idShort": "SourceId",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/Source/SourceId"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "This list includes all data sinks that are used in this MappingConfiguration."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Sinks"
+        }
+       ],
+       "idShort": "Sinks",
+       "modelType": "SubmodelElementList",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/Sinks"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "semanticIdListElement": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/Sink"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "typeValueListElement": "SubmodelElementCollection",
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "A data sink is defined by a Sink reference and SinkId."
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Sink"
+          }
+         ],
+         "idShort": "Sink",
+         "modelType": "SubmodelElementCollection",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "OneToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/Sink"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "value": [
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "This holds a reference to the respective SubmodelElement used as data sink for live-data."
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Sink"
+            }
+           ],
+           "idShort": "Sink",
+           "modelType": "ReferenceElement",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/Sink/Sink"
+             }
+            ],
+            "type": "ExternalReference"
+           }
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "This is a unique and non-empty identifier that facilitates data writing in the Lua transformation or establishes a relationship to a corresponding source when no transformation is given. It must only be unique with respect to the Sinks-list of the containing MappingConfiguration and not globally."
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Sink ID"
+            }
+           ],
+           "idShort": "SinkId",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/MappingConfiguration/Sink/SinkId"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,65 @@
+name: QualityInspection
+version: "1"
+revision: "0"
+displayName: {en: "Quality Inspection", de: "Qualitätsprüfung"}
+description:
+  en: >-
+    Inspection results of a product instance against its inspection plan: one entry per inspected characteristic
+    (nominal value, tolerance, measured value, verdict), the overall decision and the disposition of the part
+    (ISO 9001 records, VDA 16 terminology). Detailed measurements may be referenced as IDTA Measurement Value
+    submodels. Virtual Factory custom template.
+  de: >-
+    Prüfergebnisse einer Produktinstanz gegen ihren Prüfplan: je Merkmal Nennwert, Toleranz, Messwert und Bewertung,
+    die Gesamtentscheidung und der Verbleib des Teils (Qualitätsaufzeichnung nach ISO 9001). Detailmessungen können als
+    IDTA-Measurement-Value-Teilmodelle referenziert werden.
+elements:
+  - idShort: InspectionPlan
+    modelType: SubmodelElementCollection
+    preferredName: {en: "inspection plan", de: "Prüfplan"}
+    definition: {en: "Inspection plan the results refer to.", de: "Prüfplan, auf den sich die Ergebnisse beziehen."}
+    elements:
+      - {idShort: PlanId, preferredName: {en: "plan identifier", de: "Prüfplankennung"}, definition: {en: "Identifier of the inspection plan.", de: "Kennung des Prüfplans."}}
+      - {idShort: PlanVersion, cardinality: ZeroToOne, preferredName: {en: "plan version", de: "Prüfplanversion"}, definition: {en: "Version of the inspection plan.", de: "Version des Prüfplans."}}
+      - {idShort: PlanReference, modelType: ReferenceElement, cardinality: ZeroToOne, preferredName: {en: "plan reference", de: "Prüfplanreferenz"}, definition: {en: "Reference to the inspection parameters (e.g. in Process Parameters or Manufacturing Recipe).", de: "Referenz auf die Prüfparameter (z. B. in Process Parameters oder Manufacturing Recipe)."}}
+  - idShort: OverallResult
+    preferredName: {en: "overall result", de: "Gesamtergebnis"}
+    definition: {en: "Overall inspection result: Pass, Fail or Pending.", de: "Gesamtergebnis der Prüfung: Pass, Fail oder Pending."}
+  - idShort: Disposition
+    cardinality: ZeroToOne
+    preferredName: {en: "disposition", de: "Verwendungsentscheid"}
+    definition: {en: "Decision on the further use of the part: Accepted, Rejected, Rework or Quarantine.", de: "Entscheid über die weitere Verwendung des Teils: Accepted, Rejected, Rework oder Quarantine."}
+  - idShort: DecisionTime
+    valueType: xs:dateTime
+    cardinality: ZeroToOne
+    preferredName: {en: "decision time", de: "Entscheidungszeitpunkt"}
+    definition: {en: "Time of the overall decision.", de: "Zeitpunkt der Gesamtentscheidung."}
+  - idShort: Destination
+    modelType: ReferenceElement
+    cardinality: ZeroToOne
+    preferredName: {en: "destination", de: "Ziel"}
+    definition: {en: "Reference to the AAS of the container or location the part was sorted to.", de: "Referenz auf die Verwaltungsschale des Behälters oder Orts, in den das Teil sortiert wurde."}
+  - idShort: Characteristics
+    modelType: SubmodelElementCollection
+    preferredName: {en: "inspected characteristics", de: "geprüfte Merkmale"}
+    definition: {en: "Results per inspected characteristic.", de: "Ergebnisse je geprüftem Merkmal."}
+    elements:
+      - idShort: Characteristic__00__
+        conceptName: Characteristic
+        modelType: SubmodelElementCollection
+        cardinality: ZeroToMany
+        preferredName: {en: "characteristic result", de: "Merkmalsergebnis"}
+        definition: {en: "Result of one inspected characteristic.", de: "Ergebnis eines geprüften Merkmals."}
+        elements:
+          - {idShort: CharacteristicId, preferredName: {en: "characteristic identifier", de: "Merkmalskennung"}, definition: {en: "Identifier of the characteristic in the inspection plan.", de: "Kennung des Merkmals im Prüfplan."}}
+          - {idShort: CharacteristicName, modelType: MultiLanguageProperty, preferredName: {en: "characteristic name", de: "Merkmalsname"}, definition: {en: "Name of the characteristic.", de: "Name des Merkmals."}}
+          - {idShort: InspectionStation, modelType: ReferenceElement, cardinality: ZeroToOne, preferredName: {en: "inspection station", de: "Prüfstation"}, definition: {en: "Reference to the AAS of the inspection equipment.", de: "Referenz auf die Verwaltungsschale des Prüfmittels."}}
+          - {idShort: Method, cardinality: ZeroToOne, preferredName: {en: "inspection method", de: "Prüfmethode"}, definition: {en: "Inspection or measurement method.", de: "Prüf- bzw. Messmethode."}}
+          - {idShort: NominalValue, valueType: xs:double, cardinality: ZeroToOne, preferredName: {en: "nominal value", de: "Nennwert"}, definition: {en: "Nominal value of the characteristic.", de: "Nennwert des Merkmals."}}
+          - {idShort: LowerLimit, valueType: xs:double, cardinality: ZeroToOne, preferredName: {en: "lower specification limit", de: "untere Spezifikationsgrenze"}, definition: {en: "Lower specification limit.", de: "Untere Spezifikationsgrenze."}}
+          - {idShort: UpperLimit, valueType: xs:double, cardinality: ZeroToOne, preferredName: {en: "upper specification limit", de: "obere Spezifikationsgrenze"}, definition: {en: "Upper specification limit.", de: "Obere Spezifikationsgrenze."}}
+          - {idShort: MeasuredValue, valueType: xs:double, cardinality: ZeroToOne, preferredName: {en: "measured value", de: "Messwert"}, definition: {en: "Measured value (numerical characteristics).", de: "Messwert (numerische Merkmale)."}}
+          - {idShort: MeasuredValueText, cardinality: ZeroToOne, preferredName: {en: "measured value text", de: "Messwerttext"}, definition: {en: "Measured value or observation in text form (attributive characteristics).", de: "Messwert bzw. Beobachtung in Textform (attributive Merkmale)."}}
+          - {idShort: Unit, cardinality: ZeroToOne, preferredName: {en: "unit", de: "Einheit"}, definition: {en: "Unit of nominal, limits and measured value.", de: "Einheit von Nennwert, Grenzen und Messwert."}}
+          - {idShort: Result, preferredName: {en: "result", de: "Ergebnis"}, definition: {en: "Pass or Fail.", de: "Pass oder Fail."}}
+          - {idShort: Timestamp, valueType: xs:dateTime, preferredName: {en: "timestamp", de: "Zeitstempel"}, definition: {en: "Time of the measurement.", de: "Zeitpunkt der Messung."}}
+          - {idShort: MeasurementReference, modelType: ReferenceElement, cardinality: ZeroToOne, preferredName: {en: "measurement reference", de: "Messwertreferenz"}, definition: {en: "Reference to a Measurement Value submodel with the detailed measurement.", de: "Referenz auf ein Measurement-Value-Teilmodell mit der Detailmessung."}}

@@ -1,0 +1,20 @@
+# Unified Namespace (UNS) of the shop floor: single source for the Godot MQTT gateway (M4), the AAS
+# Asset Interfaces Description (provisioner) and the edge data bridge. ISA-95: enterprise/site/area/line.
+broker:
+  base: mqtt://localhost:1883          # as seen by tools and edge services on the host
+  websocket: ws://localhost:9001       # used by the Godot simulation
+topic_root: vf/plant01/final-assembly/line01
+payload:
+  content_type: application/json
+  value_key: v                         # {"v": <value>, "ts": "<ISO 8601>"}
+  timestamp_key: ts
+telemetry:                             # every FMI output of every device/controller is published
+  topic: "{root}/{device}/{variable}"  # device = lower-case instance name
+  retain: true
+  qos: 0
+commands:                              # FMI inputs that may be written via MQTT (e.g. by the ops gateway)
+  topic: "{root}/{device}/cmd/{variable}"
+  retain: false
+  qos: 1
+  writable:
+    PLC01: [packml_command]

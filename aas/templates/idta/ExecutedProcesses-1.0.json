@@ -1,0 +1,1153 @@
+{
+ "administration": {
+  "revision": "0",
+  "templateId": "https://admin-shell-io/IDTA-02031-2",
+  "version": "1"
+ },
+ "description": [
+  {
+   "language": "en",
+   "text": "The Submodel describes the input and output parameters for the execution of processes."
+  }
+ ],
+ "displayName": [
+  {
+   "language": "en",
+   "text": "Executed Processes"
+  }
+ ],
+ "id": "https://admin-shell.io/idta/ExecutedProcesses/1/0",
+ "idShort": "ExecutedProcesses",
+ "kind": "Template",
+ "modelType": "Submodel",
+ "semanticId": {
+  "keys": [
+   {
+    "type": "GlobalReference",
+    "value": "https://admin-shell.io/idta/ExecutedProcesses/1/0"
+   }
+  ],
+  "type": "ExternalReference"
+ },
+ "submodelElements": [
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "Represents a single execution of the processes defined in the bill-of-process."
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Run 00"
+    }
+   ],
+   "idShort": "Run__00__",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "OneToMany",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "https://admin-shell.io/idta/ExecutedProcesses/Run/1/0"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "value": [
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Indicates the outcome of a run."
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Run Result"
+      }
+     ],
+     "idShort": "RunResult",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "One",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/ExecutedProcesses/RunResult/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:string"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Describes the values of a process that was executed."
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Process 00"
+      }
+     ],
+     "idShort": "Process__00__",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/ExecutedProcesses/Process/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Describes the ID of the process"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Process ID"
+        }
+       ],
+       "idShort": "ProcessId",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ProcessParameters/ProcessId/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Describes the Name of the Process "
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Process Name"
+        }
+       ],
+       "idShort": "ProcessName",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ProcessParameters/ProcessName/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Describes the process."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Process Description"
+        }
+       ],
+       "idShort": "ProcessDescription",
+       "modelType": "MultiLanguageProperty",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ProcessParameters/ProcessDescription/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Planned processing time for process execution (without set-up time)"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Planned Process Time"
+        }
+       ],
+       "idShort": "PlannedProcessTime",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ProcessParameters/PlannedProcessTime/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:duration"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Mandatory product parameters for process execution"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Product Parameters"
+        }
+       ],
+       "idShort": "ProductParameters",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ProcessParameters/ProductParameters/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Mandatory process parameters for process execution"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Process Parameters"
+        }
+       ],
+       "idShort": "ProcessParameters",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ProcessParameters/ProcessParameters/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Mandatory resource parameters for process execution"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Resource Parameters"
+        }
+       ],
+       "idShort": "ResourceParameters",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ProcessParameters/ResourceParameters/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "describes the products or semi-finished products to be involved in the process"
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Process Bo M"
+        }
+       ],
+       "idShort": "ProcessBoM",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ProcessParameters/ProcessBoM/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Describes the process status."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Process Status"
+        }
+       ],
+       "idShort": "ProcessStatus",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessStatus/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Result of the process."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Process result"
+        }
+       ],
+       "idShort": "ProcessResult",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessResult/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Role of the operator in the process."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Operator Role"
+        }
+       ],
+       "idShort": "OperatorRole",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ExecutedProcesses/OperatorRole/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Start time of the process."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Process Start Time"
+        }
+       ],
+       "idShort": "ProcessStartTime",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessStartTime/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "End time of the process."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Process End Time"
+        }
+       ],
+       "idShort": "ProcessEndTime",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessEndTime/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "List of stages that the process went through."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Process Stages"
+        }
+       ],
+       "idShort": "ProcessStages",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessStages/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "A stage that the process went through."
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Process Stage 00"
+          }
+         ],
+         "idShort": "ProcessStage__00__",
+         "modelType": "SubmodelElementCollection",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessStage/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "value": [
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "ID of the stage."
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Stage ID"
+            }
+           ],
+           "idShort": "StageId",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessStage/StageId/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "Time when the stage started."
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Start Time"
+            }
+           ],
+           "idShort": "StartTime",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessStage/StartTime/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "Time when the stage ended."
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "End Time"
+            }
+           ],
+           "idShort": "EndTime",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessStage/EndTime/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "Stage result."
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Result"
+            }
+           ],
+           "idShort": "Result",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessStage/Result/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "List of errors that caused the process to fail."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Process Errors"
+        }
+       ],
+       "idShort": "ProcessErrors",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessErrors/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "An error that caused the process to fail."
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Process Error 00"
+          }
+         ],
+         "idShort": "ProcessError__00__",
+         "modelType": "SubmodelElementCollection",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessError/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "value": [
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "Error code."
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Error Code"
+            }
+           ],
+           "idShort": "ErrorCode",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessError/ErrorCode/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "Error description."
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Error Description"
+            }
+           ],
+           "idShort": "ErrorDescription",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/ExecutedProcesses/ProcessError/ErrorDescription/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

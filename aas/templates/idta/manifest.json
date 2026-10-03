@@ -1,0 +1,216 @@
+{
+ "source": "https://smt-repo.admin-shell-io.com/api/v3.0",
+ "fetched": "2026-10-03",
+ "templates": {
+  "Nameplate-3.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/DigitalNameplate/3/0",
+   "idShort": "Nameplate",
+   "semanticId": "https://admin-shell.io/idta/nameplate/3/0/Nameplate",
+   "version": "3",
+   "revision": "0"
+  },
+  "TechnicalData-2.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/TechnicalData/2/0",
+   "idShort": "TechnicalData",
+   "semanticId": "0173-1#01-AHX837#002",
+   "version": "2",
+   "revision": "0"
+  },
+  "ContactInformations-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/ContactInformation/1/0",
+   "idShort": "ContactInformations",
+   "semanticId": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformations",
+   "version": "1",
+   "revision": "0"
+  },
+  "HandoverDocumentation-2.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/HandoverDocumentation/2/0",
+   "idShort": "HandoverDocumentation",
+   "semanticId": "0173-1#01-AHF578#003",
+   "version": "2",
+   "revision": "0"
+  },
+  "CarbonFootprint-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/CarbonFootprint/1/0",
+   "idShort": "CarbonFootprint",
+   "semanticId": "https://admin-shell.io/idta/CarbonFootprint/CarbonFootprint/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "AssetInterfacesDescription-1.1": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/AssetInterfacesDescription/1/1",
+   "idShort": "AssetInterfacesDescription",
+   "semanticId": "https://admin-shell.io/idta/AssetInterfacesDescription/1/1/Submodel",
+   "version": "1",
+   "revision": "1"
+  },
+  "AssetInterfacesMappingConfiguration-2.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/AssetInterfacesMappingConfiguration/2/0",
+   "idShort": "AssetInterfacesMappingConfiguration",
+   "semanticId": "https://admin-shell.io/idta/AssetInterfacesMappingConfiguration/2/0/Submodel",
+   "version": "2",
+   "revision": "0"
+  },
+  "TimeSeries-1.1": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/TimeSeries/1/1",
+   "idShort": "TimeSeries",
+   "semanticId": "https://admin-shell.io/idta/TimeSeries/1/1",
+   "version": "1",
+   "revision": "1"
+  },
+  "SimulationModels-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/SimulationModels/1/0",
+   "idShort": "SimulationModels",
+   "semanticId": "https://admin-shell.io/idta/SimulationModels/SimulationModels/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "Models3D-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/ProvisionOf3DModels/1/0",
+   "idShort": "Models3D",
+   "semanticId": "https://admin-shell.io/idta/Models3D/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "AssetLocation-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/DataModelforAssetLocation/1/0",
+   "idShort": "AssetLocation",
+   "semanticId": "https://admin-shell.io/idta/smt/assetlocation/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "HierarchicalStructures-1.1": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/HierarchicalStructuresBoM/1/1",
+   "idShort": "HierarchicalStructures",
+   "semanticId": "https://admin-shell.io/idta/HierarchicalStructures/1/1/Submodel",
+   "version": "1",
+   "revision": "1"
+  },
+  "CapabilityDescription-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/CapabilityDescription/1/0",
+   "idShort": "CapabilityDescription",
+   "semanticId": "https://admin-shell.io/idta/SubmodelTemplate/CapabilityDescription/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "ControlComponentType-2.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/ControlComponentType/2/0",
+   "idShort": "ControlComponentType",
+   "semanticId": "https://admin-shell.io/idta/ControlComponent/Type/2/0",
+   "version": "2",
+   "revision": "0"
+  },
+  "ControlComponentInstance-2.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/ControlComponent/Instance/2/0",
+   "idShort": "ControlComponentInstance",
+   "semanticId": "https://admin-shell.io/idta/ControlComponent/Instance/2/0",
+   "version": "2",
+   "revision": "0"
+  },
+  "ProcessParameters-1.0": {
+   "id": "https://admin-shell-io/idta/SubmodelTemplate/ProcessParameters/1/0",
+   "idShort": "ProcessParameters",
+   "semanticId": "https://admin-shell-io/idta/SubmodelTemplate/ProcessParameters/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "ExecutedProcesses-1.0": {
+   "id": "https://admin-shell.io/idta/ExecutedProcesses/1/0",
+   "idShort": "ExecutedProcesses",
+   "semanticId": "https://admin-shell.io/idta/ExecutedProcesses/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "MeasurementValue-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/measurementValue/1/0",
+   "idShort": "MeasurementValue",
+   "semanticId": "https://admin-shell.io/idta/SubmodelTemplate/measurementValue/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "DppMetadata-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/dppMetadata/1/0",
+   "idShort": "DppMetadata",
+   "semanticId": "https://admin-shell.io/idta/cds/dppMetadata/1",
+   "version": "1",
+   "revision": "0"
+  },
+  "FunctionalSafety-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/FunctionalSafety/1/0",
+   "idShort": "FunctionalSafety",
+   "semanticId": "https://admin-shell.io/idta/iec62683/1/0/FunctionalSafety",
+   "version": "1",
+   "revision": "0"
+  },
+  "Reliability-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/Reliability/1/0",
+   "idShort": "Reliability",
+   "semanticId": "https://admin-shell.io/idta/iec62683/1/0/Reliability",
+   "version": "1",
+   "revision": "0"
+  },
+  "PowerDriveTrainSizing-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/SizingofPowerDriveTrains/1/0",
+   "idShort": "PowerDriveTrainSizing",
+   "semanticId": "https://admin-shell.io/idta/PowerDriveTrainSizing/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "MaintenanceInstructions-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/MaintenanceInstructions/1/0",
+   "idShort": "MaintenanceInstructions",
+   "semanticId": "https://admin-shell.io/idta/SubmodelTemplate/MaintenanceInstructions/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "SoftwareNameplate-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/SoftwareNameplate/1/0",
+   "idShort": "SoftwareNameplate",
+   "semanticId": "https://admin-shell.io/idta/SoftwareNameplate/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "DataRetentionPolicies-1.0": {
+   "id": "https://admin-shell.io/idta/DataRetentionPolicies/1/0",
+   "idShort": "DataRetentionPolicies",
+   "semanticId": "https://admin-shell.io/idta/DataRetentionPolicies/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "ProcessVariablesForManufacturingKPICalculation-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/ProcessVariablesForManufacturingKPICalculation/1/0",
+   "idShort": "ProcessVariablesForManufacturingKPICalculation",
+   "semanticId": "https://admin-shell.io/idta/SubmodelTemplate/ProcessVariablesForManufacturingKPICalculation/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "ProductionCalendar-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/ProductionCalendar/1/0",
+   "idShort": "ProductionCalendar",
+   "semanticId": "https://admin-shell.io/idta/SubmodelTemplate/ProductionCalendar/1/0",
+   "version": "1",
+   "revision": "0"
+  },
+  "CompanyData-1.0": {
+   "id": "https://admin-shell.io/idta/SubmodelTemplate/CompanyData/1/0",
+   "idShort": "CompanyData",
+   "semanticId": "https://admin-shell.io/idta/CompanyData/1/0/CompanyData",
+   "version": "1",
+   "revision": "0"
+  },
+  "DBP-MaterialComposition-1.0": {
+   "id": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.0#MaterialComposition/submodel",
+   "idShort": "MaterialComposition",
+   "semanticId": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.0#MaterialComposition",
+   "version": "1",
+   "revision": "0"
+  },
+  "DBP-Circularity-1.0": {
+   "id": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#Circularity/submodel",
+   "idShort": "Circularity",
+   "semanticId": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#Circularity",
+   "version": "1",
+   "revision": "0"
+  }
+ }
+}

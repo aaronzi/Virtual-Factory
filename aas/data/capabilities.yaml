@@ -1,0 +1,36 @@
+# Capability dictionary of the Virtual Factory (capability-based engineering).
+# Each entry becomes a concept description <ID_BASE>/capability/<Name>; resources offer capabilities in their
+# CapabilityDescription submodel, the ManufacturingRecipe requires them (EquipmentRequirements.RequiredCapability).
+AssembleCylinder:
+  preferredName: {en: "assemble pneumatic cylinder", de: "Pneumatikzylinder montieren"}
+  definition: {en: "Join piston rod, piston, seals, barrel and end caps of a profile cylinder (ISO 15552) and tighten the end-cap screws.", de: "Kolbenstange, Kolben, Dichtungen, Rohr und Deckel eines Profilzylinders (ISO 15552) fügen und die Deckelschrauben anziehen."}
+LeakTest:
+  preferredName: {en: "leak test", de: "Dichtheitsprüfung"}
+  definition: {en: "Pressure-decay leak test of a pneumatic component at test pressure.", de: "Druckabfall-Dichtheitsprüfung eines Pneumatikbauteils bei Prüfdruck."}
+FunctionTest:
+  preferredName: {en: "function test", de: "Funktionsprüfung"}
+  definition: {en: "Functional test of a cylinder: full stroke in both directions with stroke time measurement.", de: "Funktionsprüfung eines Zylinders: voller Hub in beide Richtungen mit Messung der Hubzeit."}
+FitProtectiveCap:
+  preferredName: {en: "fit protective cap", de: "Schutzkappe aufsetzen"}
+  definition: {en: "Press a protective cap onto the rod end of a cylinder for transport protection.", de: "Schutzkappe zum Transportschutz auf das Kolbenstangenende eines Zylinders aufdrücken."}
+Transport:
+  preferredName: {en: "transport", de: "Transportieren"}
+  definition: {en: "Move discrete parts between two positions of a production line.", de: "Stückgut zwischen zwei Positionen einer Fertigungslinie bewegen."}
+DetectPresence:
+  preferredName: {en: "detect presence", de: "Anwesenheit erkennen"}
+  definition: {en: "Detect the presence of an object at a defined position.", de: "Anwesenheit eines Objekts an einer definierten Position erkennen."}
+InspectColour:
+  preferredName: {en: "inspect colour", de: "Farbe prüfen"}
+  definition: {en: "Measure the colour of a surface and compare it with a taught reference (CIELAB colour distance).", de: "Farbe einer Oberfläche messen und mit einer eingelernten Referenz vergleichen (CIELAB-Farbabstand)."}
+PickAndPlace:
+  preferredName: {en: "pick and place", de: "Greifen und Ablegen"}
+  definition: {en: "Pick a part at a pick position and place it at a target position (e.g. a slot of a container).", de: "Ein Teil an einer Greifposition aufnehmen und an einer Zielposition (z. B. Fach eines Behälters) ablegen."}
+Sort:
+  preferredName: {en: "sort", de: "Sortieren"}
+  definition: {en: "Assign parts to output containers according to a classification (e.g. good/reject).", de: "Teile nach einer Klassifikation (z. B. Gut/Schlecht) Ausgangsbehältern zuordnen."}
+StoreParts:
+  preferredName: {en: "store parts", de: "Teile aufnehmen"}
+  definition: {en: "Hold a defined number of parts in defined slots for transport.", de: "Eine definierte Anzahl Teile in definierten Fächern für den Transport aufnehmen."}
+ControlLine:
+  preferredName: {en: "control production line", de: "Fertigungslinie steuern"}
+  definition: {en: "Coordinate the devices of a production line according to a PackML state model.", de: "Die Geräte einer Fertigungslinie nach einem PackML-Zustandsmodell koordinieren."}

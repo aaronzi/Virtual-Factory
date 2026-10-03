@@ -1,0 +1,671 @@
+{
+ "administration": {
+  "revision": "0",
+  "version": "1"
+ },
+ "description": [
+  {
+   "language": "en",
+   "text": "Defines the submodel for Reliability."
+  }
+ ],
+ "displayName": [
+  {
+   "language": "en",
+   "text": "Reliability"
+  }
+ ],
+ "id": "https://admin-shell.io/idta/SubmodelTemplate/Reliability/1/0",
+ "idShort": "Reliability",
+ "kind": "Template",
+ "modelType": "Submodel",
+ "semanticId": {
+  "keys": [
+   {
+    "type": "Submodel",
+    "value": "https://admin-shell.io/idta/iec62683/1/0/Reliability"
+   }
+  ],
+  "type": "ModelReference"
+ },
+ "submodelElements": [
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "number of reliability sets of characteristics"
+    },
+    {
+     "language": "fr",
+     "text": "nombre d'ensembles de caractéristiques de fiabilité"
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Number of Reliability Sets"
+    }
+   ],
+   "idShort": "NumberOfReliabilitySets",
+   "modelType": "Property",
+   "qualifiers": [
+    {
+     "kind": "ConceptQualifier",
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "0112/2///62683#ACE006#001"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "valueType": "xs:int"
+  },
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "operating conditions of reliability characteristics"
+    },
+    {
+     "language": "fr",
+     "text": "conditions de fonctionnement des caractéristiques de fiabilité et de sécurité fonctionnelle"
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Operating Conditions of Reliability Characteristics"
+    }
+   ],
+   "idShort": "OperatingConditionsOfReliabilityCharacteristics",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "ConceptQualifier",
+     "type": "SMT/Cardinality",
+     "value": "ZeroToMany",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "0112/2///62683#ACG071#001"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "value": [
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "type of voltage"
+      },
+      {
+       "language": "fr",
+       "text": "type de tension"
+      },
+      {
+       "language": "de",
+       "text": "Spannungsart"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Type of Voltage"
+      }
+     ],
+     "idShort": "TypeOfVoltage",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "ConceptQualifier",
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///61987#ABA969#007"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///61987#ABL837#001"
+       },
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///61987#ABL838#001"
+       },
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///61987#ABI407#004"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:string"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "rated voltage"
+      },
+      {
+       "language": "fr",
+       "text": "tension assignée"
+      },
+      {
+       "language": "de",
+       "text": "Bemessungsspannung"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Rated Voltage"
+      }
+     ],
+     "idShort": "RatedVoltage",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "ConceptQualifier",
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///61987#ABA588#004"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:double"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "minimum rated voltage"
+      },
+      {
+       "language": "fr",
+       "text": "tension assignée minimale"
+      },
+      {
+       "language": "de",
+       "text": "minimale Bemessungsspannung"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Minimum Rated Voltage"
+      }
+     ],
+     "idShort": "MinimumRatedVoltage",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "ConceptQualifier",
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///61987#ABD461#004"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:double"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "maximum rated voltage"
+      },
+      {
+       "language": "fr",
+       "text": "tension assignée maximale"
+      },
+      {
+       "language": "de",
+       "text": "maximale Bemessungsspannung"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Maximum Rated Voltage"
+      }
+     ],
+     "idShort": "MaximumRatedVoltage",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "ConceptQualifier",
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///61987#ABD462#004"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:double"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "rated operational current"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Rated Operational Current"
+      }
+     ],
+     "idShort": "RatedOperationalCurrent",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "ConceptQualifier",
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/FunctionalSafety/RatedOperationalCurrent/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:double"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "type of interlocking device"
+      },
+      {
+       "language": "fr",
+       "text": "type de dispositif de verrouillage"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Type of Interlocking Device"
+      }
+     ],
+     "idShort": "TypeOfInterlockingDevice",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "ConceptQualifier",
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///62683#ACE053#001"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///62683#ACH673#001"
+       },
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///62683#ACH674#001"
+       },
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///62683#ACH675#001"
+       },
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///62683#ACH676#001"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:string"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "other operating conditions"
+      },
+      {
+       "language": "fr",
+       "text": "autres conditions de fonctionnement"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Other Operating Conditions"
+      }
+     ],
+     "idShort": "OtherOperatingConditions",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "ConceptQualifier",
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///62683#ACE070#001"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:string"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "useful life in number of operations"
+      },
+      {
+       "language": "fr",
+       "text": "durée de vie utile en cycle de fonctionnement"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Useful Life in Number of Operations"
+      }
+     ],
+     "idShort": "UsefulLifeInNumberOfOperations",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "ConceptQualifier",
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///62683#ACE055#001"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:double"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "useful life in time interval"
+      },
+      {
+       "language": "fr",
+       "text": "durée de vie utile en intervalle de temps"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Useful Life in Time Interval"
+      }
+     ],
+     "idShort": "UsefulLifeInTimeInterval",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "ConceptQualifier",
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///62683#ACE054#001"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:double"
+    }
+   ]
+  },
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "Reliability characteristics"
+    },
+    {
+     "language": "fr",
+     "text": "Caractéristiques de fiabilité"
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Reliability Characteristics"
+    }
+   ],
+   "idShort": "ReliabilityCharacteristics",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "ConceptQualifier",
+     "type": "SMT/Cardinality",
+     "value": "ZeroToMany",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "0112/2///62683#ACG080#001"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "value": [
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "mean operating time to failure"
+      },
+      {
+       "language": "fr",
+       "text": "durée moyenne de fonctionnement avant défaillance"
+      },
+      {
+       "language": "de",
+       "text": "mittlere Betriebszeit bis zum Ausfall"
+      },
+      {
+       "language": "jp",
+       "text": "平均故障間動作時間"
+      },
+      {
+       "language": "cn",
+       "text": "平均失效前工作时间"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "MTTF"
+      }
+     ],
+     "idShort": "MTTF",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "ConceptQualifier",
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///62683#ACE061#001"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:int"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "mean operating time between failure"
+      },
+      {
+       "language": "fr",
+       "text": "moyenne des temps de bon fonctionnement"
+      },
+      {
+       "language": "de",
+       "text": "mittlere Betriebszeit zwischen Ausfällen"
+      },
+      {
+       "language": "cn",
+       "text": "平均失效间隔工作时间"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "MTBF"
+      }
+     ],
+     "idShort": "MTBF",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "ConceptQualifier",
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "0112/2///62683#ACE062#001"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:int"
+    },
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "B10"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "B 10"
+      }
+     ],
+     "idShort": "B10",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "ConceptQualifier",
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/Reliability/B10/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:int"
+    }
+   ]
+  }
+ ]
+}

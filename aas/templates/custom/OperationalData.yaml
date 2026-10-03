@@ -1,0 +1,44 @@
+name: OperationalData
+version: "1"
+revision: "0"
+displayName: {en: "Operational Data", de: "Betriebsdaten"}
+description:
+  en: >-
+    Current operating state, counters and process values of an asset as provided by its asset interface
+    (see Asset Interfaces Description / Mapping Configuration). Process values carry their own semantic ids whose
+    concept descriptions define name, unit and meaning (generated from the device's FMI 3.0 model description).
+    Virtual Factory custom template.
+  de: >-
+    Aktueller Betriebszustand, Zähler und Prozesswerte einer Anlage, bereitgestellt über ihre Asset-Schnittstelle.
+    Prozesswerte tragen eigene semantische Kennungen, deren Begriffsbeschreibungen Name, Einheit und Bedeutung
+    festlegen (erzeugt aus der FMI-3.0-Modellbeschreibung des Geräts).
+elements:
+  - idShort: OperatingState
+    preferredName: {en: "operating state", de: "Betriebszustand"}
+    definition: {en: "Current operating state in plain text (asset-specific vocabulary documented in StateVocabulary).", de: "Aktueller Betriebszustand im Klartext (gerätespezifisches Vokabular in StateVocabulary dokumentiert)."}
+  - idShort: StateVocabulary
+    modelType: MultiLanguageProperty
+    cardinality: ZeroToOne
+    preferredName: {en: "state vocabulary", de: "Zustandsvokabular"}
+    definition: {en: "Possible values of OperatingState and their meaning.", de: "Mögliche Werte von OperatingState und ihre Bedeutung."}
+  - idShort: OperatingHours
+    valueType: xs:double
+    unit: h
+    preferredName: {en: "operating hours", de: "Betriebsstunden"}
+    definition: {en: "Accumulated time in productive operation.", de: "Kumulierte Zeit im produktiven Betrieb."}
+  - idShort: ProcessValues
+    modelType: SubmodelElementCollection
+    preferredName: {en: "process values", de: "Prozesswerte"}
+    definition: {en: "Current process values and counters published by the asset.", de: "Aktuelle vom Gerät veröffentlichte Prozesswerte und Zähler."}
+    elements:
+      - idShort: ProcessValue__00__
+        conceptName: ProcessValue
+        valueType: xs:string
+        cardinality: ZeroToMany
+        preferredName: {en: "process value", de: "Prozesswert"}
+        definition: {en: "One process value; idShort, value type and semantic id are specific to the asset interface data point.", de: "Ein Prozesswert; idShort, Werttyp und semantische Kennung sind spezifisch für den Datenpunkt der Asset-Schnittstelle."}
+  - idShort: LastUpdate
+    valueType: xs:dateTime
+    cardinality: ZeroToOne
+    preferredName: {en: "last update", de: "letzte Aktualisierung"}
+    definition: {en: "Time of the last update by the data bridge.", de: "Zeitpunkt der letzten Aktualisierung durch die Datenbrücke."}

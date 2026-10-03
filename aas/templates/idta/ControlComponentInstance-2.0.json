@@ -1,0 +1,981 @@
+{
+ "administration": {
+  "revision": "0",
+  "templateId": "https://admin-shell.io/02016-2-0",
+  "version": "2"
+ },
+ "description": [
+  {
+   "language": "en",
+   "text": "A ControlComponentInstance Submodel."
+  }
+ ],
+ "displayName": [
+  {
+   "language": "en",
+   "text": "Control Component Instance"
+  }
+ ],
+ "id": "https://admin-shell.io/idta/SubmodelTemplate/ControlComponent/Instance/2/0",
+ "idShort": "ControlComponentInstance",
+ "kind": "Template",
+ "modelType": "Submodel",
+ "qualifiers": [
+  {
+   "kind": "TemplateQualifier",
+   "type": "FormTitle",
+   "value": "ControlComponentInstance V2 (IDTA 02016-2-0)",
+   "valueType": "xs:string"
+  },
+  {
+   "kind": "TemplateQualifier",
+   "type": "FormTag",
+   "value": "CCI",
+   "valueType": "xs:string"
+  },
+  {
+   "kind": "TemplateQualifier",
+   "type": "FormInfo",
+   "value": "ControlComponentInstance",
+   "valueType": "xs:string"
+  },
+  {
+   "kind": "TemplateQualifier",
+   "type": "FormUrl",
+   "value": "https://github.com/admin-shell-io/submodel-templates/tree/main/published/Control%20Component%20Instance/2/0",
+   "valueType": "xs:string"
+  }
+ ],
+ "semanticId": {
+  "keys": [
+   {
+    "type": "Submodel",
+    "value": "https://admin-shell.io/idta/ControlComponent/Instance/2/0"
+   }
+  ],
+  "type": "ModelReference"
+ },
+ "submodelElements": [
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "Collection of references to control endpoints supported by the instance of the component"
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Endpoints"
+    }
+   ],
+   "idShort": "Endpoints",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "https://admin-shell.io/idta/ControlComponent/Instance/Endpoints/2/0"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "value": [
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "A control endpoint supported by the instance of the component."
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Endpoint"
+      }
+     ],
+     "idShort": "Endpoint",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      },
+      {
+       "kind": "TemplateQualifier",
+       "type": "EditIdShort",
+       "value": "True",
+       "valueType": "xs:string"
+      },
+      {
+       "kind": "TemplateQualifier",
+       "type": "EditDescription",
+       "value": "True",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/ControlComponent/Instance/Endpoint/2/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "A reference to an interface description (SMC Interface) in a Control Component Type submodel that specifies the semantics of the interface."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Interface Reference"
+        }
+       ],
+       "idShort": "InterfaceReference",
+       "modelType": "ReferenceElement",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ControlComponent/Instance/Endpoint/InterfaceReference/2/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "A reference to a technical control endpoint that adheres to the semantics of the referenced interface."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Endpoint Reference"
+        }
+       ],
+       "idShort": "EndpointReference",
+       "modelType": "ReferenceElement",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ControlComponent/Instance/Endpoint/Reference/2/0"
+         }
+        ],
+        "type": "ExternalReference"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "Collection of skills offered by the component instance"
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Skills"
+    }
+   ],
+   "idShort": "Skills",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "https://admin-shell.io/idta/ControlComponent/Skills/2/0"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "value": [
+    {
+     "description": [
+      {
+       "language": "en",
+       "text": "Contains the basic information to call (request the execution of) a skill, e.g. its signature"
+      }
+     ],
+     "displayName": [
+      {
+       "language": "en",
+       "text": "Skill"
+      }
+     ],
+     "idShort": "Skill",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      },
+      {
+       "kind": "TemplateQualifier",
+       "type": "EditIdShort",
+       "value": "True",
+       "valueType": "xs:string"
+      },
+      {
+       "kind": "TemplateQualifier",
+       "type": "EditDescription",
+       "value": "True",
+       "valueType": "xs:string"
+      },
+      {
+       "kind": "TemplateQualifier",
+       "type": "PresetIdShort",
+       "value": "To be filled; normally same as idShort, might be with {00}",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/idta/ControlComponent/Skill/2/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Boolean property that defines if the skill is (currently) disabled, e.g. not licensed, tested, suitable."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Disabled"
+        }
+       ],
+       "idShort": "Disabled",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        },
+        {
+         "kind": "TemplateQualifier",
+         "type": "FormChoices",
+         "value": "true;false",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ControlComponent/Skill/Disabled/2/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:boolean"
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Collection of operation, operating, operational or execution modes (depending on the standard), in which the skill is available/allowed to execute."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Modes"
+        }
+       ],
+       "idShort": "Modes",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ControlComponent/Skill/Modes/2/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Name of the operation, operating, operational or execution modes (depending on the standard), in which the skill is available/allowed to execute."
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Mode 00"
+          }
+         ],
+         "idShort": "Mode__00__",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "type": "PresetIdShort",
+           "value": "To be filled; normally same as idShort, might be with {00}",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "OneToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/ControlComponent/Skill/Mode/2/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:string"
+        }
+       ]
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Collection of parameters used for the configuration of the skill."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Parameters"
+        }
+       ],
+       "idShort": "Parameters",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ControlComponent/Skill/Parameters/2/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Parameter used for the configuration of the skill."
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Parameter"
+          }
+         ],
+         "idShort": "Parameter",
+         "modelType": "SubmodelElementCollection",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToMany",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "type": "EditIdShort",
+           "value": "True",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "type": "EditDescription",
+           "value": "True",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "type": "PresetIdShort",
+           "value": "To be filled; normally same as idShort, might be with {00}",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/ControlComponent/Skill/Parameter/2/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "value": [
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "Indicates whether the parameter is an input (In) or an output (Out) of the skill. An InOut parameter can be set from outside and can also be changed from skill itself. "
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Direction"
+            }
+           ],
+           "idShort": "Direction",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            },
+            {
+             "kind": "TemplateQualifier",
+             "type": "FormChoices",
+             "value": "In;Out;InOut",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/ControlComponent/Skill/Parameter/Direction/2/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "Data type as string used to interpret the parameter. "
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Type"
+            }
+           ],
+           "idShort": "Type",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/ControlComponent/Skill/Parameter/Type/2/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "description": [
+            {
+             "language": "en",
+             "text": "Collection of properties of the accepted values that the parameter may take."
+            }
+           ],
+           "displayName": [
+            {
+             "language": "en",
+             "text": "Values"
+            }
+           ],
+           "idShort": "Values",
+           "modelType": "SubmodelElementCollection",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/idta/ControlComponent/Skill/Parameter/Values/2/0"
+             }
+            ],
+            "type": "ExternalReference"
+           }
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Collection of references to the error codes of the component that may be raised by this skill."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Errors"
+        }
+       ],
+       "idShort": "Errors",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ControlComponent/Skill/Errors/2/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Provides a reference for Error Reference 00."
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Error Reference 00"
+          }
+         ],
+         "idShort": "ErrorReference__00__",
+         "modelType": "ReferenceElement",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToMany",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "type": "EditIdShort",
+           "value": "True",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "type": "EditDescription",
+           "value": "True",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "type": "PresetIdShort",
+           "value": "To be filled; normally same as idShort, might be with {00}",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/ControlComponent/Skill/ErrorReference/2/0"
+           }
+          ],
+          "type": "ExternalReference"
+         }
+        }
+       ]
+      },
+      {
+       "description": [
+        {
+         "language": "en",
+         "text": "Collection of references to other skills, that this skill uses."
+        }
+       ],
+       "displayName": [
+        {
+         "language": "en",
+         "text": "Uses"
+        }
+       ],
+       "idShort": "Uses",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/idta/ControlComponent/Skill/Uses/2/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Provides a reference for Skill Reference 00."
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Skill Reference 00"
+          }
+         ],
+         "idShort": "SkillReference__00__",
+         "modelType": "ReferenceElement",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToMany",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "type": "EditIdShort",
+           "value": "True",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "type": "EditDescription",
+           "value": "True",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "type": "PresetIdShort",
+           "value": "To be filled; normally same as idShort, might be with {00}",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/ControlComponent/Skill/SkillReference/2/0"
+           }
+          ],
+          "type": "ExternalReference"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": [
+    {
+     "language": "en",
+     "text": "Reference between the component instance and its respective ControlComponentType Submodel."
+    }
+   ],
+   "displayName": [
+    {
+     "language": "en",
+     "text": "Type"
+    }
+   ],
+   "idShort": "Type",
+   "modelType": "ReferenceElement",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "https://admin-shell.io/idta/ControlComponent/Instance/Type/2/0"
+     }
+    ],
+    "type": "ExternalReference"
+   }
+  }
+ ]
+}

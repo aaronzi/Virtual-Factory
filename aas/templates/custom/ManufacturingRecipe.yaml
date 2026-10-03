@@ -1,0 +1,125 @@
+name: ManufacturingRecipe
+version: "1"
+revision: "0"
+displayName: {en: "Manufacturing Recipe", de: "Fertigungsrezept"}
+description:
+  en: >-
+    Master recipe of a product type following ISA-88 / IEC 61512 (adapted to discrete manufacturing): recipe header,
+    formula (process parameters, inputs, outputs), equipment requirements expressed as required capabilities, and the
+    procedure as an ordered set of steps. Complements IDTA 02031 Process Parameters with sequencing and capability-based
+    resource assignment. Virtual Factory custom template.
+  de: >-
+    Grundrezept eines Produkttyps nach ISA-88 / IEC 61512 (angepasst an Stückgutfertigung): Rezeptkopf, Formel
+    (Prozessparameter, Ein- und Ausgänge), Ausrüstungsanforderungen als benötigte Fähigkeiten und die Prozedur als
+    geordnete Schrittfolge. Ergänzt IDTA 02031 Process Parameters um Ablauf und fähigkeitsbasierte Ressourcenzuordnung.
+elements:
+  - idShort: RecipeHeader
+    modelType: SubmodelElementCollection
+    preferredName: {en: "recipe header", de: "Rezeptkopf"}
+    definition: {en: "Identification and life-cycle information of the recipe.", de: "Identifikation und Lebenszyklusinformation des Rezepts."}
+    elements:
+      - {idShort: RecipeId, preferredName: {en: "recipe identifier", de: "Rezeptkennung"}, definition: {en: "Unique identifier of the recipe.", de: "Eindeutige Kennung des Rezepts."}}
+      - {idShort: RecipeVersion, preferredName: {en: "recipe version", de: "Rezeptversion"}, definition: {en: "Version of the recipe.", de: "Version des Rezepts."}}
+      - {idShort: RecipeName, modelType: MultiLanguageProperty, preferredName: {en: "recipe name", de: "Rezeptname"}, definition: {en: "Human readable name of the recipe.", de: "Lesbarer Name des Rezepts."}}
+      - {idShort: RecipeType, preferredName: {en: "recipe type", de: "Rezepttyp"}, definition: {en: "ISA-88 recipe type: GeneralRecipe, SiteRecipe, MasterRecipe or ControlRecipe.", de: "Rezepttyp nach ISA-88: GeneralRecipe, SiteRecipe, MasterRecipe oder ControlRecipe."}}
+      - {idShort: ProductReference, modelType: ReferenceElement, preferredName: {en: "product reference", de: "Produktreferenz"}, definition: {en: "Reference to the AAS of the product type produced by the recipe.", de: "Referenz auf die Verwaltungsschale des mit dem Rezept hergestellten Produkttyps."}}
+      - {idShort: LotSizeBasis, valueType: xs:double, cardinality: ZeroToOne, unit: pcs, preferredName: {en: "lot size basis", de: "Losgrößenbasis"}, definition: {en: "Quantity of products the formula quantities refer to.", de: "Produktmenge, auf die sich die Mengenangaben der Formel beziehen."}}
+      - {idShort: ApprovalStatus, preferredName: {en: "approval status", de: "Freigabestatus"}, definition: {en: "Life-cycle status: Draft, Approved, Released or Obsolete.", de: "Lebenszyklusstatus: Draft, Approved, Released oder Obsolete."}}
+      - {idShort: ValidFrom, valueType: xs:date, cardinality: ZeroToOne, preferredName: {en: "valid from", de: "gültig ab"}, definition: {en: "Date from which the recipe may be used for production.", de: "Datum, ab dem das Rezept für die Produktion verwendet werden darf."}}
+      - {idShort: Author, cardinality: ZeroToOne, preferredName: {en: "author", de: "Ersteller"}, definition: {en: "Organisational unit or person responsible for the recipe.", de: "Für das Rezept verantwortliche Organisationseinheit oder Person."}}
+      - {idShort: ChangeDescription, modelType: MultiLanguageProperty, cardinality: ZeroToOne, preferredName: {en: "change description", de: "Änderungsbeschreibung"}, definition: {en: "Description of changes compared with the previous version.", de: "Beschreibung der Änderungen gegenüber der Vorversion."}}
+  - idShort: Formula
+    modelType: SubmodelElementCollection
+    preferredName: {en: "formula", de: "Formel"}
+    definition: {en: "Process parameters and material inputs/outputs of the recipe (ISA-88 formula).", de: "Prozessparameter sowie Materialein- und -ausgänge des Rezepts (Formel nach ISA-88)."}
+    elements:
+      - idShort: Parameters
+        modelType: SubmodelElementCollection
+        preferredName: {en: "formula parameters", de: "Formelparameter"}
+        definition: {en: "Process parameters with nominal value and limits.", de: "Prozessparameter mit Nennwert und Grenzen."}
+        elements:
+          - idShort: Parameter__00__
+            conceptName: Parameter
+            modelType: SubmodelElementCollection
+            cardinality: ZeroToMany
+            preferredName: {en: "formula parameter", de: "Formelparameter"}
+            definition: {en: "One process parameter of the formula.", de: "Ein Prozessparameter der Formel."}
+            elements:
+              - {idShort: ParameterId, preferredName: {en: "parameter identifier", de: "Parameterkennung"}, definition: {en: "Identifier of the parameter within the recipe.", de: "Kennung des Parameters innerhalb des Rezepts."}}
+              - {idShort: ParameterName, modelType: MultiLanguageProperty, preferredName: {en: "parameter name", de: "Parametername"}, definition: {en: "Name of the parameter.", de: "Name des Parameters."}}
+              - {idShort: NominalValue, preferredName: {en: "nominal value", de: "Nennwert"}, definition: {en: "Nominal (target) value in lexical form.", de: "Nennwert (Sollwert) in lexikalischer Form."}}
+              - {idShort: LowerLimit, valueType: xs:double, cardinality: ZeroToOne, preferredName: {en: "lower limit", de: "untere Grenze"}, definition: {en: "Lowest permitted value.", de: "Kleinster zulässiger Wert."}}
+              - {idShort: UpperLimit, valueType: xs:double, cardinality: ZeroToOne, preferredName: {en: "upper limit", de: "obere Grenze"}, definition: {en: "Highest permitted value.", de: "Größter zulässiger Wert."}}
+              - {idShort: Unit, cardinality: ZeroToOne, preferredName: {en: "unit", de: "Einheit"}, definition: {en: "Unit of the values (UCUM or SI symbol).", de: "Einheit der Werte (UCUM- oder SI-Symbol)."}}
+              - {idShort: ParameterSemantic, modelType: ReferenceElement, cardinality: ZeroToOne, preferredName: {en: "parameter semantics", de: "Parametersemantik"}, definition: {en: "Reference to a concept description defining the parameter.", de: "Referenz auf eine Begriffsbeschreibung, die den Parameter definiert."}}
+      - idShort: Inputs
+        modelType: SubmodelElementCollection
+        cardinality: ZeroToOne
+        preferredName: {en: "process inputs", de: "Prozesseingänge"}
+        definition: {en: "Materials and components consumed per lot size basis.", de: "Pro Losgrößenbasis verbrauchte Materialien und Komponenten."}
+        elements:
+          - idShort: Input__00__
+            conceptName: Input
+            modelType: SubmodelElementCollection
+            cardinality: ZeroToMany
+            preferredName: {en: "process input", de: "Prozesseingang"}
+            definition: {en: "One consumed material or component.", de: "Ein verbrauchtes Material oder Bauteil."}
+            elements:
+              - {idShort: MaterialId, preferredName: {en: "material identifier", de: "Materialkennung"}, definition: {en: "Article or material number.", de: "Artikel- oder Materialnummer."}}
+              - {idShort: Quantity, valueType: xs:double, preferredName: {en: "quantity", de: "Menge"}, definition: {en: "Quantity per lot size basis.", de: "Menge pro Losgrößenbasis."}}
+              - {idShort: Unit, preferredName: {en: "unit", de: "Einheit"}, definition: {en: "Unit of the quantity.", de: "Einheit der Menge."}}
+              - {idShort: BomNode, modelType: ReferenceElement, cardinality: ZeroToOne, preferredName: {en: "bill of material node", de: "Stücklistenknoten"}, definition: {en: "Reference to the corresponding node of the bill of material.", de: "Referenz auf den entsprechenden Knoten der Stückliste."}}
+      - idShort: Outputs
+        modelType: SubmodelElementCollection
+        cardinality: ZeroToOne
+        preferredName: {en: "process outputs", de: "Prozessausgänge"}
+        definition: {en: "Products and by-products per lot size basis.", de: "Produkte und Nebenprodukte pro Losgrößenbasis."}
+        elements:
+          - idShort: Output__00__
+            conceptName: Output
+            modelType: SubmodelElementCollection
+            cardinality: ZeroToMany
+            preferredName: {en: "process output", de: "Prozessausgang"}
+            definition: {en: "One produced product or by-product.", de: "Ein erzeugtes Produkt oder Nebenprodukt."}
+            elements:
+              - {idShort: MaterialId, preferredName: {en: "material identifier", de: "Materialkennung"}, definition: {en: "Article or material number.", de: "Artikel- oder Materialnummer."}}
+              - {idShort: Quantity, valueType: xs:double, preferredName: {en: "quantity", de: "Menge"}, definition: {en: "Quantity per lot size basis.", de: "Menge pro Losgrößenbasis."}}
+              - {idShort: Unit, preferredName: {en: "unit", de: "Einheit"}, definition: {en: "Unit of the quantity.", de: "Einheit der Menge."}}
+  - idShort: EquipmentRequirements
+    modelType: SubmodelElementCollection
+    preferredName: {en: "equipment requirements", de: "Ausrüstungsanforderungen"}
+    definition: {en: "Capabilities required from resources to execute the recipe (capability-based engineering).", de: "Von Ressourcen benötigte Fähigkeiten zur Ausführung des Rezepts (fähigkeitsbasiertes Engineering)."}
+    elements:
+      - idShort: Requirement__00__
+        conceptName: Requirement
+        modelType: SubmodelElementCollection
+        cardinality: ZeroToMany
+        preferredName: {en: "equipment requirement", de: "Ausrüstungsanforderung"}
+        definition: {en: "One required capability.", de: "Eine benötigte Fähigkeit."}
+        elements:
+          - {idShort: RequirementId, preferredName: {en: "requirement identifier", de: "Anforderungskennung"}, definition: {en: "Identifier of the requirement within the recipe.", de: "Kennung der Anforderung innerhalb des Rezepts."}}
+          - {idShort: RequiredCapability, preferredName: {en: "required capability", de: "benötigte Fähigkeit"}, definition: {en: "Semantic identifier of the required capability (as used in Capability Description submodels).", de: "Semantische Kennung der benötigten Fähigkeit (wie in Capability-Description-Teilmodellen verwendet)."}}
+          - {idShort: Description, modelType: MultiLanguageProperty, cardinality: ZeroToOne, preferredName: {en: "description", de: "Beschreibung"}, definition: {en: "Description of the requirement.", de: "Beschreibung der Anforderung."}}
+          - {idShort: CandidateResource, modelType: ReferenceElement, cardinality: ZeroToOne, preferredName: {en: "candidate resource", de: "Kandidatenressource"}, definition: {en: "Reference to a capability of a resource that fulfils the requirement.", de: "Referenz auf eine Fähigkeit einer Ressource, die die Anforderung erfüllt."}}
+  - idShort: Procedure
+    modelType: SubmodelElementCollection
+    preferredName: {en: "procedure", de: "Prozedur"}
+    definition: {en: "Ordered procedure steps (unit procedures and operations) of the recipe.", de: "Geordnete Prozedurschritte (Teilprozeduren und Operationen) des Rezepts."}
+    elements:
+      - idShort: Step__00__
+        conceptName: Step
+        modelType: SubmodelElementCollection
+        cardinality: OneToMany
+        preferredName: {en: "procedure step", de: "Prozedurschritt"}
+        definition: {en: "One step of the procedure.", de: "Ein Schritt der Prozedur."}
+        elements:
+          - {idShort: StepId, preferredName: {en: "step identifier", de: "Schrittkennung"}, definition: {en: "Identifier of the step (e.g. operation number).", de: "Kennung des Schritts (z. B. Arbeitsgangnummer)."}}
+          - {idShort: StepName, modelType: MultiLanguageProperty, preferredName: {en: "step name", de: "Schrittname"}, definition: {en: "Name of the step.", de: "Name des Schritts."}}
+          - {idShort: StepType, preferredName: {en: "step type", de: "Schritttyp"}, definition: {en: "ISA-88 procedural element: UnitProcedure, Operation or Phase.", de: "Prozedurelement nach ISA-88: UnitProcedure, Operation oder Phase."}}
+          - {idShort: Sequence, valueType: xs:int, preferredName: {en: "sequence number", de: "Reihenfolgenummer"}, definition: {en: "Position of the step in the execution order.", de: "Position des Schritts in der Ausführungsreihenfolge."}}
+          - {idShort: Predecessors, cardinality: ZeroToOne, preferredName: {en: "predecessors", de: "Vorgänger"}, definition: {en: "Comma-separated step identifiers that must be completed first.", de: "Kommagetrennte Schrittkennungen, die zuvor abgeschlossen sein müssen."}}
+          - {idShort: RequirementRef, cardinality: ZeroToOne, preferredName: {en: "equipment requirement reference", de: "Verweis auf Ausrüstungsanforderung"}, definition: {en: "RequirementId of the equipment requirement executing this step.", de: "RequirementId der Ausrüstungsanforderung, die diesen Schritt ausführt."}}
+          - {idShort: AssignedResource, modelType: ReferenceElement, cardinality: ZeroToOne, preferredName: {en: "assigned resource", de: "zugeordnete Ressource"}, definition: {en: "Reference to the AAS of the resource assigned in this (master/control) recipe.", de: "Referenz auf die Verwaltungsschale der in diesem Rezept zugeordneten Ressource."}}
+          - {idShort: ParameterRefs, cardinality: ZeroToOne, preferredName: {en: "parameter references", de: "Parameterverweise"}, definition: {en: "Comma-separated ParameterIds of the formula used by this step.", de: "Kommagetrennte ParameterIds der Formel, die dieser Schritt verwendet."}}
+          - {idShort: PlannedDuration, valueType: xs:duration, cardinality: ZeroToOne, preferredName: {en: "planned duration", de: "geplante Dauer"}, definition: {en: "Planned execution time of the step (ISO 8601 duration).", de: "Geplante Ausführungszeit des Schritts (ISO-8601-Dauer)."}}
+          - {idShort: QualityRelevant, valueType: xs:boolean, cardinality: ZeroToOne, preferredName: {en: "quality relevant", de: "qualitätsrelevant"}, definition: {en: "True if the step produces a quality record.", de: "Wahr, wenn der Schritt einen Qualitätsnachweis erzeugt."}}

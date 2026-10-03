@@ -1,0 +1,64 @@
+name: ProductMaterialComposition
+version: "1"
+revision: "0"
+displayName: {en: "Product Material Composition", de: "Materialzusammensetzung des Produkts"}
+description:
+  en: >-
+    Material composition and substances of concern of a (non-battery) product for a Digital Product Passport
+    (EU ESPR, REACH Art. 33 / SCIP). Generalisation of the IDTA Digital Battery Passport "Material Composition"
+    template (urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.0): battery chemistry removed,
+    element names kept without the "Battery" prefix, total mass and recyclability added. Virtual Factory custom template.
+  de: >-
+    Materialzusammensetzung und besorgniserregende Stoffe eines Produkts (kein Batterieprodukt) für einen digitalen
+    Produktpass (EU-ESPR, REACH Art. 33 / SCIP). Verallgemeinerung des IDTA-Batteriepass-Templates "Material
+    Composition": Batteriechemie entfernt, Elementnamen ohne Präfix "Battery", Gesamtmasse und Recyclingfähigkeit ergänzt.
+elements:
+  - idShort: TotalMass
+    valueType: xs:double
+    unit: kg
+    preferredName: {en: "total mass", de: "Gesamtmasse"}
+    definition: {en: "Mass of one product unit without packaging.", de: "Masse einer Produkteinheit ohne Verpackung."}
+  - idShort: Materials
+    modelType: SubmodelElementList
+    preferredName: {en: "materials", de: "Materialien"}
+    definition: {en: "Materials the product consists of.", de: "Materialien, aus denen das Produkt besteht."}
+    elements:
+      - idShort: Material
+        modelType: SubmodelElementCollection
+        cardinality: OneToMany
+        preferredName: {en: "material", de: "Material"}
+        definition: {en: "One material contained in the product.", de: "Ein im Produkt enthaltenes Material."}
+        elements:
+          - idShort: MaterialLocation
+            modelType: SubmodelElementCollection
+            preferredName: {en: "material location", de: "Materialort"}
+            definition: {en: "Component in which the material is located.", de: "Bauteil, in dem sich das Material befindet."}
+            elements:
+              - {idShort: ComponentName, cardinality: ZeroToOne, preferredName: {en: "component name", de: "Bauteilname"}, definition: {en: "Name of the component.", de: "Name des Bauteils."}}
+              - {idShort: ComponentId, cardinality: ZeroToOne, preferredName: {en: "component identifier", de: "Bauteilkennung"}, definition: {en: "Article number or BoM position of the component.", de: "Artikelnummer oder Stücklistenposition des Bauteils."}}
+          - {idShort: MaterialIdentifier, preferredName: {en: "material identifier", de: "Materialkennung"}, definition: {en: "Material designation according to a standard (e.g. EN 573 for aluminium, EN 10088 for stainless steel, ISO 1043 for plastics) or CAS number.", de: "Werkstoffbezeichnung nach Norm (z. B. EN 573, EN 10088, ISO 1043) oder CAS-Nummer."}}
+          - {idShort: MaterialName, preferredName: {en: "material name", de: "Materialname"}, definition: {en: "Common name of the material.", de: "Gebräuchlicher Name des Materials."}}
+          - {idShort: MaterialMass, valueType: xs:double, unit: kg, cardinality: ZeroToOne, preferredName: {en: "material mass", de: "Materialmasse"}, definition: {en: "Mass of the material per product unit.", de: "Masse des Materials je Produkteinheit."}}
+          - {idShort: IsCriticalRawMaterial, valueType: xs:boolean, preferredName: {en: "is critical raw material", de: "ist kritischer Rohstoff"}, definition: {en: "True if the material is on the EU list of critical raw materials.", de: "Wahr, wenn das Material auf der EU-Liste kritischer Rohstoffe steht."}}
+          - {idShort: RecyclabilityClass, cardinality: ZeroToOne, preferredName: {en: "recyclability class", de: "Recyclingfähigkeitsklasse"}, definition: {en: "Recyclability of the material: Recyclable, Downcycling, EnergyRecovery or Landfill.", de: "Recyclingfähigkeit des Materials: Recyclable, Downcycling, EnergyRecovery oder Landfill."}}
+  - idShort: HazardousSubstances
+    modelType: SubmodelElementList
+    preferredName: {en: "hazardous substances", de: "Gefahrstoffe"}
+    definition: {en: "Substances of concern above the declaration threshold (REACH SVHC > 0.1 % w/w).", de: "Besorgniserregende Stoffe oberhalb der Deklarationsschwelle (REACH-SVHC > 0,1 Massen-%)."}
+    elements:
+      - idShort: HazardousSubstance
+        modelType: SubmodelElementCollection
+        cardinality: ZeroToMany
+        preferredName: {en: "hazardous substance", de: "Gefahrstoff"}
+        definition: {en: "One declared substance of concern.", de: "Ein deklarierter besorgniserregender Stoff."}
+        elements:
+          - {idShort: HazardousSubstanceClass, cardinality: ZeroToOne, preferredName: {en: "hazard class", de: "Gefahrenklasse"}, definition: {en: "Hazard class according to CLP Regulation (EC) No 1272/2008.", de: "Gefahrenklasse nach CLP-Verordnung (EG) Nr. 1272/2008."}}
+          - {idShort: HazardousSubstanceName, preferredName: {en: "substance name", de: "Stoffname"}, definition: {en: "Name of the substance.", de: "Name des Stoffes."}}
+          - {idShort: HazardousSubstanceIdentifier, preferredName: {en: "substance identifier", de: "Stoffkennung"}, definition: {en: "CAS or EC number of the substance.", de: "CAS- oder EG-Nummer des Stoffes."}}
+          - {idShort: HazardousSubstanceConcentration, valueType: xs:double, unit: "%", cardinality: ZeroToOne, preferredName: {en: "concentration", de: "Konzentration"}, definition: {en: "Concentration in the article (w/w).", de: "Konzentration im Erzeugnis (Massenanteil)."}}
+          - {idShort: HazardousSubstanceLocation, cardinality: ZeroToOne, preferredName: {en: "substance location", de: "Stoffort"}, definition: {en: "Component containing the substance.", de: "Bauteil, das den Stoff enthält."}}
+          - {idShort: ScipNumber, cardinality: ZeroToOne, preferredName: {en: "SCIP number", de: "SCIP-Nummer"}, definition: {en: "Notification number in the ECHA SCIP database.", de: "Meldenummer in der SCIP-Datenbank der ECHA."}}
+  - idShort: DeclarationDate
+    valueType: xs:date
+    preferredName: {en: "declaration date", de: "Deklarationsdatum"}
+    definition: {en: "Date of the material declaration.", de: "Datum der Materialdeklaration."}

@@ -1,0 +1,1069 @@
+{
+ "administration": {
+  "revision": "0",
+  "templateId": "https://admin-shell.io/idta-02035-6",
+  "version": "1"
+ },
+ "description": [
+  {
+   "language": "en",
+   "text": "Mandatory data: Battery chemistry; critical raw materials; materials used in the cathode, anode, and \nelectrolyte; hazardous substances; impact of substances on the environment and on human health or \nsafety."
+  }
+ ],
+ "displayName": [
+  {
+   "language": "en",
+   "text": "material composition"
+  }
+ ],
+ "id": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.0#MaterialComposition/submodel",
+ "idShort": "MaterialComposition",
+ "kind": "Template",
+ "modelType": "Submodel",
+ "semanticId": {
+  "keys": [
+   {
+    "type": "GlobalReference",
+    "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.0#MaterialComposition"
+   }
+  ],
+  "type": "ExternalReference"
+ },
+ "submodelElements": [
+  {
+   "displayName": [
+    {
+     "language": "en",
+     "text": "battery chemistry"
+    }
+   ],
+   "idShort": "BatteryChemistry",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#batteryChemistry"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "value": [
+    {
+     "displayName": [
+      {
+       "language": "en",
+       "text": "short name"
+      }
+     ],
+     "idShort": "ShortName",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "One",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#shortName"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": "NMC",
+     "valueType": "xs:string"
+    },
+    {
+     "displayName": [
+      {
+       "language": "en",
+       "text": "clear name"
+      }
+     ],
+     "idShort": "ClearName",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "One",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#clearName"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": "Lithium nickel manganese cobalt oxides",
+     "valueType": "xs:string"
+    }
+   ]
+  },
+  {
+   "displayName": [
+    {
+     "language": "en",
+     "text": "battery materials"
+    }
+   ],
+   "idShort": "BatteryMaterials",
+   "modelType": "SubmodelElementList",
+   "orderRelevant": false,
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#batteryMaterials"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "typeValueListElement": "SubmodelElementCollection",
+   "value": [
+    {
+     "displayName": [
+      {
+       "language": "en",
+       "text": "battery material"
+      }
+     ],
+     "idShort": "BatteryMaterial",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "OneToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#BatteryMaterial"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "battery material location"
+        }
+       ],
+       "idShort": "BatteryMaterialLocation",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#batteryMaterialLocation"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "displayName": [
+          {
+           "language": "en",
+           "text": "component name"
+          }
+         ],
+         "idShort": "ComponentName",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/EitherOr/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/EitherOr",
+           "value": "BatteryMaterialLocationComponent",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#componentName"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "value": "Anode",
+         "valueType": "xs:string"
+        },
+        {
+         "displayName": [
+          {
+           "language": "en",
+           "text": "component ID"
+          }
+         ],
+         "idShort": "ComponentId",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/EitherOr/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/EitherOr",
+           "value": "BatteryMaterialLocationComponent",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#componentId"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:string"
+        }
+       ]
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "battery material identifier"
+        }
+       ],
+       "idShort": "BatteryMaterialIdentifier",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#batteryMaterialIdentifier"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "supplementalSemanticIds": [
+        {
+         "keys": [
+          {
+           "type": "GlobalReference",
+           "value": "https://www.cas.org/cas-data/cas-registry"
+          }
+         ],
+         "type": "ExternalReference"
+        },
+        {
+         "keys": [
+          {
+           "type": "GlobalReference",
+           "value": "urn:irdi:0173-1#02-ABH034#003"
+          }
+         ],
+         "type": "ExternalReference"
+        }
+       ],
+       "value": "7439-93-2",
+       "valueType": "xs:string"
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "battery material name"
+        }
+       ],
+       "idShort": "BatteryMaterialName",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#batteryMaterialName"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "supplementalSemanticIds": [
+        {
+         "keys": [
+          {
+           "type": "GlobalReference",
+           "value": "urn:irdi:0173-1#02-AAN920#003"
+          }
+         ],
+         "type": "ExternalReference"
+        }
+       ],
+       "value": "Lithium",
+       "valueType": "xs:string"
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "battery material mass"
+        }
+       ],
+       "idShort": "BatteryMaterialMass",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        },
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/ExampleValue",
+         "value": "2.35",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#batteryMaterialMass"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:float"
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "is critical raw material"
+        }
+       ],
+       "idShort": "IsCriticalRawMaterial",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#isCriticalRawMaterial"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": "true",
+       "valueType": "xs:boolean"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "displayName": [
+    {
+     "language": "en",
+     "text": "hazardous substances"
+    }
+   ],
+   "idShort": "HazardousSubstances",
+   "modelType": "SubmodelElementList",
+   "orderRelevant": false,
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#hazardousSubstances"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "typeValueListElement": "SubmodelElementCollection",
+   "value": [
+    {
+     "displayName": [
+      {
+       "language": "en",
+       "text": "hazardous substance"
+      }
+     ],
+     "idShort": "HazardousSubstance",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#HazardousSubstance"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "hazardous substance class"
+        }
+       ],
+       "idShort": "HazardousSubstanceClass",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        },
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/ExampleValue",
+         "value": "AcuteToxicity",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#hazardousSubstanceClass"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "hazardous substance name"
+        }
+       ],
+       "idShort": "HazardousSubstanceName",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#hazardousSubstanceName"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "hazardous substance concentration"
+        }
+       ],
+       "idShort": "HazardousSubstanceConcentration",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        },
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/ExampleValue",
+         "value": "0.12",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#hazardousSubstanceConcentration"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:double"
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "hazardous substance impact"
+        }
+       ],
+       "idShort": "HazardousSubstanceImpact",
+       "modelType": "SubmodelElementList",
+       "orderRelevant": false,
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#hazardousSubstanceImpact"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "typeValueListElement": "Property",
+       "value": [
+        {
+         "displayName": [
+          {
+           "language": "en",
+           "text": "impact"
+          }
+         ],
+         "idShort": "Impact",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToMany",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/ExampleValue/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/ExampleValue",
+           "value": "H302 Harmful if swallowed",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#Impact"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:string"
+        }
+       ],
+       "valueTypeListElement": "xs:string"
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "hazardous substance location"
+        }
+       ],
+       "idShort": "HazardousSubstanceLocation",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#hazardousSubstanceLocation"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "value": [
+        {
+         "displayName": [
+          {
+           "language": "en",
+           "text": "component name"
+          }
+         ],
+         "idShort": "ComponentName",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/EitherOr/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/EitherOr",
+           "value": "HazardousSubstanceLocationComponent",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#componentName"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "value": "Anode",
+         "valueType": "xs:string"
+        },
+        {
+         "displayName": [
+          {
+           "language": "en",
+           "text": "component ID"
+          }
+         ],
+         "idShort": "ComponentId",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          },
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/EitherOr/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/EitherOr",
+           "value": "HazardousSubstanceLocationComponent",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#componentId"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "valueType": "xs:string"
+        }
+       ]
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "hazardous substance identifier"
+        }
+       ],
+       "idShort": "HazardousSubstanceIdentifier",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#hazardousSubstanceIdentifier"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "supplementalSemanticIds": [
+        {
+         "keys": [
+          {
+           "type": "GlobalReference",
+           "value": "https://www.cas.org/cas-data/cas-registry"
+          }
+         ],
+         "type": "ExternalReference"
+        }
+       ],
+       "valueType": "xs:string"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

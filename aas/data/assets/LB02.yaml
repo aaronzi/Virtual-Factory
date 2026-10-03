@@ -1,0 +1,12 @@
+_extends: common/light_barrier_instance.yaml
+tag: LB02
+idShort: LB02_LightBarrierInspection
+displayName: {en: "Light barrier LB02 (inspection position)", de: "Lichtschranke LB02 (Prüfposition)"}
+description:
+  en: Detects parts arriving at the QA station; the PLC stops the conveyor so the part is centred under the colour sensor.
+  de: Erkennt an der Prüfstation ankommende Teile; die SPS stoppt das Band, sodass das Teil unter dem Farbsensor steht.
+locationDescription: "LINE01, conveyor CV01, 60 mm before the QA station QS01"
+specificAssetIds: {serialNumber: LX12R-2504-18327, manufacturerPartId: LX12-R-P4M8}
+submodels:
+  - template: Nameplate-3.0
+    values: {SerialNumber: LX12R-2504-18327, DateOfManufacture: "2025-04-14"}

@@ -1,0 +1,108 @@
+tag: LB_TYPE
+idShort: LX12R_RetroReflectiveSensor
+kind: Type
+assetType: https://virtual-factory.example/ids/assettype/PhotoelectricSensor
+displayName: {en: "LX12-R retro-reflective photoelectric sensor (type)", de: "LX12-R Reflexionslichtschranke (Typ)"}
+description:
+  en: Product type of the retro-reflective light barriers used at the conveyor infeed and at the inspection position.
+  de: Produkttyp der Reflexionslichtschranken am Bandeinlauf und an der Prüfposition.
+thumbnail: repo:docs/screenshots/assets/light_barrier.png
+specificAssetIds: {manufacturerPartId: LX12-R-P4M8}
+model3d:
+  file: godot/devices/light_barrier/view/light_barrier.glb
+  preview: docs/screenshots/assets/light_barrier.png
+  title: LX12-R sensor with reflector and brackets
+  objectType: Sensor
+submodels:
+  - template: Nameplate-3.0
+    values:
+      ManufacturerName: {en: Lumetra Sensortechnik GmbH, de: Lumetra Sensortechnik GmbH}
+      ManufacturerProductDesignation: {en: "Retro-reflective photoelectric sensor, polarised, PNP, M8", de: "Reflexionslichtschranke, polarisiert, PNP, M8"}
+      ManufacturerProductRoot: {en: Photoelectric sensors, de: Optoelektronische Sensoren}
+      ManufacturerProductFamily: {en: LX12, de: LX12}
+      ManufacturerProductType: LX12-R
+      OrderCodeOfManufacturer: LX12-R-P4M8
+      ProductArticleNumberOfManufacturer: "1042-0012"
+      URIOfTheProduct: https://virtual-factory.example/lumetra/products/LX12-R
+      CountryOfOrigin: DE
+      HardwareVersion: "2.0"
+      FirmwareVersion: "1.3.0"
+      AddressInformation: {$include: common/address_lumetra.yaml}
+      Markings: [{$include: common/marking_ce.yaml}]
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation:
+        ManufacturerName: Lumetra Sensortechnik GmbH
+        ManufacturerProductDesignation: {en: "Retro-reflective photoelectric sensor LX12-R", de: "Reflexionslichtschranke LX12-R"}
+        ManufacturerArticleNumber: "1042-0012"
+        ManufacturerOrderCode: LX12-R-P4M8
+        ProductImages: [{ImageFile: repo:docs/screenshots/assets/light_barrier.png, ImageNote: {en: Sensor and reflector on conveyor brackets}}]
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          "+SensingPrinciple": {value: "retro-reflective, polarisation filter", description: {en: Sensing principle}}
+          "+SensingRangeMax": {valueType: xs:double, value: 6.0, description: {en: "Maximum sensing range with reflector R50 [m]"}}
+          "+SensingRangeMin": {valueType: xs:double, value: 0.05, description: {en: "Minimum sensing range [m]"}}
+          "+LightSource": {value: "LED red 640 nm", description: {en: Light source}}
+          "+SupplyVoltageMin": {valueType: xs:double, value: 10, description: {en: "Minimum supply voltage [V DC]"}}
+          "+SupplyVoltageMax": {valueType: xs:double, value: 30, description: {en: "Maximum supply voltage [V DC]"}}
+          "+CurrentConsumption": {valueType: xs:double, value: 0.025, description: {en: "Typical current consumption [A]"}}
+          "+ResponseTime": {valueType: xs:double, value: 0.0005, description: {en: "Response time [s]"}}
+          "+SwitchingOutput": {value: "PNP, NO/NC selectable, 100 mA", description: {en: Switching output}}
+          "+DegreeOfProtection": {value: IP67, description: {en: "Degree of protection (IEC 60529)"}}
+          "+AmbientTemperatureMin": {valueType: xs:double, value: -25, description: {en: "Minimum ambient temperature [°C]"}}
+          "+AmbientTemperatureMax": {valueType: xs:double, value: 55, description: {en: "Maximum ambient temperature [°C]"}}
+          "+Mass": {valueType: xs:double, value: 0.010, description: {en: "Mass [kg]"}}
+      FurtherInformation:
+        TextStatement: [{en: "Not a safety component; not for personnel protection.", de: "Kein Sicherheitsbauteil; nicht für den Personenschutz."}]
+        ValidDate: "2025-03-01"
+  - template: HandoverDocumentation-2.0
+    values:
+      Documents:
+        - DocumentIds: [{DocumentDomainId: Lumetra, DocumentIdentifier: DS-LX12R, DocumentIsPrimary: true}]
+          DocumentClassifications: [{ClassId: "03-02", ClassName: {en: Technical specification, de: Technische Spezifikation}, ClassificationSystem: VDI2770:2020}]
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "2.1"
+              Title: {en: LX12-R data sheet}
+              Description: {en: Technical data of the LX12-R retro-reflective sensor}
+              StatusSetDate: "2025-03-01"
+              StatusValue: Released
+              OrganizationShortName: Lumetra
+              OrganizationOfficialName: Lumetra Sensortechnik GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/DS-LX12R.pdf}]
+        - DocumentIds: [{DocumentDomainId: Lumetra, DocumentIdentifier: OM-LX12R, DocumentIsPrimary: true}]
+          DocumentClassifications: [{ClassId: "03-04", ClassName: {en: "Operation (manual)", de: Bedienung}, ClassificationSystem: VDI2770:2020}]
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.4"
+              Title: {en: LX12-R operating instructions}
+              Description: {en: "Mounting, alignment and maintenance"}
+              StatusSetDate: "2025-03-01"
+              StatusValue: Released
+              OrganizationShortName: Lumetra
+              OrganizationOfficialName: Lumetra Sensortechnik GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/OM-LX12R.pdf}]
+  - template: CarbonFootprint-1.0
+    values:
+      ProductCarbonFootprints:
+        - PcfCalculationMethods: [{value: "ISO 14067"}, {value: "GHG Protocol"}]
+          PcfCO2eq: 1.9
+          ReferenceImpactUnitForCalculation: piece
+          QuantityOfMeasureForCalculation: 1
+          LifeCyclePhases: [{value: "A1-A3"}]
+          PublicationDate: "2025-03-01T00:00:00+00:00"
+  - template: Reliability-1.0
+    values:
+      NumberOfReliabilitySets: 1
+      ReliabilityCharacteristics: [{_idShort: ReliabilityAt40C, MTTF: [{value: 1500000}]}]
+      OperatingConditionsOfReliabilityCharacteristics:
+        - _idShort: Conditions40C
+          TypeOfVoltage: [{value: DC}]
+          RatedVoltage: [{value: 24}]
+          OtherOperatingConditions: [{value: "Ambient temperature 40 °C, SN 29500"}]
+  - template: ContactInformations-1.0
+    values:
+      ContactInformation:
+        - _idShort: Sales
+          RoleOfContactPerson: "0173-1#07-AAS927#001"
+          $include: common/address_lumetra.yaml

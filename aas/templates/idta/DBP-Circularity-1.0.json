@@ -1,0 +1,1644 @@
+{
+ "administration": {
+  "revision": "0",
+  "templateId": "https://admin-shell.io/idta-02035-7",
+  "version": "1"
+ },
+ "description": [
+  {
+   "language": "en",
+   "text": "Dismantling information (including at least: exploded diagrams of the battery system/pack showing the location of battery cells; disassembly sequences; type and number of fastening techniques to be unlocked; tools required for disassembly; warnings if risk of damaging parts exists; amount of cells used and layout); part numbers for components and contact details of sources for replacement spares; safety measures \n   \n   (Annex XIII (2b-d)); usable extinguishing agent (Annex VI, Part A(9)). Bibliography includes the Digital Battery Passport Guideline."
+  }
+ ],
+ "displayName": [
+  {
+   "language": "en",
+   "text": "Circularity"
+  }
+ ],
+ "id": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#Circularity/submodel",
+ "idShort": "Circularity",
+ "kind": "Template",
+ "modelType": "Submodel",
+ "semanticId": {
+  "keys": [
+   {
+    "type": "GlobalReference",
+    "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#Circularity"
+   }
+  ],
+  "type": "ExternalReference"
+ },
+ "submodelElements": [
+  {
+   "displayName": [
+    {
+     "language": "en",
+     "text": "dismantling and removal information"
+    }
+   ],
+   "idShort": "DismantlingAndRemovalInformation",
+   "modelType": "SubmodelElementList",
+   "orderRelevant": false,
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#dismantlingAndRemovalInformation"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "typeValueListElement": "Property",
+   "value": [
+    {
+     "displayName": [
+      {
+       "language": "en",
+       "text": "document identifier"
+      }
+     ],
+     "idShort": "DocumentIdentifier",
+     "modelType": "Property",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "OneToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "urn:samm:io.admin-shell.idta.handover_documentation:2.0.0#DocumentIdentifier"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "valueType": "xs:string"
+    }
+   ],
+   "valueTypeListElement": "xs:string"
+  },
+  {
+   "displayName": [
+    {
+     "language": "en",
+     "text": "end of life information"
+    }
+   ],
+   "idShort": "EndOfLifeInformation",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#endOfLifeInformation"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "value": [
+    {
+     "displayName": [
+      {
+       "language": "en",
+       "text": "waste prevention"
+      }
+     ],
+     "idShort": "WastePrevention",
+     "modelType": "SubmodelElementList",
+     "orderRelevant": false,
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "One",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#wastePrevention"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "supplementalSemanticIds": [
+      {
+       "keys": [
+        {
+         "type": "GlobalReference",
+         "value": "urn:irdi:0173-1#02-ABL855#001"
+        }
+       ],
+       "type": "ExternalReference"
+      }
+     ],
+     "typeValueListElement": "Property",
+     "value": [
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "document identifier"
+        }
+       ],
+       "idShort": "DocumentIdentifier",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "OneToMany",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.handover_documentation:2.0.0#DocumentIdentifier"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      }
+     ],
+     "valueTypeListElement": "xs:string"
+    },
+    {
+     "displayName": [
+      {
+       "language": "en",
+       "text": "separate collection"
+      }
+     ],
+     "idShort": "SeparateCollection",
+     "modelType": "SubmodelElementList",
+     "orderRelevant": false,
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "One",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#separateCollection"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "supplementalSemanticIds": [
+      {
+       "keys": [
+        {
+         "type": "GlobalReference",
+         "value": "urn:irdi:0173-1#02-ABL854#001"
+        }
+       ],
+       "type": "ExternalReference"
+      }
+     ],
+     "typeValueListElement": "Property",
+     "value": [
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "document identifier"
+        }
+       ],
+       "idShort": "DocumentIdentifier",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "OneToMany",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.handover_documentation:2.0.0#DocumentIdentifier"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      }
+     ],
+     "valueTypeListElement": "xs:string"
+    },
+    {
+     "displayName": [
+      {
+       "language": "en",
+       "text": "information on collection"
+      }
+     ],
+     "idShort": "InformationOnCollection",
+     "modelType": "SubmodelElementList",
+     "orderRelevant": false,
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "One",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#informationOnCollection"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "supplementalSemanticIds": [
+      {
+       "keys": [
+        {
+         "type": "GlobalReference",
+         "value": "urn:irdi:0173-1#02-ABL856#001"
+        }
+       ],
+       "type": "ExternalReference"
+      }
+     ],
+     "typeValueListElement": "Property",
+     "value": [
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "document identifier"
+        }
+       ],
+       "idShort": "DocumentIdentifier",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "OneToMany",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.handover_documentation:2.0.0#DocumentIdentifier"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      }
+     ],
+     "valueTypeListElement": "xs:string"
+    }
+   ]
+  },
+  {
+   "displayName": [
+    {
+     "language": "en",
+     "text": "recycled content information"
+    }
+   ],
+   "idShort": "RecycledContentInformation",
+   "modelType": "SubmodelElementList",
+   "orderRelevant": false,
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#recycledContent"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "typeValueListElement": "SubmodelElementCollection",
+   "value": [
+    {
+     "displayName": [
+      {
+       "language": "en",
+       "text": "recycled content"
+      }
+     ],
+     "idShort": "RecycledContent",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "OneToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#RecycledContent"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "pre consumer share"
+        }
+       ],
+       "idShort": "PreConsumerShare",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#preConsumerShare"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:float"
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "recycled material"
+        }
+       ],
+       "idShort": "RecycledMaterial",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#recycledMaterial"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "post consumer share"
+        }
+       ],
+       "idShort": "PostConsumerShare",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "ZeroToOne",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#postConsumerShare"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:float"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "displayName": [
+    {
+     "language": "en",
+     "text": "renewable content"
+    }
+   ],
+   "idShort": "RenewableContent",
+   "modelType": "Property",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#renewableContent"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "supplementalSemanticIds": [
+    {
+     "keys": [
+      {
+       "type": "GlobalReference",
+       "value": "urn:irdi:0173-1#02-ABL867#001"
+      }
+     ],
+     "type": "ExternalReference"
+    }
+   ],
+   "valueType": "xs:float"
+  },
+  {
+   "displayName": [
+    {
+     "language": "en",
+     "text": "safety measures"
+    }
+   ],
+   "idShort": "SafetyMeasures",
+   "modelType": "SubmodelElementCollection",
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#safetyMeasures"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "value": [
+    {
+     "displayName": [
+      {
+       "language": "en",
+       "text": "safety instructions"
+      }
+     ],
+     "idShort": "SafetyInstructions",
+     "modelType": "SubmodelElementList",
+     "orderRelevant": false,
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "One",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#safetyInstructions"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "typeValueListElement": "Property",
+     "value": [
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "document identifier"
+        }
+       ],
+       "idShort": "DocumentIdentifier",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "OneToMany",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.handover_documentation:2.0.0#DocumentIdentifier"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      }
+     ],
+     "valueTypeListElement": "xs:string"
+    },
+    {
+     "displayName": [
+      {
+       "language": "en",
+       "text": "extinguishing agents"
+      }
+     ],
+     "idShort": "ExtinguishingAgents",
+     "modelType": "SubmodelElementList",
+     "orderRelevant": false,
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "One",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#extinguishingAgents"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "typeValueListElement": "Property",
+     "value": [
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "extinguishing agent"
+        }
+       ],
+       "idShort": "ExtinguishingAgent",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "OneToMany",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#ExtinguishingAgent"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "valueType": "xs:string"
+      }
+     ],
+     "valueTypeListElement": "xs:string"
+    }
+   ]
+  },
+  {
+   "displayName": [
+    {
+     "language": "en",
+     "text": "spare part sources"
+    }
+   ],
+   "idShort": "SparePartSources",
+   "modelType": "SubmodelElementList",
+   "orderRelevant": false,
+   "qualifiers": [
+    {
+     "kind": "TemplateQualifier",
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "type": "SMT/Cardinality",
+     "value": "One",
+     "valueType": "xs:string"
+    }
+   ],
+   "semanticId": {
+    "keys": [
+     {
+      "type": "GlobalReference",
+      "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#sparePartSources"
+     }
+    ],
+    "type": "ExternalReference"
+   },
+   "typeValueListElement": "SubmodelElementCollection",
+   "value": [
+    {
+     "displayName": [
+      {
+       "language": "en",
+       "text": "spare part supplier"
+      }
+     ],
+     "idShort": "SparePartSupplier",
+     "modelType": "SubmodelElementCollection",
+     "qualifiers": [
+      {
+       "kind": "TemplateQualifier",
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "type": "SMT/Cardinality",
+       "value": "ZeroToMany",
+       "valueType": "xs:string"
+      }
+     ],
+     "semanticId": {
+      "keys": [
+       {
+        "type": "GlobalReference",
+        "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#SparePartSupplier"
+       }
+      ],
+      "type": "ExternalReference"
+     },
+     "value": [
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "name of supplier"
+        }
+       ],
+       "idShort": "NameOfSupplier",
+       "modelType": "MultiLanguageProperty",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.contact_information:1.0.0#company"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "supplementalSemanticIds": [
+        {
+         "keys": [
+          {
+           "type": "GlobalReference",
+           "value": "urn:irdi:0173-1#02-AAW001#001"
+          }
+         ],
+         "type": "ExternalReference"
+        }
+       ]
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "address of supplier"
+        }
+       ],
+       "idShort": "AddressOfSupplier",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#addressOfSupplier"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "supplementalSemanticIds": [
+        {
+         "keys": [
+          {
+           "type": "GlobalReference",
+           "value": "https://schema.org/PostalAddress"
+          }
+         ],
+         "type": "ExternalReference"
+        }
+       ],
+       "value": [
+        {
+         "displayName": [
+          {
+           "language": "de",
+           "text": "Länderkürzel"
+          },
+          {
+           "language": "en",
+           "text": "national code"
+          }
+         ],
+         "idShort": "NationalCode",
+         "modelType": "MultiLanguageProperty",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "One",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.contact_information:1.0.0#nationalCode"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "supplementalSemanticIds": [
+          {
+           "keys": [
+            {
+             "type": "GlobalReference",
+             "value": "urn:irdi:0173-1#02-AAO134#002"
+            }
+           ],
+           "type": "ExternalReference"
+          }
+         ]
+        },
+        {
+         "displayName": [
+          {
+           "language": "en",
+           "text": "postal code"
+          }
+         ],
+         "idShort": "PostalCode",
+         "modelType": "MultiLanguageProperty",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "One",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.contact_information:1.0.0#postalCode"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "supplementalSemanticIds": [
+          {
+           "keys": [
+            {
+             "type": "GlobalReference",
+             "value": "https://schema.org/postalCode"
+            }
+           ],
+           "type": "ExternalReference"
+          },
+          {
+           "keys": [
+            {
+             "type": "GlobalReference",
+             "value": "urn:irdi:0173-1#02-AAO129#002"
+            }
+           ],
+           "type": "ExternalReference"
+          }
+         ]
+        },
+        {
+         "displayName": [
+          {
+           "language": "en",
+           "text": "street"
+          },
+          {
+           "language": "de",
+           "text": "Straße"
+          }
+         ],
+         "idShort": "Street",
+         "modelType": "MultiLanguageProperty",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "One",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.contact_information:1.0.0#street"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "supplementalSemanticIds": [
+          {
+           "keys": [
+            {
+             "type": "GlobalReference",
+             "value": "https://schema.org/streetAddress"
+            }
+           ],
+           "type": "ExternalReference"
+          },
+          {
+           "keys": [
+            {
+             "type": "GlobalReference",
+             "value": "urn:irdi:0173-1#02-AAO128#002"
+            }
+           ],
+           "type": "ExternalReference"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "email address of supplier"
+        },
+        {
+         "language": "de",
+         "text": "Email"
+        }
+       ],
+       "idShort": "EmailAddressOfSupplier",
+       "modelType": "SubmodelElementCollection",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.contact_information:1.0.0#email"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "supplementalSemanticIds": [
+        {
+         "keys": [
+          {
+           "type": "GlobalReference",
+           "value": "urn:irdi:0173-1#02-AAQ836#005"
+          }
+         ],
+         "type": "ExternalReference"
+        }
+       ],
+       "value": [
+        {
+         "displayName": [
+          {
+           "language": "en",
+           "text": "email address"
+          }
+         ],
+         "idShort": "EmailAddress",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "One",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.contact_information:1.0.0#emailAddress"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "supplementalSemanticIds": [
+          {
+           "keys": [
+            {
+             "type": "GlobalReference",
+             "value": "urn:irdi:0173-1#02-AAO198#002"
+            }
+           ],
+           "type": "ExternalReference"
+          }
+         ],
+         "valueType": "xs:string"
+        },
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Public part of an unsymmetrical key pair to sign or encrypt text or messages."
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "public key"
+          }
+         ],
+         "idShort": "PublicKey",
+         "modelType": "MultiLanguageProperty",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.contact_information:1.0.0#publicKey"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "supplementalSemanticIds": [
+          {
+           "keys": [
+            {
+             "type": "GlobalReference",
+             "value": "urn:irdi:0173-1#02-AAO200#002"
+            }
+           ],
+           "type": "ExternalReference"
+          }
+         ]
+        },
+        {
+         "displayName": [
+          {
+           "language": "en",
+           "text": "type of email address"
+          }
+         ],
+         "idShort": "TypeOfEmailAddress",
+         "modelType": "Property",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.contact_information:1.0.0#typeOfEmailAddress"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "supplementalSemanticIds": [
+          {
+           "keys": [
+            {
+             "type": "GlobalReference",
+             "value": "urn:irdi:0173-1#02-AAO199#003"
+            }
+           ],
+           "type": "ExternalReference"
+          }
+         ],
+         "valueType": "xs:string"
+        },
+        {
+         "displayName": [
+          {
+           "language": "en",
+           "text": "type of public key"
+          }
+         ],
+         "idShort": "TypeOfPublicKey",
+         "modelType": "MultiLanguageProperty",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "ZeroToOne",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.contact_information:1.0.0#typeOfPublicKey"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "supplementalSemanticIds": [
+          {
+           "keys": [
+            {
+             "type": "GlobalReference",
+             "value": "urn:irdi:0173-1#02-AAO201#002"
+            }
+           ],
+           "type": "ExternalReference"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "supplier web address"
+        }
+       ],
+       "idShort": "SupplierWebAddress",
+       "modelType": "Property",
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.contact_information:1.0.0#addressOfAdditionalLink"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "supplementalSemanticIds": [
+        {
+         "keys": [
+          {
+           "type": "GlobalReference",
+           "value": "urn:irdi:0173-1#02-AAQ326#002"
+          }
+         ],
+         "type": "ExternalReference"
+        }
+       ],
+       "valueType": "xs:string"
+      },
+      {
+       "displayName": [
+        {
+         "language": "en",
+         "text": "components"
+        }
+       ],
+       "idShort": "Components",
+       "modelType": "SubmodelElementList",
+       "orderRelevant": false,
+       "qualifiers": [
+        {
+         "kind": "TemplateQualifier",
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "type": "SMT/Cardinality",
+         "value": "One",
+         "valueType": "xs:string"
+        }
+       ],
+       "semanticId": {
+        "keys": [
+         {
+          "type": "GlobalReference",
+          "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#components"
+         }
+        ],
+        "type": "ExternalReference"
+       },
+       "typeValueListElement": "SubmodelElementCollection",
+       "value": [
+        {
+         "description": [
+          {
+           "language": "en",
+           "text": "Components available at supplier"
+          }
+         ],
+         "displayName": [
+          {
+           "language": "en",
+           "text": "Component"
+          }
+         ],
+         "idShort": "Component",
+         "modelType": "SubmodelElementCollection",
+         "qualifiers": [
+          {
+           "kind": "TemplateQualifier",
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "type": "SMT/Cardinality",
+           "value": "OneToMany",
+           "valueType": "xs:string"
+          }
+         ],
+         "semanticId": {
+          "keys": [
+           {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#Component"
+           }
+          ],
+          "type": "ExternalReference"
+         },
+         "value": [
+          {
+           "displayName": [
+            {
+             "language": "en",
+             "text": "part name"
+            }
+           ],
+           "idShort": "PartName",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#partName"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          },
+          {
+           "displayName": [
+            {
+             "language": "en",
+             "text": "part number"
+            }
+           ],
+           "idShort": "PartNumber",
+           "modelType": "Property",
+           "qualifiers": [
+            {
+             "kind": "TemplateQualifier",
+             "semanticId": {
+              "keys": [
+               {
+                "type": "GlobalReference",
+                "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+               }
+              ],
+              "type": "ExternalReference"
+             },
+             "type": "SMT/Cardinality",
+             "value": "One",
+             "valueType": "xs:string"
+            }
+           ],
+           "semanticId": {
+            "keys": [
+             {
+              "type": "GlobalReference",
+              "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#partNumber"
+             }
+            ],
+            "type": "ExternalReference"
+           },
+           "valueType": "xs:string"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

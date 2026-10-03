@@ -1,0 +1,85 @@
+name: EnergyConsumption
+version: "1"
+revision: "0"
+displayName: {en: "Energy Consumption", de: "Energieverbrauch"}
+description:
+  en: >-
+    Electrical rating and measured energy consumption of an asset, including compressed-air equivalent and the
+    operational CO2 equivalent derived from a grid emission factor (ISO 50001 energy review, GHG Protocol scope 2).
+    Static rating values are provided by the manufacturer; dynamic values are updated by the edge data bridge.
+    Virtual Factory custom template (no IDTA template for energy consumption measurement exists yet).
+  de: >-
+    Elektrische Bemessungsdaten und gemessener Energieverbrauch einer Anlage einschließlich Druckluftäquivalent und
+    betrieblichem CO2-Äquivalent auf Basis eines Netz-Emissionsfaktors (ISO 50001, GHG Protocol Scope 2).
+elements:
+  - idShort: RatedPower
+    valueType: xs:double
+    unit: W
+    preferredName: {en: "rated power", de: "Bemessungsleistung"}
+    definition: {en: "Electrical power consumption at rated operation.", de: "Elektrische Leistungsaufnahme bei Bemessungsbetrieb."}
+  - idShort: StandbyPower
+    valueType: xs:double
+    unit: W
+    cardinality: ZeroToOne
+    preferredName: {en: "standby power", de: "Standby-Leistung"}
+    definition: {en: "Electrical power consumption in standby / idle.", de: "Elektrische Leistungsaufnahme im Bereitschafts- bzw. Leerlaufzustand."}
+  - idShort: PowerSupply
+    modelType: SubmodelElementCollection
+    cardinality: ZeroToOne
+    preferredName: {en: "power supply", de: "Energieversorgung"}
+    definition: {en: "Characteristics of the electrical supply.", de: "Kennwerte der elektrischen Versorgung."}
+    elements:
+      - {idShort: RatedVoltage, valueType: xs:double, unit: V, preferredName: {en: "rated voltage", de: "Bemessungsspannung"}, definition: {en: "Rated supply voltage.", de: "Bemessungsversorgungsspannung."}}
+      - {idShort: Frequency, valueType: xs:double, unit: Hz, cardinality: ZeroToOne, preferredName: {en: "frequency", de: "Frequenz"}, definition: {en: "Supply frequency (0 for DC).", de: "Versorgungsfrequenz (0 für Gleichspannung)."}}
+      - {idShort: NumberOfPhases, valueType: xs:int, cardinality: ZeroToOne, preferredName: {en: "number of phases", de: "Anzahl der Phasen"}, definition: {en: "Number of phases of the supply.", de: "Anzahl der Phasen der Versorgung."}}
+      - {idShort: RatedCurrent, valueType: xs:double, unit: A, cardinality: ZeroToOne, preferredName: {en: "rated current", de: "Bemessungsstrom"}, definition: {en: "Rated input current.", de: "Bemessungseingangsstrom."}}
+  - idShort: ActualPower
+    valueType: xs:double
+    unit: W
+    preferredName: {en: "actual power", de: "aktuelle Leistung"}
+    definition: {en: "Currently measured electrical power (including compressed-air equivalent if applicable).", de: "Aktuell gemessene elektrische Leistung (ggf. inkl. Druckluftäquivalent)."}
+  - idShort: EnergyConsumed
+    valueType: xs:double
+    unit: kWh
+    preferredName: {en: "energy consumed", de: "verbrauchte Energie"}
+    definition: {en: "Electrical energy consumed since MeasurementStart.", de: "Seit MeasurementStart verbrauchte elektrische Energie."}
+  - idShort: MeasurementStart
+    valueType: xs:dateTime
+    cardinality: ZeroToOne
+    preferredName: {en: "measurement start", de: "Messbeginn"}
+    definition: {en: "Start of the energy measurement period (e.g. start of the production session).", de: "Beginn des Messzeitraums (z. B. Beginn der Produktionssitzung)."}
+  - idShort: CompressedAir
+    modelType: SubmodelElementCollection
+    cardinality: ZeroToOne
+    preferredName: {en: "compressed air", de: "Druckluft"}
+    definition: {en: "Compressed-air consumption and its electrical equivalent.", de: "Druckluftverbrauch und sein elektrisches Äquivalent."}
+    elements:
+      - {idShort: AirConsumed, valueType: xs:double, unit: Nl, preferredName: {en: "air consumed", de: "verbrauchte Druckluft"}, definition: {en: "Compressed air consumed since MeasurementStart in normal litres.", de: "Seit MeasurementStart verbrauchte Druckluft in Normlitern."}}
+      - {idShort: SpecificEnergy, valueType: xs:double, unit: Wh/Nl, preferredName: {en: "specific energy of compressed air", de: "spezifische Energie der Druckluft"}, definition: {en: "Electrical energy of the compressor station per normal litre.", de: "Elektrische Energie der Kompressorstation je Normliter."}}
+  - idShort: EmissionFactor
+    valueType: xs:double
+    unit: kg/kWh
+    cardinality: ZeroToOne
+    preferredName: {en: "grid emission factor", de: "Netz-Emissionsfaktor"}
+    definition: {en: "CO2 equivalent emissions per kWh of the electricity supply (location-based).", de: "CO2-Äquivalent-Emissionen je kWh der Stromversorgung (standortbasiert)."}
+  - idShort: EmissionFactorSource
+    modelType: MultiLanguageProperty
+    cardinality: ZeroToOne
+    preferredName: {en: "emission factor source", de: "Quelle des Emissionsfaktors"}
+    definition: {en: "Source and reference year of the emission factor.", de: "Quelle und Bezugsjahr des Emissionsfaktors."}
+  - idShort: OperationalCO2eq
+    valueType: xs:double
+    unit: kg
+    cardinality: ZeroToOne
+    preferredName: {en: "operational CO2 equivalent", de: "betriebliches CO2-Äquivalent"}
+    definition: {en: "EnergyConsumed multiplied by the emission factor.", de: "EnergyConsumed multipliziert mit dem Emissionsfaktor."}
+  - idShort: LastUpdate
+    valueType: xs:dateTime
+    cardinality: ZeroToOne
+    preferredName: {en: "last update", de: "letzte Aktualisierung"}
+    definition: {en: "Time of the last update of the dynamic values.", de: "Zeitpunkt der letzten Aktualisierung der dynamischen Werte."}
+  - idShort: PowerTimeSeries
+    modelType: ReferenceElement
+    cardinality: ZeroToOne
+    preferredName: {en: "power time series", de: "Leistungszeitreihe"}
+    definition: {en: "Reference to the Time Series submodel holding the power history.", de: "Referenz auf das Zeitreihen-Teilmodell mit dem Leistungsverlauf."}

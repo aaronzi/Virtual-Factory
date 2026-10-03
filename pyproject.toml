@@ -3,7 +3,7 @@ name = "virtual-factory"
 version = "0.1.0"
 description = "Virtual Factory – workspace root (edge/IT services, tools, tests)"
 requires-python = ">=3.12"
-dependencies = ["vf-common"]
+dependencies = ["vf-common", "provisioner"]
 
 [tool.uv]
 package = false
@@ -13,6 +13,7 @@ members = ["services/*"]
 
 [tool.uv.sources]
 vf-common = { workspace = true }
+provisioner = { workspace = true }
 
 [dependency-groups]
 dev = [

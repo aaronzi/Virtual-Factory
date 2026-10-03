@@ -1,0 +1,79 @@
+name: ProductCircularity
+version: "1"
+revision: "0"
+displayName: {en: "Product Circularity", de: "Kreislauffähigkeit des Produkts"}
+description:
+  en: >-
+    Circularity information of a (non-battery) product for a Digital Product Passport (EU ESPR): recycled and
+    renewable content, durability, repairability and spare parts, dismantling and end-of-life information.
+    Generalisation of the IDTA Digital Battery Passport "Circularity" template
+    (urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0): battery safety measures removed, durability and
+    repairability added. Virtual Factory custom template.
+  de: >-
+    Informationen zur Kreislauffähigkeit eines Produkts (kein Batterieprodukt) für einen digitalen Produktpass
+    (EU-ESPR): Rezyklat- und erneuerbarer Anteil, Haltbarkeit, Reparierbarkeit und Ersatzteile, Demontage- und
+    End-of-Life-Informationen. Verallgemeinerung des IDTA-Batteriepass-Templates "Circularity".
+elements:
+  - idShort: RecycledContentInformation
+    modelType: SubmodelElementList
+    preferredName: {en: "recycled content information", de: "Angaben zum Rezyklatanteil"}
+    definition: {en: "Share of recycled material per material.", de: "Rezyklatanteil je Material."}
+    elements:
+      - idShort: RecycledContent
+        modelType: SubmodelElementCollection
+        cardinality: OneToMany
+        preferredName: {en: "recycled content", de: "Rezyklatanteil"}
+        definition: {en: "Recycled content of one material.", de: "Rezyklatanteil eines Materials."}
+        elements:
+          - {idShort: RecycledMaterial, preferredName: {en: "recycled material", de: "rezykliertes Material"}, definition: {en: "Material the shares refer to.", de: "Material, auf das sich die Anteile beziehen."}}
+          - {idShort: PreConsumerShare, valueType: xs:double, unit: "%", cardinality: ZeroToOne, preferredName: {en: "pre-consumer share", de: "Pre-Consumer-Anteil"}, definition: {en: "Share of pre-consumer recycled material (w/w).", de: "Anteil Pre-Consumer-Rezyklat (Massenanteil)."}}
+          - {idShort: PostConsumerShare, valueType: xs:double, unit: "%", cardinality: ZeroToOne, preferredName: {en: "post-consumer share", de: "Post-Consumer-Anteil"}, definition: {en: "Share of post-consumer recycled material (w/w).", de: "Anteil Post-Consumer-Rezyklat (Massenanteil)."}}
+  - idShort: RenewableContent
+    valueType: xs:double
+    unit: "%"
+    preferredName: {en: "renewable content", de: "erneuerbarer Anteil"}
+    definition: {en: "Share of renewable (bio-based) material in the product (w/w).", de: "Anteil erneuerbarer (biobasierter) Materialien im Produkt (Massenanteil)."}
+  - idShort: Durability
+    modelType: SubmodelElementCollection
+    preferredName: {en: "durability", de: "Haltbarkeit"}
+    definition: {en: "Expected service life under specified conditions.", de: "Erwartete Lebensdauer unter festgelegten Bedingungen."}
+    elements:
+      - {idShort: ExpectedLifetimeCycles, valueType: xs:double, unit: cycles, cardinality: ZeroToOne, preferredName: {en: "expected lifetime in cycles", de: "erwartete Lebensdauer in Zyklen"}, definition: {en: "Expected number of operating cycles (e.g. double strokes).", de: "Erwartete Anzahl Arbeitsspiele (z. B. Doppelhübe)."}}
+      - {idShort: ExpectedLifetimeDistance, valueType: xs:double, unit: km, cardinality: ZeroToOne, preferredName: {en: "expected travel distance", de: "erwartete Laufleistung"}, definition: {en: "Expected travel distance of moving parts.", de: "Erwartete Laufleistung bewegter Teile."}}
+      - {idShort: ReferenceConditions, modelType: MultiLanguageProperty, cardinality: ZeroToOne, preferredName: {en: "reference conditions", de: "Referenzbedingungen"}, definition: {en: "Conditions under which the lifetime values apply (standard, load, medium).", de: "Bedingungen, unter denen die Lebensdauerwerte gelten (Norm, Last, Medium)."}}
+      - {idShort: WarrantyPeriod, valueType: xs:duration, cardinality: ZeroToOne, preferredName: {en: "warranty period", de: "Gewährleistungsdauer"}, definition: {en: "Commercial warranty period (ISO 8601 duration).", de: "Gewährleistungs- bzw. Garantiedauer (ISO-8601-Dauer)."}}
+  - idShort: Repairability
+    modelType: SubmodelElementCollection
+    preferredName: {en: "repairability", de: "Reparierbarkeit"}
+    definition: {en: "Information supporting repair and maintenance.", de: "Informationen zur Unterstützung von Reparatur und Wartung."}
+    elements:
+      - {idShort: RepairabilityScore, valueType: xs:double, cardinality: ZeroToOne, preferredName: {en: "repairability score", de: "Reparierbarkeitswert"}, definition: {en: "Repairability score (0 to 10) according to the applicable method.", de: "Reparierbarkeitswert (0 bis 10) nach anwendbarer Methode."}}
+      - {idShort: SparePartsAvailability, valueType: xs:duration, cardinality: ZeroToOne, preferredName: {en: "spare parts availability", de: "Ersatzteilverfügbarkeit"}, definition: {en: "Period for which spare parts are available after end of production (ISO 8601 duration).", de: "Zeitraum der Ersatzteilverfügbarkeit nach Produktionsende (ISO-8601-Dauer)."}}
+      - {idShort: RepairInstructions, cardinality: ZeroToOne, preferredName: {en: "repair instructions", de: "Reparaturanleitung"}, definition: {en: "Document identifier of the repair instructions (see Handover Documentation).", de: "Dokumentenkennung der Reparaturanleitung (siehe Handover Documentation)."}}
+  - idShort: SparePartSources
+    modelType: SubmodelElementList
+    preferredName: {en: "spare part sources", de: "Ersatzteilquellen"}
+    definition: {en: "Suppliers of spare parts.", de: "Lieferanten von Ersatzteilen."}
+    elements:
+      - idShort: SparePartSupplier
+        modelType: SubmodelElementCollection
+        cardinality: ZeroToMany
+        preferredName: {en: "spare part supplier", de: "Ersatzteillieferant"}
+        definition: {en: "One spare part supplier.", de: "Ein Ersatzteillieferant."}
+        elements:
+          - {idShort: NameOfSupplier, modelType: MultiLanguageProperty, preferredName: {en: "name of supplier", de: "Name des Lieferanten"}, definition: {en: "Name of the supplier.", de: "Name des Lieferanten."}}
+          - {idShort: SupplierWebAddress, valueType: xs:anyURI, preferredName: {en: "supplier web address", de: "Webadresse des Lieferanten"}, definition: {en: "Web address of the supplier.", de: "Webadresse des Lieferanten."}}
+          - {idShort: EmailAddressOfSupplier, cardinality: ZeroToOne, preferredName: {en: "e-mail address of supplier", de: "E-Mail-Adresse des Lieferanten"}, definition: {en: "Contact e-mail address.", de: "Kontakt-E-Mail-Adresse."}}
+          - {idShort: Components, cardinality: ZeroToOne, preferredName: {en: "components", de: "Bauteile"}, definition: {en: "Comma-separated spare parts available from this supplier.", de: "Kommagetrennte Ersatzteile, die von diesem Lieferanten erhältlich sind."}}
+  - idShort: DismantlingAndRemovalInformation
+    modelType: SubmodelElementList
+    typeValueListElement: Property
+    valueTypeListElement: xs:string
+    preferredName: {en: "dismantling and removal information", de: "Demontage- und Ausbauinformationen"}
+    definition: {en: "Document identifiers of dismantling instructions.", de: "Dokumentenkennungen der Demontageanleitungen."}
+    elements:
+      - {idShort: DocumentIdentifier, cardinality: OneToMany, preferredName: {en: "document identifier", de: "Dokumentenkennung"}, definition: {en: "Identifier of a document (see Handover Documentation).", de: "Kennung eines Dokuments (siehe Handover Documentation)."}}
+  - idShort: EndOfLifeInformation
+    modelType: MultiLanguageProperty
+    preferredName: {en: "end-of-life information", de: "End-of-Life-Informationen"}
+    definition: {en: "Information on take-back, separate collection and recycling at end of life.", de: "Informationen zu Rücknahme, getrennter Sammlung und Recycling am Lebensende."}

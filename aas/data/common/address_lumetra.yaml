@@ -1,0 +1,9 @@
+# ContactInformation structure (IDTA 02002) of the sensor manufacturer (fictional company)
+Company: {en: Lumetra Sensortechnik GmbH, de: Lumetra Sensortechnik GmbH}
+Street: {de: Lichtweg 5}
+Zipcode: {de: "79111"}
+CityTown: {en: Freiburg im Breisgau, de: Freiburg im Breisgau}
+NationalCode: {en: DE}
+Phone: {TelephoneNumber: {en: "+49 761 000000-0"}}
+Email: {EmailAddress: support@lumetra.example}
+AddressOfAdditionalLink: https://virtual-factory.example/lumetra

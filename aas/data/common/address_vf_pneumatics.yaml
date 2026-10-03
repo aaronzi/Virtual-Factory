@@ -1,0 +1,9 @@
+# ContactInformation structure (IDTA 02002) of the product manufacturer and plant operator (fictional company)
+Company: {en: VF Pneumatics GmbH, de: VF Pneumatics GmbH}
+Street: {de: Fabrikstraße 1}
+Zipcode: {de: "67655"}
+CityTown: {en: Kaiserslautern, de: Kaiserslautern}
+NationalCode: {en: DE}
+Phone: {TelephoneNumber: {en: "+49 631 000000-0"}}
+Email: {EmailAddress: info@vf-pneumatics.example}
+AddressOfAdditionalLink: https://virtual-factory.example/vf-pneumatics

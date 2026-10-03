@@ -1,0 +1,8 @@
+# ContactInformation structure (IDTA 02002) of the robot manufacturer (public company information;
+# used nominatively for the purchased UR5e - this AAS is maintained by the plant operator, not by the manufacturer)
+Company: {en: Universal Robots A/S, de: Universal Robots A/S}
+Street: {en: Energivej 51}
+Zipcode: {en: "5260"}
+CityTown: {en: Odense S}
+NationalCode: {en: DK}
+AddressOfAdditionalLink: https://www.universal-robots.com

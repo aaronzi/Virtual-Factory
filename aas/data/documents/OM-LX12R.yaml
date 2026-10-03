@@ -1,0 +1,18 @@
+title: "LX12-R operating instructions"
+subtitle: "Mounting, alignment, teach-in and maintenance"
+organization: Lumetra Sensortechnik GmbH
+version: "1.4"
+date: "2025-03-01"
+sections:
+  - heading: Safety
+    text: >-
+      The sensor is not a safety component according to the Machinery Directive and must not be used for
+      personnel protection. Observe the national regulations for the installation of electrical equipment.
+  - heading: Mounting and alignment
+    text: >-
+      Mount the sensor and the reflector on opposite sides of the conveyor at the same height. Align the light spot
+      to the centre of the reflector until the yellow LED is on (light received) and the stability indicator is lit.
+  - heading: Maintenance
+    text: >-
+      Clean the front screen and the reflector at regular intervals with a soft cloth. Contamination reduces the
+      function reserve; the sensor reports contamination via IO-Link.

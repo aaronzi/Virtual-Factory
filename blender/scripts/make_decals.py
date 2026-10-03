@@ -103,6 +103,15 @@ def hmi(name: str, title: str) -> None:
     img.save(OUT / f"{name}.png")
 
 
+def ce_marking(name: str) -> None:
+    """CE marking (Regulation (EC) No 765/2008 proportions approximated) for Nameplate markings."""
+    img, d = canvas(256, 180, WHITE)
+    d.arc([20, 30, 140, 150], 90, 270, fill=BLACK, width=18)
+    d.arc([130, 30, 250, 150], 90, 270, fill=BLACK, width=18)
+    d.rectangle([168, 81, 225, 99], fill=BLACK)
+    img.save(OUT / f"{name}.png")
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     type_plate("typeplate_cylinder", ["PC-32-80-DA-M", "ISO 15552  Ø32 × 80", "1–10 bar  −20…80 °C"], seed=3)
@@ -117,6 +126,7 @@ def main() -> None:
     arrow("arrow_flow")
     hmi("hmi_cell", "AC-200  Cylinder assembly")
     hmi("hmi_line", "LINE01  Inspection & sorting")
+    ce_marking("marking_ce")
     print("decals written to", OUT)
 
 
