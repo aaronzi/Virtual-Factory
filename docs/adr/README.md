@@ -25,3 +25,5 @@ Format: short [MADR](https://adr.github.io/madr/)-style records. New ADR = next 
 | [0018](0018-in-world-training-ui.md) | In-world training UI: world-space panels, passive views, live AAS via events | accepted |
 | [0019](0019-historian-timeseries-linked-segment.md) | Historian (InfluxDB 3 Core) referenced by IDTA TimeSeries LinkedSegments; slim AAS | accepted |
 | [0020](0020-control-component-and-aid-drive-commands.md) | Control Component and AID configure the command and event paths | accepted |
+| [0021](0021-item-level-dpp-basyx-dpp-api.md) | Item-level digital product passports served by the BaSyx Go DPP API | accepted |
+| [0022](0022-grafana-dashboards-on-the-historian.md) | Grafana dashboards on the historian (SQL via Flight SQL), anonymous read-only | accepted |

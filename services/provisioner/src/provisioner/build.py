@@ -11,6 +11,7 @@ from pathlib import Path
 import yaml
 
 from vf_common.aas.aasx import to_object_store, write_aasx_per_shell
+from vf_common.aas.entities import asset_names
 from vf_common.aas.environment import EnvironmentBuilder
 from vf_common.aas.templates import TemplateLibrary
 from vf_common.historian import HistorianConfig
@@ -34,7 +35,9 @@ class BuildResult:
 
 def load_yaml(path: Path) -> dict:
     """Loads asset data; `_extends: file` (top level) and `$include: file` (any mapping) merge shared
-    fragments (paths relative to aas/data). Keys next to `$include` override the included content."""
+    fragments (paths relative to aas/data). `$include: file#a.b` merges only the mapping at key path a.b of
+    the file (named fragments shared by several assets). Keys next to `$include` override the included
+    content."""
     data = yaml.safe_load(path.read_text()) or {}
     base = data.pop("_extends", None)
     data = _resolve_includes(data, DATA_ROOT)
@@ -46,7 +49,11 @@ def _resolve_includes(node, root: Path):
         include = node.get("$include")
         rest = {k: _resolve_includes(v, root) for k, v in node.items() if k != "$include"}
         if include:
-            return deep_merge(_resolve_includes(yaml.safe_load((root / include).read_text()), root), rest)
+            file, _, key = include.partition("#")
+            fragment = _resolve_includes(yaml.safe_load((root / file).read_text()), root)
+            for part in key.split(".") if key else []:
+                fragment = fragment[part]
+            return deep_merge(fragment, rest)
         return rest
     if isinstance(node, list):
         return [_resolve_includes(v, root) for v in node]
@@ -101,9 +108,11 @@ class BuildContext:
         self.positions = layout_positions(layout)
         capabilities = yaml.safe_load((repo / "aas" / "data" / "capabilities.yaml").read_text())
         self.library.concept_descriptions.update(capability_cds(capabilities))
+        # names of all static assets, for BoM nodes referring to assets outside a (runtime) build
+        self.names = asset_names(load_assets(repo / "aas" / "data"))
 
     def build(self, specs: list[dict], validate: bool = True) -> BuildResult:
-        builder = EnvironmentBuilder(self.library)
+        builder = EnvironmentBuilder(self.library, self.names)
         for spec in specs:
             spec = copy.deepcopy(spec)
             _apply_generators(spec, self, self.positions)

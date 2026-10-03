@@ -11,7 +11,8 @@
 | Kind | Pattern | Example |
 |---|---|---|
 | AAS | `https://virtual-factory.example/ids/aas/<TAG>` | `…/aas/RB01` |
-| Asset (globalAssetId) | `…/ids/asset/<TAG>` | `…/asset/PC3280_TYPE` |
+| Asset (globalAssetId) | `…/ids/asset/<TAG>`; product type and workpieces: GS1 Digital Link (ADR-0021) | `…/asset/CV01`, `https://virtual-factory.example/01/04099999032808/21/PC3280-2026-000123` |
+| Digital product passport id | = AAS id (item: workpiece AAS, model: PC3280_TYPE) | `…/aas/WP_PC3280_2026_000123` |
 | Submodel | `…/ids/sm/<TAG>/<idShort>/<template major version>` | `…/sm/CV01/Nameplate/3` |
 | Custom template / concept | `…/ids/smt/<Name>/<v>/<r>`, `…/ids/cd/<Template>/<Element>/<v>/<r>` | `…/cd/EnergyConsumption/ActualPower/1/0` |
 | FMI process value concept | `…/ids/cd/fmi/<ModelName>/<variable>` | `…/cd/fmi/BeltConveyor/belt_speed` |
@@ -26,7 +27,7 @@
 | LINE01 | Inspection & sorting line | Instance | – | VF Automation Systems GmbH |
 | PC3280_TYPE | Product type PC-32-80-DA-M (ISO 15552 cylinder Ø32 × 80) | Type | – | VF Pneumatics GmbH |
 | CMP_* (9) | Purchased/manufactured components of the BoM | Type | – | VF Pneumatics / suppliers |
-| *workpiece* | Product instance `PC3280-YYYY-NNNNNN` (created by the MES in M4) | Instance | PC3280_TYPE | VF Pneumatics GmbH |
+| *workpiece* | Product instance `PC3280-YYYY-NNNNNN` (created by the MES in M4; item-level DPP, ADR-0021) | Instance | PC3280_TYPE | VF Pneumatics GmbH |
 | AC01 | Assembly & test cell AC-200 (black box) | Instance | – | VF Automation Systems GmbH |
 | CV01 | Belt conveyor BC-3000 | Instance | – | VF Automation Systems GmbH |
 | LB_TYPE / LB01, LB02 | Retro-reflective sensor LX12-R | Type / Instance | LB_TYPE | Lumetra Sensortechnik GmbH |
@@ -48,14 +49,14 @@ the FMI model description, the layout or the UNS registry.
 | Submodel | Template | PLANT | LINE | PRODUCT TYPE | CMP | WORKPIECE | AC01 | CV01 | LB type / inst | QS01 | UR5e type / RB01 | GR01 | KLT type / inst | LC10 type / PLC01 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Nameplate | I 02006 3.0 | | ● | ● | ● | ● | ● | ● | ● / ● | ● | ● / ● | ● | ● / ● | ● / ● |
-| TechnicalData | I 02003 2.0 | | | ● | ● | | ● | ● | ● / | ● | ● / | ● | ● / | ● / |
-| ContactInformations | I 02002 1.0 | ● | | ● | | | ● | | ● / | | ● / | | | ● / |
-| HandoverDocumentation | I 02004 2.0 | | ● | ● | | | ● | ● | ● / | ● | ● / | | | ● / |
+| TechnicalData | I 02003 2.0 | | | ● | ● | ● (as-built) | ● | ● | ● / | ● | ● / | ● | ● / | ● / |
+| ContactInformations | I 02002 1.0 | ● | | ● | | ● | ● | | ● / | | ● / | | | ● / |
+| HandoverDocumentation | I 02004 2.0 | | ● | ● | | ● (+ certificate) | ● | ● | ● / | ● | ● / | | | ● / |
 | CarbonFootprint | I 02023 1.0 | | | ● (declared) | ● | ● (actual) | ● | ● | ● / | ● | ● / | ● | ● / | ● / |
 | CompanyData | I 1.0 | ● | | | | | | | | | | | | |
 | AssetLocation | I 1.0 (G) | ● | ● | | | ● | ● | ● | / ● | ● | / ● | | / ● | / ● |
 | Models3D | I 1.0 (G) | | | ● | | | ● | ● | ● / | ● | ● / | | ● / | |
-| HierarchicalStructures | I 02011 1.1 | ● (site) | ● (line) | ● (BoM) | | | | | | | / ● (robot cell) | | / ● (contents, G at runtime) | |
+| HierarchicalStructures | I 02011 1.1 | ● (site) | ● (line) | ● (BoM) | | ● (as-built BoM) | | | | | / ● (robot cell) | | / ● (contents, G at runtime) | |
 | CapabilityDescription | I 02020 1.0 | | ● | | | | ● | ● | / ● | ● | / ● | | / ● | / ● |
 | ControlComponentType | I 2.0 | | | | | | | | | | ● / | | | ● / |
 | ControlComponentInstance | I 2.0 | | | | | | | | | | / ● | | | / ● |
@@ -63,8 +64,8 @@ the FMI model description, the layout or the UNS registry.
 | ManufacturingRecipe | C 1.1 | | | ● | | | | | | | | | | |
 | LineControl (Operations) | C 1.0 | | ● | | | | | | | | | | | |
 | DppMetadata | I 1.0 | | | ● (model) | | ● (item) | | | | | | | | |
-| ProductMaterialComposition | C (from DBP) | | | ● | ● | | | | | | | | | |
-| ProductCircularity | C (from DBP) | | | ● | | | | | | | | | | |
+| ProductMaterialComposition | C (from DBP) | | | ● | ● | ● (+ batches) | | | | | | | | |
+| ProductCircularity | C (from DBP) | | | ● | | ● (per lot) | | | | | | | | |
 | ExecutedProcesses | I 1.0 | | | | | ● | | | | | | | | |
 | QualityInspection | C | | | | | ● | | | | | | | | |
 | MeasurementValue | I 1.0 | | | | | ● (×2) | | | | | | | | |
@@ -158,7 +159,7 @@ Rationale for the main choices:
   GmbH, Lichtweg 5, 79111 Freiburg (fictional).
 - Commissioning of the line: 2025-09-15. Assets manufactured in 2025 unless noted. CE conformity of machines built in
   2025: Machinery Directive 2006/42/EC (Regulation (EU) 2023/1230 applies from 2027-01-20).
-- Document classes: VDI 2770:2020 (e.g. 02-01 technical specification, 03-02 operation, 01-04 certificate/declaration).
+- Document classes: VDI 2770:2020 (e.g. 02-01 technical specification, 03-02 operation, 02-04 certificates/declarations).
 - Reliability template: MTTF/MTBF values in **years** (unit of the concept description). Only where a figure is
   published (LB_TYPE, QS01); the UR5e has no public MTTF, so no Reliability submodel rather than a guessed value.
 - PLANT01 is a site, not a product: CompanyData + ContactInformations instead of a Nameplate.
@@ -206,10 +207,10 @@ nominal between min/max).
 
 - **Workpiece instance AAS** grow along the process (stages released → inspected → packed, or lost); structure from
   `aas/data/blueprints/workpiece_instance.yaml`, see [services.md](services.md#mes). Thumbnail: link to the product
-  type's thumbnail (no copy per part).
+  type's thumbnail (no copy per part). Each one is the item-level digital product passport of its part (§6b).
 - **KLT contents** (KLTA01/KLTB01 `HierarchicalStructures`, archetype OneDown): station → `Box` (KLT on the station,
-  CoManagedEntity) → one Node per packed workpiece (`globalAssetId` = workpiece asset id) + `HasPart`. Cleared on
-  exchange.
+  CoManagedEntity) → one Node per packed workpiece (`globalAssetId` = the workpiece's GS1 Digital Link) + `HasPart`.
+  Cleared on exchange.
 - **Instance PCF** (ISO 14067 terminology, production-based, R9; MES `carbon.py`, `process_energy.py`), computed
   when a part is packed, static inputs from the AAS, energy from the historian (UNS series are step functions):
   1. *Material (A1)*: Σ BulkCount × component PCF (component AAS found via the `globalAssetId` of the type's BoM).
@@ -240,11 +241,62 @@ nominal between min/max).
 - **AIMC transformations** are Lua (`aimc_main(sources)`, template-conformant), e.g. PackML state number →
   `OperatingState` name.
 
+## 6b. Item-level digital product passport (ADR-0021)
+
+Every workpiece AAS is a self-contained passport of its part, readable through the BaSyx Go DPP API
+([services.md](services.md#dpp-api)):
+
+- **Ids:** DPP id = AAS id; `uniqueProductIdentifier` = `globalAssetId` = GS1 Digital Link
+  `https://virtual-factory.example/01/04099999032808/21/<serial>` (the DPP API resolves products by globalAssetId);
+  `granularity` Item; `dppStatus` Active, Inactive for rejects and lost parts. The type PC3280_TYPE is the model-level
+  passport (DPP id = type AAS id, product id `…/01/04099999032808`, granularity Model).
+- **Content** (`contentSpecificationIds`, only submodels present at the current stage): Nameplate, TechnicalData,
+  ContactInformations, HandoverDocumentation, CarbonFootprint, HierarchicalStructures, ProductMaterialComposition,
+  ProductCircularity, ExecutedProcesses, QualityInspection. MeasurementValue is not listed (two submodels with
+  the same semanticId - the DPP API shows only one per semanticId; the values are in QualityInspection),
+  AssetLocation neither (logistics, not passport data).
+- **Type data** come from `aas/data/common/product_passport_pc3280.yaml`, included by type and blueprint as named
+  fragments (`$include: "common/product_passport_pc3280.yaml#Documents.DS"`), so both stay identical.
+- **TechnicalData (as-built):** the type sections plus section `AsBuilt`: DateOfManufacture, MeasuredLeakRate,
+  MeasuredStrokeTimeAdvance/Retract, MeasuredColourLab, MeasuredDeltaE76 (same concepts as in ExecutedProcesses).
+  The line does not weigh the parts or set the cushioning; mass and cushioning stay type values.
+- **ContactInformations:** Manufacturer (AAS927 administrative), AfterSalesService (AAS931 technical), TakeBack
+  (AAS929 other contact, end-of-life take-back; also on the type).
+- **HandoverDocumentation:** good parts get the *inspection certificate 3.1 (EN 10204 style)* `IC-<serial>`
+  (VDI 2770 02-04, generated PDF, ~7 KB, sample `aas/files/docs/IC-PC3280-2026-000123.pdf`), followed by the type
+  documents DS (02-01), OM (03-01/03-02), RI (03-05/03-06) and the REACH Art. 33 information SVHC-PC3280 (02-04;
+  lead in brass and die-cast alloy, SCIP number, why the cylinder carries no CE marking). Files are uploaded as
+  attachments; BaSyx deduplicates identical content (SHA-256 + size), so the type documents are stored once.
+- **Material composition / circularity:** type entries plus `MaterialLocation.BatchId` resp. `ComponentId` +
+  `BatchId` per recycled-content entry (optional elements of the custom templates). Recycled shares per lot =
+  supplier lot certificate, simulated within ±15 % of the declared average.
+
+**As-built BoM (IDTA 02011-1-1 HierarchicalStructures 1.1, ArcheType Full).** Same node idShorts and BulkCounts as
+the type BoM (`carbon.py` keeps reading the type BoM for the component PCFs):
+
+```
+EntryNode (SelfManagedEntity, globalAssetId = Digital Link of the part)
+├─ Barrel (CoManagedEntity, displayName "Barrel, batch L2609-0419")
+│    BulkCount 1 · BatchId L2609-0419 · SameAs → PC3280_TYPE/HierarchicalStructures/EntryNode.Barrel
+├─ …  (9 nodes)
+└─ HasPart_Barrel … (EntryNode → node)
+```
+
+- A node stands for the **component batch** built into this unit. Batches have no AAS of their own. HS 1.1 uses
+  SelfManagedEntity for assets with their own AAS and CoManagedEntity for parts managed only inside this
+  submodel, so the batch nodes are CoManaged.
+- AASd-014 forbids globalAssetId/specificAssetIds on a CoManagedEntity. The batch id is therefore the statement
+  `BatchId` (generated concept description). The link to the component type is a `SameAs` relationship to the
+  type BoM node, which is SelfManaged with the component type's globalAssetId (CMP_* AAS).
+- Rejected alternative: SelfManaged nodes with the component type's globalAssetId and specificAssetId `batchId`.
+  This would claim that the batch is the asset of the CMP AAS, i.e. a type, not a batch.
+- Traceability query (all parts containing a batch): [services.md](services.md#traceability-which-parts-contain-a-batch).
+
 ## 7. Asset data format (`aas/data/assets/<TAG>.yaml`)
 
 See `services/vf_common/src/vf_common/aas/environment.py` and `instantiate.py`. In short:
 - `tag`, `idShort`, `kind`, `assetType`, `displayName`, `description`, `derivedFrom`, `thumbnail`,
-  `specificAssetIds`.
+  `specificAssetIds`, `globalAssetId` (optional, default `…/ids/asset/<TAG>`; also used by `${asset:TAG}`).
 - `model3d: {file, preview, title, objectType}` generates Models3D.
 - `device: {modelDescription, energy: {power, energy, air}, operatingHours, state: {variable, map, initial}}`
   generates AID, AIMC, OperationalData, SimulationModels and TimeSeries (LinkedSegment, endpoint and database from
@@ -278,8 +330,14 @@ See `services/vf_common/src/vf_common/aas/environment.py` and `instantiate.py`. 
   - `_noValue: true` in a Property dict (`{valueType, semanticId, _noValue: true}`) or an extra element gives a
     Property without value (structure only, e.g. the TimeSeries `Metadata.Record` definition)
   - `${asset:TAG}` / `${aas:TAG}` / `${sm:TAG/IdShort}` in strings
+  - `_idShort`, `_displayName`, `_description`, `_semanticId` override the template values of any element
+  - Entities (BoM / HierarchicalStructures nodes) never keep the template's "Node"/"Entry Node" texts: they are
+    named after the asset of their `globalAssetId` (displayName and, if not given, description of that asset, en/de;
+    `vf_common/aas/entities.py`, also for runtime workpiece builds). Nodes without an AAS of their own
+    (CoManagedEntity, e.g. an ISA-95 area or a component batch) get an explicit `_displayName: {en, de}`.
   - `repo:<path>` embeds a file
-  - `$include: common/<file>.yaml` merges a shared fragment
+  - `$include: common/<file>.yaml` merges a shared fragment; `$include: "common/<file>.yaml#A.B"` merges only the
+    mapping at key path A.B (named fragments, e.g. `common/product_passport_pc3280.yaml`); keys next to it override
 - **Quote** every text containing `,` or `:` inside flow mappings (`{en: "a, b"}`); the build rejects broken
   language maps.
 - Documents: `aas/data/documents/<ID>.yaml` → `uv run aas/scripts/make_documents.py` → `aas/files/docs/<ID>.pdf`.

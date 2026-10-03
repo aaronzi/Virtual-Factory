@@ -2,6 +2,9 @@
 # PC3280-2026-000123 (part no. 123 of the shift starting 2026-10-01 06:00 UTC, takt 12 s). Validated with
 # `uv run -m provisioner check --only PC3280_TYPE,WP_PC3280_2026_000123 --blueprints`; never preloaded.
 # The MES replaces serial, timestamps, measured values, lots and destination per part; the structure is fixed.
+# Item-level digital product passport (ADR-0021): DPP id = AAS id, product id = globalAssetId = GS1 Digital Link
+# (= uniqueProductIdentifier); readable via the BaSyx DPP API. Type data comes from the fragments shared with
+# PC3280_TYPE (common/product_passport_pc3280.yaml); lots are reported by the assembly cell AC01.
 tag: WP_PC3280_2026_000123
 idShort: PC3280_2026_000123
 kind: Instance
@@ -13,6 +16,7 @@ description:
   de: "Produktinstanz (Werkstück), am 2026-10-01 auf LINE01 montiert, geprüft, inspiziert und verpackt; Ergebnis: Gutteil, verpackt in KLT A01."
 thumbnail: repo:docs/screenshots/assets/cylinder.png
 specificAssetIds: {serialNumber: PC3280-2026-000123, manufacturerPartId: PC-32-80-DA-M}
+globalAssetId: https://virtual-factory.example/01/04099999032808/21/PC3280-2026-000123
 location: [0.75, 0.6, -0.55]
 locationDescription: "KLT A01, slot 6"
 submodels:
@@ -26,12 +30,19 @@ submodels:
 
   - template: DppMetadata-1.0
     values:
+      # semantic ids of the passport content submodels; the MES lists only those present at the current stage
       contentSpecificationIds:
         - https://admin-shell.io/idta/nameplate/3/0/Nameplate
+        - "0173-1#01-AHX837#002"
+        - https://admin-shell.io/zvei/nameplate/1/0/ContactInformations
+        - "0173-1#01-AHF578#003"
         - https://admin-shell.io/idta/CarbonFootprint/CarbonFootprint/1/0
+        - https://admin-shell.io/idta/HierarchicalStructures/1/1/Submodel
+        - https://virtual-factory.example/ids/smt/ProductMaterialComposition/1/0/Submodel
+        - https://virtual-factory.example/ids/smt/ProductCircularity/1/0/Submodel
         - https://admin-shell.io/idta/ExecutedProcesses/1/0
         - https://virtual-factory.example/ids/smt/QualityInspection/1/0/Submodel
-      digitalProductPassportId: https://virtual-factory.example/dpp/item/PC3280-2026-000123
+      digitalProductPassportId: "${aas:SELF}"
       dppSchemaVersion: "IDTA-DPP4.0:1.0"
       dppStatus: Active
       economicOperatorId: "gln:4099999000012"
@@ -39,6 +50,62 @@ submodels:
       granularity: Item
       lastUpdate: "2026-10-01T06:25:07Z"
       uniqueProductIdentifier: https://virtual-factory.example/01/04099999032808/21/PC3280-2026-000123
+
+  # As-built technical data (from the inspection on): the type values plus the values measured on this unit
+  # (section AsBuilt). The line neither weighs the parts nor sets the cushioning, so these stay type values.
+  - template: TechnicalData-2.0
+    values:
+      GeneralInformation: {$include: "common/product_passport_pc3280.yaml#GeneralInformation"}
+      TechnicalPropertyAreas:
+        - _idShort: TechnicalProperties
+          Section:
+            - {$include: "common/product_passport_pc3280.yaml#TechnicalSections.General"}
+            - {$include: "common/product_passport_pc3280.yaml#TechnicalSections.Pneumatics"}
+            - {$include: "common/product_passport_pc3280.yaml#TechnicalSections.Mechanics"}
+            - {$include: "common/product_passport_pc3280.yaml#TechnicalSections.Environment"}
+            - {$include: "common/product_passport_pc3280.yaml#TechnicalSections.Materials"}
+            - _idShort: AsBuilt
+              "+DateOfManufacture": {valueType: xs:date, value: "2026-10-01", description: {en: "Date of manufacture (release from the assembly cell)", de: "Herstelldatum (Freigabe durch die Montagezelle)"}}
+              "+MeasuredLeakRate": {unit: "cm³/min", valueType: xs:double, value: 0.38, description: {en: "Measured leak rate (limit 1.0)", de: "Gemessene Leckrate (Grenzwert 1,0)"}}
+              "+MeasuredStrokeTimeAdvance": {unit: "s", valueType: xs:double, value: 0.321, description: {en: "Measured stroke time, advancing (limits 0.28-0.36)", de: "Gemessene Hubzeit, Vorhub (Grenzen 0,28-0,36)"}}
+              "+MeasuredStrokeTimeRetract": {unit: "s", valueType: xs:double, value: 0.302, description: {en: "Measured stroke time, retracting (limits 0.28-0.36)", de: "Gemessene Hubzeit, Rückhub (Grenzen 0,28-0,36)"}}
+              "+MeasuredColourLab": {value: "L* 43.9, a* 62.1, b* 45.2", description: {en: "Measured colour in CIELAB (D65/2°)", de: "Gemessene Farbe in CIELAB (D65/2°)"}}
+              "+MeasuredDeltaE76": {valueType: xs:double, value: 3.1, description: {en: "Measured colour difference ΔE*ab (CIE76)", de: "Gemessener Farbabstand ΔE*ab (CIE76)"}}
+      FurtherInformation: {$include: "common/product_passport_pc3280.yaml#FurtherInformation"}
+
+  # Manufacturer, after-sales service and take-back (end-of-life) contact.
+  - template: ContactInformations-1.0
+    values:
+      ContactInformation:
+        - {$include: "common/product_passport_pc3280.yaml#Contacts.Manufacturer"}
+        - $include: "common/product_passport_pc3280.yaml#Contacts.TechnicalSupport"
+          _idShort: AfterSalesService
+          Department: {en: "After-sales service: spare parts, repair, warranty", de: "Kundendienst: Ersatzteile, Reparatur, Gewährleistung"}
+        - {$include: "common/product_passport_pc3280.yaml#Contacts.TakeBack"}
+
+  # Packed good parts: the inspection certificate of this unit (generated by the MES, uploaded as attachment)
+  # and the documents of the product type (same files for every unit - BaSyx stores them once, SHA-256
+  # deduplication). Rejects get the type documents only.
+  - template: HandoverDocumentation-2.0
+    values:
+      Documents:
+        - DocumentIds: [{DocumentDomainId: VFPneumatics, DocumentIdentifier: IC-PC3280-2026-000123, DocumentIsPrimary: true}]
+          DocumentClassifications:
+            - {ClassId: "02-04", ClassName: {en: "Certificates, declarations", de: "Zeugnisse, Zertifikate, Bescheinigungen"}, ClassificationSystem: VDI2770:2020}
+          DocumentVersions:
+            - Language: [{value: en}]
+              Version: "1.0"
+              Title: {en: "Inspection certificate 3.1 (EN 10204) PC-32-80-DA-M, serial PC3280-2026-000123", de: "Abnahmeprüfzeugnis 3.1 (EN 10204) PC-32-80-DA-M, Seriennummer PC3280-2026-000123"}
+              Description: {en: "Leak test, function test and colour inspection of this unit against inspection plan IP-PC3280, component lots; issued by the quality department", de: "Dichtheits-, Funktions- und Farbprüfung dieser Einheit nach Prüfplan IP-PC3280, Bauteillose; ausgestellt von der Qualitätssicherung"}
+              StatusSetDate: "2026-10-01"
+              StatusValue: Released
+              OrganizationShortName: VF Pneumatics
+              OrganizationOfficialName: VF Pneumatics GmbH
+              DigitalFiles: [{value: repo:aas/files/docs/IC-PC3280-2026-000123.pdf}]
+        - {$include: "common/product_passport_pc3280.yaml#Documents.DS"}
+        - {$include: "common/product_passport_pc3280.yaml#Documents.OM"}
+        - {$include: "common/product_passport_pc3280.yaml#Documents.RI"}
+        - {$include: "common/product_passport_pc3280.yaml#Documents.SVHC"}
 
   # Production-based PCF (MES, docs/interfaces/aas-model.md §6a): entry 1 = total A1-A3 of this unit, entries 2
   # and 3 break it down (A1 purchased components, A3 manufacturing on LINE01) - they must not be added to entry 1.
@@ -72,8 +139,72 @@ submodels:
           "+ProductionLossCO2eq": {unit: kg, valueType: xs:double, value: 0.0029, description: {en: "Share of the production losses (rejects of the session) allocated to this good unit", de: "Dieser Gut-Einheit zugeordneter Anteil der Produktionsverluste (Ausschuss der Sitzung)"}}
           "+LineResidenceTime": {unit: s, valueType: xs:double, value: 19.2, description: {en: "Time from release by the assembly cell to packing", de: "Zeit von der Freigabe durch die Montagezelle bis zum Verpacken"}}
 
+  # As-built bill of material (IDTA 02011-1-1, ArcheType Full): same node idShorts and BulkCounts as the type BoM.
+  # A node is the component BATCH built into this unit; batches have no AAS of their own, so the nodes are
+  # CoManagedEntities (AASd-014: no globalAssetId/specificAssetIds) holding the batch id (reported by AC01 with
+  # part_released) as statement BatchId and a SameAs relationship to the node of the type BoM, which references
+  # the component type AAS (SelfManagedEntity). See docs/interfaces/aas-model.md §6b.
+  - template: HierarchicalStructures-1.1
+    values:
+      ArcheType: Full
+      EntryNode:
+        _idShort: EntryNode
+        entityType: SelfManagedEntity
+        globalAssetId: "${asset:SELF}"
+        statements:
+          Node:
+            - {_idShort: Barrel, entityType: CoManagedEntity, _displayName: {en: "Barrel, batch L2609-0419", de: "Zylinderrohr, Charge L2609-0419"}, statements: {BulkCount: 1, "+BatchId": {value: L2609-0419, description: {en: "Batch (lot) of the component built into this unit", de: "Charge (Los) des in diese Einheit eingebauten Bauteils"}}, SameAs: [{_idShort: SameAsTypeNode, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.Barrel", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.Barrel"}]}}
+            - {_idShort: EndCapFront, entityType: CoManagedEntity, _displayName: {en: "Front end cap, batch DGP-260914-F", de: "Vorderdeckel, Charge DGP-260914-F"}, statements: {BulkCount: 1, "+BatchId": {value: DGP-260914-F, description: {en: "Batch (lot) of the component built into this unit", de: "Charge (Los) des in diese Einheit eingebauten Bauteils"}}, SameAs: [{_idShort: SameAsTypeNode, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.EndCapFront", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.EndCapFront"}]}}
+            - {_idShort: EndCapRear, entityType: CoManagedEntity, _displayName: {en: "Rear end cap, batch DGP-260915-R", de: "Hinterdeckel, Charge DGP-260915-R"}, statements: {BulkCount: 1, "+BatchId": {value: DGP-260915-R, description: {en: "Batch (lot) of the component built into this unit", de: "Charge (Los) des in diese Einheit eingebauten Bauteils"}}, SameAs: [{_idShort: SameAsTypeNode, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.EndCapRear", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.EndCapRear"}]}}
+            - {_idShort: PistonRod, entityType: CoManagedEntity, _displayName: {en: "Piston rod, batch L2609-2411", de: "Kolbenstange, Charge L2609-2411"}, statements: {BulkCount: 1, "+BatchId": {value: L2609-2411, description: {en: "Batch (lot) of the component built into this unit", de: "Charge (Los) des in diese Einheit eingebauten Bauteils"}}, SameAs: [{_idShort: SameAsTypeNode, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.PistonRod", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.PistonRod"}]}}
+            - {_idShort: Piston, entityType: CoManagedEntity, _displayName: {en: "Piston with magnet ring, batch L2609-3387", de: "Kolben mit Magnetring, Charge L2609-3387"}, statements: {BulkCount: 1, "+BatchId": {value: L2609-3387, description: {en: "Batch (lot) of the component built into this unit", de: "Charge (Los) des in diese Einheit eingebauten Bauteils"}}, SameAs: [{_idShort: SameAsTypeNode, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.Piston", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.Piston"}]}}
+            - {_idShort: SealKit, entityType: CoManagedEntity, _displayName: {en: "Seal kit, batch DTS-2608-1173", de: "Dichtungssatz, Charge DTS-2608-1173"}, statements: {BulkCount: 1, "+BatchId": {value: DTS-2608-1173, description: {en: "Batch (lot) of the component built into this unit", de: "Charge (Los) des in diese Einheit eingebauten Bauteils"}}, SameAs: [{_idShort: SameAsTypeNode, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.SealKit", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.SealKit"}]}}
+            - {_idShort: ScrewM5x16, entityType: CoManagedEntity, _displayName: {en: "Screws M5x16, batch NRN-26-33871", de: "Zylinderschrauben M5x16, Charge NRN-26-33871"}, statements: {BulkCount: 8, "+BatchId": {value: NRN-26-33871, description: {en: "Batch (lot) of the component built into this unit", de: "Charge (Los) des in diese Einheit eingebauten Bauteils"}}, SameAs: [{_idShort: SameAsTypeNode, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.ScrewM5x16", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.ScrewM5x16"}]}}
+            - {_idShort: CushioningScrew, entityType: CoManagedEntity, _displayName: {en: "Cushioning screws, batch L2609-5370", de: "Dämpfungsschrauben, Charge L2609-5370"}, statements: {BulkCount: 2, "+BatchId": {value: L2609-5370, description: {en: "Batch (lot) of the component built into this unit", de: "Charge (Los) des in diese Einheit eingebauten Bauteils"}}, SameAs: [{_idShort: SameAsTypeNode, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.CushioningScrew", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.CushioningScrew"}]}}
+            - {_idShort: ProtectiveCap, entityType: CoManagedEntity, _displayName: {en: "Protective cap, batch KTW-26-0911", de: "Schutzkappe, Charge KTW-26-0911"}, statements: {BulkCount: 1, "+BatchId": {value: KTW-26-0911, description: {en: "Batch (lot) of the component built into this unit", de: "Charge (Los) des in diese Einheit eingebauten Bauteils"}}, SameAs: [{_idShort: SameAsTypeNode, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.ProtectiveCap", second: "sm:PC3280_TYPE/HierarchicalStructures#EntryNode.ProtectiveCap"}]}}
+          HasPart:
+            - {_idShort: HasPart_Barrel, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode", second: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.Barrel"}
+            - {_idShort: HasPart_EndCapFront, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode", second: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.EndCapFront"}
+            - {_idShort: HasPart_EndCapRear, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode", second: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.EndCapRear"}
+            - {_idShort: HasPart_PistonRod, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode", second: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.PistonRod"}
+            - {_idShort: HasPart_Piston, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode", second: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.Piston"}
+            - {_idShort: HasPart_SealKit, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode", second: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.SealKit"}
+            - {_idShort: HasPart_ScrewM5x16, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode", second: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.ScrewM5x16"}
+            - {_idShort: HasPart_CushioningScrew, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode", second: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.CushioningScrew"}
+            - {_idShort: HasPart_ProtectiveCap, first: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode", second: "sm:WP_PC3280_2026_000123/HierarchicalStructures#EntryNode.ProtectiveCap"}
+
+  # Material composition of the type with the batch of each component (masses are nominal: not weighed).
+  - template: ProductMaterialComposition-1.0
+    values:
+      $include: "common/product_passport_pc3280.yaml#MaterialDeclaration"
+      Materials:
+        - {$include: "common/product_passport_pc3280.yaml#Materials.Barrel", MaterialLocation: {BatchId: L2609-0419}}
+        - {$include: "common/product_passport_pc3280.yaml#Materials.EndCapFront", MaterialLocation: {BatchId: DGP-260914-F}}
+        - {$include: "common/product_passport_pc3280.yaml#Materials.EndCapRear", MaterialLocation: {BatchId: DGP-260915-R}}
+        - {$include: "common/product_passport_pc3280.yaml#Materials.PistonRod", MaterialLocation: {BatchId: L2609-2411}}
+        - {$include: "common/product_passport_pc3280.yaml#Materials.Piston", MaterialLocation: {BatchId: L2609-3387}}
+        - {$include: "common/product_passport_pc3280.yaml#Materials.PistonMagnet", MaterialLocation: {BatchId: L2609-3387}}
+        - {$include: "common/product_passport_pc3280.yaml#Materials.SealKitTpu", MaterialLocation: {BatchId: DTS-2608-1173}}
+        - {$include: "common/product_passport_pc3280.yaml#Materials.SealKitNbr", MaterialLocation: {BatchId: DTS-2608-1173}}
+        - {$include: "common/product_passport_pc3280.yaml#Materials.ScrewM5x16", MaterialLocation: {BatchId: NRN-26-33871}}
+        - {$include: "common/product_passport_pc3280.yaml#Materials.CushioningScrew", MaterialLocation: {BatchId: L2609-5370}}
+        - {$include: "common/product_passport_pc3280.yaml#Materials.ProtectiveCap", MaterialLocation: {BatchId: KTW-26-0911}}
+
+  # Recycled content per component lot (supplier material certificate of the lot, simulated within +-15 % of
+  # the declared type average); durability, repair, spare parts and end of life as for the type.
+  - template: ProductCircularity-1.0
+    values:
+      $include: "common/product_passport_pc3280.yaml#Circularity"
+      RecycledContentInformation:
+        - {$include: "common/product_passport_pc3280.yaml#RecycledContent.Barrel", BatchId: L2609-0419, PreConsumerShare: 23, PostConsumerShare: 15}
+        - {$include: "common/product_passport_pc3280.yaml#RecycledContent.EndCapFront", BatchId: DGP-260914-F, PreConsumerShare: 34, PostConsumerShare: 51}
+        - {$include: "common/product_passport_pc3280.yaml#RecycledContent.EndCapRear", BatchId: DGP-260915-R, PreConsumerShare: 28, PostConsumerShare: 61}
+        - {$include: "common/product_passport_pc3280.yaml#RecycledContent.PistonRod", BatchId: L2609-2411, PreConsumerShare: 28, PostConsumerShare: 45}
+        - {$include: "common/product_passport_pc3280.yaml#RecycledContent.CushioningScrew", BatchId: L2609-5370, PreConsumerShare: 34, PostConsumerShare: 53}
+        - {$include: "common/product_passport_pc3280.yaml#RecycledContent.ScrewM5x16", BatchId: NRN-26-33871, PreConsumerShare: 11, PostConsumerShare: 22}
+
   # One Run with all processes of the master recipe MR-PC3280. Measured values are recorded as resource
-  # parameters (values reported by the executing resource); component lots in the process BoM.
+  # parameters (values reported by the executing resource); component lots (reported by AC01) in the process BoM.
   - template: ExecutedProcesses-1.0
     values:
       Run:
@@ -93,8 +224,8 @@ submodels:
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
               ProcessBoM:
-                "+PistonRodLot": {value: L2609-0412, description: {en: "Lot of piston rod 5032-1004", de: "Los der Kolbenstange 5032-1004"}}
-                "+PistonLot": {value: L2609-0388, description: {en: "Lot of piston 5032-1005", de: "Los des Kolbens 5032-1005"}}
+                "+PistonRodLot": {value: L2609-2411, description: {en: "Lot of piston rod 5032-1004", de: "Los der Kolbenstange 5032-1004"}}
+                "+PistonLot": {value: L2609-3387, description: {en: "Lot of piston 5032-1005", de: "Los des Kolbens 5032-1005"}}
               ProcessStatus: Completed
               ProcessResult: OK
               ProcessStartTime: "2026-10-01T06:24:36.000Z"
@@ -131,7 +262,7 @@ submodels:
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
               ProcessBoM:
-                "+BarrelLot": {value: L2609-0420, description: {en: "Lot of barrel 5032-1001", de: "Los des Zylinderrohrs 5032-1001"}}
+                "+BarrelLot": {value: L2609-0419, description: {en: "Lot of barrel 5032-1001", de: "Los des Zylinderrohrs 5032-1001"}}
               ProcessStatus: Completed
               ProcessResult: OK
               ProcessStartTime: "2026-10-01T06:24:39.540Z"
@@ -150,10 +281,10 @@ submodels:
               ResourceParameters:
                 "+Resource": {valueType: xs:anyURI, value: "${aas:AC01}", description: {en: "Executing resource (AAS identifier)", de: "Ausführende Ressource (AAS-Kennung)"}}
               ProcessBoM:
-                "+EndCapFrontLot": {value: DGP-260915-F, description: {en: "Supplier lot of front end cap 5032-1002", de: "Lieferantenlos des Vorderdeckels 5032-1002"}}
+                "+EndCapFrontLot": {value: DGP-260914-F, description: {en: "Supplier lot of front end cap 5032-1002", de: "Lieferantenlos des Vorderdeckels 5032-1002"}}
                 "+EndCapRearLot": {value: DGP-260915-R, description: {en: "Supplier lot of rear end cap 5032-1003", de: "Lieferantenlos des Hinterdeckels 5032-1003"}}
                 "+ScrewLot": {value: NRN-26-33871, description: {en: "Supplier lot of screws 9001-0516", de: "Lieferantenlos der Schrauben 9001-0516"}}
-                "+CushioningScrewLot": {value: L2609-0371, description: {en: "Lot of cushioning screws 5032-1008", de: "Los der Dämpfungsschrauben 5032-1008"}}
+                "+CushioningScrewLot": {value: L2609-5370, description: {en: "Lot of cushioning screws 5032-1008", de: "Los der Dämpfungsschrauben 5032-1008"}}
               ProcessStatus: Completed
               ProcessResult: OK
               ProcessStartTime: "2026-10-01T06:24:41.060Z"

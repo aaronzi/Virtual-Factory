@@ -73,12 +73,14 @@ Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 |---|---|---|
 | aas-env | `eclipsebasyx/aasenvironment-go:1.1.0` | 8091 |
 | aas-ui | `eclipsebasyx/aas-gui@sha256:5e9a…4298` | 3001 |
+| dpp-api | `eclipsebasyx/dppapi-go:1.1.0`, digital product passports read from the AAS database (ADR-0021) | 8093 |
 | db | `postgres:18` (tmpfs) | – |
 | basyx-config | `eclipsebasyx/basyxconfigurationservice-go:1.1.0` (one-shot) | – |
 | mqtt | `eclipse-mosquitto:2` | 1883, 9001 (ws) |
 | provisioner | `vf-services:dev` (built from `services/Dockerfile`), one-shot before aas-env | – |
 | bridge, mes, ops-gateway, historian | `vf-services:dev` | 8095 (ops-gateway, fixed IP 172.30.42.95 for the delegation allow-list) |
 | influxdb3 | `influxdb:3.12.0-core` (historian time-series DB, tmpfs, no auth, ADR-0019) | 8181 (HTTP: write_lp, query_sql) |
+| grafana | `grafana/grafana:13.2.3`, dashboards on the historian (SQL via Flight SQL), provisioned from `infra/grafana/`, anonymous read-only, login to edit, volume `vf_grafana-data` (ADR-0022) | 3002 |
 | bpmn | `operaton/operaton:2.1.5` (in-memory H2) | 8092 (REST, Cockpit, Tasklist) |
 | nodered (optional, profile `sandbox`) | `nodered/node-red:4.1.15-22`, learner sandbox outside the core data path; flows from `infra/nodered/`, edits in volume `vf_nodered-data`, no auth | 1880 |
 

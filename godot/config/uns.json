@@ -29,10 +29,11 @@
     "definitions": [
       {
         "device": "AC01", "event": "part_released", "trigger": "AC01.release_count",
-        "description": "A finished cylinder left the assembly cell onto the conveyor (cell test data included)",
+        "description": "A finished cylinder left the assembly cell onto the conveyor (cell test data and component lots included)",
         "fields": {
           "serial": "AC01.last_serial", "cap_variant": "AC01.last_cap_variant",
-          "leak_rate": "AC01.last_leak_rate", "stroke_time": "AC01.last_stroke_time"
+          "leak_rate": "AC01.last_leak_rate", "stroke_time": "AC01.last_stroke_time",
+          "lots": "AC01.last_lots"
         }
       },
       {

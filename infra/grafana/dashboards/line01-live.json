@@ -1,0 +1,2045 @@
+{
+  "uid": "vf-line01-live",
+  "title": "LINE01 live",
+  "tags": [
+    "virtual-factory",
+    "LINE01",
+    "historian"
+  ],
+  "description": "Live process values of LINE01 from the historian (InfluxDB 3 Core, ADR-0019/0022)",
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "5s",
+  "schemaVersion": 41,
+  "version": 1,
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "fiscalYearStartMonth": 0,
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m"
+    ]
+  },
+  "templating": {
+    "list": [
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "vf-historian"
+        },
+        "includeAll": false,
+        "multi": false,
+        "sort": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "options": [],
+        "name": "session",
+        "label": "Session",
+        "type": "query",
+        "refresh": 2,
+        "hide": 0,
+        "description": "UNS session (one per Godot start); 'latest' follows the newest session",
+        "query": {
+          "query": "SELECT 'latest' AS session UNION ALL SELECT session FROM (SELECT DISTINCT session FROM plc01) ORDER BY session = 'latest' DESC, session DESC",
+          "refId": "session"
+        },
+        "current": {
+          "selected": true,
+          "text": "latest",
+          "value": "latest"
+        }
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "vf-historian"
+        },
+        "includeAll": false,
+        "multi": false,
+        "sort": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "options": [],
+        "name": "sid",
+        "label": "Session id",
+        "type": "query",
+        "refresh": 2,
+        "hide": 2,
+        "description": "Resolved session id ('latest' -> newest session)",
+        "query": {
+          "query": "SELECT CASE WHEN '${session}' = 'latest' THEN max(session) ELSE '${session}' END AS sid FROM plc01",
+          "refId": "sid"
+        },
+        "current": {}
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [
+    {
+      "title": "AAS Web UI",
+      "type": "link",
+      "url": "http://localhost:3001",
+      "targetBlank": true,
+      "icon": "external link",
+      "tooltip": "BaSyx AAS Web UI (device, line and workpiece AAS)",
+      "asDropdown": false,
+      "includeVars": false,
+      "keepTime": false,
+      "tags": []
+    },
+    {
+      "title": "Operaton Cockpit",
+      "type": "link",
+      "url": "http://localhost:8092/operaton/app/cockpit/",
+      "targetBlank": true,
+      "icon": "external link",
+      "tooltip": "BPMN processes (MES)",
+      "asDropdown": false,
+      "includeVars": false,
+      "keepTime": false,
+      "tags": []
+    },
+    {
+      "title": "Operaton Tasklist",
+      "type": "link",
+      "url": "http://localhost:8092/operaton/app/tasklist/",
+      "targetBlank": true,
+      "icon": "external link",
+      "tooltip": "Operator tasks",
+      "asDropdown": false,
+      "includeVars": false,
+      "keepTime": false,
+      "tags": []
+    }
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "State",
+      "description": "Current PackML state of LINE01 (PLC01 packml_state)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT (SELECT packml_state FROM plc01 WHERE session = '${sid}' AND packml_state IS NOT NULL ORDER BY time DESC LIMIT 1) AS \"State\"",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "UNDEFINED",
+                  "color": "gray",
+                  "index": 0
+                },
+                "1": {
+                  "text": "CLEARING",
+                  "color": "purple",
+                  "index": 1
+                },
+                "2": {
+                  "text": "STOPPED",
+                  "color": "red",
+                  "index": 2
+                },
+                "3": {
+                  "text": "STARTING",
+                  "color": "light-green",
+                  "index": 3
+                },
+                "4": {
+                  "text": "IDLE",
+                  "color": "blue",
+                  "index": 4
+                },
+                "5": {
+                  "text": "SUSPENDED",
+                  "color": "yellow",
+                  "index": 5
+                },
+                "6": {
+                  "text": "EXECUTE",
+                  "color": "green",
+                  "index": 6
+                },
+                "7": {
+                  "text": "STOPPING",
+                  "color": "red",
+                  "index": 7
+                },
+                "8": {
+                  "text": "ABORTING",
+                  "color": "red",
+                  "index": 8
+                },
+                "9": {
+                  "text": "ABORTED",
+                  "color": "dark-red",
+                  "index": 9
+                },
+                "10": {
+                  "text": "HOLDING",
+                  "color": "orange",
+                  "index": 10
+                },
+                "11": {
+                  "text": "HELD",
+                  "color": "orange",
+                  "index": 11
+                },
+                "12": {
+                  "text": "UNHOLDING",
+                  "color": "yellow",
+                  "index": 12
+                },
+                "13": {
+                  "text": "SUSPENDING",
+                  "color": "yellow",
+                  "index": 13
+                },
+                "14": {
+                  "text": "UNSUSPENDING",
+                  "color": "yellow",
+                  "index": 14
+                },
+                "15": {
+                  "text": "RESETTING",
+                  "color": "purple",
+                  "index": 15
+                },
+                "16": {
+                  "text": "COMPLETING",
+                  "color": "blue",
+                  "index": 16
+                },
+                "17": {
+                  "text": "COMPLETE",
+                  "color": "blue",
+                  "index": 17
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto",
+        "justifyMode": "center"
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Parts (session)",
+      "description": "Part counters of PLC01 in the selected session (parts_total, parts_ok, parts_nok)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 3,
+        "y": 0,
+        "w": 5,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT (SELECT parts_total FROM plc01 WHERE session = '${sid}' AND parts_total IS NOT NULL ORDER BY time DESC LIMIT 1) AS \"Total\", (SELECT parts_ok FROM plc01 WHERE session = '${sid}' AND parts_ok IS NOT NULL ORDER BY time DESC LIMIT 1) AS \"OK\", (SELECT parts_nok FROM plc01 WHERE session = '${sid}' AND parts_nok IS NOT NULL ORDER BY time DESC LIMIT 1) AS \"NOK\"",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "OK"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "NOK"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "justifyMode": "center"
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Reject rate",
+      "description": "parts_nok / parts_total of the session",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT CAST(coalesce((SELECT parts_nok FROM plc01 WHERE session = '${sid}' AND parts_nok IS NOT NULL ORDER BY time DESC LIMIT 1), 0) AS DOUBLE) / (SELECT parts_total FROM plc01 WHERE session = '${sid}' AND parts_total IS NOT NULL ORDER BY time DESC LIMIT 1) AS \"Reject rate\"",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.05
+              },
+              {
+                "color": "red",
+                "value": 0.15
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "justifyMode": "center"
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Throughput",
+      "description": "Inspected parts per hour in the selected time range (ideal at 12 s takt: 300/h)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT count(parts_total) * 3600.0 / ((CAST($__timeTo AS BIGINT) - CAST($__timeFrom AS BIGINT)) / 1e9) AS \"Throughput\" FROM plc01 WHERE $__timeFilter(time) AND session = '${sid}' AND parts_total > 0",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "suffix: /h",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "justifyMode": "center"
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Line power",
+      "description": "Sum of the latest power value of all devices (incl. compressed-air equivalent of AC01)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT coalesce((SELECT power FROM ac01 WHERE session = '${sid}' AND power IS NOT NULL ORDER BY time DESC LIMIT 1), 0) + coalesce((SELECT power FROM rb01 WHERE session = '${sid}' AND power IS NOT NULL ORDER BY time DESC LIMIT 1), 0) + coalesce((SELECT power FROM cv01 WHERE session = '${sid}' AND power IS NOT NULL ORDER BY time DESC LIMIT 1), 0) + coalesce((SELECT power FROM qs01 WHERE session = '${sid}' AND power IS NOT NULL ORDER BY time DESC LIMIT 1), 0) + coalesce((SELECT power FROM lb01 WHERE session = '${sid}' AND power IS NOT NULL ORDER BY time DESC LIMIT 1), 0) + coalesce((SELECT power FROM lb02 WHERE session = '${sid}' AND power IS NOT NULL ORDER BY time DESC LIMIT 1), 0) + coalesce((SELECT power FROM sl01 WHERE session = '${sid}' AND power IS NOT NULL ORDER BY time DESC LIMIT 1), 0) AS \"Line power\"",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "yellow"
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "justifyMode": "center"
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Robot cycles",
+      "description": "RB01 cycle_count and KLT exchanges (KLTA01 + KLTB01 exchange_count)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 0,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT (SELECT cycle_count FROM rb01 WHERE session = '${sid}' AND cycle_count IS NOT NULL ORDER BY time DESC LIMIT 1) AS \"RB01 cycles\", (SELECT exchange_count FROM klta01 WHERE session = '${sid}' AND exchange_count IS NOT NULL ORDER BY time DESC LIMIT 1) + (SELECT exchange_count FROM kltb01 WHERE session = '${sid}' AND exchange_count IS NOT NULL ORDER BY time DESC LIMIT 1) AS \"KLT exchanges\"",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "justifyMode": "center"
+      }
+    },
+    {
+      "id": 7,
+      "type": "state-timeline",
+      "title": "PackML state",
+      "description": "PLC01 packml_state over time (ISA-TR88 states)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 14,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, v AS \"PackML state\" FROM (SELECT greatest(time, $__timeFrom) AS time, packml_state AS v FROM plc01 WHERE session = '${sid}' AND packml_state IS NOT NULL AND time >= (SELECT coalesce(max(time), $__timeFrom) FROM plc01 WHERE session = '${sid}' AND packml_state IS NOT NULL AND time <= $__timeFrom) AND time <= $__timeTo UNION ALL SELECT $__timeTo AS time, v FROM (SELECT packml_state AS v FROM plc01 WHERE session = '${sid}' AND packml_state IS NOT NULL AND time <= $__timeTo ORDER BY time DESC LIMIT 1)) ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "UNDEFINED",
+                  "color": "gray",
+                  "index": 0
+                },
+                "1": {
+                  "text": "CLEARING",
+                  "color": "purple",
+                  "index": 1
+                },
+                "2": {
+                  "text": "STOPPED",
+                  "color": "red",
+                  "index": 2
+                },
+                "3": {
+                  "text": "STARTING",
+                  "color": "light-green",
+                  "index": 3
+                },
+                "4": {
+                  "text": "IDLE",
+                  "color": "blue",
+                  "index": 4
+                },
+                "5": {
+                  "text": "SUSPENDED",
+                  "color": "yellow",
+                  "index": 5
+                },
+                "6": {
+                  "text": "EXECUTE",
+                  "color": "green",
+                  "index": 6
+                },
+                "7": {
+                  "text": "STOPPING",
+                  "color": "red",
+                  "index": 7
+                },
+                "8": {
+                  "text": "ABORTING",
+                  "color": "red",
+                  "index": 8
+                },
+                "9": {
+                  "text": "ABORTED",
+                  "color": "dark-red",
+                  "index": 9
+                },
+                "10": {
+                  "text": "HOLDING",
+                  "color": "orange",
+                  "index": 10
+                },
+                "11": {
+                  "text": "HELD",
+                  "color": "orange",
+                  "index": 11
+                },
+                "12": {
+                  "text": "UNHOLDING",
+                  "color": "yellow",
+                  "index": 12
+                },
+                "13": {
+                  "text": "SUSPENDING",
+                  "color": "yellow",
+                  "index": 13
+                },
+                "14": {
+                  "text": "UNSUSPENDING",
+                  "color": "yellow",
+                  "index": 14
+                },
+                "15": {
+                  "text": "RESETTING",
+                  "color": "purple",
+                  "index": 15
+                },
+                "16": {
+                  "text": "COMPLETING",
+                  "color": "blue",
+                  "index": 16
+                },
+                "17": {
+                  "text": "COMPLETE",
+                  "color": "blue",
+                  "index": 17
+                }
+              }
+            }
+          ],
+          "custom": {
+            "fillOpacity": 80,
+            "lineWidth": 0
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "mergeValues": true,
+        "showValue": "auto",
+        "alignValue": "left",
+        "rowHeight": 0.85,
+        "legend": {
+          "showLegend": false
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "gauge",
+      "title": "OEE (session)",
+      "description": "ISO 22400 like the HMI: availability = EXECUTE time / planned time (not STOPPED/IDLE), performance = parts_total x 12 s ideal cycle (AC01 takt_time) / EXECUTE time, quality = parts_ok / parts_total",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 4,
+        "w": 10,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "WITH s AS (SELECT packml_state AS st, (CAST(coalesce(lead(time) OVER (ORDER BY time), (SELECT max(time) FROM cv01 WHERE session = '${sid}')) AS BIGINT) - CAST(time AS BIGINT)) / 1e9 AS dur FROM plc01 WHERE session = '${sid}' AND packml_state IS NOT NULL), d AS (SELECT sum(CASE WHEN st = 6 THEN dur ELSE 0 END) AS run, sum(CASE WHEN st NOT IN (0, 2, 4) THEN greatest(dur, 0) ELSE 0 END) AS planned FROM s), c AS (SELECT max(parts_total) AS total, max(parts_ok) AS ok FROM plc01 WHERE session = '${sid}') SELECT d.run / d.planned AS \"Availability\", least(c.total * 12.0 / d.run, 1.0) AS \"Performance\", CAST(c.ok AS DOUBLE) / c.total AS \"Quality\", (d.run / d.planned) * least(c.total * 12.0 / d.run, 1.0) * CAST(c.ok AS DOUBLE) / c.total AS \"OEE\" FROM d, c",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "decimals": 1,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.6
+              },
+              {
+                "color": "green",
+                "value": 0.85
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdMarkers": true,
+        "showThresholdLabels": false,
+        "sizing": "auto",
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 9,
+      "type": "state-timeline",
+      "title": "Alarms",
+      "description": "PLC01 alarm_code (highest-priority active alarm, docs/interfaces/scenarios.md)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 12,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, v AS \"Alarm\" FROM (SELECT greatest(time, $__timeFrom) AS time, alarm_code AS v FROM plc01 WHERE session = '${sid}' AND alarm_code IS NOT NULL AND time >= (SELECT coalesce(max(time), $__timeFrom) FROM plc01 WHERE session = '${sid}' AND alarm_code IS NOT NULL AND time <= $__timeFrom) AND time <= $__timeTo UNION ALL SELECT $__timeTo AS time, v FROM (SELECT alarm_code AS v FROM plc01 WHERE session = '${sid}' AND alarm_code IS NOT NULL AND time <= $__timeTo ORDER BY time DESC LIMIT 1)) ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "no alarm",
+                  "color": "green",
+                  "index": 0
+                },
+                "100": {
+                  "text": "100 E-stop",
+                  "color": "dark-red",
+                  "index": 1
+                },
+                "101": {
+                  "text": "101 CV01 drive fault",
+                  "color": "red",
+                  "index": 2
+                },
+                "201": {
+                  "text": "201 RB01 protective stop",
+                  "color": "orange",
+                  "index": 3
+                },
+                "202": {
+                  "text": "202 RB01 fault",
+                  "color": "red",
+                  "index": 4
+                },
+                "301": {
+                  "text": "301 LB01 stuck",
+                  "color": "orange",
+                  "index": 5
+                },
+                "302": {
+                  "text": "302 LB02 stuck",
+                  "color": "orange",
+                  "index": 6
+                },
+                "401": {
+                  "text": "401 infeed timeout",
+                  "color": "yellow",
+                  "index": 7
+                }
+              }
+            }
+          ],
+          "custom": {
+            "fillOpacity": 80,
+            "lineWidth": 0
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "mergeValues": true,
+        "showValue": "auto",
+        "alignValue": "left",
+        "rowHeight": 0.85,
+        "legend": {
+          "showLegend": false
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": "state-timeline",
+      "title": "Stack light SL01",
+      "description": "SL01 red_on, amber_on, green_on, buzzer_on",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 9,
+        "w": 12,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, v AS \"Red\" FROM (SELECT greatest(time, $__timeFrom) AS time, red_on AS v FROM sl01 WHERE session = '${sid}' AND red_on IS NOT NULL AND time >= (SELECT coalesce(max(time), $__timeFrom) FROM sl01 WHERE session = '${sid}' AND red_on IS NOT NULL AND time <= $__timeFrom) AND time <= $__timeTo UNION ALL SELECT $__timeTo AS time, v FROM (SELECT red_on AS v FROM sl01 WHERE session = '${sid}' AND red_on IS NOT NULL AND time <= $__timeTo ORDER BY time DESC LIMIT 1)) ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, v AS \"Amber\" FROM (SELECT greatest(time, $__timeFrom) AS time, amber_on AS v FROM sl01 WHERE session = '${sid}' AND amber_on IS NOT NULL AND time >= (SELECT coalesce(max(time), $__timeFrom) FROM sl01 WHERE session = '${sid}' AND amber_on IS NOT NULL AND time <= $__timeFrom) AND time <= $__timeTo UNION ALL SELECT $__timeTo AS time, v FROM (SELECT amber_on AS v FROM sl01 WHERE session = '${sid}' AND amber_on IS NOT NULL AND time <= $__timeTo ORDER BY time DESC LIMIT 1)) ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, v AS \"Green\" FROM (SELECT greatest(time, $__timeFrom) AS time, green_on AS v FROM sl01 WHERE session = '${sid}' AND green_on IS NOT NULL AND time >= (SELECT coalesce(max(time), $__timeFrom) FROM sl01 WHERE session = '${sid}' AND green_on IS NOT NULL AND time <= $__timeFrom) AND time <= $__timeTo UNION ALL SELECT $__timeTo AS time, v FROM (SELECT green_on AS v FROM sl01 WHERE session = '${sid}' AND green_on IS NOT NULL AND time <= $__timeTo ORDER BY time DESC LIMIT 1)) ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, v AS \"Buzzer\" FROM (SELECT greatest(time, $__timeFrom) AS time, buzzer_on AS v FROM sl01 WHERE session = '${sid}' AND buzzer_on IS NOT NULL AND time >= (SELECT coalesce(max(time), $__timeFrom) FROM sl01 WHERE session = '${sid}' AND buzzer_on IS NOT NULL AND time <= $__timeFrom) AND time <= $__timeTo UNION ALL SELECT $__timeTo AS time, v FROM (SELECT buzzer_on AS v FROM sl01 WHERE session = '${sid}' AND buzzer_on IS NOT NULL AND time <= $__timeTo ORDER BY time DESC LIMIT 1)) ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "true": {
+                  "text": "on",
+                  "index": 0
+                },
+                "false": {
+                  "text": "off",
+                  "color": "#2b2b2b",
+                  "index": 1
+                }
+              }
+            }
+          ],
+          "custom": {
+            "fillOpacity": 85,
+            "lineWidth": 0
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Red"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "true": {
+                        "text": "on",
+                        "color": "red",
+                        "index": 0
+                      },
+                      "false": {
+                        "text": "off",
+                        "color": "#2b2b2b",
+                        "index": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Amber"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "true": {
+                        "text": "on",
+                        "color": "orange",
+                        "index": 0
+                      },
+                      "false": {
+                        "text": "off",
+                        "color": "#2b2b2b",
+                        "index": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Green"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "true": {
+                        "text": "on",
+                        "color": "green",
+                        "index": 0
+                      },
+                      "false": {
+                        "text": "off",
+                        "color": "#2b2b2b",
+                        "index": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Buzzer"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "true": {
+                        "text": "on",
+                        "color": "purple",
+                        "index": 0
+                      },
+                      "false": {
+                        "text": "off",
+                        "color": "#2b2b2b",
+                        "index": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "mergeValues": true,
+        "showValue": "never",
+        "alignValue": "left",
+        "rowHeight": 0.85,
+        "legend": {
+          "showLegend": false
+        }
+      }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Parts per minute (OK / NOK)",
+      "description": "Increments of PLC01 parts_ok / parts_nok per minute",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT date_bin(INTERVAL '1 minute', time) AS time, sum(CASE WHEN parts_ok > 0 THEN 1 ELSE 0 END) AS \"OK\", sum(CASE WHEN parts_nok > 0 THEN 1 ELSE 0 END) AS \"NOK\" FROM plc01 WHERE $__timeFilter(time) AND session = '${sid}' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "stacking": {
+              "mode": "normal"
+            },
+            "lineWidth": 1
+          },
+          "decimals": 0,
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "OK"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "NOK"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Reject rate (cumulative)",
+      "description": "parts_nok / parts_total of the session at every inspected part",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 14,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, \"Reject rate\" FROM (SELECT time, CAST(coalesce(max(parts_nok) OVER w, 0) AS DOUBLE) / max(parts_total) OVER w AS \"Reject rate\" FROM plc01 WHERE session = '${sid}' AND (parts_total IS NOT NULL OR parts_nok IS NOT NULL) WINDOW w AS (ORDER BY time)) WHERE $__timeFilter(time) ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineInterpolation": "stepAfter",
+            "spanNulls": true,
+            "showPoints": "never",
+            "fillOpacity": 10
+          },
+          "min": 0,
+          "decimals": 1,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Power per device (stacked)",
+      "description": "Mean electrical power per 10 s from each device's energy counter (kWh -> W); the stack is the line power. AC01 includes the compressed-air equivalent.",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 14,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT t AS time, (e - lag(e) OVER (ORDER BY t)) * 3600000.0 / ((CAST(te AS BIGINT) - lag(CAST(te AS BIGINT)) OVER (ORDER BY t)) / 1e9) AS \"AC01\" FROM (SELECT date_bin(INTERVAL '10 seconds', time) AS t, max(energy) AS e, max(time) AS te FROM ac01 WHERE $__timeFilter(time) AND session = '${sid}' AND energy IS NOT NULL GROUP BY 1) ORDER BY 1",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT t AS time, (e - lag(e) OVER (ORDER BY t)) * 3600000.0 / ((CAST(te AS BIGINT) - lag(CAST(te AS BIGINT)) OVER (ORDER BY t)) / 1e9) AS \"RB01\" FROM (SELECT date_bin(INTERVAL '10 seconds', time) AS t, max(energy) AS e, max(time) AS te FROM rb01 WHERE $__timeFilter(time) AND session = '${sid}' AND energy IS NOT NULL GROUP BY 1) ORDER BY 1",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT t AS time, (e - lag(e) OVER (ORDER BY t)) * 3600000.0 / ((CAST(te AS BIGINT) - lag(CAST(te AS BIGINT)) OVER (ORDER BY t)) / 1e9) AS \"CV01\" FROM (SELECT date_bin(INTERVAL '10 seconds', time) AS t, max(energy) AS e, max(time) AS te FROM cv01 WHERE $__timeFilter(time) AND session = '${sid}' AND energy IS NOT NULL GROUP BY 1) ORDER BY 1",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT t AS time, (e - lag(e) OVER (ORDER BY t)) * 3600000.0 / ((CAST(te AS BIGINT) - lag(CAST(te AS BIGINT)) OVER (ORDER BY t)) / 1e9) AS \"QS01\" FROM (SELECT date_bin(INTERVAL '10 seconds', time) AS t, max(energy) AS e, max(time) AS te FROM qs01 WHERE $__timeFilter(time) AND session = '${sid}' AND energy IS NOT NULL GROUP BY 1) ORDER BY 1",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT t AS time, (e - lag(e) OVER (ORDER BY t)) * 3600000.0 / ((CAST(te AS BIGINT) - lag(CAST(te AS BIGINT)) OVER (ORDER BY t)) / 1e9) AS \"LB01\" FROM (SELECT date_bin(INTERVAL '10 seconds', time) AS t, max(energy) AS e, max(time) AS te FROM lb01 WHERE $__timeFilter(time) AND session = '${sid}' AND energy IS NOT NULL GROUP BY 1) ORDER BY 1",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT t AS time, (e - lag(e) OVER (ORDER BY t)) * 3600000.0 / ((CAST(te AS BIGINT) - lag(CAST(te AS BIGINT)) OVER (ORDER BY t)) / 1e9) AS \"LB02\" FROM (SELECT date_bin(INTERVAL '10 seconds', time) AS t, max(energy) AS e, max(time) AS te FROM lb02 WHERE $__timeFilter(time) AND session = '${sid}' AND energy IS NOT NULL GROUP BY 1) ORDER BY 1",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        },
+        {
+          "refId": "G",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT t AS time, (e - lag(e) OVER (ORDER BY t)) * 3600000.0 / ((CAST(te AS BIGINT) - lag(CAST(te AS BIGINT)) OVER (ORDER BY t)) / 1e9) AS \"SL01\" FROM (SELECT date_bin(INTERVAL '10 seconds', time) AS t, max(energy) AS e, max(time) AS te FROM sl01 WHERE $__timeFilter(time) AND session = '${sid}' AND energy IS NOT NULL GROUP BY 1) ORDER BY 1",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "stacking": {
+              "mode": "normal"
+            },
+            "fillOpacity": 60,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "spanNulls": true
+          },
+          "min": 0,
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "mean",
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "type": "bargauge",
+      "title": "Energy per device (session)",
+      "description": "Energy counter increase per device in the selected session",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 21,
+        "w": 6,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT device, energy FROM (SELECT 'AC01' AS device, max(energy) - min(energy) AS energy FROM ac01 WHERE session = '${sid}' UNION ALL SELECT 'RB01' AS device, max(energy) - min(energy) AS energy FROM rb01 WHERE session = '${sid}' UNION ALL SELECT 'CV01' AS device, max(energy) - min(energy) AS energy FROM cv01 WHERE session = '${sid}' UNION ALL SELECT 'QS01' AS device, max(energy) - min(energy) AS energy FROM qs01 WHERE session = '${sid}' UNION ALL SELECT 'LB01' AS device, max(energy) - min(energy) AS energy FROM lb01 WHERE session = '${sid}' UNION ALL SELECT 'LB02' AS device, max(energy) - min(energy) AS energy FROM lb02 WHERE session = '${sid}' UNION ALL SELECT 'SL01' AS device, max(energy) - min(energy) AS energy FROM sl01 WHERE session = '${sid}') ORDER BY energy DESC",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 3,
+          "min": 0,
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "orientation": "horizontal",
+        "displayMode": "basic",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "left",
+        "sizing": "auto"
+      }
+    },
+    {
+      "id": 15,
+      "type": "stat",
+      "title": "Line energy",
+      "description": "Sum of the energy counter increase of all devices in the session",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 21,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT sum(energy) AS \"Energy\" FROM (SELECT 'AC01' AS device, max(energy) - min(energy) AS energy FROM ac01 WHERE session = '${sid}' UNION ALL SELECT 'RB01' AS device, max(energy) - min(energy) AS energy FROM rb01 WHERE session = '${sid}' UNION ALL SELECT 'CV01' AS device, max(energy) - min(energy) AS energy FROM cv01 WHERE session = '${sid}' UNION ALL SELECT 'QS01' AS device, max(energy) - min(energy) AS energy FROM qs01 WHERE session = '${sid}' UNION ALL SELECT 'LB01' AS device, max(energy) - min(energy) AS energy FROM lb01 WHERE session = '${sid}' UNION ALL SELECT 'LB02' AS device, max(energy) - min(energy) AS energy FROM lb02 WHERE session = '${sid}' UNION ALL SELECT 'SL01' AS device, max(energy) - min(energy) AS energy FROM sl01 WHERE session = '${sid}')",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 3,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "yellow"
+          },
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "justifyMode": "center"
+      }
+    },
+    {
+      "id": 16,
+      "type": "stat",
+      "title": "Compressed air",
+      "description": "AC01 air_consumption increase in the session (normal litres)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 25,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT max(air_consumption) - min(air_consumption) AS \"Compressed air\" FROM ac01 WHERE session = '${sid}'",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "suffix: Nl",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "justifyMode": "center"
+      }
+    },
+    {
+      "id": 17,
+      "type": "timeseries",
+      "title": "QS01 colour distance ΔE*ab per part",
+      "description": "QS01 delta_e (CIE76) of every measured cap; limit 25 (recipe DeltaEMax / QS01 tolerance_delta_e)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 29,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, delta_e AS \"ΔE*ab\" FROM qs01 WHERE $__timeFilter(time) AND session = '${sid}' AND delta_e IS NOT NULL ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "points",
+            "pointSize": 7,
+            "showPoints": "always",
+            "gradientMode": "scheme",
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
+          },
+          "decimals": 1,
+          "min": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 18,
+      "type": "timeseries",
+      "title": "AC01 leak rate per part",
+      "description": "AC01 last_leak_rate (pressure decay at 6 bar); limit 1.0 cm³/min (recipe LeakRateMax)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 29,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, last_leak_rate AS \"Leak rate\" FROM ac01 WHERE $__timeFilter(time) AND session = '${sid}' AND last_leak_rate IS NOT NULL ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "points",
+            "pointSize": 7,
+            "showPoints": "always",
+            "gradientMode": "scheme",
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
+          },
+          "unit": "suffix: cm³/min",
+          "decimals": 2,
+          "min": 0,
+          "max": 1.2,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1.0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 19,
+      "type": "timeseries",
+      "title": "AC01 stroke time per part",
+      "description": "AC01 last_stroke_time (function test at 6 bar); recipe limits 0.28 … 0.36 s",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 29,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, last_stroke_time AS \"Stroke time\" FROM ac01 WHERE $__timeFilter(time) AND session = '${sid}' AND last_stroke_time IS NOT NULL ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "points",
+            "pointSize": 7,
+            "showPoints": "always",
+            "gradientMode": "scheme",
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
+          },
+          "min": 0.26,
+          "max": 0.38,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0.28
+              },
+              {
+                "color": "red",
+                "value": 0.36
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 20,
+      "type": "timeseries",
+      "title": "RB01 cycle time",
+      "description": "Time between two increments of RB01 cycle_count (pick & place cycle incl. waiting for the next part; ideal = takt 12 s)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 37,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, \"Cycle time\" FROM (SELECT time, (CAST(time AS BIGINT) - CAST(lag(time) OVER (ORDER BY time) AS BIGINT)) / 1e9 AS \"Cycle time\" FROM rb01 WHERE session = '${sid}' AND cycle_count IS NOT NULL) WHERE $__timeFilter(time) ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "always",
+            "pointSize": 5,
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
+          "decimals": 2,
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 12.0
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "Compressed air flow AC01",
+      "description": "Mean flow per 10 s from the AC01 air_consumption counter (Nl -> Nl/min)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 37,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT t AS time, (e - lag(e) OVER (ORDER BY t)) * 60.0 / ((CAST(te AS BIGINT) - lag(CAST(te AS BIGINT)) OVER (ORDER BY t)) / 1e9) AS \"Air flow\" FROM (SELECT date_bin(INTERVAL '10 seconds', time) AS t, max(air_consumption) AS e, max(time) AS te FROM ac01 WHERE $__timeFilter(time) AND session = '${sid}' AND air_consumption IS NOT NULL GROUP BY 1) ORDER BY 1",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "suffix: Nl/min",
+          "decimals": 1,
+          "min": 0,
+          "custom": {
+            "fillOpacity": 20,
+            "showPoints": "never"
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 22,
+      "type": "timeseries",
+      "title": "KLT fill levels",
+      "description": "KLTA01 / KLTB01 fill_count (capacity 12; drops to 0 at an exchange)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 44,
+        "w": 16,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, v AS \"KLT A (OK)\" FROM (SELECT greatest(time, $__timeFrom) AS time, fill_count AS v FROM klta01 WHERE session = '${sid}' AND fill_count IS NOT NULL AND time >= (SELECT coalesce(max(time), $__timeFrom) FROM klta01 WHERE session = '${sid}' AND fill_count IS NOT NULL AND time <= $__timeFrom) AND time <= $__timeTo UNION ALL SELECT $__timeTo AS time, v FROM (SELECT fill_count AS v FROM klta01 WHERE session = '${sid}' AND fill_count IS NOT NULL AND time <= $__timeTo ORDER BY time DESC LIMIT 1)) ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT time, v AS \"KLT B (NOK)\" FROM (SELECT greatest(time, $__timeFrom) AS time, fill_count AS v FROM kltb01 WHERE session = '${sid}' AND fill_count IS NOT NULL AND time >= (SELECT coalesce(max(time), $__timeFrom) FROM kltb01 WHERE session = '${sid}' AND fill_count IS NOT NULL AND time <= $__timeFrom) AND time <= $__timeTo UNION ALL SELECT $__timeTo AS time, v FROM (SELECT fill_count AS v FROM kltb01 WHERE session = '${sid}' AND fill_count IS NOT NULL AND time <= $__timeTo ORDER BY time DESC LIMIT 1)) ORDER BY time",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineInterpolation": "stepAfter",
+            "spanNulls": true,
+            "showPoints": "never",
+            "fillOpacity": 10
+          },
+          "min": 0,
+          "max": 12,
+          "decimals": 0,
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "KLT A (OK)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "KLT B (NOK)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 23,
+      "type": "bargauge",
+      "title": "KLT fill now",
+      "description": "Current fill_count of both KLTs (PLC01 klt_capacity 12)",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "vf-historian"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 44,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "vf-historian"
+          },
+          "rawSql": "SELECT (SELECT fill_count FROM klta01 WHERE session = '${sid}' AND fill_count IS NOT NULL ORDER BY time DESC LIMIT 1) AS \"KLT A (OK)\", (SELECT fill_count FROM kltb01 WHERE session = '${sid}' AND fill_count IS NOT NULL ORDER BY time DESC LIMIT 1) AS \"KLT B (NOK)\"",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 12,
+          "decimals": 0,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 9
+              },
+              {
+                "color": "red",
+                "value": 12
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "displayMode": "lcd",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "auto",
+        "sizing": "auto"
+      }
+    }
+  ],
+  "liveNow": false,
+  "weekStart": ""
+}

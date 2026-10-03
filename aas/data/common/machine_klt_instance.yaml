@@ -53,6 +53,7 @@ submodels:
         statements:
           Node:
             - _idShort: Box
+              _displayName: {en: "KLT box 6428", de: "KLT-Behälter 6428"}
               _description: {en: "KLT 6428 box currently on the station (empty at session start)", de: "KLT-6428-Behälter, der aktuell auf der Station steht (bei Sitzungsbeginn leer)"}
               entityType: CoManagedEntity
           HasPart:

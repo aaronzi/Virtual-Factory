@@ -2,6 +2,7 @@ extends GutTest
 
 const Model := preload("res://devices/assembly_cell/model/assembly_cell_model.gd")
 const MD := "res://devices/assembly_cell/model/modelDescription.xml"
+const ComponentLots := preload("res://devices/assembly_cell/model/component_lots.gd")
 const H := 0.1
 
 
@@ -31,6 +32,7 @@ func test_releases_at_takt_with_serials() -> void:
 	assert_eq(m.get_value("last_serial"), "PC3280-2026-000001")
 	_run(m, 10.0)
 	assert_eq(m.get_value("last_serial"), "PC3280-2026-000002")
+	assert_string_contains(m.get_value("last_lots"), "Barrel=L2609-0418;EndCapFront=DGP-260914-F")
 
 
 func test_blocks_until_infeed_free() -> void:
@@ -77,3 +79,23 @@ func test_defect_rate_is_tunable_at_runtime() -> void:
 	m.set_value("defect_rate_wrong_cap", 1.0)
 	_run(m, 1.0)
 	assert_eq(m.get_value("last_cap_variant"), 2, "wrong cap")
+
+
+func test_component_lots_change_per_feeder() -> void:
+	var first := _lots(1)
+	assert_eq(first.size(), 9, "one lot per BoM node")
+	assert_eq(_lots(35)["Barrel"], "L2609-0418")
+	assert_eq(_lots(36)["Barrel"], "L2609-0419", "barrel lot of 120 parts, 85 used before serial 1")
+	assert_eq(_lots(36)["PistonRod"], first["PistonRod"], "the other feeders keep their lot")
+	assert_eq(_lots(123), {"Barrel": "L2609-0419", "EndCapFront": "DGP-260914-F", "EndCapRear": "DGP-260915-R",
+		"PistonRod": "L2609-2411", "Piston": "L2609-3387", "SealKit": "DTS-2608-1173",
+		"ScrewM5x16": "NRN-26-33871", "CushioningScrew": "L2609-5370", "ProtectiveCap": "KTW-26-0911"},
+		"lots of the blueprint serial PC3280-2026-000123")
+	assert_eq(_lots(3021)["EndCapFront"], "DGP-261001-F", "cast date rolls over the month end")
+
+
+func _lots(serial_no: int) -> Dictionary:
+	var out := {}
+	for pair in ComponentLots.lots_for(serial_no).split(";"):
+		out[pair.get_slice("=", 0)] = pair.get_slice("=", 1)
+	return out

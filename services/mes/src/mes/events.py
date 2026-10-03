@@ -45,7 +45,7 @@ def message_for(event: dict, name: str | None = None) -> tuple[str, str | None, 
         return "PartReleased", event["serial"], {
             "serial": event["serial"], "releasedAt": ts, "session": event.get("session"),
             "leakRate": float(event.get("leak_rate", 0)),
-            "strokeTime": float(event.get("stroke_time", 0))}, False
+            "strokeTime": float(event.get("stroke_time", 0)), "lots": str(event.get("lots") or "")}, False
     if name == "part_inspected" and event.get("serial"):
         return "PartInspected", event["serial"], {
             "inspectedAt": ts, "plcResult": int(event.get("result", 0)),

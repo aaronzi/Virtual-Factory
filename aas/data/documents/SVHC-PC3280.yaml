@@ -1,0 +1,33 @@
+title: "PC-32-80-DA-M REACH Art. 33 information"
+subtitle: "Substances of very high concern (SVHC) in articles"
+organization: VF Pneumatics GmbH
+version: "1.0"
+date: "2025-09-01"
+sections:
+  - heading: Product
+    rows: [[Product, "Profile cylinder ISO 15552 PC-32-80-DA-M"], [Article number, "5032-0080"],
+           [Manufacturer, "VF Pneumatics GmbH, Kaiserslautern, DE"],
+           [Candidate List considered, "ECHA Candidate List as of 2025-06-25"]]
+  - heading: Declaration
+    text: >-
+      According to Article 33(1) of Regulation (EC) No 1907/2006 (REACH) we inform recipients of the article that
+      the following component articles contain a substance of the Candidate List in a concentration above
+      0.1 % weight by weight (w/w). Concentrations refer to the component article ("once an article, always an
+      article", CJEU C-106/14).
+  - heading: Substances above 0.1 % w/w
+    rows: [[Substance, "Lead, CAS 7439-92-1, EC 231-100-4"], [Reason for inclusion, "toxic for reproduction (Repr. 1A)"],
+           [Cushioning screws 5032-1008, "brass CW614N, approx. 3.0 % w/w lead"],
+           [End caps 5032-1002 / 5032-1003, "die-cast alloy EN AC-46000, approx. 0.2 % w/w lead"],
+           [SCIP notification (cylinder), "6f1c2a9e-4b7d-4e2a-9d35-8c0b7e51a4f3"]]
+  - heading: Safe use
+    text: >-
+      The lead is bound in the metal alloy; no exposure occurs during intended use, mounting and maintenance. Do
+      not grind or melt the parts outside industrial recycling. At end of life return the cylinder to VF Pneumatics
+      (take-back, takeback@vf-pneumatics.example) or hand it to a metal recycler; separate brass and aluminium as
+      described in the repair instructions RI-PC3280.
+  - heading: Other legislation
+    text: >-
+      RoHS 2011/65/EU does not apply (no electrical or electronic equipment). No CE marking: ISO 15552 cylinders are
+      not machinery under Directive 2006/42/EC (no drive system of their own), not pressure equipment in the scope
+      of Directive 2014/68/EU (Art. 1(2)(j)) and fall under no other CE legislation. Information is updated when
+      the Candidate List changes; the current version is part of the digital product passport of every unit.

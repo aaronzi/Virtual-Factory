@@ -10,6 +10,7 @@ Asset definition (see docs/interfaces/aas-model.md):
     derivedFrom: <TAG of the type AAS>
     thumbnail: repo:docs/screenshots/assets/assembly_cell.png
     specificAssetIds: {serialNumber: ..., manufacturerPartId: ...}
+    globalAssetId: <IRI>           # optional, default ids.asset_id(tag) (e.g. a GS1 Digital Link URI)
     submodels:
       - template: Nameplate-3.0     # name in the TemplateLibrary
         idShort: Nameplate          # optional (default: template idShort)
@@ -29,6 +30,7 @@ from dataclasses import dataclass, field
 from pathlib import PurePosixPath
 
 from .. import ids
+from .entities import Names, asset_names, name_entities
 from .instantiate import instantiate
 from .templates import TemplateLibrary, concept_description
 from .values import file_value, mlp_value
@@ -48,8 +50,9 @@ class BuildReport:
 
 
 class EnvironmentBuilder:
-    def __init__(self, library: TemplateLibrary):
+    def __init__(self, library: TemplateLibrary, names: Names | None = None):
         self.library = library
+        self.names = dict(names or {})  # asset names for Entity elements (e.g. BoM nodes), see entities.py
         self.shells: list[dict] = []
         self.submodels: list[dict] = []
         self.files: dict[str, str] = {}      # package path -> repo path
@@ -58,6 +61,7 @@ class EnvironmentBuilder:
         self._sm_ids: dict[str, str] = {}    # "TAG/IdShort" -> submodel id
         self._pending: list[dict] = []
         self._specs: list[dict] = []
+        self._global_ids: dict[str, str] = {}  # tag -> explicit globalAssetId of the spec
         self._concept_units: dict[str, tuple] = {}  # generated cd id -> (unit, first use)
 
     # -- public API -------------------------------------------------------------------------------
@@ -68,6 +72,8 @@ class EnvironmentBuilder:
             id_short = sm_spec.get("idShort") or self.library.get(sm_spec["template"])["idShort"]
             version = sm_spec["template"].rsplit("-", 1)[-1].split(".")[0]
             self._sm_ids[f"{tag}/{id_short}"] = ids.submodel_id(tag, id_short, version)
+        if spec.get("globalAssetId"):
+            self._global_ids[tag] = spec["globalAssetId"]
         self._specs.append(spec)
 
     def build(self) -> dict:
@@ -75,6 +81,7 @@ class EnvironmentBuilder:
             self._build_asset(spec)
         for ref in self._pending:
             self._resolve_pending(ref)
+        name_entities(self.submodels, {**self.names, **asset_names(self._specs)})
         cds = self.library.concept_descriptions_for(self.submodels)
         cds += self._template_concepts({cd["id"] for cd in cds})
         return {"assetAdministrationShells": self.shells, "submodels": self.submodels,
@@ -118,7 +125,8 @@ class EnvironmentBuilder:
         self.shells.append(shell)
 
     def _asset_information(self, spec: dict, aas_id: str) -> dict:
-        info = {"assetKind": spec.get("kind", "Instance"), "globalAssetId": ids.asset_id(spec["tag"])}
+        info = {"assetKind": spec.get("kind", "Instance"),
+                "globalAssetId": self._identifier("asset", spec["tag"])}
         if spec.get("assetType"):
             info["assetType"] = spec["assetType"]
         specific = [{"name": k, "value": str(v)} for k, v in (spec.get("specificAssetIds") or {}).items()]
@@ -194,7 +202,7 @@ class EnvironmentBuilder:
 
     def _identifier(self, kind: str, target: str) -> str:
         if kind == "asset":
-            return ids.asset_id(target)
+            return self._global_ids.get(target) or ids.asset_id(target)
         if kind == "aas":
             return ids.aas_id(target)
         return self._sm_ids[target]

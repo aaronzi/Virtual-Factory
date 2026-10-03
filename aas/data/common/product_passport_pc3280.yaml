@@ -1,0 +1,207 @@
+# Product data of PC-32-80-DA-M shared by the product type AAS (assets/PC3280_TYPE.yaml) and the item-level
+# passport of every produced part (blueprints/workpiece_instance.yaml, filled by the MES): named fragments
+# included with `$include: "common/product_passport_pc3280.yaml#<Key>.<Name>"` (docs/interfaces/aas-model.md §7).
+
+# TechnicalData (IDTA 02003) GeneralInformation without product images (the type adds them).
+GeneralInformation:
+  ManufacturerName: VF Pneumatics GmbH
+  ManufacturerProductDesignation:
+    en: "Profile cylinder ISO 15552 PC-32-80-DA-M"
+    de: "Profilzylinder ISO 15552 PC-32-80-DA-M"
+  ManufacturerArticleNumber: "5032-0080"
+  ManufacturerOrderCode: PC-32-80-DA-M
+
+# TechnicalData sections of the area TechnicalProperties (type values; the passport adds an AsBuilt section).
+TechnicalSections:
+  General:
+    _idShort: General
+    "+Standard": {value: ISO 15552, description: {en: "Dimensional standard", de: "Maßnorm"}}
+    "+DesignType": {value: "profile cylinder, double-acting", description: {en: "Design type", de: "Bauart"}}
+    "+PistonBore": {unit: "mm", valueType: xs:double, value: 32, description: {en: "Piston diameter", de: "Kolbendurchmesser"}}
+    "+Stroke": {unit: "mm", valueType: xs:double, value: 80, description: {en: "Stroke", de: "Hub"}}
+    "+PistonRodDiameter": {unit: "mm", valueType: xs:double, value: 12, description: {en: "Piston rod diameter", de: "Kolbenstangendurchmesser"}}
+    "+PistonRodThread": {value: M10x1.25, description: {en: "Piston rod thread (male)", de: "Kolbenstangengewinde (außen)"}}
+    "+PneumaticConnection": {value: G1/8, description: {en: "Pneumatic connection (ISO 228-1)", de: "Pneumatischer Anschluss (ISO 228-1)"}}
+    "+PositionSensing": {value: "magnetic piston for proximity sensors in T-slot", description: {en: "Position sensing", de: "Positionserfassung"}}
+    "+MountingPosition": {value: any, description: {en: "Mounting position", de: "Einbaulage"}}
+  Pneumatics:
+    _idShort: Pneumatics
+    "+OperatingMedium": {value: "compressed air ISO 8573-1:2010 [7:4:4]", description: {en: "Operating medium", de: "Betriebsmedium"}}
+    "+OperatingPressureMin": {unit: "bar", valueType: xs:double, value: 1, description: {en: "Minimum operating pressure", de: "Minimaler Betriebsdruck"}}
+    "+OperatingPressureMax": {unit: "bar", valueType: xs:double, value: 10, description: {en: "Maximum operating pressure", de: "Maximaler Betriebsdruck"}}
+    "+TheoreticalForceAdvance": {unit: "N", valueType: xs:double, value: 482, description: {en: "Theoretical force at 6 bar, advancing stroke", de: "Theoretische Kraft bei 6 bar, Vorhub"}}
+    "+TheoreticalForceRetract": {unit: "N", valueType: xs:double, value: 414, description: {en: "Theoretical force at 6 bar, return stroke", de: "Theoretische Kraft bei 6 bar, Rückhub"}}
+    "+Cushioning": {value: "pneumatic, adjustable at both ends", description: {en: "End-position cushioning", de: "Endlagendämpfung"}}
+    "+CushioningLength": {unit: "mm", valueType: xs:double, value: 17, description: {en: "Cushioning length", de: "Dämpfungslänge"}}
+    "+CushioningEnergyMax": {unit: "J", valueType: xs:double, value: 0.4, description: {en: "Maximum cushioning energy", de: "Maximale Dämpfungsenergie"}}
+    "+PistonSpeedMax": {unit: "m/s", valueType: xs:double, value: 1.0, description: {en: "Maximum piston speed", de: "Maximale Kolbengeschwindigkeit"}}
+    "+Lubrication": {value: "lifetime-lubricated; operation with oil-free air permitted", description: {en: "Lubrication", de: "Schmierung"}}
+  Mechanics:
+    _idShort: Mechanics
+    "+Mass": {unit: "kg", valueType: xs:double, value: 0.59, description: {en: "Mass incl. protective cap", de: "Masse inkl. Schutzkappe"}}
+    "+OverallLengthL8": {unit: "mm", valueType: xs:double, value: 174, description: {en: "Overall length L8 without piston rod (ISO 15552)", de: "Baulänge L8 ohne Kolbenstange (ISO 15552)"}}
+    "+PistonRodExtensionWH": {unit: "mm", valueType: xs:double, value: 26, description: {en: "Piston rod extension WH (ISO 15552)", de: "Kolbenstangenüberstand WH (ISO 15552)"}}
+    "+MountingThread": {value: M6, description: {en: "Mounting thread in end caps", de: "Befestigungsgewinde in den Deckeln"}}
+    "+MountingHolePitchTG": {unit: "mm", valueType: xs:double, value: 32.5, description: {en: "Mounting hole pitch TG (ISO 15552)", de: "Lochabstand TG (ISO 15552)"}}
+  Environment:
+    _idShort: Environment
+    "+AmbientTemperatureMin": {unit: "°C", valueType: xs:double, value: -20, description: {en: "Minimum ambient and medium temperature", de: "Minimale Umgebungs- und Mediumstemperatur"}}
+    "+AmbientTemperatureMax": {unit: "°C", valueType: xs:double, value: 80, description: {en: "Maximum ambient and medium temperature", de: "Maximale Umgebungs- und Mediumstemperatur"}}
+    "+PwisFree": {valueType: xs:boolean, value: true, description: {en: "Free of paint-wetting impairment substances (PWIS)", de: "Frei von lackbenetzungsstörenden Substanzen (LABS)"}}
+  Materials:
+    _idShort: Materials
+    "+MaterialBarrel": {value: "EN AW-6063 T6, anodised", description: {en: "Material of the barrel", de: "Werkstoff des Zylinderrohrs"}}
+    "+MaterialEndCaps": {value: "EN AC-46000, die-cast", description: {en: "Material of the end caps", de: "Werkstoff der Deckel"}}
+    "+MaterialPistonRod": {value: "1.4301 (X5CrNi18-10)", description: {en: "Material of the piston rod", de: "Werkstoff der Kolbenstange"}}
+    "+MaterialSeals": {value: "TPU, NBR", description: {en: "Material of the seals", de: "Werkstoff der Dichtungen"}}
+
+FurtherInformation:
+  TextStatement:
+    - {en: "Theoretical forces are calculated from the piston areas at 6 bar; the effective force is reduced by friction.", de: "Die theoretischen Kräfte sind aus den Kolbenflächen bei 6 bar berechnet; die effektive Kraft ist um die Reibung geringer."}
+    - {en: "No CE marking: ISO 15552 cylinders are not machinery under 2006/42/EC and not pressure equipment in the scope of 2014/68/EU.", de: "Keine CE-Kennzeichnung: Zylinder nach ISO 15552 sind keine Maschinen im Sinne der 2006/42/EG und kein Druckgerät im Anwendungsbereich der 2014/68/EU."}
+  ValidDate: "2025-09-01"
+
+# ContactInformations (IDTA 02002) entries.
+Contacts:
+  Sales:
+    _idShort: Sales
+    $include: common/address_vf_pneumatics.yaml
+    RoleOfContactPerson: "0173-1#07-AAS928#001"
+    Department: {en: Sales pneumatic drives, de: Vertrieb Pneumatikantriebe}
+    Email: {EmailAddress: sales@vf-pneumatics.example}
+  TechnicalSupport:
+    _idShort: TechnicalSupport
+    $include: common/address_vf_pneumatics.yaml
+    RoleOfContactPerson: "0173-1#07-AAS931#001"
+    Department: {en: Technical support and repair service, de: Technischer Support und Reparaturservice}
+    Phone: {TelephoneNumber: {en: "+49 631 000000-250"}, AvailableTime: {en: "Mon-Fri 07:00-17:00 CET", de: "Mo-Fr 07:00-17:00 MEZ"}}
+    Email: {EmailAddress: support@vf-pneumatics.example}
+  Manufacturer:
+    _idShort: Manufacturer
+    $include: common/address_vf_pneumatics.yaml
+    RoleOfContactPerson: "0173-1#07-AAS927#001"
+    Department: {en: "Customer service, product compliance", de: "Kundenservice, Produktkonformität"}
+  TakeBack:
+    _idShort: TakeBack
+    $include: common/address_vf_pneumatics.yaml
+    RoleOfContactPerson: "0173-1#07-AAS929#001"
+    Department: {en: Take-back and recycling, de: Rücknahme und Recycling}
+    Phone: {TelephoneNumber: {en: "+49 631 000000-270"}, AvailableTime: {en: "Mon-Fri 08:00-16:00 CET", de: "Mo-Fr 08:00-16:00 MEZ"}}
+    Email: {EmailAddress: takeback@vf-pneumatics.example}
+    FurtherDetailsOfContact:
+      en: "Free take-back of PC cylinders at end of life (any condition, without packaging). Request a return label by e-mail stating the serial number; dismantling and material sorting per RI-PC3280."
+      de: "Kostenlose Rücknahme von PC-Zylindern am Lebensende (jeder Zustand, ohne Verpackung). Rücksendeetikett per E-Mail unter Angabe der Seriennummer anfordern; Demontage und Materialtrennung nach RI-PC3280."
+
+# HandoverDocumentation (IDTA 02004) documents of the product type (VDI 2770 classes).
+Documents:
+  DS:
+    DocumentIds: [{DocumentDomainId: VFPneumatics, DocumentIdentifier: DS-PC3280, DocumentIsPrimary: true}]
+    DocumentClassifications:
+      - {ClassId: "02-01", ClassName: {en: Technical specification, de: Technische Spezifikation}, ClassificationSystem: VDI2770:2020}
+    DocumentVersions:
+      - Language: [{value: en}]
+        Version: "1.1"
+        Title: {en: PC-32-80-DA-M data sheet, de: Datenblatt PC-32-80-DA-M}
+        Description: {en: "Technical data, materials and conformity information", de: "Technische Daten, Werkstoffe und Konformitätsangaben"}
+        StatusSetDate: "2025-09-01"
+        StatusValue: Released
+        OrganizationShortName: VF Pneumatics
+        OrganizationOfficialName: VF Pneumatics GmbH
+        DigitalFiles: [{value: repo:aas/files/docs/DS-PC3280.pdf}]
+  OM:
+    DocumentIds: [{DocumentDomainId: VFPneumatics, DocumentIdentifier: OM-PC3280, DocumentIsPrimary: true}]
+    DocumentClassifications:
+      - {ClassId: "03-01", ClassName: {en: "Assembly, disassembly", de: "Montage, Demontage"}, ClassificationSystem: VDI2770:2020}
+      - {ClassId: "03-02", ClassName: {en: Operation, de: Bedienung}, ClassificationSystem: VDI2770:2020}
+    DocumentVersions:
+      - Language: [{value: en}]
+        Version: "1.2"
+        Title: {en: PC-32-80-DA-M operating and assembly instructions, de: Betriebs- und Montageanleitung PC-32-80-DA-M}
+        Description: {en: "Intended use, safety, mounting, commissioning, cushioning adjustment and maintenance", de: "Bestimmungsgemäße Verwendung, Sicherheit, Montage, Inbetriebnahme, Dämpfungseinstellung und Wartung"}
+        StatusSetDate: "2025-09-01"
+        StatusValue: Released
+        OrganizationShortName: VF Pneumatics
+        OrganizationOfficialName: VF Pneumatics GmbH
+        DigitalFiles: [{value: repo:aas/files/docs/OM-PC3280.pdf}]
+  RI:
+    DocumentIds: [{DocumentDomainId: VFPneumatics, DocumentIdentifier: RI-PC3280, DocumentIsPrimary: true}]
+    DocumentClassifications:
+      - {ClassId: "03-05", ClassName: {en: Repair, de: Instandsetzung}, ClassificationSystem: VDI2770:2020}
+      - {ClassId: "03-06", ClassName: {en: Spare parts, de: Ersatzteile}, ClassificationSystem: VDI2770:2020}
+    DocumentVersions:
+      - Language: [{value: en}]
+        Version: "1.0"
+        Title: {en: PC-32-80-DA-M repair instructions and spare parts, de: Reparaturanleitung und Ersatzteile PC-32-80-DA-M}
+        Description: {en: "Dismantling, seal replacement, spare parts list and end-of-life sorting", de: "Demontage, Dichtungswechsel, Ersatzteilliste und Sortierung am Lebensende"}
+        StatusSetDate: "2025-09-01"
+        StatusValue: Released
+        OrganizationShortName: VF Pneumatics
+        OrganizationOfficialName: VF Pneumatics GmbH
+        DigitalFiles: [{value: repo:aas/files/docs/RI-PC3280.pdf}]
+  # REACH Art. 33(1) information on substances of very high concern (lead in brass and die-cast alloy).
+  SVHC:
+    DocumentIds: [{DocumentDomainId: VFPneumatics, DocumentIdentifier: SVHC-PC3280, DocumentIsPrimary: true}]
+    DocumentClassifications:
+      - {ClassId: "02-04", ClassName: {en: "Certificates, declarations", de: "Zeugnisse, Zertifikate, Bescheinigungen"}, ClassificationSystem: VDI2770:2020}
+    DocumentVersions:
+      - Language: [{value: en}]
+        Version: "1.0"
+        Title: {en: "PC-32-80-DA-M REACH Article 33 information (SVHC)", de: "Information nach REACH Artikel 33 (SVHC) PC-32-80-DA-M"}
+        Description: {en: "Substances of very high concern above 0.1 % w/w (lead), safe use, SCIP notification and the reason for the missing CE marking", de: "Besonders besorgniserregende Stoffe über 0,1 Massen-% (Blei), sichere Verwendung, SCIP-Meldung und Begründung der fehlenden CE-Kennzeichnung"}
+        StatusSetDate: "2025-09-01"
+        StatusValue: Released
+        OrganizationShortName: VF Pneumatics
+        OrganizationOfficialName: VF Pneumatics GmbH
+        DigitalFiles: [{value: repo:aas/files/docs/SVHC-PC3280.pdf}]
+
+# ProductMaterialComposition (custom) - declaration data and one material per key.
+MaterialDeclaration:
+  TotalMass: 0.59
+  HazardousSubstances:
+    - {HazardousSubstanceClass: "Repr. 1A (H360FD); Lact. (H362)", HazardousSubstanceName: Lead, HazardousSubstanceIdentifier: "CAS 7439-92-1 / EC 231-100-4", HazardousSubstanceConcentration: 3.0, HazardousSubstanceLocation: "Cushioning screws, brass CW614N (5032-1008)", ScipNumber: "6f1c2a9e-4b7d-4e2a-9d35-8c0b7e51a4f3"}
+    - {HazardousSubstanceClass: "Repr. 1A (H360FD); Lact. (H362)", HazardousSubstanceName: Lead, HazardousSubstanceIdentifier: "CAS 7439-92-1 / EC 231-100-4", HazardousSubstanceConcentration: 0.2, HazardousSubstanceLocation: "End caps, die-cast alloy EN AC-46000 (5032-1002, 5032-1003)", ScipNumber: "6f1c2a9e-4b7d-4e2a-9d35-8c0b7e51a4f3"}
+  DeclarationDate: "2025-09-01"
+Materials:
+  Barrel: {MaterialLocation: {ComponentName: Barrel, ComponentId: "5032-1001"}, MaterialIdentifier: "EN AW-6063 T6 (EN 573-3), anodised", MaterialName: "Aluminium wrought alloy AlMg0.7Si", MaterialMass: 0.200, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+  EndCapFront: {MaterialLocation: {ComponentName: Front end cap, ComponentId: "5032-1002"}, MaterialIdentifier: "EN AC-46000 (EN 1706)", MaterialName: "Aluminium casting alloy AlSi9Cu3(Fe)", MaterialMass: 0.095, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+  EndCapRear: {MaterialLocation: {ComponentName: Rear end cap, ComponentId: "5032-1003"}, MaterialIdentifier: "EN AC-46000 (EN 1706)", MaterialName: "Aluminium casting alloy AlSi9Cu3(Fe)", MaterialMass: 0.085, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+  PistonRod: {MaterialLocation: {ComponentName: Piston rod, ComponentId: "5032-1004"}, MaterialIdentifier: "1.4301 (EN 10088-3)", MaterialName: "Stainless steel X5CrNi18-10", MaterialMass: 0.128, IsCriticalRawMaterial: false, RecyclabilityClass: Recyclable}
+  Piston: {MaterialLocation: {ComponentName: Piston, ComponentId: "5032-1005"}, MaterialIdentifier: "EN AW-6082 T6 (EN 573-3)", MaterialName: "Aluminium wrought alloy AlSi1MgMn", MaterialMass: 0.0215, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+  PistonMagnet: {MaterialLocation: {ComponentName: Piston magnet ring, ComponentId: "5032-1005"}, MaterialIdentifier: "NdFeB, sintered, grade N35, Ni-Cu-Ni coated", MaterialName: "Neodymium iron boron permanent magnet (Nd, Pr, Dy)", MaterialMass: 0.0025, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+  SealKitTpu: {MaterialLocation: {ComponentName: "Seal kit (piston, rod and wiper seals)", ComponentId: "5032-1006"}, MaterialIdentifier: "TPU (ISO 18064), 93 Shore A", MaterialName: "Thermoplastic polyurethane", MaterialMass: 0.007, IsCriticalRawMaterial: false, RecyclabilityClass: EnergyRecovery}
+  SealKitNbr: {MaterialLocation: {ComponentName: "Seal kit (cushioning seals, O-rings)", ComponentId: "5032-1006"}, MaterialIdentifier: "NBR (ISO 1629), 70 Shore A", MaterialName: "Acrylonitrile butadiene rubber", MaterialMass: 0.004, IsCriticalRawMaterial: false, RecyclabilityClass: EnergyRecovery}
+  ScrewM5x16: {MaterialLocation: {ComponentName: "End-cap screws M5x16 (8 pcs)", ComponentId: "9001-0516"}, MaterialIdentifier: "Steel property class 8.8 (ISO 898-1), zinc plated (ISO 4042)", MaterialName: "Quenched and tempered boron steel 20MnB4 (1.5525)", MaterialMass: 0.0296, IsCriticalRawMaterial: false, RecyclabilityClass: Recyclable}
+  CushioningScrew: {MaterialLocation: {ComponentName: "Cushioning screws (2 pcs)", ComponentId: "5032-1008"}, MaterialIdentifier: "CW614N (EN 12164)", MaterialName: "Free-cutting brass CuZn39Pb3", MaterialMass: 0.003, IsCriticalRawMaterial: true, RecyclabilityClass: Recyclable}
+  ProtectiveCap: {MaterialLocation: {ComponentName: Protective cap, ComponentId: "5032-1009"}, MaterialIdentifier: "PE-LD (ISO 1043-1), red masterbatch", MaterialName: "Low-density polyethylene", MaterialMass: 0.014, IsCriticalRawMaterial: false, RecyclabilityClass: Recyclable}
+
+# ProductCircularity (custom) - recycled content per component (declared average over the lots) and the
+# remaining circularity information.
+RecycledContent:
+  Barrel: {RecycledMaterial: "Aluminium wrought alloy EN AW-6063 (barrel)", ComponentId: "5032-1001", PreConsumerShare: 25, PostConsumerShare: 15}
+  EndCapFront: {RecycledMaterial: "Aluminium casting alloy EN AC-46000 (front end cap)", ComponentId: "5032-1002", PreConsumerShare: 30, PostConsumerShare: 55}
+  EndCapRear: {RecycledMaterial: "Aluminium casting alloy EN AC-46000 (rear end cap)", ComponentId: "5032-1003", PreConsumerShare: 30, PostConsumerShare: 55}
+  PistonRod: {RecycledMaterial: "Stainless steel 1.4301 (piston rod)", ComponentId: "5032-1004", PreConsumerShare: 25, PostConsumerShare: 40}
+  CushioningScrew: {RecycledMaterial: "Brass CW614N (cushioning screws)", ComponentId: "5032-1008", PreConsumerShare: 40, PostConsumerShare: 50}
+  ScrewM5x16: {RecycledMaterial: "Steel 20MnB4 (screws)", ComponentId: "9001-0516", PreConsumerShare: 10, PostConsumerShare: 25}
+Circularity:
+  RenewableContent: 0
+  Durability:
+    ExpectedLifetimeCycles: 31250000
+    ExpectedLifetimeDistance: 5000
+    ReferenceConditions:
+      en: "B10 value according to ISO 19973-3 at 6 bar, 20 °C, 0.5 m/s, no lateral load, compressed air ISO 8573-1:2010 [7:4:4]; 31.25 million double strokes correspond to 5000 km travel at 80 mm stroke"
+      de: "B10-Wert nach ISO 19973-3 bei 6 bar, 20 °C, 0,5 m/s, ohne Querkraft, Druckluft ISO 8573-1:2010 [7:4:4]; 31,25 Mio. Doppelhübe entsprechen 5000 km Laufleistung bei 80 mm Hub"
+    WarrantyPeriod: P2Y
+  Repairability:
+    RepairabilityScore: 7.5
+    SparePartsAvailability: P10Y
+    RepairInstructions: RI-PC3280
+  SparePartSources:
+    - NameOfSupplier: {en: VF Pneumatics GmbH, de: VF Pneumatics GmbH}
+      SupplierWebAddress: https://virtual-factory.example/vf-pneumatics/spare-parts
+      EmailAddressOfSupplier: support@vf-pneumatics.example
+      Components: "seal kit SK-PC32 (5032-1006), cushioning screw (5032-1008), end-cap screw M5x16 (9001-0516), protective cap (5032-1009), piston assembly (5032-1004, 5032-1005)"
+  DismantlingAndRemovalInformation: [RI-PC3280, OM-PC3280]
+  EndOfLifeInformation:
+    en: "Return to VF Pneumatics GmbH or a metal recycler. Dismantle as described in RI-PC3280 and separate aluminium, stainless steel, steel, brass (contains lead), the NdFeB magnet ring (rare earths, collect separately) and the polymer parts."
+    de: "Rückgabe an die VF Pneumatics GmbH oder einen Metallverwerter. Demontage nach RI-PC3280; Aluminium, Edelstahl, Stahl, Messing (bleihaltig), den NdFeB-Magnetring (Seltene Erden, getrennt sammeln) und die Kunststoffteile trennen."

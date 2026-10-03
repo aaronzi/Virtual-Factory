@@ -5,6 +5,8 @@ extends Fmi3CoSimulation
 enum CellState { IDLE, ASSEMBLING, BLOCKED }
 enum CapVariant { RED, MISSING, WRONG }
 
+const ComponentLots := preload("res://devices/assembly_cell/model/component_lots.gd")
+
 var _rng := RandomNumberGenerator.new()
 var _meter := EnergyMeter.new()
 var _timer := 0.0
@@ -53,6 +55,7 @@ func _release() -> void:
 	_set_var("last_cap_variant", variant)
 	_set_var("last_leak_rate", absf(_rng.randfn(0.4, 0.15)))
 	_set_var("last_stroke_time", _rng.randfn(0.32, 0.01))
+	_set_var("last_lots", ComponentLots.lots_for(serial_no))
 
 
 func _update_power(state: int, takt: float, h: float) -> void:

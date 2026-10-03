@@ -1,14 +1,16 @@
 {
-  "_doc": "IT endpoints used by the in-world UI (AAS inspector, operator terminal). Override with --vf-aas-url / --vf-bpmn-url.",
+  "_doc": "IT endpoints used by the in-world UI (AAS inspector, operator terminal) and the menu link to the Grafana dashboard. dpp_url: BaSyx DPP API (inspector action 'open passport' of workpieces). Override with --vf-aas-url / --vf-dpp-url / --vf-bpmn-url / --vf-grafana-url.",
   "aas_url": "http://localhost:8091",
   "aas_events_topic": "vf/basyx/#",
   "id_base": "https://virtual-factory.example/ids",
   "bpmn_url": "http://localhost:8092/engine-rest",
+  "dpp_url": "http://localhost:8093",
   "task_poll_s": 2.0,
   "terminal_position": [
     2.25,
     0.0,
     -1.05
   ],
-  "terminal_yaw_deg": -10.0
+  "terminal_yaw_deg": -10.0,
+  "grafana_url": "http://localhost:3002/d/vf-line01-live/line01-live"
 }

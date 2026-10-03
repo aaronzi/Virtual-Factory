@@ -51,6 +51,8 @@ sequenceDiagram
 The historian stores ~210 samples/s as ~90 rows/s in 2 batched write requests/s (0.5 s batches); the TimeSeries
 submodel is static, so recording causes no AAS traffic. The MES reads the series of a part (cell cycle, release →
 sort) with ~20 small SQL queries when the part is packed.
+Grafana (ADR-0022, port 3002) queries the same tables over Flight SQL (gRPC on port 8181): about 35 SQL
+queries per refresh of *LINE01 live* (every 5 s per open browser), each limited to the time range.
 
 ## 2. Life cycle of one workpiece (UNS events → BPMN → AAS)
 
@@ -61,23 +63,25 @@ sequenceDiagram
   participant E as Operaton
   participant W as MES worker
   participant A as BaSyx
-  G->>M: event part_released {serial, leak_rate, stroke_time}
+  G->>M: event part_released {serial, leak_rate, stroke_time, lots}
   M->>E: correlate PartReleased (businessKey = serial) -> new WorkpieceLifecycle
   E->>W: external task workpiece-create
-  W->>A: PUT shell + Nameplate, DppMetadata, ExecutedProcesses (OP10-OP70), AssetLocation
+  W->>A: PUT shell + Nameplate, DppMetadata, ExecutedProcesses (OP10-OP70), AssetLocation,
+  W->>A: ContactInformations, HierarchicalStructures (batches), MaterialComposition, Circularity
   G->>M: event part_inspected {serial, result, r,g,b, delta_e}   (≈ 11 s later)
   M->>E: correlate PartInspected (retried until the instance waits)
   E->>W: workpiece-record-inspection
-  W->>A: PUT ExecutedProcesses (+OP75, OP80), QualityInspection, MeasurementValue x2
+  W->>A: PUT ExecutedProcesses (+OP75, OP80), QualityInspection, MeasurementValue x2, TechnicalData
   G->>M: event part_sorted {serial, container, slot}             (≈ 8 s later)
   M->>E: correlate PartSorted
   E->>W: workpiece-record-packing
-  W->>A: PUT ExecutedProcesses (+OP90, Completed), CarbonFootprint, AssetLocation; KLT contents
+  W->>A: PUT ExecutedProcesses (+OP90, Completed), CarbonFootprint, HandoverDocumentation, AssetLocation
+  W->>A: PUT attachments (certificate PDF, type documents); KLT contents
   E->>E: gateway correctContainer? -> end / user task "Check mis-sorted part"
 ```
 
-Measured: every part of a 4-minute run ended in `End_Completed`, no incidents; a workpiece AAS has 8 submodels
-when packed. The instance PCF is production-based (aas-model.md §6a). Verification run (240 s real time,
+Measured: every part of a 4-minute run ended in `End_Completed`, no incidents; a workpiece AAS has 14 submodels
+when packed (item-level passport, ADR-0021; readable via the DPP API on port 8093). The instance PCF is production-based (aas-model.md §6a). Verification run (240 s real time,
 AC01 missing-cap rate 0.25 → 7 of 14 packed parts rejected, line held 45 s via LineControl): a normally produced
 part gets 4.7 Wh electricity + 0.6 Wh compressed air → 0.0019 kg CO₂e (A3 without losses); the part that waited
 on the held line (residence 69 s instead of ~24 s) 6.1 Wh (+29 %), the part assembled during the hold (cell cycle

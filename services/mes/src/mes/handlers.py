@@ -21,18 +21,28 @@ log = logging.getLogger("mes.handlers")
 PACKML = {2: "STOPPED", 4: "IDLE", 6: "EXECUTE", 9: "ABORTED", 17: "COMPLETE", 11: "HELD", 5: "SUSPENDED"}
 
 
+class ActiveOrder:
+    """Production order running on the line (set by line-start, cleared by order-close); workpieces released
+    meanwhile keep its number (process variable orderId, shown on the inspection certificate)."""
+
+    def __init__(self):
+        self.order_id = ""
+
+
 class WorkpieceHandlers:
     def __init__(self, store: WorkpieceStore, specs: WorkpieceSpec, limits: Limits, klt: KltContents,
-                 footprint):
+                 footprint, order: ActiveOrder | None = None):
         self.store, self.specs, self.limits, self.klt, self.footprint = store, specs, limits, klt, footprint
+        self.order = order or ActiveOrder()
 
     def topics(self) -> dict:
         return {"workpiece-create": self.create, "workpiece-record-inspection": self.record_inspection,
                 "workpiece-record-packing": self.record_packing, "workpiece-mark-lost": self.mark_lost}
 
     def create(self, v: dict) -> dict:
-        self.store.publish(self.specs.build(v, "released"))
-        return {}
+        order_id = self.order.order_id
+        self.store.publish(self.specs.build({**v, "orderId": order_id}, "released"))
+        return {"orderId": order_id}
 
     def record_inspection(self, v: dict) -> dict:
         verdict = evaluate(v, self.limits)
@@ -43,9 +53,10 @@ class WorkpieceHandlers:
     def record_packing(self, v: dict) -> dict:
         verdict = evaluate(v, self.limits)
         footprint = self.footprint(v)  # production-based PCF (carbon.FootprintCalculator)
-        self.store.publish(self.specs.build(v, "packed", verdict, footprint))
+        spec = self.specs.build(v, "packed", verdict, footprint)
+        self.store.publish(spec, self.specs.certificate(spec, v, verdict))
         container = int(v["container"])
-        self.klt.add(container, v["serial"], int(v["slot"]))
+        self.klt.add(container, v["serial"], int(v["slot"]), spec.get("globalAssetId"))
         return {"correctContainer": container == verdict.planned_container, "pcf": round(footprint.total, 4)}
 
     def mark_lost(self, v: dict) -> dict:
@@ -55,8 +66,10 @@ class WorkpieceHandlers:
 
 
 class OrderHandlers:
-    def __init__(self, aas: BasyxClient, line: str = "LINE01", controller: str = "PLC01"):
+    def __init__(self, aas: BasyxClient, line: str = "LINE01", controller: str = "PLC01",
+                 order: ActiveOrder | None = None):
         self.aas = aas
+        self.order = order or ActiveOrder()
         self.line_control = ids.submodel_id(line, "LineControl", "1")
         self.operational_data = ids.submodel_id(controller, "OperationalData", "1")
 
@@ -77,6 +90,7 @@ class OrderHandlers:
             # auto_start may start it itself
             state = self._wait_state("EXECUTE", 2.0) or self._command("Start")
         good, rejects = self._counters()
+        self.order.order_id = str(v.get("orderId") or "")
         log.info("order %s started: line %s, baseline %d/%d", v.get("orderId"), state, good, rejects)
         return {"goodAtStart": good, "rejectsAtStart": rejects, "checkGood": good, "checkRejects": rejects,
                 "produced": 0, "rejects": 0, "orderDone": False, "rejectAlarm": False}
@@ -98,6 +112,7 @@ class OrderHandlers:
         return {"lineState": self._command(str(v["packmlCommand"]))}
 
     def order_close(self, v: dict) -> dict:
+        self.order.order_id = ""
         self._invoke("SetAutoExchange", Enabled=True)
         log.info("order %s closed: %s good, %s rejects",
                  v.get("orderId"), v.get("produced"), v.get("rejects"))

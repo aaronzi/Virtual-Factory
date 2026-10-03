@@ -2,8 +2,8 @@ class_name TrainingUi
 extends Node
 ## Composition of the in-world training UI (part of the composition root): pointer routing, asset picking,
 ## AAS inspector with BaSyx events, and the backend clients. Endpoints: res://config/backend.json,
-## `--vf-aas-url=`, `--vf-bpmn-url=`, `--vf-aas-events=<broker url|off>` (default: broker of uns.json),
-## `--vf-inspect=<AAS tag>` opens the inspector at start (screenshots, demos);
+## `--vf-aas-url=`, `--vf-bpmn-url=`, `--vf-dpp-url=`, `--vf-aas-events=<broker url|off>` (default: broker of
+## uns.json), `--vf-inspect=<AAS tag>` opens the inspector at start (screenshots, demos);
 ## `--vf-estop=1` presses the E-stop.
 
 const BACKEND := "res://config/backend.json"
@@ -128,8 +128,11 @@ func _setup_tasks() -> void:
 	tasks.tasks_changed.connect(inspector.refresh_actions)
 
 
-## Context actions of the inspector: KLT stations offer the exchange (BPMN task or direct command).
+## Context actions of the inspector: KLT stations offer the exchange (BPMN task or direct command),
+## workpieces open their item-level passport in the BaSyx DPP API (browser).
 func _actions_for(tag: String) -> Array:
+	if tag.begins_with("WP_"):
+		return [{"id": "open_passport", "label": tr("INSPECTOR_OPEN_PASSPORT")}]
 	var container: int = {"KLTA01": 1, "KLTB01": 2}.get(tag, 0)
 	if container == 0:
 		return []
@@ -139,12 +142,21 @@ func _actions_for(tag: String) -> Array:
 
 
 func _on_action(tag: String, action_id: String) -> void:
+	if action_id == "open_passport":
+		OS.shell_open(passport_url(tag))
+		return
 	var container: int = {"KLTA01": 1, "KLTB01": 2}.get(tag, 0)
 	if action_id == "complete_exchange" and tasks.exchange_tasks.has(container):
 		await tasks.complete(tasks.exchange_tasks[container])
 	elif action_id == "exchange":
 		commands.write("PLC01.klt_exchange_command", container, true)
 	inspector.refresh_actions()
+
+
+## DPP API URL of a workpiece passport: the DPP id is the workpiece AAS id (ADR-0021), percent-encoded once.
+func passport_url(tag: String) -> String:
+	var base: String = DevTools.get_arg("vf-dpp-url", config.get("dpp_url", "http://localhost:8093"))
+	return "%s/v1/dpps/%s" % [base.rstrip("/"), aas.aas_id(tag).uri_encode()]
 
 
 func _start_feed() -> void:

@@ -7,8 +7,8 @@ description:
     Circularity information of a (non-battery) product for a Digital Product Passport (EU ESPR): recycled and
     renewable content, durability, repairability and spare parts, dismantling and end-of-life information.
     Generalisation of the IDTA Digital Battery Passport "Circularity" template
-    (urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0): battery safety measures removed, durability and
-    repairability added. Virtual Factory custom template.
+    (urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0): battery safety measures removed, durability,
+    repairability and component/batch references of the recycled content added. Virtual Factory custom template.
   de: >-
     Informationen zur Kreislauffähigkeit eines Produkts (kein Batterieprodukt) für einen digitalen Produktpass
     (EU-ESPR): Rezyklat- und erneuerbarer Anteil, Haltbarkeit, Reparierbarkeit und Ersatzteile, Demontage- und
@@ -26,6 +26,8 @@ elements:
         definition: {en: "Recycled content of one material.", de: "Rezyklatanteil eines Materials."}
         elements:
           - {idShort: RecycledMaterial, preferredName: {en: "recycled material", de: "rezykliertes Material"}, definition: {en: "Material the shares refer to.", de: "Material, auf das sich die Anteile beziehen."}}
+          - {idShort: ComponentId, cardinality: ZeroToOne, preferredName: {en: "component identifier", de: "Bauteilkennung"}, definition: {en: "Article number of the component made of the material.", de: "Artikelnummer des Bauteils aus diesem Material."}}
+          - {idShort: BatchId, cardinality: ZeroToOne, preferredName: {en: "batch identifier", de: "Chargenkennung"}, definition: {en: "Lot or batch of the component the shares were declared for (item-level passport; supplier material certificate of the lot).", de: "Los bzw. Charge des Bauteils, für die die Anteile deklariert sind (Produktpass auf Einzelteilebene; Werkstoffzeugnis des Lieferanten für das Los)."}}
           - {idShort: PreConsumerShare, valueType: xs:double, unit: "%", cardinality: ZeroToOne, preferredName: {en: "pre-consumer share", de: "Pre-Consumer-Anteil"}, definition: {en: "Share of pre-consumer recycled material (w/w).", de: "Anteil Pre-Consumer-Rezyklat (Massenanteil)."}}
           - {idShort: PostConsumerShare, valueType: xs:double, unit: "%", cardinality: ZeroToOne, preferredName: {en: "post-consumer share", de: "Post-Consumer-Anteil"}, definition: {en: "Share of post-consumer recycled material (w/w).", de: "Anteil Post-Consumer-Rezyklat (Massenanteil)."}}
   - idShort: RenewableContent

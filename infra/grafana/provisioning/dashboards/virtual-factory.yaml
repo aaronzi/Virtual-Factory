@@ -1,0 +1,18 @@
+# Dashboards of the Virtual Factory (ADR-0022), folder "Virtual Factory". The JSON files in
+# infra/grafana/dashboards are the source of truth. allowUiUpdates: logged-in editors may save changes in the
+# UI; they persist in the volume vf_grafana-data until the JSON file in the repo changes (then the file wins
+# again). Make a change permanent by exporting the dashboard JSON into infra/grafana/dashboards/.
+apiVersion: 1
+
+providers:
+  - name: virtual-factory
+    orgId: 1
+    folder: Virtual Factory
+    folderUid: vf
+    type: file
+    disableDeletion: true
+    allowUiUpdates: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/dashboards
+      foldersFromFilesStructure: false

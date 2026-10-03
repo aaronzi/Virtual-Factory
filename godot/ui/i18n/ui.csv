@@ -58,3 +58,5 @@ SEQ_INSPECTING,inspecting,prüfen
 SEQ_WAIT_ROBOT,wait robot,warte auf Roboter
 SEQ_PICKING,picking,greifen
 HOVER_HINT,"%s · click for AAS","%s · Klick für AAS"
+MENU_DASHBOARD,Open dashboard (Grafana),Dashboard öffnen (Grafana)
+INSPECTOR_OPEN_PASSPORT,Open passport (DPP API),Produktpass öffnen (DPP-API)

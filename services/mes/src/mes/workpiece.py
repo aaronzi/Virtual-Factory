@@ -1,10 +1,14 @@
 """Workpiece instance AAS from the blueprint (aas/data/blueprints/workpiece_instance.yaml) and the data
-collected along the process. The AAS grows with the life cycle (stages):
+collected along the process; it is the item-level digital product passport of the part (ADR-0021,
+passport.py). The AAS grows with the life cycle (stages):
 
-    released   nameplate, DPP metadata, executed processes OP10-OP70 (assembly cell report), location
-    inspected  + OP75/OP80, QualityInspection, measurement values
-    packed     + OP90, run completed, carbon footprint (actual), location in the KLT
-    lost       run aborted (part did not reach the next station)
+    released   nameplate, DPP metadata, executed processes OP10-OP70 (assembly cell report incl. component
+               lots), contacts, as-built BoM, material composition, circularity (recycled content per lot),
+               location
+    inspected  + OP75/OP80, QualityInspection, measurement values, as-built technical data
+    packed     + OP90, run completed, carbon footprint (actual), handover documents (good parts: inspection
+               certificate), location in the KLT
+    lost       run aborted (part did not reach the next station), passport inactive
 """
 
 from __future__ import annotations
@@ -14,14 +18,19 @@ from datetime import datetime, timedelta, timezone
 
 from provisioner.build import REPO, load_yaml
 
-from . import cell_data
+from . import cell_data, passport
 from .carbon import PartFootprint
+from .lots import lots_for
+from .passport import values_of as _submodel
 from .quality import Verdict
 
 BLUEPRINT_SERIAL = "PC3280-2026-000123"
 BLUEPRINT_RELEASE = "2026-10-01T06:24:48.090Z"  # end of OP70 in the blueprint = release from the cell
 CELL_OPS = ["OP10", "OP20", "OP30", "OP40", "OP50", "OP60", "OP70"]
 STAGES = ("released", "inspected", "packed", "lost")
+RELEASED = {"Nameplate", "DppMetadata", "ExecutedProcesses", "ContactInformations", "HierarchicalStructures",
+            "ProductMaterialComposition", "ProductCircularity"}
+INSPECTED = {"QualityInspection", "MeasurementValue_LeakRate", "MeasurementValue_CapColour", "TechnicalData"}
 REJECT_NOTE = {"en": "Footprint of this rejected unit (production loss, A1-A3): components and energy. It "
                      "is allocated to the good units of the session (their ProductionLossCO2eq) - do not "
                      "count it again.",
@@ -43,6 +52,7 @@ class WorkpieceSpec:
 
     def __init__(self, blueprint: dict, positions: dict[str, list[float]], thumbnail: dict | str):
         self.blueprint, self.positions, self.thumbnail = blueprint, positions, thumbnail
+        self.base_lots = passport.lots_of(blueprint)  # fallback lots for cells that report none
 
     def build(self, v: dict, stage: str, verdict: Verdict | None = None,
               pcf: PartFootprint | float | None = None) -> dict:
@@ -51,21 +61,32 @@ class WorkpieceSpec:
         spec["thumbnail"] = self.thumbnail
         released = _parse(v["releasedAt"])
         spec["specificAssetIds"]["serialNumber"] = serial
+        lots = lots_for(v, self.base_lots)
         self._nameplate(spec, serial, released)
-        self._dpp(spec, serial, v)
-        self._processes(spec, v, stage, verdict)
+        self._processes(spec, v, stage, verdict, lots)
         self._location(spec, v, stage)
-        keep = {"Nameplate", "DppMetadata", "ExecutedProcesses"}
+        passport.apply_lots(spec, lots)
+        keep = set(RELEASED)
         if stage in ("inspected", "packed") or (stage == "lost" and v.get("inspectedAt")):
-            keep |= {"QualityInspection", "MeasurementValue_LeakRate", "MeasurementValue_CapColour"}
+            keep |= INSPECTED
             self._quality(spec, v, verdict)
+            passport.apply_as_built(spec, v, verdict)
+        if stage == "packed":
+            keep.add("HandoverDocumentation")
+            passport.apply_handover(spec, v, bool(verdict and verdict.passed))
         if stage == "packed" and pcf is not None:
             keep.add("CarbonFootprint")
             self._carbon_footprint(spec, v, pcf)
         spec["submodels"] = [s for s in spec["submodels"]
                              if s.get("idShort", s["template"].split("-")[0]) in keep]
+        self._dpp(spec, v, stage, verdict, keep)
         spec["description"] = _description(serial, released, stage, verdict, v)
         return spec
+
+    @staticmethod
+    def certificate(spec: dict, v: dict, verdict: Verdict) -> dict[str, bytes]:
+        """Generated files of a packed part: {file path: PDF} of the inspection certificate (good parts)."""
+        return passport.certificate(spec, v, verdict)
 
     def _nameplate(self, spec: dict, serial: str, released: datetime) -> None:
         values = _submodel(spec, "Nameplate")
@@ -73,19 +94,22 @@ class WorkpieceSpec:
         values["DateOfManufacture"] = released.date().isoformat()
         values["YearOfConstruction"] = str(released.year)
 
-    def _dpp(self, spec: dict, serial: str, v: dict) -> None:
-        values = _submodel(spec, "DppMetadata")
-        values["lastUpdate"] = _iso(_parse(v.get("sortedAt") or v.get("inspectedAt") or v["releasedAt"]))
-        values["dppStatus"] = "Active"
+    @staticmethod
+    def _dpp(spec: dict, v: dict, stage: str, verdict: Verdict | None, keep: set[str]) -> None:
+        """Content list of the stage; rejects and lost parts are never placed on the market: Inactive."""
+        rejected = stage == "lost" or (stage == "packed" and not (verdict and verdict.passed))
+        last = _iso(_parse(v.get("sortedAt") or v.get("inspectedAt") or v["releasedAt"]))
+        passport.apply_metadata(spec, keep, "Inactive" if rejected else "Active", last)
 
-    def _processes(self, spec: dict, v: dict, stage: str, verdict: Verdict | None) -> None:
+    def _processes(self, spec: dict, v: dict, stage: str, verdict: Verdict | None,
+                   lots: dict[str, str]) -> None:
         run = _submodel(spec, "ExecutedProcesses")["Run"][0]
         processes = {p["_idShort"]: p for p in run["Process"]}
         shift = _parse(v["releasedAt"]) - _parse(BLUEPRINT_RELEASE)
         rng = cell_data.rng(v["serial"])
         for op in CELL_OPS:
             _shift_times(processes[op], shift)
-            cell_data.apply(processes[op], op, v, rng)
+            cell_data.apply(processes[op], op, v, rng, lots)
         order = list(CELL_OPS)
         if v.get("inspectedAt"):
             inspected = _parse(v["inspectedAt"])
@@ -131,10 +155,6 @@ class WorkpieceSpec:
         if fp.rejected:
             total["_description"] = REJECT_NOTE
 
-
-def _submodel(spec: dict, id_short: str) -> dict:
-    entry = next(s for s in spec["submodels"] if s.get("idShort", s["template"].split("-")[0]) == id_short)
-    return entry["values"]
 
 
 def _replace_serial(node, serial: str):

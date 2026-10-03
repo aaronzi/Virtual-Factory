@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-from mes import cell_data
+from mes import lots
 from mes.events import EventRouter, message_for
 from mes.handlers import OrderHandlers
 from mes.kpi import KpiTracker
@@ -46,10 +46,11 @@ def _build(ctx, type_spec, spec):
 
 
 @pytest.mark.parametrize("stage, extra, expected", [
-    ("released", {}, {"Nameplate", "DppMetadata", "ExecutedProcesses", "AssetLocation"}),
+    ("released", {}, {"Nameplate", "DppMetadata", "ExecutedProcesses", "AssetLocation", "ContactInformations",
+                      "HierarchicalStructures", "ProductMaterialComposition", "ProductCircularity"}),
     ("inspected", INSPECTED,
-     {"QualityInspection", "MeasurementValue_CapColour", "MeasurementValue_LeakRate"}),
-    ("packed", {**INSPECTED, **SORTED}, {"CarbonFootprint", "QualityInspection"}),
+     {"QualityInspection", "MeasurementValue_CapColour", "MeasurementValue_LeakRate", "TechnicalData"}),
+    ("packed", {**INSPECTED, **SORTED}, {"CarbonFootprint", "QualityInspection", "HandoverDocumentation"}),
     ("lost", {}, {"ExecutedProcesses"}),
 ])
 def test_workpiece_stages_build_valid_aas(ctx, specs, type_spec, stage, extra, expected):
@@ -85,16 +86,17 @@ def test_verdict_combines_cell_tests_and_colour():
     assert not evaluate({**v, "deltaE": 40}, Limits()).colour_ok
 
 
-def test_lots_change_in_blocks():
-    assert cell_data._lot("L2609-0412", 2) == "L2609-0414"
-    assert cell_data._lot("DGP-260915-F", 1) == "DGP-260916-F"
-    assert cell_data.serial_number(SERIAL) == 777
+def test_fallback_lots_change_in_blocks():
+    assert lots.shift("L2609-0412", 2) == "L2609-0414"
+    assert lots.shift("DGP-260915-F", 1) == "DGP-260916-F"
+    assert lots.fallback(SERIAL, {"Barrel": "L2609-0419"}) == {"Barrel": "L2609-0422"}  # 777 // 250 = 3
 
 
 def test_event_messages():
     name, key, variables, all_ = message_for({"event": "part_released", "serial": SERIAL, "ts": "t",
                                               "leak_rate": 0.4, "stroke_time": 0.32, "cap_variant": 0})
     assert (name, key, all_) == ("PartReleased", SERIAL, False) and "capVariant" not in variables
+    assert variables["lots"] == ""
     assert message_for({"event": "container_full", "device": "KLTB01"})[2] == {"container": 2}
     assert message_for({"event": "part_inspected", "serial": ""}) is None
 

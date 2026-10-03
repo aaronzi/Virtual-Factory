@@ -6,11 +6,13 @@
 # Host ports:
 #   8091  BaSyx Go AAS Environment (repos, registries, discovery, concept descriptions)
 #   3001  BaSyx AAS Web UI
+#   8093  BaSyx Go DPP API      – digital product passports read from the AAS database (ADR-0021)
 #   1883  MQTT (TCP)            – edge services, MQTT Explorer
 #   9001  MQTT over WebSocket   – Godot shop-floor simulation
 #   8092  Operaton BPMN engine  – Cockpit / Tasklist (/operaton/app/), REST (/engine-rest), local user demo/demo
 #   8095  ops gateway           – AAS operation delegation target (health: /health)
 #   1880  Node-RED              – optional learner sandbox, only with `--profile sandbox` (no auth)
+#   3002  Grafana               – dashboard "LINE01 live" on the historian; anonymous read-only, login to edit
 #
 # The database lives on tmpfs: every `up` starts with a fresh DB. The one-shot `provisioner` service builds the
 # static AAS into ./basyx/preload, which BaSyx imports at startup (workpiece instances are ephemeral, ADR-0004).
@@ -121,6 +123,39 @@ services:
       ENDPOINT_CONFIG_AVAILABLE: "false"
     restart: unless-stopped
 
+  dpp-api:
+    # BaSyx Go Digital Product Passport API (ADR-0021) on the SAME database as aas-env: serves the item-level
+    # passports the MES writes as workpiece AAS (DPP id = AAS id, product id = globalAssetId = GS1 Digital Link)
+    # and the model-level passport of PC3280_TYPE. Read-only use; managed attachments (certificates, documents)
+    # are linked to the AAS environment's attachment endpoints via GENERAL_EXTERNALURL. History endpoints are
+    # not configured (aas-env runs without BaSyx history).
+    image: eclipsebasyx/dppapi-go:1.1.0
+    command: ["/app/dppapiservice"]
+    ports:
+      - "8093:8093"
+    environment:
+      <<: *postgres-env
+      SERVER_PORT: "8093"
+      CORS_ALLOWEDORIGINS: "*"
+      CORS_ALLOWEDHEADERS: "*"
+      CORS_ALLOWCREDENTIALS: "true"
+      CORS_ALLOWEDMETHODS: GET,POST,PUT,PATCH,DELETE,OPTIONS
+      ABAC_ENABLED: "false"
+      GENERAL_AASREGISTRYINTEGRATION: "true"
+      GENERAL_SUBMODELREGISTRYINTEGRATION: "true"
+      GENERAL_EXTERNALURL: http://localhost:8091
+      LOGGING_LEVEL: info
+    healthcheck:
+      test: ["CMD", "/bin/healthprobe"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    depends_on:
+      basyx-config:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
   mqtt:
     image: eclipse-mosquitto:2
     ports:
@@ -155,6 +190,31 @@ services:
     depends_on:
       mqtt:
         condition: service_started
+      influxdb3:
+        condition: service_started
+    restart: unless-stopped
+
+  grafana:
+    # Live dashboards on the historian (ADR-0022): data source InfluxDB 3 Core (SQL via Flight SQL) and the
+    # dashboard "LINE01 live" are provisioned from ./grafana (read-only). Anonymous visitors are viewers; log in
+    # as admin / editor (local default passwords, open issue O34) to edit. Saved edits and users persist in the
+    # volume grafana-data; reset: `docker compose -f infra/docker-compose.yml rm -sf grafana &&
+    # docker volume rm vf_grafana-data`.
+    image: grafana/grafana:13.2.3
+    entrypoint: ["/bin/sh", "/etc/grafana/vf-entrypoint.sh"]
+    ports:
+      - "3002:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: virtualfactory   # local default (O34), applied when the volume is created
+      VF_GRAFANA_EDITOR_PASSWORD: virtualfactory
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - ./grafana/entrypoint.sh:/etc/grafana/vf-entrypoint.sh:ro
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/dashboards:/etc/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
       influxdb3:
         condition: service_started
     restart: unless-stopped
@@ -248,3 +308,4 @@ services:
 
 volumes:
   nodered-data:   # Node-RED user dir of the sandbox (flows edited in the editor, installed palette nodes)
+  grafana-data:   # Grafana database (users, dashboard edits saved in the UI)

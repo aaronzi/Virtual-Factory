@@ -54,15 +54,19 @@ submodels:
               entityType: SelfManagedEntity
               globalAssetId: ${asset:GR01}
             - _idShort: Pedestal
+              _displayName: {en: "Robot pedestal 600 mm", de: "Robotersockel 600 mm"}
               _description: {en: "Steel pedestal 600 mm with floor anchors (VF Automation Systems, no own AAS)", de: "Stahlsockel 600 mm mit Bodenankern (VF Automation Systems, ohne eigene VWS)"}
               entityType: CoManagedEntity
             - _idShort: ControlBox
+              _displayName: {en: "UR e-Series control box", de: "UR-e-Series-Steuerschrank"}
               _description: {en: "UR e-Series control box with safety controller (supplied with the robot)", de: "UR-e-Series-Steuerschrank mit Sicherheitssteuerung (Lieferumfang des Roboters)"}
               entityType: CoManagedEntity
             - _idShort: TeachPendant
+              _displayName: {en: "Teach pendant", de: "Programmierhandgerät"}
               _description: {en: "Teach pendant with emergency stop (supplied with the robot)", de: "Programmierhandgerät mit Not-Halt (Lieferumfang des Roboters)"}
               entityType: CoManagedEntity
             - _idShort: SafetyFence
+              _displayName: {en: "Safety fence with interlocked door", de: "Schutzzaun mit verriegelter Tür"}
               _description: {en: "Safety fence with interlocked door (protective stop input)", de: "Schutzzaun mit verriegelter Tür (Schutzstopp-Eingang)"}
               entityType: CoManagedEntity
           HasPart:

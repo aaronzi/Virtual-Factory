@@ -2,10 +2,13 @@ class_name MenuController
 extends Node
 ## Executes the desktop menu: language, quality preset, simulation speed (physics ticks scale with time,
 ## so the co-simulation step stays 1/60 s), training scenarios (factory.scenarios), demo tour and data-flow
-## view. Dev args: --vf-lang=de, --vf-quality=0..2, --vf-tour (start the demo tour), --vf-dataflow.
+## view, and opens the Grafana dashboard in the browser (backend.json `grafana_url`, ADR-0022).
+## Dev args: --vf-lang=de, --vf-quality=0..2, --vf-tour (start the demo tour), --vf-dataflow,
+## --vf-grafana-url=<url>.
 
 const TOUR := "res://config/tours/default.json"
 const BASE_TICKS := 60
+const GRAFANA_URL := "http://localhost:3002/d/vf-line01-live/line01-live"
 
 var ui: TrainingUi
 var menu: MainMenu
@@ -24,6 +27,8 @@ func setup(p_ui: TrainingUi) -> void:
 	menu.scenario_stop.connect(_stop_scenario)
 	menu.tour_toggled.connect(_toggle_tour)
 	menu.dataflow_toggled.connect(func(on: bool) -> void: ui.set_dataflow(on))
+	menu.dashboard_requested.connect(func() -> void:
+		OS.shell_open(DevTools.get_arg("vf-grafana-url", dashboard_url(ui.config))))
 	tour = CameraTour.new()
 	tour.rig = ui.rig
 	tour.load_tour(TOUR)
@@ -58,6 +63,11 @@ func _toggle_tour(on: bool) -> void:
 		tour.start()
 	else:
 		tour.stop()
+
+
+## Grafana dashboard "LINE01 live" from backend.json `grafana_url` (default: local stack, port 3002).
+static func dashboard_url(config: Dictionary) -> String:
+	return String(config.get("grafana_url", GRAFANA_URL))
 
 
 func set_language(locale: String) -> void:

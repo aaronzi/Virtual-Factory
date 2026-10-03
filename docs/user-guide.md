@@ -10,11 +10,15 @@ docker compose -f infra/docker-compose.yml up -d
 ```
 - AAS Web UI: http://localhost:3001
 - AAS API (BaSyx Go AAS Environment): http://localhost:8091 (Swagger UI at `/swagger`)
+- Digital product passports (BaSyx Go DPP API): http://localhost:8093 (Swagger UI at `/swagger`) - the item-level
+  passport of every produced part and the model passport of the product type, see *Product passports* below
 - MQTT: `localhost:1883` (TCP), `ws://localhost:9001` (WebSocket); BaSyx change events on `vf/basyx/#`
 - BPMN engine (Operaton): Cockpit http://localhost:8092/operaton/app/cockpit/, Tasklist
   http://localhost:8092/operaton/app/tasklist/ (local user `demo` / `demo`), REST `/engine-rest`
 - Historian (InfluxDB 3 Core): http://localhost:8181, database `vf`, no token - every UNS value of the session,
   one table per device (`cv01`, `rb01`, …); see *Query the history* below
+- Dashboards (Grafana): http://localhost:3002 - live dashboard *LINE01 live*, read-only without login;
+  log in as `admin` or `editor` (password `virtualfactory`) to edit, see *Dashboards (Grafana)* below
 - Services: `bridge` (UNS → AAS), `historian` (UNS → InfluxDB), `mes` (workpiece AAS, BPMN workers),
   `ops-gateway` (AAS operations → PLC),
   see [interfaces/services.md](interfaces/services.md). Logs: `docker compose -f infra/docker-compose.yml logs -f mes`
@@ -89,12 +93,63 @@ Rows are sparse: a column only has a value in the rows where it changed (power, 
 state changes - use the `energy` counter or the step function for averages). The workpiece carbon footprint uses the
 same data (energy of the part's time on the line, see [interfaces/aas-model.md](interfaces/aas-model.md) §6a).
 
+## Dashboards (Grafana)
+Grafana at http://localhost:3002 opens the dashboard **LINE01 live** (folder *Virtual Factory*) with the values of
+the running process from the historian: refreshed every 5 s, last 15 minutes by default. The selector *Session*
+shows `latest` (follows the newest Godot start) or an older session. Links at the top open the AAS Web UI and
+Operaton Cockpit/Tasklist.
+
+![LINE01 live](screenshots/m8-grafana.png)
+
+| Panel | Historian data (table.column) |
+|---|---|
+| State, PackML state (timeline) | `plc01.packml_state` (ISA-TR88 state names) |
+| Parts, Reject rate, Parts per minute, Reject rate (cumulative), Throughput | `plc01.parts_total`, `parts_ok`, `parts_nok` (throughput = inspected parts per hour in the time range) |
+| OEE (availability, performance, quality) | PackML state durations of the session (`plc01.packml_state`), counters; ideal cycle = AC01 takt 12 s - same formula as the HMI |
+| Alarms | `plc01.alarm_code` (100 E-stop, 101 CV01 drive, 201/202 RB01, 301/302 light barrier stuck, 401 infeed timeout) |
+| Stack light SL01 | `sl01.red_on`, `amber_on`, `green_on`, `buzzer_on` |
+| Line power, Power per device (stacked), Energy per device, Line energy | `power` (latest) and the `energy` counters (kWh) of AC01, RB01, CV01, QS01, LB01, LB02, SL01; mean power per 10 s from the counter |
+| Compressed air, Compressed air flow AC01 | `ac01.air_consumption` (Nl) → Nl/min |
+| QS01 colour distance ΔE*ab per part | `qs01.delta_e`, limit 25 (red area) |
+| AC01 leak rate / stroke time per part | `ac01.last_leak_rate` (limit 1.0 cm³/min), `ac01.last_stroke_time` (0.28 … 0.36 s) |
+| Robot cycles, RB01 cycle time | `rb01.cycle_count` (time between two increments), KLT `exchange_count` |
+| KLT fill levels, KLT fill now | `klta01.fill_count`, `kltb01.fill_count` (capacity 12) |
+
+**Access:** without login everyone is a *Viewer* (read-only). *Sign in* (top right) with `admin` / `virtualfactory`
+or `editor` / `virtualfactory` (local defaults, change them before exposing port 3002) to edit: panel menu →
+*Edit*, then *Save dashboard*. Saved changes stay in the Docker volume `vf_grafana-data` (also across `down`) until
+the dashboard file `infra/grafana/dashboards/line01-live.json` in the repository changes; to keep a change for
+everyone, export the JSON (*Export* → *Export as JSON*) into that file. New dashboards can be saved as well.
+Reset Grafana to the repository state:
+`docker compose -f infra/docker-compose.yml rm -sf grafana && docker volume rm vf_grafana-data`.
+
+At simulation speed 2×/4× the UNS timestamps run ahead of the clock; use a time range that ends in the future
+(e.g. `now-15m` to `now+15m`) or switch back to 1× (O43).
+
+## Product passports (DPP API)
+Every cylinder gets an item-level digital product passport while it is produced (its workpiece AAS, ADR-0021): as-built
+technical data (leak rate, stroke times, cap colour), the component batches it was built from (reported by the
+assembly cell; each feeder changes its batch after its own number of parts), material composition and recycled
+content per batch, carbon footprint, contacts incl. take-back, and - for packed good parts - an *inspection
+certificate 3.1* PDF plus the data sheet, manuals and the REACH SVHC information. Rejects get the documents but no
+certificate; their passport is `Inactive`.
+
+Open it from the inspector (*Open passport (DPP API)*) or with the BaSyx DPP API:
+```bash
+enc() { python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$1"; }
+curl -s "http://localhost:8093/v1/dppsByProductId/$(enc https://virtual-factory.example/01/04099999032808/21/PC3280-2026-000005)" | jq .
+```
+More examples (by DPP id, single element, find all parts with a given batch):
+[interfaces/services.md](interfaces/services.md#dpp-api). Passports are deleted with the session like all
+workpiece AAS (O41).
+
 ## Training UI (M5)
 Everything an operator needs is in the 3D scene (world-space panels, ready for VR later):
 - **AAS inspector:** click any device (or the control cabinet for PLC01, or a cylinder on the belt or in a KLT)
   to open its AAS in front of you: thumbnail, submodels, element tree. The visible submodel updates live when
   BaSyx reports a change (MQTT event → fetch). *Open type AAS* jumps from an instance to its type. For a KLT the
-  inspector offers the exchange (completes a pending *Exchange KLT* task, otherwise exchanges directly).
+  inspector offers the exchange (completes a pending *Exchange KLT* task, otherwise exchanges directly); for a
+  cylinder *Open passport (DPP API)* opens its digital product passport in the browser.
 - **HMI** (stand left of the conveyor): PackML state, Reset/Start/Stop/Hold/Unhold/Suspend/Unsuspend/Abort/Clear
   (only allowed commands are enabled), parts, reject rate, OEE (availability × performance × quality), automatic
   KLT exchange on/off and manual exchange. The HMI talks to the PLC directly (fieldbus), like a real panel.
@@ -109,7 +164,8 @@ Everything an operator needs is in the 3D scene (world-space panels, ready for V
 - **Menu (Esc or F1):** language English/Deutsch, render quality Low/Medium/High, simulation speed 1×/2×/4×, training
   scenarios (start/stop), demo tour (camera flies through the line with captions and opens AAS), data-flow view
   (IT layer above the line; packets follow real UNS events and BaSyx change events; violet packets = telemetry
-  stored by the historian).
+  stored by the historian), *Open dashboard (Grafana)* (opens *LINE01 live* in the browser; URL
+  `grafana_url` in `godot/config/backend.json`, `--vf-grafana-url=…`).
 
 Developer options (after `--`): `--vf-lang=de`, `--vf-quality=0|1|2`, `--vf-tour`, `--vf-dataflow`,
 `--vf-inspect=<AAS tag>`, `--vf-estop=1` (press the E-stop), `--vf-scenario=<id>`, `--vf-ui=off`, `--vf-xr` (OpenXR headset, see

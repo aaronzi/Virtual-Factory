@@ -10,7 +10,8 @@ Godot (FMUs, PLC) ──UNS/MQTT──► bridge ──REST $value──► BaSy
        └──────UNS commands─────── ops-gateway ◄── delegation ─────┘ (LineControl) │
        │                                                          ◄──────────────┘ invoke LineControl
        └──UNS telemetry (MQTT)──► historian ──line protocol──► InfluxDB 3 ◄──SQL── mes (PCF), clients via the
-                                                                                 AAS TimeSeries LinkedSegment
+                                                                                 AAS TimeSeries LinkedSegment and
+                                                                                 Grafana dashboards (:3002)
 ```
 
 | Service | Responsibility | Talks to | ADR |
@@ -19,8 +20,10 @@ Godot (FMUs, PLC) ──UNS/MQTT──► bridge ──REST $value──► BaSy
 | `bridge` | Writes UNS telemetry into the AAS as configured by AIMC/AID (state and slow values only) | MQTT, AAS | 0015, 0019 |
 | `historian` | Records the UNS telemetry of all devices (every FMI output) in InfluxDB 3 | MQTT, InfluxDB | 0019 |
 | `influxdb3` | InfluxDB 3 Core 3.12.0: time-series database of the historian, port 8181, no auth, tmpfs | – | 0019 |
+| `grafana` | Grafana 13.2.3: dashboard "LINE01 live" on the historian, port 3002; anonymous read-only, login (admin/editor) to edit; state in volume `vf_grafana-data` | InfluxDB (Flight SQL) | 0022 |
 | `mes` | Sessions, workpiece instance AAS, quality verdict, production-based PCF (energy from the historian), KLT contents, energy/CO₂e, KPIs; external-task worker of both BPMN processes; UNS event → BPMN message correlation (event topics from the AID) | MQTT, AAS, Operaton, InfluxDB | 0016, 0019, 0020 |
 | `ops-gateway` | Executes the delegated LineControl operations (incl. Control Component skills) as UNS commands; endpoints resolved from Control Component → AID | AAS (delegation, configuration), MQTT | 0017, 0020 |
+| `dpp-api` | BaSyx Go DPP API 1.1.0: digital product passports (item: workpieces, model: PC3280_TYPE) read from the AAS database, port 8093 | PostgreSQL (shared with aas-env) | 0021 |
 | `bpmn` | Operaton 2.1.5: process engine, Cockpit, Tasklist | – | 0016 |
 | `nodered` (profile `sandbox`, optional) | Learner sandbox with example flows (UNS explorer, reject alarm, read the AAS, call an AAS operation); port 1880, no auth, outside the core data path; publishes only `{root}/sandbox/alert` | MQTT, AAS | – |
 
@@ -80,6 +83,29 @@ where it changed; JSON omits nulls). Further examples: `... WHERE session = 'S-�
 `SELECT date_bin(INTERVAL '10 seconds', time) AS t, avg(power) FROM rb01 GROUP BY 1 ORDER BY 1` for aggregates,
 POST `{"db": "vf", "q": "...", "format": "json"}` to `/api/v3/query_sql` as an alternative to GET.
 
+## grafana
+
+Grafana OSS 13.2.3 at `http://localhost:3002` (ADR-0022), configured from `infra/grafana/` (mounted read-only):
+
+| File | Content |
+|---|---|
+| `grafana.ini` | anonymous Viewer in org "Virtual Factory", login form, no sign-up/telemetry/update checks/news, bundled plugins only (no download at start) |
+| `provisioning/datasources/historian.yaml` | data source `Historian (InfluxDB 3)`, uid `vf-historian`: InfluxDB, query language SQL (Flight SQL over gRPC on `http://influxdb3:8181`, `insecureGrpc`, database `vf`, dummy token because InfluxDB runs `--without-auth`) |
+| `provisioning/dashboards/virtual-factory.yaml` | file provider → folder "Virtual Factory", `allowUiUpdates: true`, rescan every 30 s |
+| `dashboards/line01-live.json` | dashboard "LINE01 live", uid `vf-line01-live` (source of truth; panel list in the [user guide](../user-guide.md#dashboards-grafana)) |
+| `entrypoint.sh` | starts Grafana, then (HTTP API, idempotent) renames org 1, creates user `editor` (role Editor), sets the home dashboard |
+
+- Accounts: `admin` (`GF_SECURITY_ADMIN_PASSWORD`, compose) and `editor` (`VF_GRAFANA_EDITOR_PASSWORD`), local
+  default `virtualfactory` (O34). Passwords apply when the volume `vf_grafana-data` is created.
+- Edits saved in the UI and new dashboards persist in `vf_grafana-data`; a changed JSON file in the repository
+  replaces the saved version of the provisioned dashboard at the next rescan. Reset everything:
+  `docker compose -f infra/docker-compose.yml rm -sf grafana && docker volume rm vf_grafana-data`.
+- Query from scripts like a panel (anonymous works as viewer): `POST /api/ds/query` with
+  `{"from": "now-15m", "to": "now", "queries": [{"refId": "A", "datasource": {"uid": "vf-historian"},
+  "rawSql": "SELECT time, power FROM rb01 WHERE $__timeFilter(time)", "format": "table"}]}`.
+- Integration test: `tools/tests/test_grafana_integration.py` (health, anonymous read/refused save, admin save,
+  editor role, data source health, a panel query).
+
 ## mes
 
 **Workpiece instance AAS** (`aas/data/blueprints/workpiece_instance.yaml`, built with the provisioner's
@@ -87,13 +113,21 @@ POST `{"db": "vf", "q": "...", "format": "json"}` to `/api/v3/query_sql` as an a
 
 | Stage (BPMN task) | Trigger | Content |
 |---|---|---|
-| released (`workpiece-create`) | `part_released` | Nameplate, DppMetadata, ExecutedProcesses OP10–OP70 (cell test data), AssetLocation (CV01) |
-| inspected (`workpiece-record-inspection`) | `part_inspected` | + OP75/OP80, QualityInspection (verdict vs. recipe limits), MeasurementValue ×2 |
-| packed (`workpiece-record-packing`) | `part_sorted` | + OP90, run completed, CarbonFootprint (production-based PCF: A1-A3 total, A1 components, A3 manufacturing), AssetLocation (KLT, slot), KLT contents |
-| lost (`workpiece-mark-lost`) | 5 min timeout | run aborted |
+| released (`workpiece-create`) | `part_released` | Nameplate, DppMetadata, ExecutedProcesses OP10–OP70 (cell test data, component lots), ContactInformations, HierarchicalStructures (as-built BoM with batches), ProductMaterialComposition, ProductCircularity (recycled content per lot), AssetLocation (CV01); sets `orderId` (running production order) |
+| inspected (`workpiece-record-inspection`) | `part_inspected` | + OP75/OP80, QualityInspection (verdict vs. recipe limits), MeasurementValue ×2, TechnicalData (as-built) |
+| packed (`workpiece-record-packing`) | `part_sorted` | + OP90, run completed, CarbonFootprint (production-based PCF: A1-A3 total, A1 components, A3 manufacturing), HandoverDocumentation (good parts: inspection certificate PDF; type documents - uploaded as attachments), AssetLocation (KLT, slot), KLT contents |
+| lost (`workpiece-mark-lost`) | 5 min timeout | run aborted, passport `Inactive` |
 
-- Values the simulation does not produce (torques, forces, lots of the black-box assembly cell) are derived
-  deterministically per serial around the recipe values; lots change every 250 parts (`cell_data.py`).
+Each workpiece AAS is the item-level passport of its part (ADR-0021, [aas-model.md §6b](aas-model.md#6b-item-level-digital-product-passport-adr-0021)):
+DPP id = AAS id, globalAssetId = `uniqueProductIdentifier` = GS1 Digital Link, `contentSpecificationIds` = the
+passport submodels present at the stage, `dppStatus` Inactive for rejects/lost parts.
+
+- Component lots come from the assembly cell (`part_released.lots` = FMI output `last_lots`, `lots.py`); each
+  feeder changes its lot after its own number of parts. Without `lots` (older simulation builds) the blueprint
+  lots are shifted every 250 parts. Values the simulation does not produce (torques, forces, grease) are derived
+  deterministically per serial around the recipe values (`cell_data.py`).
+- Inspection certificate (`certificate.py`, `pdf.py`): one A4 page, ~7 KB, for packed good parts; uploaded with the
+  type documents as File attachments of HandoverDocumentation (BaSyx stores identical files once).
 - Verdict: leak rate and stroke time (cell) and ΔE*ab (QS01) against the formula limits of the master recipe; the
   PLC sorts by colour only, so a part with a failed cell test packed into KLT A raises the "mis-sorted" user task.
 - PCF: production-based, per part from the historian (method in [aas-model.md §6a](aas-model.md#6a-runtime-submodels-m4)):
@@ -128,6 +162,59 @@ messages on topics the AAS does not describe are ignored. Reloaded (debounced 2 
 submodels and every 5 min; if discovery fails or finds no events, the previous topics are kept and an error is
 logged (no fallback to `uns.json`). Still taken from the UNS registry: the session birth `{root}/session` (a
 namespace topic of the Godot gateway, not an asset affordance) and the PLC01 KPI telemetry topics.
+
+## dpp-api
+
+BaSyx Go DPP API (`eclipsebasyx/dppapi-go:1.1.0`, ADR-0021) at `http://localhost:8093` (Swagger UI `/swagger`,
+health `/health`). It reads the passports directly from the AAS database (same PostgreSQL as aas-env); the MES
+writes them as workpiece AAS through the AAS API. Id-based reads need AAS id = `digitalProductPassportId`
+(BaSyx limitation) - fulfilled by design. Attachment links point to the AAS environment
+(`GENERAL_EXTERNALURL=http://localhost:8091`). History endpoints (`/v1/dppsByIdAndDate`) are not configured (O40).
+
+```bash
+DPP=http://localhost:8093
+enc() { python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$1"; }
+SERIAL=PC3280-2026-000005      # any produced part, e.g. from the inspector or the KLT contents
+# by DPP id (= AAS id of the workpiece)
+curl -s "$DPP/v1/dpps/$(enc "https://virtual-factory.example/ids/aas/WP_${SERIAL//-/_}")" | jq 'keys'
+# by product id (= GS1 Digital Link = globalAssetId)
+curl -s "$DPP/v1/dppsByProductId/$(enc "https://virtual-factory.example/01/04099999032808/21/$SERIAL")" \
+  | jq '{digitalProductPassportId, granularity, dppStatus, contentSpecificationIds}'
+# one element: path = $['<semantic id of the content section>']['<idShort>']...
+curl -s "$DPP/v1/dpps/$(enc "https://virtual-factory.example/ids/aas/WP_${SERIAL//-/_}")/elements/$(enc \
+  "\$['https://admin-shell.io/idta/CarbonFootprint/CarbonFootprint/1/0']['ProductCarbonFootprints'][0]['PcfCO2eq']")"
+# the model-level passport of the product type, also in the full representation (types and metadata)
+curl -s "$DPP/v1/dppsByProductId/$(enc https://virtual-factory.example/01/04099999032808)" | jq .granularity
+curl -s "$DPP/v1/dpps/$(enc https://virtual-factory.example/ids/aas/PC3280_TYPE)?representation=full" | jq '.elements | length'
+```
+
+Content sections are keyed by semantic id (`https://admin-shell.io/idta/nameplate/3/0/Nameplate`,
+`0173-1#01-AHX837#002` TechnicalData, `0173-1#01-AHF578#003` HandoverDocumentation, ...). File elements are
+rendered as attachment URLs, e.g. the certificate:
+`jq -r '.["0173-1#01-AHF578#003"].Documents[0].DocumentVersions[0].DigitalFiles[0]'`. The BaSyx web UI (3001)
+has no DPP view; it shows the same AAS/submodels from the AAS environment. `representation=full` fails for item
+passports (HTTP 422 `DPP-ELEM-FULL-UNSUPPORTED`): DPP API 1.1.0 converts only Property, MLP, SMC, SML, Entity and
+File, while the BoM (HasPart/SameAs relationships) and QualityInspection (references) contain other element types -
+use the default compressed representation (O38).
+
+### Traceability: which parts contain a batch?
+
+The as-built BoM of every workpiece (HierarchicalStructures, node statement `BatchId`) answers it with the AAS
+API alone - all submodels with the HierarchicalStructures semantic id, filtered by batch:
+
+```bash
+LOT=L2609-0418                 # barrel lot of serials 1-35 of a session
+HS=$(printf %s '{"type":"ModelReference","keys":[{"type":"Submodel","value":"https://admin-shell.io/idta/HierarchicalStructures/1/1/Submodel"}]}' \
+  | base64 | tr '+/' '-_' | tr -d '=')
+curl -s "http://localhost:8091/submodels?semanticId=$HS&limit=1000" | jq -r --arg lot "$LOT" '.result[]
+  | select(.id | contains("/sm/WP_")) | . as $sm | .submodelElements[] | select(.idShort == "EntryNode")
+  | .statements[]? | select(.modelType == "Entity") as $node | $node.statements[]?
+  | select(.idShort == "BatchId" and .value == $lot) | "\($sm.id | split("/")[5]) \($node.idShort)"'
+```
+
+prints e.g. `WP_PC3280_2026_000001 Barrel` per affected part (AAS tag = `WP_<serial>`; the HS template's semanticId is
+a ModelReference with key type Submodel, BaSyx matches the reference type); the passport of each is then one DPP
+API call. Lot changes per feeder: [aas-model.md §6b](aas-model.md#6b-item-level-digital-product-passport-adr-0021).
 
 ## ops-gateway
 

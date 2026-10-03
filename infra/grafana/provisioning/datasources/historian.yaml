@@ -1,0 +1,24 @@
+# Historian data source (ADR-0022): InfluxDB 3 Core via Flight SQL (gRPC on the HTTP port 8181, plaintext).
+# InfluxDB runs with --without-auth; Grafana's SQL mode insists on a token, any value is accepted.
+apiVersion: 1
+
+deleteDatasources:
+  - name: Historian (InfluxDB 3)
+    orgId: 1
+
+datasources:
+  - name: Historian (InfluxDB 3)
+    uid: vf-historian
+    orgId: 1
+    type: influxdb
+    access: proxy
+    url: http://influxdb3:8181
+    isDefault: true
+    editable: false
+    jsonData:
+      version: SQL
+      dbName: vf
+      httpMode: POST
+      insecureGrpc: true
+    secureJsonData:
+      token: without-auth

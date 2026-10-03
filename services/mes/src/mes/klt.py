@@ -1,6 +1,6 @@
 """Contents of the KLT stations in their HierarchicalStructures submodel: station (entry node) -> Box (the KLT
-on the station) -> one Node per packed workpiece with a HasPart relationship. Cleared when the KLT is
-exchanged."""
+on the station) -> one Node per packed workpiece (globalAssetId = the workpiece's GS1 Digital Link, ADR-0021)
+with a HasPart relationship. Cleared when the KLT is exchanged."""
 
 from __future__ import annotations
 
@@ -21,14 +21,14 @@ class KltContents:
         self.aas = aas
         self._lock = threading.Lock()
 
-    def add(self, container: int, serial: str, slot: int) -> None:
+    def add(self, container: int, serial: str, slot: int, global_asset_id: str | None = None) -> None:
         tag = CONTAINERS[container]
         with self._lock:
             sm, box = self._box(tag)
             node_id = serial.replace("-", "_")
             box["statements"] = [s for s in box.get("statements", []) if s.get("idShort") not in
                                  (node_id, "HasPart_" + node_id)]
-            box["statements"].append(_node(node_id, serial, slot))
+            box["statements"].append(_node(node_id, serial, slot, global_asset_id))
             box["statements"].append(_has_part(sm["id"], node_id))
             self.aas.put_submodel(sm)
 
@@ -51,10 +51,13 @@ class KltContents:
         return sm, box
 
 
-def _node(node_id: str, serial: str, slot: int) -> dict:
+def _node(node_id: str, serial: str, slot: int, global_asset_id: str | None) -> dict:
     return {"modelType": "Entity", "idShort": node_id, "entityType": "SelfManagedEntity",
-            "globalAssetId": ids.asset_id("WP_" + node_id),
+            "globalAssetId": global_asset_id or ids.asset_id("WP_" + node_id),
             "semanticId": _ref(NODE),
+            "displayName": [
+                {"language": "en", "text": f"Profile cylinder PC-32-80-DA-M, serial {serial}"},
+                {"language": "de", "text": f"Profilzylinder PC-32-80-DA-M, Seriennummer {serial}"}],
             "description": [{"language": "en", "text": f"Cylinder {serial}, slot {slot + 1}"},
                             {"language": "de", "text": f"Zylinder {serial}, Fach {slot + 1}"}]}
 

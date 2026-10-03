@@ -1,38 +1,34 @@
 """Process data of the executed processes.
 
-OP50/OP60 use the values the assembly cell reports with part_released (leak rate, stroke time from the FMU).
-The other black-box cell values (torques, forces, grease) are not simulated physically: they are generated
-deterministically per serial number around the blueprint (= recipe) values, and component lots change every
-LOT_SIZE parts. The cell reports the cap it intended to fit; only the inspection at QS01 detects cap defects.
+OP50/OP60 use the values the assembly cell reports with part_released (leak rate, stroke time from the FMU),
+the process BoM the component lots it reports (lots.py). The other black-box cell values (torques, forces,
+grease) are not simulated physically: they are generated deterministically per serial number around the
+blueprint (= recipe) values. The cell reports the cap it intended to fit; only the inspection at QS01 detects
+cap defects.
 """
 
 from __future__ import annotations
 
 import hashlib
 import random
-import re
 
-LOT_SIZE = 250
+from .lots import PROCESS_BOM
+
 MEASURED = {"MeasuredLeakRate", "PressureDecay", "MeasuredStrokeTimeAdvance", "MeasuredStrokeTimeRetract"}
-LOT_NUMBER = re.compile(r"(\d+)(\D*)$")
 
 
 def rng(serial: str) -> random.Random:
     return random.Random(int(hashlib.sha256(serial.encode()).hexdigest()[:12], 16))
 
 
-def serial_number(serial: str) -> int:
-    return int(serial.rsplit("-", 1)[-1])
-
-
-def apply(process: dict, op: str, v: dict, r: random.Random) -> None:
+def apply(process: dict, op: str, v: dict, r: random.Random, lots: dict[str, str]) -> None:
     for group in ("ProcessParameters", "ResourceParameters"):
         for key, spec in (process.get(group) or {}).items():
             if key.startswith("+") and key[1:] not in MEASURED and spec.get("valueType") == "xs:double":
                 spec["value"] = _jitter(spec["value"], r)
     for key, spec in (process.get("ProcessBoM") or {}).items():
-        if key.endswith("Lot") and isinstance(spec, dict):
-            spec["value"] = _lot(spec["value"], serial_number(v["serial"]) // LOT_SIZE)
+        if PROCESS_BOM.get(key[1:]) in lots and isinstance(spec, dict):
+            spec["value"] = lots[PROCESS_BOM[key[1:]]]
     params = process.get("ProcessParameters") or {}
     resource = process.get("ResourceParameters") or {}
     if op == "OP50":
@@ -77,11 +73,3 @@ def _jitter(value, r: random.Random, rel: float = 0.012):
     decimals = len(text.split(".")[1]) if "." in text else 0
     jittered = float(value) * (1 + r.gauss(0, rel))
     return round(jittered, max(decimals, 1)) if decimals else round(jittered)
-
-
-def _lot(lot: str, block: int) -> str:
-    match = LOT_NUMBER.search(lot)
-    if not match:
-        return lot
-    digits = match.group(1)
-    return lot[:match.start(1)] + str(int(digits) + block).zfill(len(digits)) + match.group(2)

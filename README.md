@@ -25,8 +25,10 @@ Or run a desktop build (`tools/export_builds.sh` → `build/VirtualFactory-{maco
 |---|---|
 | Factory (click devices/parts for their AAS, Esc menu) | Godot app |
 | AAS Web UI / AAS API | http://localhost:3001 · http://localhost:8091 |
+| Digital product passports (BaSyx DPP API) | http://localhost:8093/swagger |
 | BPMN Cockpit / Tasklist (demo/demo) | http://localhost:8092/operaton/app/ |
 | MQTT (UNS) | localhost:1883, ws://localhost:9001 |
+| Live dashboard *LINE01 live* (Grafana; read-only, log in as admin/editor to edit) | http://localhost:3002 |
 | Node-RED sandbox (optional, `--profile sandbox`) | http://localhost:1880 |
 
 ## Documentation

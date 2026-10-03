@@ -1,7 +1,7 @@
 class_name MainMenu
 extends CanvasLayer
 ## Desktop menu (Esc or F1 toggles it, desktop-only extra per ADR-0003): language, render quality, simulation
-## speed, training scenarios, demo tour, data-flow view. Also shows tour captions.
+## speed, training scenarios, demo tour, data-flow view, Grafana dashboard link. Also shows tour captions.
 ## View only - emits the user's choices.
 ## Scenario list entries: {id, title} (already localized by the runner).
 
@@ -12,6 +12,7 @@ signal scenario_start(id: String)
 signal scenario_stop
 signal tour_toggled(on: bool)
 signal dataflow_toggled(on: bool)
+signal dashboard_requested
 
 const SPEEDS := [1.0, 2.0, 4.0]
 const WIDTH := 440
@@ -69,6 +70,10 @@ func _fill(box: VBoxContainer) -> void:
 	_tour = _toggle("MENU_TOUR", func(on: bool) -> void: tour_toggled.emit(on))
 	box.add_child(_tour)
 	box.add_child(_toggle("MENU_DATAFLOW", func(on: bool) -> void: dataflow_toggled.emit(on)))
+	var dashboard := Button.new()
+	dashboard.text = "MENU_DASHBOARD"
+	dashboard.pressed.connect(func() -> void: dashboard_requested.emit())
+	box.add_child(dashboard)
 	_info = UiTheme.label("", 16, UiTheme.MUTED)
 	_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(_info)

@@ -44,7 +44,7 @@
 | Python | ✅ 3.12.13 via uv 0.11, `basyx-python-sdk` 2.2.0 | The RWTH `aas-python-http-client` (1.0.3) gets evaluated as the REST client in M3. |
 | Git LFS | ✅ 3.8.0, hooks installed | `.gitattributes` already routes `.blend/.glb/.png/.aasx…` through LFS. |
 | Node / Java / Go / gh | ✅ 24 / 17 / 1.27 / logged in | Go isn't strictly needed. |
-| Ports | ⚠️ 8080, 8082, 3000 taken by the `rebac-*` stack | The VF stack uses **8091** (AAS Environment), **3001** (AAS Web UI), **1883** (MQTT TCP), **9001** (MQTT over WebSocket) and **8095** (operation gateway). Postgres stays internal only. |
+| Ports | ⚠️ 8080, 8082, 3000 taken by the `rebac-*` stack | The VF stack uses **8091** (AAS Environment), **3001** (AAS Web UI), **1883** (MQTT TCP), **9001** (MQTT over WebSocket) **8095** (operation gateway) and **8093** (BaSyx DPP API, ADR-0021). Postgres stays internal only. |
 | Godot export templates | ⚠️ missing | Only needed for exported builds (M6). Editor and headless runs don't need them. |
 | VR toolchain | ⚠️ none on macOS | No OpenXR runtime and no Android SDK. Acceptable, see D1. |
 | GitHub MCP plugin | ⚠️ failed to connect (auth header) | Doesn't matter; the `gh` CLI works. |

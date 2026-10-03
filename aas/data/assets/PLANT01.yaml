@@ -78,6 +78,7 @@ submodels:
         statements:
           Node:
             - _idShort: FinalAssembly
+              _displayName: {en: "Final assembly (Hall 1)", de: "Endmontage (Halle 1)"}
               _description: {en: "ISA-95 area Final Assembly in Hall 1", de: "ISA-95-Bereich Endmontage in Halle 1"}
               entityType: CoManagedEntity
               statements:

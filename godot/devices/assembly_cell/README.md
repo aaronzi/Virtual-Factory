@@ -14,4 +14,6 @@ Geometry options: `size` (Vector3, 1.6 × 2.0 × 1.2 m), `outlet` (local spawn p
 
 Behaviour: when `enable` is true it assembles for `takt_time`, then releases if `infeed_free`, otherwise it is BLOCKED.
 Each release sets `release_count`, `last_serial` (`PC3280-YYYY-NNNNNN`), `last_cap_variant` (from the seeded defect rates), and the
-test results `last_leak_rate` and `last_stroke_time`. Power = idle + (working + compressed-air equivalent) while assembling.
+test results `last_leak_rate` and `last_stroke_time`, and `last_lots` - the component lots built into the part
+(`model/component_lots.gd`: one feeder per BoM node, each changes its lot after its own number of parts; supplier lot
+formats; reported with `part_released` for the as-built BoM of the item passport, ADR-0021). Power = idle + (working + compressed-air equivalent) while assembling.

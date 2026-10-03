@@ -63,6 +63,8 @@
         initial="exact" start="0" unit="h"/>
     <Float64 name="air_consumption" valueReference="30" causality="output" variability="continuous"
         initial="exact" start="0" unit="Nl"/>
+    <String name="last_lots" valueReference="31" causality="output" variability="discrete"
+        initial="exact" description="Component lots built into the last released cylinder: BoM node=lot, separated by ';' (a lot changes when its feeder container is replaced)"><Start value=""/></String>
   </ModelVariables>
   <ModelStructure>
     <Output valueReference="20"/>
@@ -76,5 +78,6 @@
     <Output valueReference="28"/>
     <Output valueReference="29"/>
     <Output valueReference="30"/>
+    <Output valueReference="31"/>
   </ModelStructure>
 </fmiModelDescription>

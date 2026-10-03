@@ -7,11 +7,13 @@ description:
     Material composition and substances of concern of a (non-battery) product for a Digital Product Passport
     (EU ESPR, REACH Art. 33 / SCIP). Generalisation of the IDTA Digital Battery Passport "Material Composition"
     template (urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.0): battery chemistry removed,
-    element names kept without the "Battery" prefix, total mass and recyclability added. Virtual Factory custom template.
+    element names kept without the "Battery" prefix, total mass, recyclability and the component batch
+    (item-level passports) added. Virtual Factory custom template.
   de: >-
     Materialzusammensetzung und besorgniserregende Stoffe eines Produkts (kein Batterieprodukt) für einen digitalen
     Produktpass (EU-ESPR, REACH Art. 33 / SCIP). Verallgemeinerung des IDTA-Batteriepass-Templates "Material
-    Composition": Batteriechemie entfernt, Elementnamen ohne Präfix "Battery", Gesamtmasse und Recyclingfähigkeit ergänzt.
+    Composition": Batteriechemie entfernt, Elementnamen ohne Präfix "Battery", Gesamtmasse, Recyclingfähigkeit
+    und die Bauteilcharge (Produktpass auf Einzelteilebene) ergänzt.
 elements:
   - idShort: TotalMass
     valueType: xs:double
@@ -36,6 +38,7 @@ elements:
             elements:
               - {idShort: ComponentName, cardinality: ZeroToOne, preferredName: {en: "component name", de: "Bauteilname"}, definition: {en: "Name of the component.", de: "Name des Bauteils."}}
               - {idShort: ComponentId, cardinality: ZeroToOne, preferredName: {en: "component identifier", de: "Bauteilkennung"}, definition: {en: "Article number or BoM position of the component.", de: "Artikelnummer oder Stücklistenposition des Bauteils."}}
+              - {idShort: BatchId, cardinality: ZeroToOne, preferredName: {en: "batch identifier", de: "Chargenkennung"}, definition: {en: "Lot or batch of the component built into this product unit (item-level passport).", de: "Los bzw. Charge des in diese Produkteinheit eingebauten Bauteils (Produktpass auf Einzelteilebene)."}}
           - {idShort: MaterialIdentifier, preferredName: {en: "material identifier", de: "Materialkennung"}, definition: {en: "Material designation according to a standard (e.g. EN 573 for aluminium, EN 10088 for stainless steel, ISO 1043 for plastics) or CAS number.", de: "Werkstoffbezeichnung nach Norm (z. B. EN 573, EN 10088, ISO 1043) oder CAS-Nummer."}}
           - {idShort: MaterialName, preferredName: {en: "material name", de: "Materialname"}, definition: {en: "Common name of the material.", de: "Gebräuchlicher Name des Materials."}}
           - {idShort: MaterialMass, valueType: xs:double, unit: kg, cardinality: ZeroToOne, preferredName: {en: "material mass", de: "Materialmasse"}, definition: {en: "Mass of the material per product unit.", de: "Masse des Materials je Produkteinheit."}}

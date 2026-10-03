@@ -17,7 +17,7 @@ from .bpmn import BpmnClient
 from .carbon import EnergyIntensity, FootprintCalculator, PartFootprint
 from .event_topics import EventTopics
 from .events import EventRouter
-from .handlers import OrderHandlers, WorkpieceHandlers
+from .handlers import ActiveOrder, OrderHandlers, WorkpieceHandlers
 from .klt import CONTAINERS, KltContents
 from .kpi import KpiTracker
 from .plant_data import PlantData
@@ -70,11 +70,13 @@ class Mes:
                      "contentType": "image/png"}
         store = WorkpieceStore(self.ctx, aas, retention=int(ENV("VF_RETENTION", "500")))
         self.store = store
+        order = ActiveOrder()
         workpieces = WorkpieceHandlers(store, WorkpieceSpec(load_blueprint(), self.ctx.positions, thumbnail),
-                                       Limits.from_recipe(recipe["values"]), KltContents(aas), self.footprint)
+                                       Limits.from_recipe(recipe["values"]), KltContents(aas), self.footprint,
+                                       order)
         Worker(self.bpmn, "workpiece", workpieces.topics()).start()
         Worker(BpmnClient(str(self.bpmn.http.base_url)), "order",
-               OrderHandlers(BasyxClient(self.aas_url)).topics()).start()
+               OrderHandlers(BasyxClient(self.aas_url), order=order).topics()).start()
 
     def footprint(self, v: dict) -> PartFootprint:
         """Production-based instance PCF of a sorted part (carbon.py; energy from the historian)."""

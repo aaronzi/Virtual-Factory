@@ -4,8 +4,8 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
 
 ## Commands
 - Backend: `docker compose -f infra/docker-compose.yml up -d [--build]` (project `vf`; ports 8091 AAS env, 3001 UI,
-  1883/9001 MQTT, 8092 Operaton BPMN (demo/demo), 8095 ops gateway, 8181 InfluxDB 3). Services: bridge, mes, ops-gateway, historian
-  (`services/`).
+  1883/9001 MQTT, 8092 Operaton BPMN (demo/demo), 8095 ops gateway, 8093 BaSyx DPP API, 8181 InfluxDB 3, 3002 Grafana (anonymous read-only; admin/editor: virtualfactory)).
+  Services: bridge, mes, ops-gateway, historian (`services/`). Grafana dashboards: infra/grafana/dashboards/*.json.
   Do NOT touch the separate `rebac-*` containers (other project on 8080/8082/3000).
 - GDScript tests: `tools/run_godot_tests.sh` (also compiles every script) · line run: `tools/run_line_simulation.sh [s]`
   · training scenarios: `tools/run_scenarios.sh` · Node-RED sandbox: `--profile sandbox`
@@ -19,6 +19,9 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
 
 - AAS: `uv run -m provisioner check|build|upload [--only TAGS] [--blueprints]`, `uv run tools/check_aasx.py`,
   `uv run tools/aas_template_tree.py <Template-ver>`; data in aas/data (format: docs/interfaces/aas-model.md §7)
+  · document PDFs: `uv run aas/scripts/make_documents.py [ID…]` · sample certificate: `uv run python -m mes.certificate`
+- Product data shared by the type and the item passport: `aas/data/common/product_passport_pc3280.yaml`, included
+  with `$include: "file#Key"`. DPP id = AAS id (BaSyx DPP API, ADR-0021).
 
 ## Rules
 - Module dependency rules in `docs/architecture/dependency-rules.yaml`: `core` depends on nothing; other modules

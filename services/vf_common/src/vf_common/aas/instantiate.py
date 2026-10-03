@@ -14,7 +14,7 @@ Data is a nested dict keyed by idShort (see docs/interfaces/aas-model.md, "Asset
     Blob                     {"contentType": ..., "value": str | bytes | JSON object}
     extra element            "+Name": {modelType, valueType, value | _noValue, unit, semanticId, description}
                              (no semanticId: a concept description <ID_BASE>/cd/property/<Name> is generated)
-    any element              "_idShort" / "_description" / "_semanticId" override the template values
+    any element              "_idShort" / "_displayName" / "_description" / "_semanticId" override template
 
 Unfilled optional elements (ZeroToOne/ZeroToMany) are removed. Unfilled mandatory leaves are kept with an
 empty value and reported in `InstantiationResult.missing`. Template qualifiers (SMT/*) are removed.
@@ -29,11 +29,9 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from ..ids import ID_BASE
+from .extras import extra_element as _extra_element
 from .values import convert_property_value, file_value, mlp_value, resolve_refs
 
-EXTRA_META = ("semanticId", "description", "value", "unit", "conceptName", "_noValue")
-CONCEPT_TYPES = ("Property", "MultiLanguageProperty", "Range")
 PLACEHOLDER = re.compile(r"__\d\d__|\{\d\d\}")
 OPTIONAL = {"ZeroToOne", "ZeroToMany"}
 MULTIPLE = {"ZeroToMany", "OneToMany"}
@@ -118,8 +116,9 @@ class _Ctx:
             key["value"] = key["value"].strip()  # e.g. " 0173-1#02-ABH961#002" in AssetLocation 1.0
         if isinstance(value, dict) and "_idShort" in value:
             el["idShort"] = value["_idShort"]
-        if isinstance(value, dict) and "_description" in value:
-            el["description"] = mlp_value(value["_description"])
+        for key in ("displayName", "description"):
+            if isinstance(value, dict) and f"_{key}" in value:
+                el[key] = mlp_value(value[f"_{key}"])
         if isinstance(value, dict) and "_semanticId" in value:
             el["semanticId"] = {"type": "ExternalReference",
                                 "keys": [{"type": "GlobalReference", "value": value["_semanticId"]}]}
@@ -213,6 +212,9 @@ class _Ctx:
 
     def _fill_Entity(self, el: dict, value: Any, path: str) -> None:
         value = value or {}
+        for key in ("displayName", "description"):  # template texts ("Node"); named in entities.py
+            if f"_{key}" not in value:
+                el.pop(key, None)
         for key in ("entityType", "globalAssetId"):
             if key in value:
                 el[key] = value[key]
@@ -266,35 +268,3 @@ def _fix_list_value_type(el: dict) -> None:
     if el.get("typeValueListElement") in ("Property", "Range") and not el.get("valueTypeListElement"):
         items = el.get("value") or []
         el["valueTypeListElement"] = items[0].get("valueType", "xs:string") if items else "xs:string"
-
-
-def _extra_element(id_short: str, spec: dict, concepts: dict | None = None) -> dict:
-    """A fully specified element that is not part of the template (e.g. technical properties).
-
-    Properties without an explicit semanticId get a generated concept description (unit, definition from the
-    description): `{value, valueType, unit, description, conceptName?}`; the unit never goes into the text."""
-    el = {k: v for k, v in spec.items() if k not in EXTRA_META}
-    el.setdefault("modelType", "Property")
-    if id_short:
-        el["idShort"] = id_short
-    semantic_id = spec.get("semanticId")
-    if not semantic_id and id_short and concepts is not None and el["modelType"] in CONCEPT_TYPES:
-        name = spec.get("conceptName", id_short)
-        semantic_id = f"{ID_BASE}/cd/property/{name}"
-        concepts[semantic_id] = {"idShort": name, "valueType": el.get("valueType", "xs:string"),
-                                 "unit": spec.get("unit"), "description": spec.get("description"),
-                                 "modelType": el["modelType"]}
-    if semantic_id:
-        el["semanticId"] = {"type": "ExternalReference",
-                            "keys": [{"type": "GlobalReference", "value": semantic_id}]}
-    if spec.get("description"):
-        el["description"] = mlp_value(spec["description"])
-    if el["modelType"] == "Property":
-        el.setdefault("valueType", "xs:string")
-        if not spec.get("_noValue"):
-            el["value"] = convert_property_value(el["valueType"], spec.get("value"))
-    elif el["modelType"] == "MultiLanguageProperty":
-        el["value"] = mlp_value(spec.get("value", ""))
-    elif "value" in spec:
-        el["value"] = spec["value"]
-    return el

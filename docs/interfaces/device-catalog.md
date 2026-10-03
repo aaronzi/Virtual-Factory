@@ -103,6 +103,7 @@ Black-box pneumatic cylinder assembly and test cell: releases finished cylinders
 | 28 | `energy` | output | continuous | Float64 | kWh | 0 |  |
 | 29 | `operating_hours` | output | continuous | Float64 | h | 0 |  |
 | 30 | `air_consumption` | output | continuous | Float64 | Nl | 0 |  |
+| 31 | `last_lots` | output | discrete | String |  | "" | Component lots built into the last released cylinder: BoM node=lot, separated by ';' (a lot changes when its feeder container is replaced) |
 
 ## BeltConveyor
 

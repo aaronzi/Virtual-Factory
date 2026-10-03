@@ -100,6 +100,15 @@ class BasyxClient:
         if response.status_code >= 300:
             raise BasyxError("PUT", url, response)
 
+    def put_attachment(self, sm_id: str, path: str, data: bytes, file_name: str, content_type: str) -> None:
+        """Uploads the content of a File element (multipart); BaSyx stores it content-addressed (SHA-256
+        deduplication) and sets the element value to its managed /aasx/files/... path."""
+        url = f"/submodels/{b64(sm_id)}/submodel-elements/{path}/attachment"
+        response = self.http.put(url, files={"file": (file_name, data, content_type)},
+                                 data={"fileName": file_name})
+        if response.status_code >= 300:
+            raise BasyxError("PUT", url, response)
+
     def invoke(self, sm_id: str, path: str, inputs: dict[str, Any], timeout_s: int = 15) -> dict[str, Any]:
         """Synchronous invocation; inputs/outputs as {idShort: value} of Property variables."""
         body = {"inputArguments": [{"value": _property(k, v)} for k, v in inputs.items()],

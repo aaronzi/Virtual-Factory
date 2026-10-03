@@ -4,11 +4,12 @@
 Input:  aas/data/documents/<id>.yaml  {title, subtitle, organization, version, date, language, sections: [
             {heading, text?, rows?: [[key, value], ...]}]}
 Output: aas/files/docs/<id>.pdf (A4, rendered with Pillow; Git LFS)
-Usage:  uv run aas/scripts/make_documents.py
+Usage:  uv run aas/scripts/make_documents.py [ID ...]   (default: all documents)
 """
 
 from __future__ import annotations
 
+import sys
 import textwrap
 from pathlib import Path
 
@@ -71,7 +72,10 @@ def render(doc: dict) -> list[Image.Image]:
 def main() -> None:
     out = ROOT / "files" / "docs"
     out.mkdir(parents=True, exist_ok=True)
+    only = set(sys.argv[1:])
     for path in sorted((ROOT / "data" / "documents").glob("*.yaml")):
+        if only and path.stem not in only:
+            continue
         doc = yaml.safe_load(path.read_text())
         doc["id"] = path.stem
         pages = render(doc)
