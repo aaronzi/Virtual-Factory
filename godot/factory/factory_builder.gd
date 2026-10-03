@@ -1,7 +1,7 @@
 class_name FactoryBuilder
 extends RefCounted
 ## Builds the factory from a layout file (composition root, ADR-0006):
-##   1. instantiate device scenes (res://devices/<type>/<type>.tscn) and their FMI models
+##   1. instantiate device scenes (res://devices/<type>/<type>.tscn) and their FMI models, place props
 ##   2. instantiate the PLC program (also an FMI model)
 ##   3. teach robot positions from device markers ("commissioning")
 ##   4. connect FMI variables and initialise the co-simulation master
@@ -20,6 +20,8 @@ func build(layout_path: String, root: Node3D, items_root: Node3D) -> Error:
 	for spec in layout.devices:
 		if not _add_device(spec, root):
 			return ERR_CANT_CREATE
+	for prop in layout.get("props", []):
+		_add_prop(prop, root)
 	_teach(layout.get("teach", []))
 	_add_controller(layout.controller)
 	for conn in layout.get("connections", []):
@@ -49,6 +51,15 @@ func _add_device(spec: Dictionary, root: Node3D) -> bool:
 	master.add_instance(model)
 	devices[spec.id] = device
 	return true
+
+
+## Static scenery placed with the line (fence, cabinet, HMI stand); moves along on reorganisation.
+func _add_prop(spec: Dictionary, root: Node3D) -> void:
+	var prop: Node3D = (load(spec.scene) as PackedScene).instantiate()
+	root.add_child(prop)
+	var p: Array = spec.get("position", [0, 0, 0])
+	prop.position = Vector3(p[0], p[1], p[2])
+	prop.rotation_degrees.y = spec.get("rotation_deg", 0.0)
 
 
 func _add_controller(spec: Dictionary) -> void:

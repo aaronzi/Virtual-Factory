@@ -13,6 +13,10 @@ const POWER_SOURCES := ["AC01", "CV01", "LB01", "LB02", "QS01", "RB01"]
 
 func _ready() -> void:
 	_overlay.source = _status_text
+	var hall := $Hall as Hall
+	var interior := hall.get_interior_bounds()
+	($DesktopRig as DesktopRig).bounds = AABB(hall.to_global(interior.position) + Vector3(0, 0.3, 0),
+		interior.size - Vector3(0, 0.3, 0))
 	_apply_camera_arg(DevTools.get_arg("vf-camera"))
 
 

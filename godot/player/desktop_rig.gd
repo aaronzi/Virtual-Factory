@@ -9,6 +9,8 @@ extends PlayerRig
 @export var pointer_length := 50.0
 ## Initial look-at point in world space (the rig keeps its own position).
 @export var look_at_on_start := Vector3(0.0, 0.5, 0.0)
+## World-space volume the camera must stay inside (e.g. hall interior); empty = unbounded.
+var bounds := AABB()
 
 var _yaw := 0.0
 var _pitch := 0.0
@@ -42,6 +44,7 @@ func _process(delta: float) -> void:
 	var basis_flat := _camera.global_basis
 	global_position += (basis_flat * Vector3(input.x, 0.0, input.z)) * speed * delta
 	global_position.y += input.y * speed * delta
+	_clamp_to_bounds()
 
 
 func get_pointer_ray() -> Dictionary:
@@ -55,11 +58,18 @@ func get_view_camera() -> Camera3D:
 
 func teleport_to(from: Vector3, target: Vector3) -> void:
 	global_position = from
+	_clamp_to_bounds()
 	var dir := (target - from).normalized()
 	_yaw = atan2(-dir.x, -dir.z)
 	_pitch = asin(clampf(dir.y, -1.0, 1.0))
 	rotation = Vector3(0.0, _yaw, 0.0)
 	_camera.rotation = Vector3(_pitch, 0.0, 0.0)
+
+
+func _clamp_to_bounds() -> void:
+	if bounds.size == Vector3.ZERO:
+		return
+	global_position = global_position.clamp(bounds.position, bounds.end)
 
 
 func _raycast_pointer() -> Dictionary:
