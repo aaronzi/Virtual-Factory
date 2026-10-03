@@ -1,0 +1,23 @@
+infrastructures:
+  default: vf
+
+  vf:
+    name: Virtual Factory (BaSyx Go)
+    components:
+      aasDiscovery:
+        baseUrl: "http://localhost:8091/lookup/shells"
+      aasRegistry:
+        baseUrl: "http://localhost:8091/shell-descriptors"
+        hasDiscoveryIntegration: true
+      submodelRegistry:
+        baseUrl: "http://localhost:8091/submodel-descriptors"
+      aasRepository:
+        baseUrl: "http://localhost:8091/shells"
+        hasRegistryIntegration: true
+      submodelRepository:
+        baseUrl: "http://localhost:8091/submodels"
+        hasRegistryIntegration: true
+      conceptDescriptionRepository:
+        baseUrl: "http://localhost:8091/concept-descriptions"
+    security:
+      type: none

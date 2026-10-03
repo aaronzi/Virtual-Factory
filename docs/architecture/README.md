@@ -1,0 +1,104 @@
+# Architecture (arc42)
+
+> Living document. Sections marked *(planned)* are specified in [PLAN.md](../PLAN.md) and are moved here
+> with implementation details as each milestone is completed.
+
+## 1. Introduction and goals
+See [requirements.md](../requirements.md). Top quality goals:
+1. **Realism** of data flows and assets (NFR-07)
+2. **Modularity and extensibility**, measured adherence ≥ 95 % (NFR-03/04)
+3. **Performance** on slow hardware and XR-readiness (NFR-01/02)
+
+## 2. Constraints
+- Godot 4.7 (GDScript), Blender 5.2 via MCP, Eclipse BaSyx Go 1.1.0 (AAS API V3.2), Python 3.12 + basyx-python-sdk.
+- Local, single-machine deployment with docker compose. No authentication (local development only).
+- Device models aligned with FMI 3.0 Co-Simulation (ADR-0002).
+
+## 3. Context and scope
+```mermaid
+flowchart LR
+  Trainee([Trainee / Student / Operator]) --> VF[Virtual Factory<br/>Godot]
+  Agent([AI agent / external client]) -->|AAS API V3.2| BX[BaSyx Go AAS Environment]
+  Agent -.->|MQTT| MQ[(MQTT broker)]
+  VF <-->|MQTT UNS| MQ
+  MQ <--> EDGE[Edge/IT services<br/>bridge, MES, ops gateway]
+  EDGE --> BX
+  VF -->|read| BX
+  Browser([AAS Web UI user]) --> UI[BaSyx AAS Web UI] --> BX
+```
+
+## 4. Solution strategy
+| Goal | Approach |
+|---|---|
+| Realistic data flow | OT/IT split: devices + virtual PLC in Godot → MQTT UNS → edge services → AAS (ADR-0005) |
+| Interchangeable devices | FMI-3-aligned model interface, one folder per device type, composition root (ADR-0002, ADR-0006) |
+| Standards-based twins | IDTA submodel templates, AID/AIMC-driven bridge, AAS Operations for control |
+| Slow hardware / XR | Mobile renderer, low-poly assets, baked lighting, PlayerRig abstraction (ADR-0001, ADR-0003) |
+| Measurable architecture | `tools/arch_check.py`, gdlint, `tools/complexity_check.py` in CI |
+
+## 5. Building block view
+### Level 1: repository
+| Block | Path | Responsibility |
+|---|---|---|
+| Godot simulation | `godot/` | 3D world, device models, virtual PLC, MQTT gateway, AAS inspector |
+| Edge/IT services | `services/` | `vf_common` (shared), provisioner, databridge, mes, ops_gateway *(planned)* |
+| AAS master data | `aas/` | Asset data YAML, concept dictionary, generated AASX *(planned)* |
+| 3D asset sources | `blender/` | .blend files and the generator scripts that produce them |
+| Infrastructure | `infra/` | docker compose: BaSyx Go, AAS Web UI, Postgres, Mosquitto |
+| Tooling | `tools/` | Architecture/complexity checks, test runners, screenshot helper |
+
+### Level 2: Godot modules
+Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
+
+| Module | Responsibility | May depend on |
+|---|---|---|
+| `core` | FMI-3 API and co-sim master, PLC runtime and IEC FBs, PlayerRig/Interactable interfaces, utilities | — |
+| `devices/<type>` | One device type each: model (FMU), probes, view, scene, type metadata | core |
+| `products` | Workpiece scene, product-type resources | core |
+| `control` | PLC programs (SortingLine), I/O maps | core |
+| `connectivity` | MQTT gateway, UNS mapping, AAS REST reader | core (+ mqtt addon) |
+| `world` | Hall, lighting, props | core |
+| `player` | DesktopRig (later XRRig) | core |
+| `ui` | World-space panels, AAS inspector, HMI, i18n | core |
+| `scenarios` | Training scenarios, fault injection | core |
+| `factory` | **Composition root**: layout loading, wiring, main scene | all |
+
+## 6. Runtime view *(planned)*
+Part life cycle, session start and agent operation: see [PLAN.md §2.2, §3.9–3.10](../PLAN.md).
+
+## 7. Deployment view
+| Container | Image | Host port |
+|---|---|---|
+| aas-env | `eclipsebasyx/aasenvironment-go:1.1.0` | 8091 |
+| aas-ui | `eclipsebasyx/aas-gui@sha256:5e9a…4298` | 3001 |
+| db | `postgres:18` (tmpfs) | – |
+| basyx-config | `eclipsebasyx/basyxconfigurationservice-go:1.1.0` (one-shot) | – |
+| mqtt | `eclipse-mosquitto:2` | 1883, 9001 (ws) |
+| databridge, mes, ops-gateway | built from `services/` *(planned)* | 8095 (ops) |
+
+The Godot application runs natively on the host and connects to `ws://localhost:9001` and `http://localhost:8091`.
+
+## 8. Crosscutting concepts
+- **ID scheme**: `services/vf_common/src/vf_common/ids.py` (base `https://virtual-factory.example/ids`).
+- **Units**: SI throughout (m, s, rad, W, kWh, kg CO₂e). 1 Godot unit = 1 m. Godot is Y-up; the robot base frame is Z-up (converted in the robot view).
+- **FMI-3 interface**, **UNS topics**, **AAS modelling**, **physics/transport**, **XR-readiness**: *(planned)* see PLAN.md §3.4–3.14.
+
+## 9. Architecture decisions
+See [adr/](../adr/README.md).
+
+## 10. Quality requirements
+See NFRs in [requirements.md](../requirements.md#3-non-functional-requirements).
+
+## 11. Risks and technical debt
+See [open-issues.md](../open-issues.md).
+
+## 12. Glossary
+| Term | Meaning |
+|---|---|
+| AAS | Asset Administration Shell (IEC 63278), the standardised digital twin |
+| AID / AIMC | IDTA Asset Interfaces Description / Asset Interfaces Mapping Configuration submodels |
+| FMU / FMI | Functional Mock-up Unit / Interface (Modelica Association standard for simulation models) |
+| KLT | Kleinladungsträger, a standardised small load carrier (VDA 4500) |
+| PackML | ISA-TR88.00.02 machine state model |
+| PCF | Product Carbon Footprint (ISO 14067) |
+| UNS | Unified Namespace: an MQTT topic tree that mirrors the ISA-95 hierarchy |

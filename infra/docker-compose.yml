@@ -1,0 +1,95 @@
+# Virtual Factory – IT/edge infrastructure
+#
+# Usage (from repo root):  docker compose -f infra/docker-compose.yml up -d
+# Compose project name "vf" keeps it separate from other BaSyx stacks on this machine.
+#
+# Host ports:
+#   8091  BaSyx Go AAS Environment (repos, registries, discovery, concept descriptions)
+#   3001  BaSyx AAS Web UI
+#   1883  MQTT (TCP)            – edge services, MQTT Explorer
+#   9001  MQTT over WebSocket   – Godot shop-floor simulation
+#
+# The database lives on tmpfs: every `up` starts with a fresh DB and the static AAS
+# are preloaded from ./basyx/preload (workpiece instances are ephemeral, see ADR-0004).
+
+name: vf
+
+x-postgres-env: &postgres-env
+  POSTGRES_HOST: db
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: vf
+  POSTGRES_PASSWORD: vf-local-only
+  POSTGRES_DBNAME: basyx
+  POSTGRES_MAXOPENCONNECTIONS: "50"
+  POSTGRES_MAXIDLECONNECTIONS: "25"
+  POSTGRES_CONNMAXLIFETIMEMINUTES: "5"
+  POSTGRES_CONNMAXIDLETIMEMINUTES: "0"
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: vf
+      POSTGRES_PASSWORD: vf-local-only
+      POSTGRES_DB: basyx
+    tmpfs:
+      - /var/lib/postgresql:size=1g
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vf -d basyx"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  basyx-config:
+    image: eclipsebasyx/basyxconfigurationservice-go:1.1.0
+    environment:
+      <<: *postgres-env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  aas-env:
+    image: eclipsebasyx/aasenvironment-go:1.1.0
+    command: ["/app/aasenvironmentservice"]
+    ports:
+      - "8091:8091"
+    environment:
+      <<: *postgres-env
+      SERVER_PORT: "8091"
+      CORS_ALLOWEDORIGINS: "*"
+      CORS_ALLOWEDHEADERS: "*"
+      CORS_ALLOWCREDENTIALS: "true"
+      CORS_ALLOWEDMETHODS: GET,POST,PUT,PATCH,DELETE,OPTIONS
+      ABAC_ENABLED: "false"
+      GENERAL_AASREGISTRYINTEGRATION: "true"
+      GENERAL_SUBMODELREGISTRYINTEGRATION: "true"
+      GENERAL_EXTERNALURL: http://localhost:8091
+      GENERAL_AAS_PRECONFIG_PATHS: /app/preconfiguration
+      LOGGING_LEVEL: info
+    volumes:
+      - ./basyx/preload:/app/preconfiguration:ro
+    depends_on:
+      basyx-config:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  aas-ui:
+    # aas-gui publishes no version tags; pinned by digest (latest as of 2026-09-24).
+    image: eclipsebasyx/aas-gui@sha256:5e9ad866865267a0cf13f99d309a823e979c5bf945e63138b9a1268c9a884298
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./basyx/basyx-infra.yml:/basyx-infra.yml:ro
+    environment:
+      ENDPOINT_CONFIG_AVAILABLE: "false"
+    restart: unless-stopped
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    restart: unless-stopped

@@ -1,0 +1,37 @@
+# Module dependency rules for the Godot project (checked by tools/arch_check.py).
+# A module is the first folder below godot/ (e.g. core, devices, factory).
+# See docs/architecture/05-building-blocks.md for the rationale.
+
+modules:
+  core: []
+  devices: [core]
+  products: [core]
+  control: [core]
+  connectivity: [core]
+  world: [core]
+  player: [core]
+  ui: [core]
+  scenarios: [core]
+  # composition root – the only module that may know everything
+  factory: [core, devices, products, control, connectivity, world, player, ui, scenarios]
+
+# Sub-folders of these modules are independent units: devices/conveyor must not
+# depend on devices/light_barrier (devices only interact via FMI variables, wired by factory).
+isolated_submodules: [devices]
+
+# Third-party addons and which modules may use them.
+addons:
+  gut: ["*tests*"]          # test code only
+  mqtt: [connectivity]
+
+# Code below any `tests/` folder may depend on anything (excluded from the adherence score).
+test_dirs: [tests]
+
+# Documented exceptions: each needs an ADR or a docs/architecture conformance note.
+exceptions: []
+#  - from: devices/ur5e/...
+#    to: devices/gripper_2f/...
+#    reason: ...
+#    adr: docs/adr/NNNN-....md
+
+target_adherence: 0.95

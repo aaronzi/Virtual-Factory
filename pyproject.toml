@@ -1,7 +1,30 @@
 [project]
 name = "virtual-factory"
 version = "0.1.0"
+description = "Virtual Factory – workspace root (edge/IT services, tools, tests)"
 requires-python = ">=3.12"
-dependencies = [
-    "basyx-python-sdk>=2.2.0",
+dependencies = ["vf-common"]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["services/*"]
+
+[tool.uv.sources]
+vf-common = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "gdtoolkit>=4.3",
+    "xmlschema>=3.4",
+    "import-linter>=2.1",
+    "aas-test-engines>=1.0",
+    "pyyaml>=6",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["services", "tools/tests"]
+markers = ["integration: needs the running docker compose stack (infra/)"]
+addopts = "-m 'not integration'"
