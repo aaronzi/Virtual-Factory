@@ -12,8 +12,10 @@ modules:
   player: [core]
   ui: [core]
   scenarios: [core]
+  # pure data (layouts, topic registry); read only by the composition root
+  config: []
   # composition root – the only module that may know everything
-  factory: [core, devices, products, control, connectivity, world, player, ui, scenarios]
+  factory: [core, devices, products, control, connectivity, world, player, ui, scenarios, config]
 
 # Sub-folders of these modules are independent units: devices/conveyor must not
 # depend on devices/light_barrier (devices only interact via FMI variables, wired by factory).

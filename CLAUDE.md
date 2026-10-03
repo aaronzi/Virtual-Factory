@@ -5,10 +5,12 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
 ## Commands
 - Backend: `docker compose -f infra/docker-compose.yml up -d` (project `vf`; ports 8091 AAS env, 3001 UI, 1883/9001 MQTT).
   Do NOT touch the separate `rebac-*` containers (other project on 8080/8082/3000).
-- GDScript tests: `tools/run_godot_tests.sh` · Python tests: `uv run pytest` (`-m integration` needs the stack)
+- GDScript tests: `tools/run_godot_tests.sh` (also compiles every script) · line run: `tools/run_line_simulation.sh [s]`
+- Python tests: `uv run pytest` (`-m integration` needs the stack) · interface docs: `uv run tools/gen_interface_docs.py`
 - Checks (must pass before commit): `uv run tools/arch_check.py`, `uv run tools/complexity_check.py`,
   `(cd godot && uv run gdlint .)`
-- Screenshot: `tools/screenshot.sh docs/screenshots/<name>.png [delay] [res://scene.tscn]`
+- Screenshot: `tools/screenshot.sh docs/screenshots/<name>.png [delay] [scene] --vf-camera=x,y,z,tx,ty,tz`
+- GIF: `godot --path godot --write-movie <dir>/f.png --fixed-fps 15 --quit-after N` + `uv run tools/frames_to_gif.py`
 - After adding/renaming Godot files: `(cd godot && /Applications/Godot.app/Contents/MacOS/Godot --headless --import)`
 
 ## Rules

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="SortingLinePLC"
+    instantiationToken="{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e10}"
+    description="Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robot handshake, KLT handling, PackML"
+    generationTool="Virtual Factory" version="1.0.0">
+  <CoSimulation modelIdentifier="sorting_line_plc" canHandleVariableCommunicationStepSize="true"
+      canGetAndSetFMUState="true"/>
+  <UnitDefinitions>
+    <Unit name="s"><BaseUnit s="1"/></Unit>
+    <Unit name="m/s"><BaseUnit m="1" s="-1"/></Unit>
+  </UnitDefinitions>
+  <DefaultExperiment stepSize="0.0166666666666667"/>
+  <ModelVariables>
+    <Float64 name="time" valueReference="0" causality="independent" variability="continuous" unit="s"/>
+    <Int32 name="ac_release_count" valueReference="1" causality="input" variability="discrete" start="0"
+        description="AC01: number of released parts"/>
+    <String name="ac_last_serial" valueReference="2" causality="input" variability="discrete"
+        description="AC01: serial of the last released part"><Start value=""/></String>
+    <Boolean name="lb01_signal" valueReference="3" causality="input" variability="discrete" start="false"
+        description="LB01 infeed light barrier"/>
+    <Boolean name="lb02_signal" valueReference="4" causality="input" variability="discrete" start="false"
+        description="LB02 inspection-position light barrier"/>
+    <Boolean name="qs_result_valid" valueReference="5" causality="input" variability="discrete" start="false"/>
+    <Boolean name="qs_result_ok" valueReference="6" causality="input" variability="discrete" start="false"/>
+    <Boolean name="rb_busy" valueReference="7" causality="input" variability="discrete" start="false"/>
+    <Boolean name="rb_job_done" valueReference="8" causality="input" variability="discrete" start="false"/>
+    <Boolean name="rb_part_clear" valueReference="9" causality="input" variability="discrete" start="false"/>
+    <Boolean name="rb_fault" valueReference="10" causality="input" variability="discrete" start="false"/>
+    <Int32 name="klt_a_count" valueReference="11" causality="input" variability="discrete" start="0"
+        description="KLT A measured fill count"/>
+    <Int32 name="klt_b_count" valueReference="12" causality="input" variability="discrete" start="0"
+        description="KLT B measured fill count"/>
+    <Int32 name="packml_command" valueReference="13" causality="input" variability="discrete" start="0"
+        description="PackML command (1 Reset, 2 Start, 3 Stop, 4 Hold, 5 Unhold, 6 Suspend, 7 Unsuspend, 8 Abort, 9 Clear); edge-triggered on change"/>
+    <Float64 name="scan_time" valueReference="50" causality="parameter" variability="fixed" start="0.01" unit="s"
+        description="PLC cycle time"/>
+    <Boolean name="auto_start" valueReference="51" causality="parameter" variability="fixed" start="true"
+        description="Reset and start automatically"/>
+    <Float64 name="belt_speed" valueReference="52" causality="parameter" variability="tunable" start="0.25" unit="m/s"
+        description="Conveyor speed setpoint (recipe)"/>
+    <Float64 name="lb02_stop_delay" valueReference="53" causality="parameter" variability="tunable" start="0.17" unit="s"
+        description="Delay after LB02 until the belt stops so the part is centred at the station"/>
+    <Float64 name="settle_time" valueReference="54" causality="parameter" variability="tunable" start="0.35" unit="s"
+        description="Wait after belt stop before measuring"/>
+    <Int32 name="klt_capacity" valueReference="55" causality="parameter" variability="tunable" start="12"/>
+    <Boolean name="auto_exchange" valueReference="56" causality="parameter" variability="tunable" start="true"
+        description="Exchange full KLTs automatically (demo/agent mode)"/>
+    <Float64 name="exchange_delay" valueReference="57" causality="parameter" variability="tunable" start="4.0" unit="s"/>
+    <Float64 name="infeed_timeout" valueReference="58" causality="parameter" variability="fixed" start="8.0" unit="s"
+        description="Max time between release and LB01"/>
+    <Int32 name="max_parts_on_belt" valueReference="59" causality="parameter" variability="fixed" start="3"/>
+    <Boolean name="ac_enable" valueReference="100" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Boolean name="ac_infeed_free" valueReference="101" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Boolean name="cv_run" valueReference="102" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Float64 name="cv_speed_setpoint" valueReference="103" causality="output" variability="discrete" initial="exact" start="0.25" unit="m/s"/>
+    <Boolean name="qs_trigger" valueReference="104" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Boolean name="rb_job_start" valueReference="105" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Int32 name="rb_place_target" valueReference="106" causality="output" variability="discrete" initial="exact" start="1"
+        description="1 = KLT A, 2 = KLT B"/>
+    <Int32 name="rb_place_slot" valueReference="107" causality="output" variability="discrete" initial="exact" start="0"/>
+    <Boolean name="klt_a_exchange" valueReference="108" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Boolean name="klt_b_exchange" valueReference="109" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Int32 name="packml_state" valueReference="110" causality="output" variability="discrete" initial="exact" start="2"
+        description="PackML state (ISA-TR88: 2 Stopped, 4 Idle, 5 Suspended, 6 Execute, 11 Held, ...)"/>
+    <Int32 name="parts_total" valueReference="111" causality="output" variability="discrete" initial="exact" start="0"/>
+    <Int32 name="parts_ok" valueReference="112" causality="output" variability="discrete" initial="exact" start="0"/>
+    <Int32 name="parts_nok" valueReference="113" causality="output" variability="discrete" initial="exact" start="0"/>
+    <String name="serial_at_qs" valueReference="114" causality="output" variability="discrete" initial="exact"><Start value=""/></String>
+    <Int32 name="last_result" valueReference="115" causality="output" variability="discrete" initial="exact" start="0"
+        description="0 none, 1 OK, 2 NOK"/>
+    <Boolean name="light_green" valueReference="116" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Boolean name="light_amber" valueReference="117" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Boolean name="light_red" valueReference="118" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Int32 name="sequence_step" valueReference="119" causality="output" variability="discrete" initial="exact" start="0"
+        description="0 wait part, 1 positioning, 2 settling, 3 inspecting, 4 wait robot, 5 picking"/>
+    <Int32 name="parts_on_belt" valueReference="120" causality="output" variability="discrete" initial="exact" start="0"/>
+    <Int32 name="infeed_faults" valueReference="121" causality="output" variability="discrete" initial="exact" start="0"/>
+  </ModelVariables>
+  <ModelStructure>
+    <Output valueReference="100"/>
+    <Output valueReference="101"/>
+    <Output valueReference="102"/>
+    <Output valueReference="103"/>
+    <Output valueReference="104"/>
+    <Output valueReference="105"/>
+    <Output valueReference="106"/>
+    <Output valueReference="107"/>
+    <Output valueReference="108"/>
+    <Output valueReference="109"/>
+    <Output valueReference="110"/>
+    <Output valueReference="111"/>
+    <Output valueReference="112"/>
+    <Output valueReference="113"/>
+    <Output valueReference="114"/>
+    <Output valueReference="115"/>
+    <Output valueReference="116"/>
+    <Output valueReference="117"/>
+    <Output valueReference="118"/>
+    <Output valueReference="119"/>
+    <Output valueReference="120"/>
+    <Output valueReference="121"/>
+  </ModelStructure>
+</fmiModelDescription>

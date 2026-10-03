@@ -8,9 +8,9 @@ conveyor, inspects the red protective end cap with a colour sensor, and sorts th
 good and reject containers. Every machine, the product type and every workpiece have an AAS. Data flows like it
 does in a real plant: device models and a virtual PLC (Godot) → MQTT unified namespace → edge/MES services → BaSyx Go.
 
-**Status:** M0 (foundations). See [docs/PLAN.md](docs/PLAN.md) for the plan and milestones.
+**Status:** M1 (simulation core + greybox line) complete. See [docs/PLAN.md](docs/PLAN.md) for the plan and milestones.
 
-![Greybox hall](docs/screenshots/m0-hall-greybox.png)
+![Greybox line](docs/screenshots/m1-pick-place-cycle.gif)
 
 ## Quick start
 ```bash

@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://core/device/device_node.gd" id="1_dev"]
+[ext_resource type="Script" path="res://devices/conveyor/model/conveyor_model.gd" id="2_model"]
+[ext_resource type="Script" path="res://devices/conveyor/view/conveyor_greybox_view.gd" id="3_view"]
+
+[node name="Conveyor" type="Node3D"]
+script = ExtResource("1_dev")
+model_script = ExtResource("2_model")
+model_description_path = "res://devices/conveyor/model/modelDescription.xml"
+
+[node name="View" type="Node3D" parent="."]
+script = ExtResource("3_view")

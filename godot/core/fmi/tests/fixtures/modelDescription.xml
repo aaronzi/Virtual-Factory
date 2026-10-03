@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="Accumulator" instantiationToken="{vf-test-accumulator-1}"
+    description="Test model: integrates rate while enabled" generationTool="Virtual Factory" version="1.0.0">
+  <CoSimulation modelIdentifier="accumulator" canHandleVariableCommunicationStepSize="true" canGetAndSetFMUState="true"/>
+  <UnitDefinitions>
+    <Unit name="s"><BaseUnit s="1"/></Unit>
+    <Unit name="1/s"><BaseUnit s="-1"/></Unit>
+  </UnitDefinitions>
+  <DefaultExperiment stepSize="0.01"/>
+  <ModelVariables>
+    <Float64 name="time" valueReference="0" causality="independent" variability="continuous" unit="s"/>
+    <Boolean name="enable" valueReference="1" causality="input" variability="discrete" start="false"/>
+    <Float64 name="rate" valueReference="10" causality="parameter" variability="tunable" start="2.0" unit="1/s"/>
+    <Int32 name="limit" valueReference="11" causality="parameter" variability="fixed" start="100"/>
+    <String name="label" valueReference="12" causality="parameter" variability="fixed"><Start value="acc"/></String>
+    <Float64 name="value" valueReference="20" causality="output" variability="continuous" initial="exact" start="0"/>
+    <Boolean name="enabled_out" valueReference="21" causality="output" variability="discrete" initial="exact" start="false"/>
+  </ModelVariables>
+  <ModelStructure>
+    <Output valueReference="20"/>
+    <Output valueReference="21"/>
+  </ModelStructure>
+</fmiModelDescription>

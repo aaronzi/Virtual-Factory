@@ -1,7 +1,10 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://world/hall/hall_greybox.gd" id="1_hall"]
-[ext_resource type="PackedScene" path="res://player/desktop_rig.tscn" id="2_rig"]
+[ext_resource type="Script" path="res://factory/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://world/hall/hall_greybox.gd" id="2_hall"]
+[ext_resource type="Script" path="res://factory/factory_runtime.gd" id="3_factory"]
+[ext_resource type="PackedScene" path="res://player/desktop_rig.tscn" id="4_rig"]
+[ext_resource type="Script" path="res://ui/status_overlay/status_overlay.gd" id="5_overlay"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.38, 0.52, 0.72, 1)
@@ -18,9 +21,9 @@ ambient_light_source = 3
 ambient_light_energy = 0.8
 reflected_light_source = 2
 tonemap_mode = 4
-glow_enabled = false
 
 [node name="Main" type="Node3D"]
+script = ExtResource("1_main")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_main")
@@ -29,11 +32,17 @@ environment = SubResource("Environment_main")
 transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 12, 0)
 light_energy = 1.1
 shadow_enabled = true
-directional_shadow_max_distance = 60.0
+directional_shadow_max_distance = 40.0
 
 [node name="Hall" type="Node3D" parent="."]
-script = ExtResource("1_hall")
+script = ExtResource("2_hall")
 
-[node name="DesktopRig" parent="." instance=ExtResource("2_rig")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 4, 10)
-look_at_on_start = Vector3(1, 0.5, -2)
+[node name="Factory" type="Node3D" parent="."]
+script = ExtResource("3_factory")
+
+[node name="DesktopRig" parent="." instance=ExtResource("4_rig")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 2.1, 2.6)
+look_at_on_start = Vector3(-0.6, 0.9, -0.3)
+
+[node name="StatusOverlay" type="CanvasLayer" parent="."]
+script = ExtResource("5_overlay")

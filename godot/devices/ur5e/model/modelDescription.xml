@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="UR5e"
+    instantiationToken="{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e06}"
+    description="Universal Robots UR5e with 2-finger gripper: analytic IK, URScript-like movej/movel pick &amp; place program, power model"
+    generationTool="Virtual Factory" version="1.0.0">
+  <CoSimulation modelIdentifier="ur5e" canHandleVariableCommunicationStepSize="true"
+      canGetAndSetFMUState="true"/>
+  <UnitDefinitions>
+    <Unit name="s"><BaseUnit s="1"/></Unit>
+    <Unit name="m"><BaseUnit m="1"/></Unit>
+    <Unit name="rad"><BaseUnit rad="1"/></Unit>
+    <Unit name="rad/s"><BaseUnit rad="1" s="-1"/></Unit>
+    <Unit name="rad/s2"><BaseUnit rad="1" s="-2"/></Unit>
+    <Unit name="m/s"><BaseUnit m="1" s="-1"/></Unit>
+    <Unit name="m/s2"><BaseUnit m="1" s="-2"/></Unit>
+    <Unit name="W"><BaseUnit kg="1" m="2" s="-3"/></Unit>
+    <Unit name="W.s/rad"><BaseUnit kg="1" m="2" s="-2" rad="-1"/></Unit>
+    <Unit name="kWh"><BaseUnit kg="1" m="2" s="-2" factor="3600000"/></Unit>
+    <Unit name="h"><BaseUnit s="1" factor="3600"/></Unit>
+  </UnitDefinitions>
+  <DefaultExperiment stepSize="0.0166666666666667"/>
+  <ModelVariables>
+    <Float64 name="time" valueReference="0" causality="independent" variability="continuous" unit="s"/>
+    <Boolean name="job_start" valueReference="1" causality="input" variability="discrete" start="false"
+        description="Start pick &amp; place job (rising edge); hold until job_done"/>
+    <Int32 name="place_target" valueReference="2" causality="input" variability="discrete" start="1"
+        description="1 = KLT A (good), 2 = KLT B (reject)"/>
+    <Int32 name="place_slot" valueReference="3" causality="input" variability="discrete" start="0"
+        description="Slot index in the target container (row-major)"/>
+    <Float64 name="speed_override" valueReference="4" causality="input" variability="discrete" start="1.0"
+        description="Speed slider 0..1"/>
+    <Boolean name="protective_stop" valueReference="5" causality="input" variability="discrete" start="false"
+        description="Safety input (e.g. fence door open)"/>
+    <Boolean name="object_in_grip" valueReference="6" causality="input" variability="discrete" start="false"
+        description="Physical stimulus: an item is between the fingers"/>
+    <Float64 name="object_width" valueReference="7" causality="input" variability="discrete" start="0" unit="m"
+        description="Physical stimulus: width of that item"/>
+    <Float64 name="home_x" valueReference="100" causality="parameter" variability="fixed" start="0.0" unit="m"
+        description="Home TCP position"/>
+    <Float64 name="home_y" valueReference="101" causality="parameter" variability="fixed" start="-0.3" unit="m"/>
+    <Float64 name="home_z" valueReference="102" causality="parameter" variability="fixed" start="0.45" unit="m"/>
+    <Float64 name="pick_x" valueReference="103" causality="parameter" variability="fixed" start="0.0" unit="m"
+        description="Pick TCP position (taught)"/>
+    <Float64 name="pick_y" valueReference="104" causality="parameter" variability="fixed" start="-0.55" unit="m"/>
+    <Float64 name="pick_z" valueReference="105" causality="parameter" variability="fixed" start="0.25" unit="m"/>
+    <Float64 name="place_a_x" valueReference="106" causality="parameter" variability="fixed" start="0.0" unit="m"
+        description="KLT A: slot 0 (palletizing origin)"/>
+    <Float64 name="place_a_y" valueReference="107" causality="parameter" variability="fixed" start="0.0" unit="m"/>
+    <Float64 name="place_a_z" valueReference="108" causality="parameter" variability="fixed" start="0.0" unit="m"/>
+    <Float64 name="place_a_row_x" valueReference="109" causality="parameter" variability="fixed" start="0.0" unit="m"
+        description="KLT A: last slot of first row"/>
+    <Float64 name="place_a_row_y" valueReference="110" causality="parameter" variability="fixed" start="0.0" unit="m"/>
+    <Float64 name="place_a_row_z" valueReference="111" causality="parameter" variability="fixed" start="0.0" unit="m"/>
+    <Float64 name="place_a_col_x" valueReference="112" causality="parameter" variability="fixed" start="0.0" unit="m"
+        description="KLT A: first slot of last row"/>
+    <Float64 name="place_a_col_y" valueReference="113" causality="parameter" variability="fixed" start="0.0" unit="m"/>
+    <Float64 name="place_a_col_z" valueReference="114" causality="parameter" variability="fixed" start="0.0" unit="m"/>
+    <Float64 name="place_b_x" valueReference="115" causality="parameter" variability="fixed" start="0.0" unit="m"
+        description="KLT B: slot 0 (palletizing origin)"/>
+    <Float64 name="place_b_y" valueReference="116" causality="parameter" variability="fixed" start="0.0" unit="m"/>
+    <Float64 name="place_b_z" valueReference="117" causality="parameter" variability="fixed" start="0.0" unit="m"/>
+    <Float64 name="place_b_row_x" valueReference="118" causality="parameter" variability="fixed" start="0.0" unit="m"
+        description="KLT B: last slot of first row"/>
+    <Float64 name="place_b_row_y" valueReference="119" causality="parameter" variability="fixed" start="0.0" unit="m"/>
+    <Float64 name="place_b_row_z" valueReference="120" causality="parameter" variability="fixed" start="0.0" unit="m"/>
+    <Float64 name="place_b_col_x" valueReference="121" causality="parameter" variability="fixed" start="0.0" unit="m"
+        description="KLT B: first slot of last row"/>
+    <Float64 name="place_b_col_y" valueReference="122" causality="parameter" variability="fixed" start="0.0" unit="m"/>
+    <Float64 name="place_b_col_z" valueReference="123" causality="parameter" variability="fixed" start="0.0" unit="m"/>
+    <Int32 name="slots_per_row" valueReference="124" causality="parameter" variability="fixed" start="4"/>
+    <Int32 name="slot_rows" valueReference="125" causality="parameter" variability="fixed" start="3"/>
+    <Float64 name="pick_approach" valueReference="126" causality="parameter" variability="fixed" start="0.12" unit="m"
+        description="Approach/retract height above pick"/>
+    <Float64 name="place_approach" valueReference="127" causality="parameter" variability="fixed" start="0.32" unit="m"
+        description="Approach/retract height above slot (clears KLT walls)"/>
+    <Float64 name="tool_length" valueReference="128" causality="parameter" variability="fixed" start="0.16" unit="m"
+        description="Flange to TCP (between fingertips)"/>
+    <Float64 name="tool_rz" valueReference="129" causality="parameter" variability="fixed" start="0.0" unit="rad"
+        description="Tool rotation about base Z (finger axis)"/>
+    <Float64 name="joint_speed" valueReference="130" causality="parameter" variability="tunable" start="1.4" unit="rad/s"/>
+    <Float64 name="joint_accel" valueReference="131" causality="parameter" variability="tunable" start="2.5" unit="rad/s2"/>
+    <Float64 name="linear_speed" valueReference="132" causality="parameter" variability="tunable" start="0.25" unit="m/s"/>
+    <Float64 name="linear_accel" valueReference="133" causality="parameter" variability="tunable" start="1.2" unit="m/s2"/>
+    <Float64 name="gripper_open_width" valueReference="134" causality="parameter" variability="fixed" start="0.085" unit="m"/>
+    <Float64 name="gripper_speed" valueReference="135" causality="parameter" variability="fixed" start="0.1" unit="m/s"/>
+    <Float64 name="idle_power" valueReference="136" causality="parameter" variability="fixed" start="90" unit="W"
+        description="Powered, brakes released"/>
+    <Float64 name="motion_power_coefficient" valueReference="137" causality="parameter" variability="fixed" start="45" unit="W.s/rad"
+        description="Additional power per rad/s summed over joints"/>
+    <Float64 name="q1" valueReference="200" causality="output" variability="continuous" initial="exact" start="0" unit="rad"
+        description="Base joint angle"/>
+    <Float64 name="q2" valueReference="201" causality="output" variability="continuous" initial="exact" start="0" unit="rad"
+        description="Shoulder joint angle"/>
+    <Float64 name="q3" valueReference="202" causality="output" variability="continuous" initial="exact" start="0" unit="rad"
+        description="Elbow joint angle"/>
+    <Float64 name="q4" valueReference="203" causality="output" variability="continuous" initial="exact" start="0" unit="rad"
+        description="Wrist 1 joint angle"/>
+    <Float64 name="q5" valueReference="204" causality="output" variability="continuous" initial="exact" start="0" unit="rad"
+        description="Wrist 2 joint angle"/>
+    <Float64 name="q6" valueReference="205" causality="output" variability="continuous" initial="exact" start="0" unit="rad"
+        description="Wrist 3 joint angle"/>
+    <Float64 name="tcp_x" valueReference="206" causality="output" variability="continuous" initial="exact" start="0" unit="m"
+        description="TCP position in base frame"/>
+    <Float64 name="tcp_y" valueReference="207" causality="output" variability="continuous" initial="exact" start="0" unit="m"/>
+    <Float64 name="tcp_z" valueReference="208" causality="output" variability="continuous" initial="exact" start="0" unit="m"/>
+    <Float64 name="gripper_width" valueReference="209" causality="output" variability="continuous" initial="exact" start="0.085" unit="m"/>
+    <Boolean name="gripper_closed" valueReference="210" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Boolean name="grasp_ok" valueReference="211" causality="output" variability="discrete" initial="exact" start="false"
+        description="Item gripped"/>
+    <Boolean name="busy" valueReference="212" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Boolean name="job_done" valueReference="213" causality="output" variability="discrete" initial="exact" start="false"
+        description="Job finished; stays true until job_start is false"/>
+    <Boolean name="part_clear" valueReference="214" causality="output" variability="discrete" initial="exact" start="false"
+        description="Part lifted off the conveyor"/>
+    <Int32 name="program_step" valueReference="215" causality="output" variability="discrete" initial="exact" start="0"
+        description="0 = idle, 1..9 = job step"/>
+    <Int32 name="cycle_count" valueReference="216" causality="output" variability="discrete" initial="exact" start="0"/>
+    <Boolean name="protective_stopped" valueReference="217" causality="output" variability="discrete" initial="exact" start="false"/>
+    <Boolean name="fault" valueReference="218" causality="output" variability="discrete" initial="exact" start="false"
+        description="Target unreachable (IK failed)"/>
+    <Float64 name="power" valueReference="219" causality="output" variability="continuous" initial="exact" start="0" unit="W"/>
+    <Float64 name="energy" valueReference="220" causality="output" variability="continuous" initial="exact" start="0" unit="kWh"/>
+    <Float64 name="operating_hours" valueReference="221" causality="output" variability="continuous" initial="exact" start="0" unit="h"/>
+  </ModelVariables>
+  <ModelStructure>
+    <Output valueReference="200"/>
+    <Output valueReference="201"/>
+    <Output valueReference="202"/>
+    <Output valueReference="203"/>
+    <Output valueReference="204"/>
+    <Output valueReference="205"/>
+    <Output valueReference="206"/>
+    <Output valueReference="207"/>
+    <Output valueReference="208"/>
+    <Output valueReference="209"/>
+    <Output valueReference="210"/>
+    <Output valueReference="211"/>
+    <Output valueReference="212"/>
+    <Output valueReference="213"/>
+    <Output valueReference="214"/>
+    <Output valueReference="215"/>
+    <Output valueReference="216"/>
+    <Output valueReference="217"/>
+    <Output valueReference="218"/>
+    <Output valueReference="219"/>
+    <Output valueReference="220"/>
+    <Output valueReference="221"/>
+  </ModelStructure>
+</fmiModelDescription>

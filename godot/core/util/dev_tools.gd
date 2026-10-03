@@ -4,6 +4,7 @@ extends Node
 ##   --vf-screenshot=<abs path.png>   capture the main viewport, then quit
 ##   --vf-screenshot-delay=<seconds>  wait before capturing (default 2.0)
 ##   --vf-quit-after=<seconds>        quit after the given wall-clock time
+##   --vf-perf-report=<seconds>       vsync off; after warm-up, sample performance for <seconds>, print, quit
 ##
 ## Used by tools/screenshot.sh to produce review screenshots without the editor.
 
@@ -15,6 +16,8 @@ func _ready() -> void:
 	if _args.has("vf-screenshot"):
 		var delay := float(_args.get("vf-screenshot-delay", "2.0"))
 		_capture_after(delay, String(_args["vf-screenshot"]))
+	if _args.has("vf-perf-report"):
+		_perf_report(float(_args["vf-perf-report"]))
 	if _args.has("vf-quit-after"):
 		await get_tree().create_timer(float(_args["vf-quit-after"]), true, false, true).timeout
 		get_tree().quit()
@@ -34,6 +37,25 @@ func _capture_after(delay: float, path: String) -> void:
 		print("[DevTools] screenshot saved: ", path)
 	else:
 		push_error("[DevTools] screenshot failed (%s): %s" % [error_string(err), path])
+	get_tree().quit()
+
+
+func _perf_report(seconds: float) -> void:
+	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+	await get_tree().create_timer(3.0, true, false, true).timeout
+	var frames := 0
+	var draw_calls := 0.0
+	var primitives := 0.0
+	var start := Time.get_ticks_usec()
+	while Time.get_ticks_usec() - start < seconds * 1e6:
+		await get_tree().process_frame
+		frames += 1
+		draw_calls = maxf(draw_calls, Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
+		primitives = maxf(primitives, Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME))
+	var elapsed := (Time.get_ticks_usec() - start) / 1e6
+	print("[DevTools] PERF renderer=%s fps=%.1f frame_ms=%.2f max_draw_calls=%d max_primitives=%d objects=%d" % [
+		RenderingServer.get_current_rendering_method(), frames / elapsed, elapsed * 1000.0 / frames,
+		draw_calls, primitives, Performance.get_monitor(Performance.OBJECT_NODE_COUNT)])
 	get_tree().quit()
 
 

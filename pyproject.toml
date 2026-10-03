@@ -22,6 +22,7 @@ dev = [
     "import-linter>=2.1",
     "aas-test-engines>=1.0",
     "pyyaml>=6",
+    "pillow>=12.3.0",
 ]
 
 [tool.pytest.ini_options]

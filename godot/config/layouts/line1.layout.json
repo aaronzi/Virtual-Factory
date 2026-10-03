@@ -1,0 +1,56 @@
+{
+  "line": "LINE01",
+  "description": "Inspection & sorting line: AC01 -> CV01 (LB01, LB02) -> QS01 -> RB01 -> KLT A/B. World: +X = material flow, Y up, metres.",
+  "product": { "scene": "res://products/cylinder/cylinder_workpiece.tscn" },
+  "devices": [
+    { "id": "AC01", "type": "assembly_cell", "position": [-3.4, 0.0, 0.0],
+      "parameters": { "takt_time": 12.0, "defect_rate_missing_cap": 0.05, "defect_rate_wrong_cap": 0.03 } },
+    { "id": "CV01", "type": "conveyor", "position": [-1.0, 0.85, 0.0],
+      "geometry": { "length": 3.0, "width": 0.3, "height": 0.85, "guide_gap": 0.08 } },
+    { "id": "LB01", "type": "light_barrier", "position": [-2.1, 0.85, 0.0] },
+    { "id": "LB02", "type": "light_barrier", "position": [0.19, 0.85, 0.0] },
+    { "id": "QS01", "type": "qa_station", "position": [0.25, 0.85, 0.0] },
+    { "id": "RB01", "type": "ur5e", "position": [0.25, 0.0, -0.55], "geometry": { "pedestal_height": 0.75 } },
+    { "id": "KLTA01", "type": "klt_container", "position": [0.75, 0.0, -0.55], "geometry": { "color": "#2f5f9e" } },
+    { "id": "KLTB01", "type": "klt_container", "position": [-0.25, 0.0, -0.55], "geometry": { "color": "#b8312f" } }
+  ],
+  "controller": {
+    "id": "PLC01",
+    "program": "res://control/sorting_line/sorting_line_program.gd",
+    "model_description": "res://control/sorting_line/modelDescription.xml",
+    "parameters": { "belt_speed": 0.25, "lb02_stop_delay": 0.165, "klt_capacity": 12 }
+  },
+  "teach": [
+    { "device": "RB01", "parameter": "pick", "marker": "QS01/PickPoint" },
+    { "device": "RB01", "parameter": "place_a", "marker": "KLTA01/SlotOrigin" },
+    { "device": "RB01", "parameter": "place_a_row", "marker": "KLTA01/SlotRowEnd" },
+    { "device": "RB01", "parameter": "place_a_col", "marker": "KLTA01/SlotColEnd" },
+    { "device": "RB01", "parameter": "place_b", "marker": "KLTB01/SlotOrigin" },
+    { "device": "RB01", "parameter": "place_b_row", "marker": "KLTB01/SlotRowEnd" },
+    { "device": "RB01", "parameter": "place_b_col", "marker": "KLTB01/SlotColEnd" }
+  ],
+  "connections": [
+    ["PLC01.ac_enable", "AC01.enable"],
+    ["PLC01.ac_infeed_free", "AC01.infeed_free"],
+    ["PLC01.cv_run", "CV01.run"],
+    ["PLC01.cv_speed_setpoint", "CV01.speed_setpoint"],
+    ["PLC01.qs_trigger", "QS01.trigger"],
+    ["PLC01.rb_job_start", "RB01.job_start"],
+    ["PLC01.rb_place_target", "RB01.place_target"],
+    ["PLC01.rb_place_slot", "RB01.place_slot"],
+    ["PLC01.klt_a_exchange", "KLTA01.exchange"],
+    ["PLC01.klt_b_exchange", "KLTB01.exchange"],
+    ["AC01.release_count", "PLC01.ac_release_count"],
+    ["AC01.last_serial", "PLC01.ac_last_serial"],
+    ["LB01.signal", "PLC01.lb01_signal"],
+    ["LB02.signal", "PLC01.lb02_signal"],
+    ["QS01.result_valid", "PLC01.qs_result_valid"],
+    ["QS01.result_ok", "PLC01.qs_result_ok"],
+    ["RB01.busy", "PLC01.rb_busy"],
+    ["RB01.job_done", "PLC01.rb_job_done"],
+    ["RB01.part_clear", "PLC01.rb_part_clear"],
+    ["RB01.fault", "PLC01.rb_fault"],
+    ["KLTA01.fill_count", "PLC01.klt_a_count"],
+    ["KLTB01.fill_count", "PLC01.klt_b_count"]
+  ]
+}

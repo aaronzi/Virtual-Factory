@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="LightBarrier"
+    instantiationToken="{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e01}"
+    description="Retro-reflective photoelectric sensor with response-time filter and dark/light-on logic"
+    generationTool="Virtual Factory" version="1.0.0">
+  <CoSimulation modelIdentifier="light_barrier" canHandleVariableCommunicationStepSize="true"
+      canGetAndSetFMUState="true"/>
+  <UnitDefinitions>
+    <Unit name="s"><BaseUnit s="1"/></Unit>
+    <Unit name="W"><BaseUnit kg="1" m="2" s="-3"/></Unit>
+    <Unit name="kWh"><BaseUnit kg="1" m="2" s="-2" factor="3600000"/></Unit>
+    <Unit name="h"><BaseUnit s="1" factor="3600"/></Unit>
+  </UnitDefinitions>
+  <DefaultExperiment stepSize="0.0166666666666667"/>
+  <ModelVariables>
+    <Float64 name="time" valueReference="0" causality="independent" variability="continuous" unit="s"/>
+    <Boolean name="beam_blocked" valueReference="1" causality="input" variability="discrete" start="false"
+        description="Physical stimulus: an object interrupts the light beam"/>
+    <Float64 name="response_time" valueReference="10" causality="parameter" variability="fixed" start="0.01"
+        unit="s" description="Switching delay (filter) for both edges"/>
+    <Boolean name="dark_on" valueReference="11" causality="parameter" variability="fixed" start="true"
+        description="true: output is active while the beam is interrupted"/>
+    <Float64 name="rated_power" valueReference="12" causality="parameter" variability="fixed" start="1.2"
+        unit="W"/>
+    <Boolean name="signal" valueReference="20" causality="output" variability="discrete" initial="exact"
+        start="false" description="Switching output (PNP)"/>
+    <Int32 name="switch_count" valueReference="21" causality="output" variability="discrete" initial="exact"
+        start="0" description="Number of activations since start"/>
+    <Float64 name="power" valueReference="22" causality="output" variability="continuous" initial="exact"
+        start="0" unit="W"/>
+    <Float64 name="energy" valueReference="23" causality="output" variability="continuous" initial="exact"
+        start="0" unit="kWh"/>
+    <Float64 name="operating_hours" valueReference="24" causality="output" variability="continuous"
+        initial="exact" start="0" unit="h"/>
+  </ModelVariables>
+  <ModelStructure>
+    <Output valueReference="20"/>
+    <Output valueReference="21"/>
+    <Output valueReference="22"/>
+    <Output valueReference="23"/>
+    <Output valueReference="24"/>
+  </ModelStructure>
+</fmiModelDescription>

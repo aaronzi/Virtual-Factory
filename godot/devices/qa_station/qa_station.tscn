@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://core/device/device_node.gd" id="1_dev"]
+[ext_resource type="Script" path="res://devices/qa_station/model/qa_station_model.gd" id="2_model"]
+[ext_resource type="Script" path="res://devices/qa_station/probes/color_probe.gd" id="3_probe"]
+[ext_resource type="Script" path="res://devices/qa_station/view/qa_station_greybox_view.gd" id="4_view"]
+
+[node name="QaStation" type="Node3D"]
+script = ExtResource("1_dev")
+model_script = ExtResource("2_model")
+model_description_path = "res://devices/qa_station/model/modelDescription.xml"
+
+[node name="ColorProbe" type="Node3D" parent="."]
+script = ExtResource("3_probe")
+
+[node name="View" type="Node3D" parent="."]
+script = ExtResource("4_view")

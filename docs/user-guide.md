@@ -29,6 +29,10 @@ Open `godot/project.godot` in Godot 4.7 and press Play, or run:
 | Shift | Move faster |
 | Left click | Point / interact |
 
+## What you see
+The line runs automatically (PackML auto-start). The overlay shows the line state, the inspection results, KLT fill
+levels, robot step and line power. Full KLTs are exchanged automatically after 4 s.
+
 ## Developer commands
 | Command | Purpose |
 |---|---|
@@ -38,4 +42,8 @@ Open `godot/project.godot` in Godot 4.7 and press Play, or run:
 | `uv run tools/arch_check.py` | Architecture conformance (≥ 95 %) |
 | `uv run tools/complexity_check.py` | Function length limits |
 | `(cd godot && uv run gdlint .)` | GDScript lint |
-| `tools/screenshot.sh out.png [delay]` | Headless-free review screenshot |
+| `tools/run_line_simulation.sh [seconds]` | Headless line run, faster than real time, checks production invariants |
+| `uv run tools/gen_interface_docs.py` | Regenerate `docs/interfaces/device-catalog.md` from the FMI model descriptions |
+| `tools/screenshot.sh out.png [delay] [scene] --vf-camera=x,y,z,tx,ty,tz` | Review screenshot (camera override optional) |
+| `godot --path godot -- --vf-perf-report=5` | Performance sample (FPS, draw calls, triangles) |
+| `godot --path godot --rendering-method gl_compatibility` | Low-end renderer (Compatibility) |

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="AssemblyCell"
+    instantiationToken="{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e04}"
+    description="Black-box pneumatic cylinder assembly and test cell: releases finished cylinders at takt time"
+    generationTool="Virtual Factory" version="1.0.0">
+  <CoSimulation modelIdentifier="assembly_cell" canHandleVariableCommunicationStepSize="true"
+      canGetAndSetFMUState="true"/>
+  <UnitDefinitions>
+    <Unit name="s"><BaseUnit s="1"/></Unit>
+    <Unit name="W"><BaseUnit kg="1" m="2" s="-3"/></Unit>
+    <Unit name="kWh"><BaseUnit kg="1" m="2" s="-2" factor="3600000"/></Unit>
+    <Unit name="h"><BaseUnit s="1" factor="3600"/></Unit>
+    <Unit name="Nl"><BaseUnit m="3" factor="0.001"/></Unit>
+    <Unit name="Wh/Nl"><BaseUnit kg="1" m="-1" s="-2" factor="3600000"/></Unit>
+    <Unit name="cm3/min"><BaseUnit m="3" s="-1" factor="1.66666666666667e-8"/></Unit>
+  </UnitDefinitions>
+  <DefaultExperiment stepSize="0.0166666666666667"/>
+  <ModelVariables>
+    <Float64 name="time" valueReference="0" causality="independent" variability="continuous" unit="s"/>
+    <Boolean name="enable" valueReference="1" causality="input" variability="discrete" start="false"
+        description="Production enable (from line PLC)"/>
+    <Boolean name="infeed_free" valueReference="2" causality="input" variability="discrete" start="false"
+        description="Interlock: conveyor infeed position is free"/>
+    <Float64 name="takt_time" valueReference="10" causality="parameter" variability="tunable" start="12"
+        unit="s"/>
+    <Float64 name="defect_rate_missing_cap" valueReference="11" causality="parameter" variability="tunable"
+        start="0.05" min="0" max="1"/>
+    <Float64 name="defect_rate_wrong_cap" valueReference="12" causality="parameter" variability="tunable"
+        start="0.03" min="0" max="1"/>
+    <Int32 name="seed" valueReference="13" causality="parameter" variability="fixed" start="42"/>
+    <Int32 name="serial_start" valueReference="14" causality="parameter" variability="fixed" start="1"/>
+    <Int32 name="production_year" valueReference="15" causality="parameter" variability="fixed" start="2026"/>
+    <String name="type_code" valueReference="16" causality="parameter" variability="fixed">
+      <Start value="PC3280"/>
+    </String>
+    <Float64 name="idle_power" valueReference="17" causality="parameter" variability="fixed" start="300"
+        unit="W"/>
+    <Float64 name="working_power" valueReference="18" causality="parameter" variability="fixed" start="900"
+        unit="W" description="Additional electrical power while assembling"/>
+    <Float64 name="air_per_cycle" valueReference="19" causality="parameter" variability="fixed" start="5"
+        unit="Nl" description="Compressed air per cylinder (leak and function test)"/>
+    <Float64 name="air_specific_energy" valueReference="9" causality="parameter" variability="fixed"
+        start="0.12" unit="Wh/Nl" description="Electrical energy of the compressor per normal litre"/>
+    <Int32 name="release_count" valueReference="20" causality="output" variability="discrete"
+        initial="exact" start="0"/>
+    <String name="last_serial" valueReference="21" causality="output" variability="discrete"
+        initial="exact"><Start value=""/></String>
+    <Int32 name="last_cap_variant" valueReference="22" causality="output" variability="discrete"
+        initial="exact" start="0" description="0 = red cap (ok), 1 = cap missing, 2 = wrong (blue) cap"/>
+    <Float64 name="last_leak_rate" valueReference="23" causality="output" variability="discrete"
+        initial="exact" start="0" unit="cm3/min" description="Leak test result (pressure decay at 6 bar)"/>
+    <Float64 name="last_stroke_time" valueReference="24" causality="output" variability="discrete"
+        initial="exact" start="0" unit="s" description="Function test: full stroke time at 6 bar"/>
+    <Int32 name="state" valueReference="25" causality="output" variability="discrete" initial="exact"
+        start="0" description="0 = idle, 1 = assembling, 2 = blocked (waiting for free infeed)"/>
+    <Float64 name="cycle_progress" valueReference="26" causality="output" variability="continuous"
+        initial="exact" start="0"/>
+    <Float64 name="power" valueReference="27" causality="output" variability="continuous" initial="exact"
+        start="0" unit="W" description="Electrical power incl. compressed-air equivalent"/>
+    <Float64 name="energy" valueReference="28" causality="output" variability="continuous" initial="exact"
+        start="0" unit="kWh"/>
+    <Float64 name="operating_hours" valueReference="29" causality="output" variability="continuous"
+        initial="exact" start="0" unit="h"/>
+    <Float64 name="air_consumption" valueReference="30" causality="output" variability="continuous"
+        initial="exact" start="0" unit="Nl"/>
+  </ModelVariables>
+  <ModelStructure>
+    <Output valueReference="20"/>
+    <Output valueReference="21"/>
+    <Output valueReference="22"/>
+    <Output valueReference="23"/>
+    <Output valueReference="24"/>
+    <Output valueReference="25"/>
+    <Output valueReference="26"/>
+    <Output valueReference="27"/>
+    <Output valueReference="28"/>
+    <Output valueReference="29"/>
+    <Output valueReference="30"/>
+  </ModelStructure>
+</fmiModelDescription>

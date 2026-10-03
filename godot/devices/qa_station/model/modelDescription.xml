@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0" modelName="ColorInspectionStation"
+    instantiationToken="{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e03}"
+    description="Quality assurance station with a true-colour sensor: CIELAB delta-E comparison against a taught colour"
+    generationTool="Virtual Factory" version="1.0.0">
+  <CoSimulation modelIdentifier="qa_station" canHandleVariableCommunicationStepSize="true"
+      canGetAndSetFMUState="true"/>
+  <UnitDefinitions>
+    <Unit name="s"><BaseUnit s="1"/></Unit>
+    <Unit name="deg"><BaseUnit rad="1" factor="0.0174532925199433"/></Unit>
+    <Unit name="W"><BaseUnit kg="1" m="2" s="-3"/></Unit>
+    <Unit name="kWh"><BaseUnit kg="1" m="2" s="-2" factor="3600000"/></Unit>
+    <Unit name="h"><BaseUnit s="1" factor="3600"/></Unit>
+  </UnitDefinitions>
+  <DefaultExperiment stepSize="0.0166666666666667"/>
+  <ModelVariables>
+    <Float64 name="time" valueReference="0" causality="independent" variability="continuous" unit="s"/>
+    <Float64 name="measured_r" valueReference="1" causality="input" variability="continuous" start="0"
+        min="0" max="1" description="Physical stimulus: sRGB red of the surface in the light spot"/>
+    <Float64 name="measured_g" valueReference="2" causality="input" variability="continuous" start="0"
+        min="0" max="1"/>
+    <Float64 name="measured_b" valueReference="3" causality="input" variability="continuous" start="0"
+        min="0" max="1"/>
+    <Boolean name="object_present" valueReference="4" causality="input" variability="discrete" start="false"
+        description="Physical stimulus: an object is in the light spot"/>
+    <Boolean name="trigger" valueReference="5" causality="input" variability="discrete" start="false"
+        description="Start measurement (rising edge, from PLC); result stays valid while true"/>
+    <Float64 name="taught_r" valueReference="10" causality="parameter" variability="tunable" start="0.78"
+        min="0" max="1" description="Taught reference colour (red protective cap)"/>
+    <Float64 name="taught_g" valueReference="11" causality="parameter" variability="tunable" start="0.08"
+        min="0" max="1"/>
+    <Float64 name="taught_b" valueReference="12" causality="parameter" variability="tunable" start="0.10"
+        min="0" max="1"/>
+    <Float64 name="tolerance_delta_e" valueReference="13" causality="parameter" variability="tunable"
+        start="25" description="Accepted CIE76 colour distance"/>
+    <Float64 name="noise_sigma" valueReference="14" causality="parameter" variability="fixed" start="0.01"
+        description="Measurement noise (std. dev., sRGB units)"/>
+    <Float64 name="integration_time" valueReference="15" causality="parameter" variability="fixed"
+        start="0.15" unit="s"/>
+    <Int32 name="seed" valueReference="16" causality="parameter" variability="fixed" start="7"/>
+    <Float64 name="sensor_power" valueReference="17" causality="parameter" variability="fixed" start="2.5"
+        unit="W"/>
+    <Float64 name="light_power" valueReference="18" causality="parameter" variability="fixed" start="4"
+        unit="W" description="Ring light, on during measurement"/>
+    <Float64 name="r" valueReference="20" causality="output" variability="discrete" initial="exact" start="0"/>
+    <Float64 name="g" valueReference="21" causality="output" variability="discrete" initial="exact" start="0"/>
+    <Float64 name="b" valueReference="22" causality="output" variability="discrete" initial="exact" start="0"/>
+    <Float64 name="hue" valueReference="23" causality="output" variability="discrete" initial="exact"
+        start="0" unit="deg"/>
+    <Float64 name="delta_e" valueReference="24" causality="output" variability="discrete" initial="exact"
+        start="0"/>
+    <Boolean name="result_ok" valueReference="25" causality="output" variability="discrete" initial="exact"
+        start="false" description="Colour matches the taught colour within tolerance"/>
+    <Boolean name="result_valid" valueReference="26" causality="output" variability="discrete"
+        initial="exact" start="false"/>
+    <Int32 name="measure_count" valueReference="27" causality="output" variability="discrete"
+        initial="exact" start="0"/>
+    <Boolean name="light_on" valueReference="28" causality="output" variability="discrete" initial="exact"
+        start="false"/>
+    <Float64 name="power" valueReference="29" causality="output" variability="continuous" initial="exact"
+        start="0" unit="W"/>
+    <Float64 name="energy" valueReference="30" causality="output" variability="continuous" initial="exact"
+        start="0" unit="kWh"/>
+    <Float64 name="operating_hours" valueReference="31" causality="output" variability="continuous"
+        initial="exact" start="0" unit="h"/>
+  </ModelVariables>
+  <ModelStructure>
+    <Output valueReference="20"/>
+    <Output valueReference="21"/>
+    <Output valueReference="22"/>
+    <Output valueReference="23"/>
+    <Output valueReference="24"/>
+    <Output valueReference="25"/>
+    <Output valueReference="26"/>
+    <Output valueReference="27"/>
+    <Output valueReference="28"/>
+    <Output valueReference="29"/>
+    <Output valueReference="30"/>
+    <Output valueReference="31"/>
+  </ModelStructure>
+</fmiModelDescription>

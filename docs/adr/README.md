@@ -12,3 +12,5 @@ Format: short [MADR](https://adr.github.io/madr/)-style records. New ADR = next 
 | [0005](0005-ot-it-split-mqtt-uns.md) | OT/IT split via MQTT UNS and edge services | accepted |
 | [0006](0006-composition-root-dependency-rules.md) | Composition root and measured dependency rules | accepted |
 | [0007](0007-gut-for-gdscript-tests.md) | GUT for GDScript tests | accepted |
+| [0008](0008-plc-program-as-fmu.md) | PLC program as an FMI co-simulation slave | accepted |
+| [0009](0009-physical-transport-and-items.md) | Physical transport with Jolt rigid bodies | accepted |

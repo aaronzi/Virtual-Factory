@@ -21,6 +21,8 @@ jobs:
         run: uv run tools/arch_check.py
       - name: Complexity limits
         run: uv run tools/complexity_check.py
+      - name: Interface catalogue up to date
+        run: uv run tools/gen_interface_docs.py --check
       - name: GDScript lint
         working-directory: godot
         run: uv run gdlint .
@@ -38,3 +40,5 @@ jobs:
           echo "GODOT_PATH=$PWD/Godot_v${GODOT_VERSION}-stable_linux.x86_64" >> "$GITHUB_ENV"
       - name: GUT unit tests
         run: tools/run_godot_tests.sh
+      - name: Line integration run (300 simulated seconds, headless)
+        run: tools/run_line_simulation.sh 300

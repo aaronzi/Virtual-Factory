@@ -63,8 +63,9 @@ Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 | `scenarios` | Training scenarios, fault injection | core |
 | `factory` | **Composition root**: layout loading, wiring, main scene | all |
 
-## 6. Runtime view *(planned)*
-Part life cycle, session start and agent operation: see [PLAN.md §2.2, §3.9–3.10](../PLAN.md).
+## 6. Runtime view
+- [Life cycle of one part](runtime-part-lifecycle.md) (OT layer, M1)
+- Session start and agent operation: *(planned, M4)*, see [PLAN.md §3.9–3.10](../PLAN.md)
 
 ## 7. Deployment view
 | Container | Image | Host port |
@@ -81,7 +82,13 @@ The Godot application runs natively on the host and connects to `ws://localhost:
 ## 8. Crosscutting concepts
 - **ID scheme**: `services/vf_common/src/vf_common/ids.py` (base `https://virtual-factory.example/ids`).
 - **Units**: SI throughout (m, s, rad, W, kWh, kg CO₂e). 1 Godot unit = 1 m. Godot is Y-up; the robot base frame is Z-up (converted in the robot view).
-- **FMI-3 interface**, **UNS topics**, **AAS modelling**, **physics/transport**, **XR-readiness**: *(planned)* see PLAN.md §3.4–3.14.
+- **FMI-3 interface**: [interfaces/fmi-interface.md](../interfaces/fmi-interface.md), generated [device catalogue](../interfaces/device-catalog.md)
+- **Device modules** (model / probe / view / root, services, teach points): [device-modules.md](device-modules.md)
+- **Virtual PLC**: a PLC program is an FMI slave whose variables are the process image; IEC 61131-3 FBs
+  (`core/plc/iec_*.gd`), PackML state machine, 10 ms scans ([ADR-0008](../adr/0008-plc-program-as-fmu.md))
+- **Physics/transport**: belt `constant_linear_velocity` (Jolt), rigid workpieces, kinematic attach on grasp
+  ([ADR-0009](../adr/0009-physical-transport-and-items.md))
+- **UNS topics**, **AAS modelling**: *(planned, M3/M4)* see PLAN.md §3.9–3.12
 
 ## 9. Architecture decisions
 See [adr/](../adr/README.md).

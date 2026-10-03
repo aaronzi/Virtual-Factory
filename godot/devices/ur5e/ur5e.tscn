@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://devices/ur5e/ur5e_device.gd" id="1_dev"]
+[ext_resource type="Script" path="res://devices/ur5e/model/ur5e_model.gd" id="2_model"]
+[ext_resource type="Script" path="res://devices/ur5e/view/ur5e_greybox_view.gd" id="3_view"]
+[ext_resource type="Script" path="res://devices/ur5e/probes/grip_probe.gd" id="4_probe"]
+[ext_resource type="Script" path="res://devices/ur5e/view/grasp_actuator.gd" id="5_grasp"]
+
+[node name="UR5e" type="Node3D"]
+script = ExtResource("1_dev")
+model_script = ExtResource("2_model")
+model_description_path = "res://devices/ur5e/model/modelDescription.xml"
+
+[node name="Base" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+
+[node name="TCP" type="Node3D" parent="Base"]
+
+[node name="GripProbe" type="Node3D" parent="Base/TCP"]
+script = ExtResource("4_probe")
+
+[node name="View" type="Node3D" parent="."]
+script = ExtResource("3_view")
+
+[node name="GraspActuator" type="Node3D" parent="."]
+script = ExtResource("5_grasp")
