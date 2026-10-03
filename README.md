@@ -36,7 +36,8 @@ Or run a desktop build (`tools/export_builds.sh` → `build/VirtualFactory-{maco
 - [Requirements](docs/requirements.md) · [architecture (arc42)](docs/architecture/README.md) · [ADRs](docs/adr/README.md)
 - Interfaces: [FMI](docs/interfaces/fmi-interface.md) · [UNS](docs/interfaces/uns.md) ·
   [AAS model](docs/interfaces/aas-model.md) · [services](docs/interfaces/services.md) · [scenarios](docs/interfaces/scenarios.md)
-- [Conformance report](docs/conformance-report.md) · [open issues](docs/open-issues.md) · [plan](docs/PLAN.md)
+- [Conformance report](docs/conformance-report.md) · [open issues](docs/open-issues.md) ·
+  [upstream findings](docs/upstream-findings.md) (BaSyx Go, basyx-python-sdk, AAS specs, IDTA templates) · [plan](docs/PLAN.md)
 - [Development and CI](docs/development.md): checks, CI workflows, integration suite (`tools/ci_integration.sh`)
 
 ## Repository layout

@@ -8,5 +8,6 @@
 | [interfaces/](interfaces/) | FMI device catalogue, UNS topics, AAS model, Operations API *(from M1)* |
 | [adr/](adr/README.md) | Architecture decision records |
 | [open-issues.md](open-issues.md) | Risks, gaps, technical debt |
+| [upstream-findings.md](upstream-findings.md) | Verified bugs and gaps in BaSyx Go, basyx-python-sdk, the AAS specifications and IDTA submodel templates |
 | [user-guide.md](user-guide.md) | Setup, controls, developer commands |
 | [screenshots/](screenshots/) | Milestone review screenshots |
