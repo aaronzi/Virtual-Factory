@@ -4,6 +4,8 @@ extends Node3D
 ##
 ## UNS gateway (MQTT): on by default with broker.websocket from res://config/uns.json;
 ##   --vf-uns=<ws://host:port | mqtt://host:port> overrides the broker, --vf-uns=off disables it.
+## Training scenarios: `scenarios` (ScenarioRunner, stepped after UNS commands);
+##   --vf-scenario=<id> starts one at launch.
 
 signal built(builder: FactoryBuilder)
 
@@ -13,6 +15,7 @@ const UNS_REGISTRY := "res://config/uns.json"
 
 var builder := FactoryBuilder.new()
 var uns: UnsGateway
+var scenarios: ScenarioRunner
 var _running := false
 
 
@@ -25,6 +28,7 @@ func _ready() -> void:
 		push_error("Factory build failed: %s" % error_string(err))
 		return
 	_running = true
+	scenarios = ScenarioWiring.create(builder.master)
 	_start_uns(DevTools.get_arg("vf-uns"))
 	built.emit(builder)
 
@@ -34,6 +38,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if uns:
 		uns.before_step()
+	scenarios.before_step(delta)
 	for device: DeviceNode in builder.devices.values():
 		device.sample_probes(delta)
 	builder.master.step(delta)

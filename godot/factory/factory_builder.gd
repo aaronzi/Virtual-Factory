@@ -10,6 +10,7 @@ var master := CoSimMaster.new()
 var devices: Dictionary = {}  ## id -> DeviceNode
 var item_factory: ItemFactory
 var layout: Dictionary = {}
+var props: Array[Node3D] = []  ## static scenery; `asset_tag` meta if the layout names its AAS (e.g. PLC01)
 
 
 func build(layout_path: String, root: Node3D, items_root: Node3D) -> Error:
@@ -60,6 +61,9 @@ func _add_prop(spec: Dictionary, root: Node3D) -> void:
 	var p: Array = spec.get("position", [0, 0, 0])
 	prop.position = Vector3(p[0], p[1], p[2])
 	prop.rotation_degrees.y = spec.get("rotation_deg", 0.0)
+	if spec.has("asset"):
+		prop.set_meta("asset_tag", spec.asset)
+	props.append(prop)
 
 
 func _add_controller(spec: Dictionary) -> void:

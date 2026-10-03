@@ -1,0 +1,18 @@
+{
+  "id": "light_barrier_misalignment",
+  "title_en": "Misaligned light barrier",
+  "title_de": "Dejustierte Lichtschranke",
+  "description_en": "The inspection light barrier LB02 was knocked out of alignment. The beam drops out randomly and triggers inspections without a part (empty measurements, false rejects, robot picks nothing); finally the beam is lost completely, the PLC detects a stuck signal (alarm 302) and holds the line. The diagnostics output stability_ok points to the faulty sensor.",
+  "description_de": "Die Prüflichtschranke LB02 wurde verstellt. Der Strahl fällt zufällig aus und löst Prüfungen ohne Teil aus (Leermessungen, Pseudoausschuss, Roboter greift ins Leere); schließlich geht der Strahl ganz verloren, die SPS erkennt ein hängendes Signal (Alarm 302) und hält die Linie an. Der Diagnoseausgang stability_ok zeigt auf den fehlerhaften Sensor.",
+  "steps": [
+    {"at": 20.0, "set": {"LB02.misalignment": 0.3},
+     "message_en": "LB02 slightly misaligned: intermittent false triggers.",
+     "message_de": "LB02 leicht verstellt: sporadische Fehlauslösungen."},
+    {"after": 60.0, "set": {"LB02.misalignment": 1.0},
+     "message_en": "LB02 beam lost: signal stuck, the line is held (alarm 302).",
+     "message_de": "LB02 Strahl verloren: Signal hängt, die Linie hält an (Alarm 302)."},
+    {"after": 20.0, "reset": "all",
+     "message_en": "LB02 realigned - the line resumes automatically.",
+     "message_de": "LB02 neu justiert - die Linie läuft automatisch weiter."}
+  ]
+}

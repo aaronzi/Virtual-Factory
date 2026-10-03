@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription fmiVersion="3.0" modelName="SortingLinePLC"
     instantiationToken="{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e10}"
-    description="Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robot handshake, KLT handling, PackML"
+    description="Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robot handshake, KLT handling, PackML, alarms"
     generationTool="Virtual Factory" version="1.0.0">
   <CoSimulation modelIdentifier="sorting_line_plc" canHandleVariableCommunicationStepSize="true"
       canGetAndSetFMUState="true"/>
@@ -34,6 +34,10 @@
         description="PackML command (1 Reset, 2 Start, 3 Stop, 4 Hold, 5 Unhold, 6 Suspend, 7 Unsuspend, 8 Abort, 9 Clear); edge-triggered on change"/>
     <Int32 name="klt_exchange_command" valueReference="14" causality="input" variability="discrete" start="0"
         description="Manual container exchange (1 KLT A, 2 KLT B, 0 none); edge-triggered on change, only if the KLT holds parts"/>
+    <Boolean name="cv_fault" valueReference="15" causality="input" variability="discrete" start="false"
+        description="CV01 drive fault (alarm 101, line aborts)"/>
+    <Boolean name="rb_protective_stop" valueReference="16" causality="input" variability="discrete" start="false"
+        description="RB01 in protective stop, e.g. fence door open (alarm 201, line held until released)"/>
     <Float64 name="scan_time" valueReference="50" causality="parameter" variability="fixed" start="0.01" unit="s"
         description="PLC cycle time"/>
     <Boolean name="auto_start" valueReference="51" causality="parameter" variability="fixed" start="true"
@@ -51,6 +55,8 @@
     <Float64 name="infeed_timeout" valueReference="58" causality="parameter" variability="fixed" start="8.0" unit="s"
         description="Max time between release and LB01"/>
     <Int32 name="max_parts_on_belt" valueReference="59" causality="parameter" variability="fixed" start="3"/>
+    <Float64 name="sensor_blocked_timeout" valueReference="60" causality="parameter" variability="fixed" start="1.5" unit="s"
+        description="A light barrier blocked longer than this while it must be free (belt running) raises a stuck-signal alarm (301/302)"/>
     <Boolean name="ac_enable" valueReference="100" causality="output" variability="discrete" initial="exact" start="false"/>
     <Boolean name="ac_infeed_free" valueReference="101" causality="output" variability="discrete" initial="exact" start="false"/>
     <Boolean name="cv_run" valueReference="102" causality="output" variability="discrete" initial="exact" start="false"/>
@@ -85,6 +91,14 @@
         description="KLT of the last sorted part: 1 = KLT A (OK), 2 = KLT B (NOK)"/>
     <Int32 name="sorted_slot" valueReference="125" causality="output" variability="discrete" initial="exact" start="0"
         description="Slot index of the last sorted part in its KLT"/>
+    <Int32 name="alarm_code" valueReference="126" causality="output" variability="discrete" initial="exact" start="0"
+        description="Highest-priority active alarm (0 none, 101 CV01 drive fault, 201 RB01 protective stop, 202 RB01 fault, 301/302 LB01/LB02 signal stuck, 401 infeed tracking timeout)"/>
+    <String name="alarm_text" valueReference="127" causality="output" variability="discrete" initial="exact"
+        description="Text of alarm_code (empty when no alarm is active)"><Start value=""/></String>
+    <Int32 name="alarm_count" valueReference="128" causality="output" variability="discrete" initial="exact" start="0"
+        description="Number of alarms raised since start"/>
+    <Boolean name="horn" valueReference="129" causality="output" variability="discrete" initial="exact" start="false"
+        description="Stack light buzzer: an alarm stops the line"/>
   </ModelVariables>
   <ModelStructure>
     <Output valueReference="100"/>
@@ -113,5 +127,9 @@
     <Output valueReference="123"/>
     <Output valueReference="124"/>
     <Output valueReference="125"/>
+    <Output valueReference="126"/>
+    <Output valueReference="127"/>
+    <Output valueReference="128"/>
+    <Output valueReference="129"/>
   </ModelStructure>
 </fmiModelDescription>

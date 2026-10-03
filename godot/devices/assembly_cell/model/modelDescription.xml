@@ -24,9 +24,9 @@
     <Float64 name="takt_time" valueReference="10" causality="parameter" variability="tunable" start="12"
         unit="s"/>
     <Float64 name="defect_rate_missing_cap" valueReference="11" causality="parameter" variability="tunable"
-        start="0.05" min="0" max="1"/>
+        start="0.05" min="0" max="1" description="Probability of a missing protective cap (tunable at runtime: fault injection)"/>
     <Float64 name="defect_rate_wrong_cap" valueReference="12" causality="parameter" variability="tunable"
-        start="0.03" min="0" max="1"/>
+        start="0.03" min="0" max="1" description="Probability of a wrong (blue) protective cap (tunable at runtime: fault injection)"/>
     <Int32 name="seed" valueReference="13" causality="parameter" variability="fixed" start="42"/>
     <Int32 name="serial_start" valueReference="14" causality="parameter" variability="fixed" start="1"/>
     <Int32 name="production_year" valueReference="15" causality="parameter" variability="fixed" start="2026"/>

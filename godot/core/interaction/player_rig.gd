@@ -6,6 +6,13 @@ extends Node3D
 
 ## Emitted when the rig's pointer (mouse ray or XR controller ray) presses on something.
 signal pointer_pressed(hit: Dictionary)
+## Emitted when the pointer button / trigger is released (hit may be empty).
+signal pointer_released(hit: Dictionary)
+
+
+## True while the pointer can be used for UI (e.g. not while the desktop camera is being rotated).
+func is_pointer_active() -> bool:
+	return true
 
 
 ## World-space origin and direction of the rig's primary pointer ray.

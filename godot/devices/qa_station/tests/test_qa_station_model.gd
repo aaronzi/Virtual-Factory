@@ -5,11 +5,13 @@ const MD := "res://devices/qa_station/model/modelDescription.xml"
 const H := 1.0 / 60.0
 
 
-func _measure(rgb: Color, present := true) -> Fmi3CoSimulation:
+func _measure(rgb: Color, present := true, faults := {}) -> Fmi3CoSimulation:
 	var m: Fmi3CoSimulation = Model.new()
 	m.instantiate("QS", Fmi3ModelDescription.load_file(MD))
 	m.enter_initialization_mode()
 	m.exit_initialization_mode()
+	for key in faults:
+		assert_eq(m.set_value(key, faults[key]), Fmi3.Status.OK, "%s tunable in step mode" % key)
 	m.set_value("measured_r", rgb.r)
 	m.set_value("measured_g", rgb.g)
 	m.set_value("measured_b", rgb.b)
@@ -49,3 +51,20 @@ func test_delta_e_reference_values() -> void:
 	assert_almost_eq(ColorMath.delta_e76(Vector3.ONE, Vector3.ONE), 0.0, 1e-6)
 	assert_almost_eq(ColorMath.srgb_to_lab(Vector3.ONE).x, 100.0, 0.05, "white L* = 100")
 	assert_almost_eq(ColorMath.delta_e76(Vector3.ZERO, Vector3.ONE), 100.0, 0.05)
+
+
+func test_contamination_shifts_colour_and_causes_false_rejects() -> void:
+	var red := Color(0.78, 0.08, 0.10)
+	var slight := _measure(red, true, {"contamination": 0.2})
+	assert_true(slight.get_value("result_ok"), "slightly dirty lens still passes")
+	assert_gt(slight.get_value("delta_e"), 10.0, "delta-E rises")
+	var dirty := _measure(red, true, {"contamination": 0.5})
+	assert_false(dirty.get_value("result_ok"), "false reject")
+	assert_lt(dirty.get_value("r"), 0.55, "darker/greyer")
+	assert_gt(dirty.get_value("g"), 0.08)
+
+
+func test_drift_adds_offset() -> void:
+	var m := _measure(Color(0.5, 0.5, 0.5), true, {"drift": 0.1})
+	assert_almost_eq(m.get_value("r"), 0.6, 0.04)
+	assert_almost_eq(m.get_value("b"), 0.6, 0.04)

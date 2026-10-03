@@ -29,8 +29,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		_pitch = clampf(_pitch - event.relative.y * mouse_sensitivity, -1.5, 1.5)
 		rotation.y = _yaw
 		_camera.rotation.x = _pitch
-	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		pointer_pressed.emit(_raycast_pointer())
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			pointer_pressed.emit(_raycast_pointer())
+		else:
+			pointer_released.emit(_raycast_pointer())
 
 
 func _process(delta: float) -> void:
@@ -54,6 +57,10 @@ func get_pointer_ray() -> Dictionary:
 
 func get_view_camera() -> Camera3D:
 	return _camera
+
+
+func is_pointer_active() -> bool:
+	return Input.mouse_mode != Input.MOUSE_MODE_CAPTURED
 
 
 func teleport_to(from: Vector3, target: Vector3) -> void:

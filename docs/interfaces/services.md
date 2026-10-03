@@ -18,6 +18,7 @@ Godot (FMUs, PLC) ──UNS/MQTT──► bridge ──REST $value──► BaSy
 | `mes` | Sessions, workpiece instance AAS, quality verdict, PCF, KLT contents, energy/CO₂e, power time series, KPIs; external-task worker of both BPMN processes; UNS event → BPMN message correlation | MQTT, AAS, Operaton | 0016 |
 | `ops-gateway` | Executes the delegated LineControl operations as UNS commands | AAS (delegation), MQTT | 0017 |
 | `bpmn` | Operaton 2.1.5: process engine, Cockpit, Tasklist | – | 0016 |
+| `nodered` (profile `sandbox`, optional) | Learner sandbox with example flows (UNS explorer, reject alarm, read the AAS, call an AAS operation); port 1880, no auth, outside the core data path; publishes only `{root}/sandbox/alert` | MQTT, AAS | – |
 
 ## Configuration (environment variables)
 

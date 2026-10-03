@@ -10,6 +10,7 @@
 #   9001  MQTT over WebSocket   – Godot shop-floor simulation
 #   8092  Operaton BPMN engine  – Cockpit / Tasklist (/operaton/app/), REST (/engine-rest), local user demo/demo
 #   8095  ops gateway           – AAS operation delegation target (health: /health)
+#   1880  Node-RED              – optional learner sandbox, only with `--profile sandbox` (no auth)
 #
 # The database lives on tmpfs: every `up` starts with a fresh DB. The one-shot `provisioner` service builds the
 # static AAS into ./basyx/preload, which BaSyx imports at startup (workpiece instances are ephemeral, ADR-0004).
@@ -181,3 +182,34 @@ services:
       mqtt:
         condition: service_started
     restart: unless-stopped
+
+  nodered:
+    # Optional learner sandbox, outside the core data path. Only started with the "sandbox" profile:
+    #   docker compose -f infra/docker-compose.yml --profile sandbox up -d nodered
+    # Example flows are provisioned from infra/nodered/flows.json (read-only) into the named volume
+    # nodered-data once (marker /data/.vf-seeded); later edits persist there. Reset to the repo examples:
+    #   docker compose -f infra/docker-compose.yml rm -sf nodered && docker volume rm vf_nodered-data
+    # No authentication (local use only).
+    image: nodered/node-red:4.1.15-22
+    profiles: ["sandbox"]
+    ports:
+      - "1880:1880"
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - >-
+        if [ ! -f /data/.vf-seeded ]; then
+        rm -f /data/flows.json && cp /vf/flows.json /data/flows.json && touch /data/.vf-seeded; fi;
+        exec ./entrypoint.sh --settings /vf/settings.js
+    environment:
+      TZ: UTC
+    volumes:
+      - ./nodered/flows.json:/vf/flows.json:ro
+      - ./nodered/settings.js:/vf/settings.js:ro
+      - nodered-data:/data
+    depends_on:
+      mqtt:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  nodered-data:   # Node-RED user dir of the sandbox (flows edited in the editor, installed palette nodes)

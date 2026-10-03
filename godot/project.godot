@@ -58,6 +58,7 @@ move_fast={
 
 [internationalization]
 
+locale/translations=PackedStringArray("res://ui/i18n/ui.en.translation", "res://ui/i18n/ui.de.translation")
 locale/fallback="en"
 
 [physics]

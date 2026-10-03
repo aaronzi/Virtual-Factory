@@ -57,12 +57,12 @@ Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 | `devices/<type>` | One device type each: model (FMU), probes, view, scene, type metadata | core |
 | `products` | Workpiece scene, product-type resources | core |
 | `control` | PLC programs (SortingLine), I/O maps | core |
-| `connectivity` | MQTT 3.1.1 client (own GDScript, TCP/WebSocket), UNS gateway, AAS REST reader | core |
+| `connectivity` | MQTT 3.1.1 client (own GDScript, TCP/WebSocket), UNS gateway, AAS REST client + BaSyx event feed, BPMN task client | core |
 | `world` | Hall, lighting, props | core |
 | `player` | DesktopRig (later XRRig) | core |
-| `ui` | World-space panels, AAS inspector, HMI, i18n | core |
+| `ui` | Views only (ADR-0018): world-space panels + pointer router, AAS inspector, HMI, MES task terminal, F1 menu, camera tour, data-flow view, theme, i18n | core |
 | `scenarios` | Training scenarios, fault injection | core |
-| `factory` | **Composition root**: layout loading, wiring, main scene | all |
+| `factory` | **Composition root**: layout loading, wiring, main scene, training-UI controllers (inspector, HMI, tasks, menu, data flow, asset picking, local commands) | all |
 
 ## 6. Runtime view
 - [Life cycle of one part](runtime-part-lifecycle.md) (OT layer, M1)
@@ -79,6 +79,7 @@ Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 | provisioner | `vf-services:dev` (built from `services/Dockerfile`), one-shot before aas-env | – |
 | bridge, mes, ops-gateway | `vf-services:dev` | 8095 (ops-gateway, fixed IP 172.30.42.95 for the delegation allow-list) |
 | bpmn | `operaton/operaton:2.1.5` (in-memory H2) | 8092 (REST, Cockpit, Tasklist) |
+| nodered (optional, profile `sandbox`) | `nodered/node-red:4.1.15-22`, learner sandbox outside the core data path; flows from `infra/nodered/`, edits in volume `vf_nodered-data`, no auth | 1880 |
 
 The Godot application runs natively on the host and connects to `ws://localhost:9001` and `http://localhost:8091`.
 
@@ -89,6 +90,8 @@ The Godot application runs natively on the host and connects to `ws://localhost:
 - **Device modules** (model / probe / view / root, services, teach points): [device-modules.md](device-modules.md)
 - **Virtual PLC**: a PLC program is an FMI slave whose variables are the process image; IEC 61131-3 FBs
   (`core/plc/iec_*.gd`), PackML state machine, 10 ms scans ([ADR-0008](../adr/0008-plc-program-as-fmu.md))
+- **Fault injection / training**: faults are FMI inputs/tunable parameters, PLC alarms with PackML reactions,
+  data-driven scenarios (`godot/scenarios`, `godot/config/scenarios`): [interfaces/scenarios.md](../interfaces/scenarios.md)
 - **3D asset pipeline** (Blender scripts → glb → ModelView, animations from recorded runs): [asset-pipeline.md](asset-pipeline.md)
 - **Rendering/lighting**: Compatibility renderer, unbaked indoor lighting, draw-call budget ([ADR-0010](../adr/0010-compatibility-renderer-indoor-lighting.md))
 - **Physics/transport**: belt `constant_linear_velocity` (Jolt), rigid workpieces, kinematic attach on grasp

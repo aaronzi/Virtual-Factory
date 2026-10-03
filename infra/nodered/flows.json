@@ -1,0 +1,634 @@
+[
+    {
+        "id": "vf_broker",
+        "type": "mqtt-broker",
+        "name": "VF broker (mqtt:1883)",
+        "broker": "mqtt",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "tab_uns_explorer",
+        "type": "tab",
+        "label": "1 UNS explorer",
+        "disabled": false,
+        "info": "Subscribes to all **events** of the line in the Unified Namespace (UNS) and counts them per\nevent type.\n\n- Topic scheme: `vf/plant01/final-assembly/line01/{device}/event/{event}` (see docs/interfaces/uns.md)\n- `+` matches exactly one topic level (the device), `#` everything below `event/`\n- Payload: flat JSON object with `event`, `device`, `session`, `seq`, `ts` and event specific fields\n\nStart the factory (Godot) and open the debug sidebar (bug icon, top right).\n\nIdeas: also count per device; subscribe to telemetry `vf/plant01/final-assembly/line01/plc01/#` instead (much more traffic!)."
+    },
+    {
+        "id": "uns_c1",
+        "type": "comment",
+        "z": "tab_uns_explorer",
+        "x": 230,
+        "y": 60,
+        "name": "UNS explorer: count line events per type (double click for details)",
+        "info": "Every event of every device arrives at the mqtt-in node, the function keeps a counter per event type in its node context and sends the whole table on. `seq` is a per-session event counter, so a gap means that events were lost (e.g. during a reconnect).",
+        "wires": []
+    },
+    {
+        "id": "uns_events",
+        "type": "mqtt in",
+        "z": "tab_uns_explorer",
+        "x": 210,
+        "y": 140,
+        "name": "all line events",
+        "topic": "vf/plant01/final-assembly/line01/+/event/#",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "vf_broker",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "wires": [
+            [
+                "uns_count",
+                "uns_raw_dbg"
+            ]
+        ]
+    },
+    {
+        "id": "uns_reset",
+        "type": "inject",
+        "z": "tab_uns_explorer",
+        "x": 200,
+        "y": 200,
+        "name": "reset counters",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "wires": [
+            [
+                "uns_count"
+            ]
+        ]
+    },
+    {
+        "id": "uns_count",
+        "type": "function",
+        "z": "tab_uns_explorer",
+        "x": 450,
+        "y": 160,
+        "name": "count per event type",
+        "func": "// Count UNS events per event type and detect gaps in the event sequence number.\n// msg.topic = vf/plant01/final-assembly/line01/{device}/event/{event}\n// msg.payload = parsed JSON (the mqtt-in node is set to \"a parsed JSON object\")\n\nif (msg.payload === true) {                 // from the \"reset counters\" inject node\n    context.set(\"counts\", {});\n    node.status({});\n    return null;\n}\n\nconst levels = msg.topic.split(\"/\");\nconst device = levels[4];                   // e.g. \"plc01\"\nconst type = levels[6] || msg.payload.event; // e.g. \"part_inspected\"\n\n// node context survives between messages (but not a restart of Node-RED)\nconst counts = context.get(\"counts\") || {};\ncounts[type] = (counts[type] || 0) + 1;\ncontext.set(\"counts\", counts);\n\n// seq counts all events of one factory session; a jump > 1 means lost events\nconst last = context.get(\"last\") || {};\nif (last.session === msg.payload.session && msg.payload.seq > last.seq + 1) {\n    node.warn(`events lost: seq ${last.seq} -> ${msg.payload.seq}`);\n}\ncontext.set(\"last\", { session: msg.payload.session, seq: msg.payload.seq });\n\nconst total = Object.values(counts).reduce((a, b) => a + b, 0);\nnode.status({ fill: \"green\", shape: \"dot\", text: `${total} events, last: ${device}/${type}` });\n\nmsg.payload = counts;                       // e.g. {\"part_released\": 12, \"part_inspected\": 11, ...}\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "wires": [
+            [
+                "uns_counts_dbg"
+            ]
+        ]
+    },
+    {
+        "id": "uns_counts_dbg",
+        "type": "debug",
+        "z": "tab_uns_explorer",
+        "x": 690,
+        "y": 160,
+        "name": "event counts",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto"
+    },
+    {
+        "id": "uns_raw_dbg",
+        "type": "debug",
+        "z": "tab_uns_explorer",
+        "x": 450,
+        "y": 240,
+        "name": "raw events (enable me)",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto"
+    },
+    {
+        "id": "tab_reject_alarm",
+        "type": "tab",
+        "label": "2 Reject alarm",
+        "disabled": false,
+        "info": "Raises an alarm when too many parts fail the colour inspection.\n\n1. `part_inspected` events of PLC01 arrive (field `result`: 1 = OK, 2 = reject)\n2. the switch node lets only rejects pass\n3. the function keeps the reject times of the last `WINDOW_S` seconds (sliding window) and emits an alert\n   when there are more than `LIMIT` of them (at most one alert per window)\n4. the change node sets the alert topic, the mqtt-out node publishes it to `vf/plant01/final-assembly/line01/sandbox/alert`\n\nWatch the alert e.g. with MQTT Explorer or `mosquitto_sub -h localhost -t 'vf/plant01/final-assembly/line01/sandbox/#' -v`.\nThe \"simulated reject\" inject node feeds a fake event directly into the switch (it is **not** published to the\nbroker, so the MES does not see it) - click it a few times to test without the factory."
+    },
+    {
+        "id": "rej_c1",
+        "type": "comment",
+        "z": "tab_reject_alarm",
+        "x": 250,
+        "y": 60,
+        "name": "Reject alarm: > LIMIT rejects within WINDOW_S seconds -> alert topic",
+        "info": "Window length and limit are constants at the top of the function node. Time base is the event timestamp `ts` (simulation time), so the alarm also works in faster-than-real-time runs.",
+        "wires": []
+    },
+    {
+        "id": "rej_events",
+        "type": "mqtt in",
+        "z": "tab_reject_alarm",
+        "x": 200,
+        "y": 140,
+        "name": "part_inspected",
+        "topic": "vf/plant01/final-assembly/line01/plc01/event/part_inspected",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "vf_broker",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "wires": [
+            [
+                "rej_switch"
+            ]
+        ]
+    },
+    {
+        "id": "rej_test",
+        "type": "inject",
+        "z": "tab_reject_alarm",
+        "x": 200,
+        "y": 200,
+        "name": "simulated reject",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"event\": \"part_inspected\", \"device\": \"PLC01\", \"serial\": \"TEST-0001\", \"result\": 2, \"ts\": $now()}",
+        "payloadType": "jsonata",
+        "wires": [
+            [
+                "rej_switch"
+            ]
+        ]
+    },
+    {
+        "id": "rej_switch",
+        "type": "switch",
+        "z": "tab_reject_alarm",
+        "x": 410,
+        "y": 160,
+        "name": "result == 2 (reject)",
+        "property": "payload.result",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "2",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "wires": [
+            [
+                "rej_window"
+            ]
+        ]
+    },
+    {
+        "id": "rej_window",
+        "type": "function",
+        "z": "tab_reject_alarm",
+        "x": 620,
+        "y": 160,
+        "name": "sliding window",
+        "func": "// Sliding-window reject counter. Change the parameters, then press Deploy.\nconst WINDOW_S = 60;   // window length in seconds\nconst LIMIT = 3;       // alert when MORE than LIMIT rejects lie inside the window\n\n// Time base: the event timestamp (simulation time base), fallback wall clock\nconst t = Date.parse(msg.payload.ts) || Date.now();\n\n// keep only rejects that are still inside the window, then add the new one\nconst rejects = (context.get(\"rejects\") || []).filter(x => x > t - WINDOW_S * 1000 && x <= t);\nrejects.push(t);\ncontext.set(\"rejects\", rejects);\n\nconst alarm = rejects.length > LIMIT;\nnode.status({ fill: alarm ? \"red\" : \"green\", shape: \"dot\", text: `${rejects.length} rejects / ${WINDOW_S} s` });\nif (!alarm) return null;\n\n// debounce: at most one alert per window\nif (t - (context.get(\"lastAlert\") || 0) < WINDOW_S * 1000) return null;\ncontext.set(\"lastAlert\", t);\n\nmsg.payload = {\n    alert: \"reject_rate\",\n    rejects: rejects.length,\n    window_s: WINDOW_S,\n    limit: LIMIT,\n    last_serial: msg.payload.serial,\n    ts: new Date(t).toISOString(),\n    source: \"nodered-sandbox\"\n};\nreturn msg;               // the mqtt-out node serialises the object to JSON\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "wires": [
+            [
+                "rej_topic"
+            ]
+        ]
+    },
+    {
+        "id": "rej_topic",
+        "type": "change",
+        "z": "tab_reject_alarm",
+        "x": 830,
+        "y": 160,
+        "name": "set alert topic",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "vf/plant01/final-assembly/line01/sandbox/alert",
+                "tot": "str"
+            }
+        ],
+        "wires": [
+            [
+                "rej_publish",
+                "rej_dbg"
+            ]
+        ]
+    },
+    {
+        "id": "rej_publish",
+        "type": "mqtt out",
+        "z": "tab_reject_alarm",
+        "x": 1040,
+        "y": 140,
+        "name": "publish alert",
+        "topic": "",
+        "qos": "1",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "vf_broker"
+    },
+    {
+        "id": "rej_dbg",
+        "type": "debug",
+        "z": "tab_reject_alarm",
+        "x": 1030,
+        "y": 200,
+        "name": "alert",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto"
+    },
+    {
+        "id": "tab_read_aas",
+        "type": "tab",
+        "label": "3 Read the AAS",
+        "disabled": false,
+        "info": "Reads the live counters of the PLC from its digital twin (AAS) via the AAS REST API.\n\n- Submodel id: `https://virtual-factory.example/ids/sm/PLC01/OperationalData/1`\n- In URLs, ids are **base64url** encoded (RFC 4648, `-` and `_` instead of `+` and `/`, no `=` padding)\n- `GET http://aas-env:8091/submodels/{base64url id}/$value` returns the values only (ValueOnly format, numbers as strings)\n- `aas-env` is the compose service name; from the host use `http://localhost:8091` (Swagger UI: `/swagger`)\n\nThe counters are written into the AAS by the bridge service from the UNS telemetry (at most once per second).\nIdeas: add a repeat interval to the inject node; read another submodel (e.g. LINE01 EnergyConsumption)."
+    },
+    {
+        "id": "aas_c1",
+        "type": "comment",
+        "z": "tab_read_aas",
+        "x": 230,
+        "y": 60,
+        "name": "Read the AAS: PLC01 OperationalData -> part counters",
+        "info": "Click the button of the inject node. The result appears in the debug sidebar and as node status.",
+        "wires": []
+    },
+    {
+        "id": "aas_read_inject",
+        "type": "inject",
+        "z": "tab_read_aas",
+        "x": 180,
+        "y": 140,
+        "name": "read PLC01 counters",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "wires": [
+            [
+                "aas_read_url"
+            ]
+        ]
+    },
+    {
+        "id": "aas_read_url",
+        "type": "function",
+        "z": "tab_read_aas",
+        "x": 390,
+        "y": 140,
+        "name": "build URL (base64url id)",
+        "func": "// AAS API: identifiers in the path are base64url-encoded (no padding).\nconst SUBMODEL_ID = \"https://virtual-factory.example/ids/sm/PLC01/OperationalData/1\";\nconst AAS_URL = \"http://aas-env:8091\";   // compose service name; from the host: http://localhost:8091\n\nconst encoded = Buffer.from(SUBMODEL_ID, \"utf8\").toString(\"base64url\");\n// encoded = \"aHR0cHM6Ly92aXJ0dWFsLWZhY3RvcnkuZXhhbXBsZS9pZHMvc20vUExDMDEvT3BlcmF0aW9uYWxEYXRhLzE\"\n\nmsg.url = `${AAS_URL}/submodels/${encoded}/$value`;   // used by the http request node (its URL is empty)\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "wires": [
+            [
+                "aas_read_http"
+            ]
+        ]
+    },
+    {
+        "id": "aas_read_http",
+        "type": "http request",
+        "z": "tab_read_aas",
+        "x": 620,
+        "y": 140,
+        "name": "GET $value",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "wires": [
+            [
+                "aas_read_json"
+            ]
+        ]
+    },
+    {
+        "id": "aas_read_json",
+        "type": "json",
+        "z": "tab_read_aas",
+        "x": 790,
+        "y": 140,
+        "name": "parse JSON",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "wires": [
+            [
+                "aas_read_extract"
+            ]
+        ]
+    },
+    {
+        "id": "aas_read_extract",
+        "type": "function",
+        "z": "tab_read_aas",
+        "x": 400,
+        "y": 220,
+        "name": "extract counters",
+        "func": "// msg.statusCode comes from the http request node\nif (msg.statusCode !== 200) {\n    node.status({ fill: \"red\", shape: \"ring\", text: `HTTP ${msg.statusCode}` });\n    node.warn(msg.payload);\n    return null;\n}\nconst pv = msg.payload.ProcessValues || {};   // PLC process image (SubmodelElementCollection)\n\n// ValueOnly ($value) serialises every value as a string (\"12\"), so convert explicitly\nmsg.payload = {\n    parts_total: Number(pv.parts_total),\n    parts_ok: Number(pv.parts_ok),\n    parts_nok: Number(pv.parts_nok),\n    packml_state: Number(pv.packml_state),\n    operating_state: msg.payload.OperatingState\n};\nnode.status({ fill: \"green\", shape: \"dot\",\n    text: `${msg.payload.parts_total} total, ${msg.payload.parts_ok} OK, ${msg.payload.parts_nok} NOK` });\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "wires": [
+            [
+                "aas_read_summary",
+                "aas_read_dbg"
+            ]
+        ]
+    },
+    {
+        "id": "aas_read_summary",
+        "type": "template",
+        "z": "tab_read_aas",
+        "x": 640,
+        "y": 220,
+        "name": "summary text",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "output": "str",
+        "template": "PLC01 (from AAS): {{payload.parts_total}} parts inspected, {{payload.parts_ok}} OK, {{payload.parts_nok}} NOK - PackML state {{payload.packml_state}} ({{payload.operating_state}})",
+        "wires": [
+            [
+                "aas_read_text_dbg"
+            ]
+        ]
+    },
+    {
+        "id": "aas_read_text_dbg",
+        "type": "debug",
+        "z": "tab_read_aas",
+        "x": 860,
+        "y": 220,
+        "name": "AAS counters",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto"
+    },
+    {
+        "id": "aas_read_dbg",
+        "type": "debug",
+        "z": "tab_read_aas",
+        "x": 640,
+        "y": 280,
+        "name": "counters (object)",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto"
+    },
+    {
+        "id": "tab_aas_operation",
+        "type": "tab",
+        "label": "4 Call an AAS operation",
+        "disabled": false,
+        "info": "Commands the line through its digital twin: invokes the operation\n`ExecutePackMLCommand` of the LINE01 submodel `LineControl`.\n\n- `POST http://aas-env:8091/submodels/{base64url id}/submodel-elements/ExecutePackMLCommand/invoke`\n- Body: `inputArguments` (OperationVariables, here the Property `Command`) + `clientTimeoutDuration`\n- BaSyx delegates the call to the ops-gateway, which sends the PackML command to the PLC over the UNS and waits for\n  the resulting state. Output arguments: `Accepted`, `State`, `Message`.\n- Commands: Start, Stop, Hold, Unhold, Reset, Suspend, Unsuspend, Abort, Clear. Commands not allowed in the\n  current PackML state are rejected (`Accepted` = false, reason in `Message`).\n\n**This really commands the running line.** Hold pauses it, Unhold continues."
+    },
+    {
+        "id": "op_c1",
+        "type": "comment",
+        "z": "tab_aas_operation",
+        "x": 230,
+        "y": 60,
+        "name": "Call an AAS operation: LINE01 LineControl/ExecutePackMLCommand",
+        "info": "Duplicate an inject node and change its payload to try other commands (e.g. Stop, Reset, Start).",
+        "wires": []
+    },
+    {
+        "id": "aas_op_hold",
+        "type": "inject",
+        "z": "tab_aas_operation",
+        "x": 170,
+        "y": 140,
+        "name": "Hold",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "Hold",
+        "payloadType": "str",
+        "wires": [
+            [
+                "aas_op_request"
+            ]
+        ]
+    },
+    {
+        "id": "aas_op_unhold",
+        "type": "inject",
+        "z": "tab_aas_operation",
+        "x": 170,
+        "y": 200,
+        "name": "Unhold",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "Unhold",
+        "payloadType": "str",
+        "wires": [
+            [
+                "aas_op_request"
+            ]
+        ]
+    },
+    {
+        "id": "aas_op_request",
+        "type": "function",
+        "z": "tab_aas_operation",
+        "x": 400,
+        "y": 170,
+        "name": "build invoke request",
+        "func": "// Synchronous invocation of an AAS operation (AAS API part 2, POST .../invoke)\nconst SUBMODEL_ID = \"https://virtual-factory.example/ids/sm/LINE01/LineControl/1\";\nconst encoded = Buffer.from(SUBMODEL_ID, \"utf8\").toString(\"base64url\");\n\nmsg.command = msg.payload;              // \"Hold\" / \"Unhold\" from the inject node, kept for the result\nmsg.url = `http://aas-env:8091/submodels/${encoded}/submodel-elements/ExecutePackMLCommand/invoke`;\nmsg.headers = { \"Content-Type\": \"application/json\" };\nmsg.payload = {\n    inputArguments: [\n        { value: { modelType: \"Property\", idShort: \"Command\", valueType: \"xs:string\", value: msg.command } }\n    ],\n    clientTimeoutDuration: \"PT15S\"      // ISO 8601 duration\n};\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "wires": [
+            [
+                "aas_op_http"
+            ]
+        ]
+    },
+    {
+        "id": "aas_op_http",
+        "type": "http request",
+        "z": "tab_aas_operation",
+        "x": 630,
+        "y": 170,
+        "name": "POST invoke",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "wires": [
+            [
+                "aas_op_result"
+            ]
+        ]
+    },
+    {
+        "id": "aas_op_result",
+        "type": "function",
+        "z": "tab_aas_operation",
+        "x": 830,
+        "y": 170,
+        "name": "read output arguments",
+        "func": "if (msg.statusCode !== 200) {\n    node.status({ fill: \"red\", shape: \"ring\", text: `HTTP ${msg.statusCode}` });\n    node.warn(msg.payload);\n    return null;\n}\n// outputArguments: [{value: {idShort: \"Accepted\", value: \"true\", ...}}, {value: {idShort: \"State\", ...}}, ...]\nconst out = {};\nfor (const arg of msg.payload.outputArguments || []) {\n    out[arg.value.idShort] = arg.value.value;\n}\nconst accepted = out.Accepted === \"true\";\nnode.status({ fill: accepted ? \"green\" : \"yellow\", shape: \"dot\", text: `${msg.command}: ${out.State}` });\n\nmsg.payload = {\n    command: msg.command,\n    executionState: msg.payload.executionState,   // Completed / Failed / Timeout ...\n    accepted: accepted,\n    state: out.State,\n    message: out.Message\n};\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "wires": [
+            [
+                "aas_op_dbg"
+            ]
+        ]
+    },
+    {
+        "id": "aas_op_dbg",
+        "type": "debug",
+        "z": "tab_aas_operation",
+        "x": 1040,
+        "y": 170,
+        "name": "operation result",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto"
+    }
+]

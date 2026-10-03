@@ -68,6 +68,13 @@ consistent timestamps that may lie in the future. All messages of one physics ti
 | `PLC01.packml_command` | Int32, pulse | 1 Reset, 2 Start, 3 Stop, 4 Hold, 5 Unhold, 6 Suspend, 7 Unsuspend, 8 Abort, 9 Clear |
 | `PLC01.klt_exchange_command` | Int32, pulse | 1 = exchange KLT A, 2 = KLT B (only if it holds parts; waits for a running robot job) |
 | `PLC01.auto_exchange` | Boolean, tunable parameter | automatic exchange of full KLTs after `exchange_delay` |
+| `CV01.motor_fault` | Boolean, input | fault injection: conveyor drive trip |
+| `QS01.contamination`, `QS01.drift` | Float64, tunable parameters | fault injection: dirty colour sensor lens (0..1), calibration offset |
+| `LB01.misalignment`, `LB02.misalignment` | Float64, input | fault injection: 0 aligned … 1 beam lost (signal stuck) |
+| `AC01.defect_rate_missing_cap`, `AC01.defect_rate_wrong_cap` | Float64, tunable parameters | defect probabilities per part |
+| `RB01.protective_stop` | Boolean, input | robot protective stop (fence door) |
+
+Fault variables and the resulting PLC alarms (`PLC01.alarm_code/alarm_text`): [scenarios.md](scenarios.md).
 
 - Validation on receipt: JSON object with `v`; numbers/booleans converted to the FMI type (integers must be integral
   and in range; booleans accept `true/false/0/1`). Invalid commands are rejected immediately.
@@ -97,5 +104,7 @@ consistent timestamps that may lie in the future. All messages of one physics ti
 | mes | events (→ BPMN messages), session birth, PLC01 `packml_state` and counters (KPIs) |
 | ops-gateway | commands + acks, PLC01 `packml_state` (ADR-0017) |
 | BaSyx Go | publishes its own CloudEvents under `vf/basyx/...` (not part of this registry) |
+| Godot training UI | `vf/basyx/#` (inspector live values, data-flow view) |
+| Node-RED sandbox | events; publishes `{root}/sandbox/alert` (outside the registry, consumed by nobody) |
 
 See [services.md](services.md).

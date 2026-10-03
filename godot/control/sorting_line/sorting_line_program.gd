@@ -4,6 +4,8 @@ extends PlcProgram
 ##   -> WAIT_ROBOT (free robot, target KLT not full) -> PICKING (until part clear) -> WAIT_PART
 ## When the robot reports a job done, sorted_serial/target/slot and sorted_count are set in the same scan.
 ## KLT exchange: automatic after exchange_delay (auto_exchange) or manual via klt_exchange_command.
+## Alarms (LineAlarms): drive fault -> ABORT, protective stop / stuck light barrier -> HOLD until gone,
+## robot fault -> HOLD, infeed tracking timeout -> warning; reported as alarm_code/alarm_text.
 
 enum Seq { WAIT_PART, POSITIONING, SETTLING, INSPECTING, WAIT_ROBOT, PICKING }
 const S := PackMLStateMachine.State
@@ -16,12 +18,17 @@ var _klt := {1: KltSlotManager.new(), 2: KltSlotManager.new()}
 var _lb02_rise := IecRTrig.new()
 var _stop_delay := IecTon.new()
 var _settle := IecTon.new()
+var _alarms := LineAlarms.new()
+var _lb01_stuck: StuckSignal
+var _lb02_stuck: StuckSignal
 var _result_ok := false
 var _last_klt_command := 0
 
 
 func _on_initialize() -> void:
 	_tracker = PartTracker.new(_get_var("infeed_timeout"))
+	_lb01_stuck = StuckSignal.new(_get_var("sensor_blocked_timeout"))
+	_lb02_stuck = StuckSignal.new(_get_var("sensor_blocked_timeout"))
 	if _get_var("auto_start"):
 		packml.command(C.RESET)
 
@@ -30,15 +37,30 @@ func _scan(dt: float) -> void:
 	if _get_var("auto_start") and packml.state == S.IDLE:
 		packml.command(C.START)
 	var executing := packml.state == S.EXECUTE
-	_tracker.update(_get_var("ac_release_count"), _get_var("ac_last_serial"), _get_var("lb01_signal"), dt)
+	_tracker.update(_get_var("ac_release_count"), _get_var("ac_last_serial"), _get_var("lb01_signal"), dt,
+		_get_var("cv_run"))
 	if _robot.update(_get_var("rb_job_done")):
 		_report_sorted()
 	_handle_klt_exchange_command()
-	var lb02_rising := _lb02_rise.update(_get_var("lb02_signal"))
-	if executing or packml.state in [S.SUSPENDED, S.HELD]:
-		_run_sequence(dt, lb02_rising, executing)
+	# the sequence runs in every state so work in progress (measurement, robot job handshake) completes
+	# while held/aborted; belt, cell and new robot jobs need EXECUTE (`executing`)
+	_run_sequence(dt, _lb02_rise.update(_get_var("lb02_signal")), executing)
 	_update_klts(dt)
+	_update_alarms(dt)
 	_write_outputs(executing)
+
+
+## Alarm conditions; the belt command of the previous scan defines when the barriers must be free.
+func _update_alarms(dt: float) -> void:
+	var belt_on: bool = _get_var("cv_run")
+	_alarms.update({
+		101: _get_var("cv_fault"),
+		202: _get_var("rb_fault"),
+		201: _get_var("rb_protective_stop"),
+		302: _lb02_stuck.update(_get_var("lb02_signal"), belt_on and _seq == Seq.WAIT_PART, dt),
+		301: _lb01_stuck.update(_get_var("lb01_signal"), belt_on, dt),
+		401: _tracker.timeout_alarm,
+	}, packml)
 
 
 func _run_sequence(dt: float, lb02_rising: bool, executing: bool) -> void:
@@ -133,6 +155,12 @@ func _write_outputs(executing: bool) -> void:
 	_set_var("sequence_step", _seq)
 	_set_var("parts_on_belt", parts_on_belt)
 	_set_var("infeed_faults", _tracker.infeed_faults)
+	var stops := _alarms.stops_line()
+	_set_var("alarm_code", _alarms.code)
+	_set_var("alarm_text", _alarms.text)
+	_set_var("alarm_count", _alarms.count)
+	_set_var("horn", stops)
 	_set_var("light_green", executing)
-	_set_var("light_amber", packml.state in [S.SUSPENDED, S.HELD, S.IDLE] or packml.is_acting())
-	_set_var("light_red", packml.state in [S.STOPPED, S.ABORTED] or _get_var("rb_fault"))
+	_set_var("light_amber", packml.state in [S.SUSPENDED, S.HELD, S.IDLE] or packml.is_acting()
+		or (_alarms.code != 0 and not stops))
+	_set_var("light_red", packml.state in [S.STOPPED, S.ABORTED] or stops)

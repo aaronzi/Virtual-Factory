@@ -1,0 +1,15 @@
+{
+  "id": "robot_protective_stop",
+  "title_en": "Safety fence door opened",
+  "title_de": "Schutzzauntür geöffnet",
+  "description_en": "Someone opens the door of the robot safety fence while RB01 carries a part. The robot stops in its protective stop, the PLC holds the line (alarm 201). When the door is closed again the robot continues its job and the line resumes automatically.",
+  "description_de": "Jemand öffnet die Tür des Roboterschutzzauns, während RB01 ein Teil transportiert. Der Roboter bleibt im Schutzhalt stehen, die SPS hält die Linie an (Alarm 201). Nach dem Schließen der Tür setzt der Roboter seinen Auftrag fort und die Linie läuft automatisch weiter.",
+  "steps": [
+    {"when": {"var": "RB01.program_step", "op": ">=", "value": 5}, "set": {"RB01.protective_stop": true},
+     "message_en": "Fence door open: robot protective stop, line held (alarm 201).",
+     "message_de": "Zauntür offen: Roboter-Schutzhalt, Linie angehalten (Alarm 201)."},
+    {"after": 20.0, "reset": "all",
+     "message_en": "Door closed - robot and line resume.",
+     "message_de": "Tür geschlossen - Roboter und Linie laufen weiter."}
+  ]
+}

@@ -85,3 +85,20 @@ and automatic exchange restored. A reject rate above the limit holds the line an
 
 Verified run (order of 14 good parts, manual exchange): started 14:00:48, KLT A full → operator task → exchange →
 line resumed, order closed 14:04:46 with 14 good parts, line STOPPED, auto exchange restored.
+
+## 5. In-world AAS inspector (M5, ADR-0018)
+
+```mermaid
+sequenceDiagram
+  participant U as Player (pointer)
+  participant F as factory (AssetPicker, InspectorController)
+  participant A as BaSyx AAS env
+  participant M as Mosquitto
+  U->>F: click (ray) -> workpiece body (serial) or selection volume (device tag)
+  F->>A: GET shell, thumbnail, submodels
+  F-->>U: world panel in front of the player (AasInspectorView)
+  A-->>M: CloudEvent submodel updated (e.g. RB01 OperationalData, written by the bridge)
+  M->>F: event (AasEventFeed) -> visible submodel? -> debounce 0.4 s
+  F->>A: GET submodel -> view refreshed (keeps collapsed state), "live" indicator flashes
+```
+

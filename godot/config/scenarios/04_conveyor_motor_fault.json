@@ -1,0 +1,19 @@
+{
+  "id": "conveyor_motor_fault",
+  "title_en": "Conveyor drive fault",
+  "title_de": "Störung Förderbandantrieb",
+  "description_en": "After the third inspected part the frequency inverter of conveyor CV01 trips. The belt coasts to a stop, the PLC aborts the line (alarm 101, red light, horn). After the repair the line must be cleared and reset (PackML Clear, Reset); the scenario does this automatically at the end.",
+  "description_de": "Nach dem dritten geprüften Teil löst der Frequenzumrichter des Förderbands CV01 aus. Das Band läuft aus, die SPS bricht die Linie ab (Alarm 101, rotes Licht, Hupe). Nach der Reparatur muss die Linie quittiert und zurückgesetzt werden (PackML Clear, Reset); das Szenario macht das am Ende automatisch.",
+  "steps": [
+    {"when": {"var": "PLC01.parts_total", "op": ">=", "value": 3}, "set": {"CV01.motor_fault": true},
+     "message_en": "CV01 drive tripped - line aborted (alarm 101).",
+     "message_de": "Antrieb CV01 ausgelöst - Linie abgebrochen (Alarm 101)."},
+    {"after": 20.0, "reset": ["CV01.motor_fault"],
+     "message_en": "Drive repaired. Clear the alarm and reset the line.",
+     "message_de": "Antrieb repariert. Alarm quittieren und Linie zurücksetzen."},
+    {"after": 3.0, "pulse": {"PLC01.packml_command": 9},
+     "message_en": "PackML Clear.", "message_de": "PackML Clear (Quittieren)."},
+    {"after": 2.0, "pulse": {"PLC01.packml_command": 1},
+     "message_en": "PackML Reset - the line restarts.", "message_de": "PackML Reset - die Linie startet wieder."}
+  ]
+}

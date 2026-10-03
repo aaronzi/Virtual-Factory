@@ -88,3 +88,13 @@ func test_protective_stop_freezes_motion() -> void:
 		m.do_step((30 + i) * H, H)
 	assert_almost_eq(_tcp(m).distance_to(before), 0.0, 1e-9)
 	assert_true(m.get_value("busy"))
+	assert_true(m.get_value("protective_stopped"))
+	m.set_value("protective_stop", false)
+	var t := 60 * H
+	while t < 30.0 and not m.get_value("job_done"):
+		m.do_step(t, H)
+		t += H
+	assert_false(m.get_value("protective_stopped"))
+	assert_true(m.get_value("job_done"), "job resumes and completes after release")
+	assert_false(m.get_value("fault"))
+	assert_eq(m.get_value("cycle_count"), 1)

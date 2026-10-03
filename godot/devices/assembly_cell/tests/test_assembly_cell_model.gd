@@ -64,3 +64,16 @@ func test_defect_distribution_and_determinism() -> void:
 	first.set_value("infeed_free", true)
 	_run(first, 1.0)
 	assert_eq(again.get_value("last_leak_rate"), first.get_value("last_leak_rate"), "same seed, same data")
+
+
+func test_defect_rate_is_tunable_at_runtime() -> void:
+	var m := _make({"takt_time": 1.0})
+	m.set_value("enable", true)
+	m.set_value("infeed_free", true)
+	assert_eq(m.set_value("defect_rate_missing_cap", 1.0), Fmi3.Status.OK, "settable in step mode")
+	_run(m, 1.05)
+	assert_eq(m.get_value("last_cap_variant"), 1, "missing cap after the rate was raised")
+	m.set_value("defect_rate_missing_cap", 0.0)
+	m.set_value("defect_rate_wrong_cap", 1.0)
+	_run(m, 1.0)
+	assert_eq(m.get_value("last_cap_variant"), 2, "wrong cap")

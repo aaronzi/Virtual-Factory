@@ -21,4 +21,10 @@ Rules:
   their positions into other devices' parameters, expressed in the target device's frame.
 - Views are greybox (primitive) views in M1; Blender views replace them in M2 without touching models.
 
+- Fault injection = FMI inputs/tunable parameters of the model (no back doors into views or probes); random fault
+  effects use the model's `seed` parameter. Listed in `uns.json` `commands.writable` to be writable over MQTT.
+- Pure actuator devices need no probe (e.g. `stack_light`: PLC outputs → model → lamp emission via `Indicator`).
+
 Adding a device type = new folder + layout entry (+ connections). Nothing else changes.
+Example (M5): `devices/stack_light` - FMU, view, `.glb` from `blender/scripts/build_stack_light.py`, layout entry
+`SL01` and four connections from PLC01.

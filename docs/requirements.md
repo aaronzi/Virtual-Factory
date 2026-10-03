@@ -21,9 +21,9 @@ that mirror a genuine manufacturing environment.
 | FR-04 | Light barriers detect products: one at the infeed and one at the inspection position. | M1 | T | ☑ |
 | FR-05 | A quality-assurance station with a colour sensor classifies each product: **red = OK** (cap present); any other colour = NOK (cap missing or wrong). | M1 | T | ☑ |
 | FR-06 | A UR5e robot arm picks each inspected product and places it in **KLT A (good)** or **KLT B (reject)** according to the QA result. | M1 | T, D | ☑ |
-| FR-07 | Full KLTs trigger an exchange request. The exchange is done by an operator (training mode) or automatically (demo/agent mode). *(M4: manual exchange as BPMN user task in the Tasklist; in-world operator interaction in M5)* | M5 | D | ◐ |
+| FR-07 | Full KLTs trigger an exchange request. The exchange is done by an operator (training mode) or automatically (demo/agent mode). *(M5: automatic exchange, manual exchange from the HMI or by clicking the KLT, BPMN task "Exchange KLT" in the Tasklist and on the MES terminal)* | M5 | D | ☑ |
 | FR-08 | A virtual PLC controls the line using a PackML state model (Start/Stop/Hold/Reset/Abort/Clear …). | M1 | T | ☑ |
-| FR-09 | Defect rates and fault scenarios can be configured: missing cap, wrong cap, sensor contamination, robot protective stop, conveyor fault. | M5 | T, D | ☐ |
+| FR-09 | Defect rates and fault scenarios can be configured: missing cap, wrong cap, sensor contamination, robot protective stop, conveyor fault. *(M5: fault inputs in CV01/QS01/LB01/LB02/AC01/RB01, PLC alarms 101–401, stack light SL01, 5 data-driven scenarios (`godot/config/scenarios`), writable via UNS/AID; [scenarios.md](interfaces/scenarios.md))* | M5 | T, D | ☑ |
 
 ### 2.2 Device models and extensibility
 
@@ -54,9 +54,9 @@ that mirror a genuine manufacturing environment.
 |---|---|---|---|---|
 | FR-30 | 3D models are created in Blender (via MCP) and are recognisable but low-poly. | M2 | D | ☑ |
 | FR-31 | Models are animated: products move along the conveyor, robot joints rotate, rollers turn, indicator lights react. | M1/M2 | D | ☑ |
-| FR-32 | An in-world AAS inspector shows the AAS of any asset, including live values. | M5 | D | ☐ |
-| FR-33 | The UI is available in German and English. | M5 | I | ☐ |
-| FR-34 | A demo mode runs autonomously with a camera tour. A headless/fast-forward mode supports agents. | M5 | D | ☐ |
+| FR-32 | An in-world AAS inspector shows the AAS of any asset, including live values. | M5 | D | ☑ |
+| FR-33 | The UI is available in German and English. | M5 | I | ☑ |
+| FR-34 | A demo mode runs autonomously with a camera tour. A headless/fast-forward mode supports agents. *(M5: demo tour (F1/--vf-tour), simulation speed 1×/2×/4×, headless line runs)* | M5 | D | ☑ |
 
 ## 3. Non-functional requirements
 

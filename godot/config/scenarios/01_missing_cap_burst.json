@@ -1,0 +1,15 @@
+{
+  "id": "missing_cap_burst",
+  "title_en": "Missing protective caps",
+  "title_de": "Fehlende Schutzkappen",
+  "description_en": "The cap feeder of the assembly cell AC01 jams: for two minutes most cylinders leave the cell without a protective cap. Watch the colour inspection at QS01 reject them into KLT B and find the root cause from the reject rate and the cell data (last_cap_variant).",
+  "description_de": "Die Kappenzuführung der Montagezelle AC01 klemmt: Zwei Minuten lang verlassen die meisten Zylinder die Zelle ohne Schutzkappe. Beobachten Sie, wie die Farbprüfung QS01 sie in KLT B aussortiert, und finden Sie die Ursache über die Ausschussquote und die Zellendaten (last_cap_variant).",
+  "steps": [
+    {"at": 5.0, "set": {"AC01.defect_rate_missing_cap": 0.6},
+     "message_en": "Cap feeder jammed: 60 % of the parts have no cap.",
+     "message_de": "Kappenzuführung klemmt: 60 % der Teile ohne Kappe."},
+    {"after": 120.0, "reset": ["AC01.defect_rate_missing_cap"],
+     "message_en": "Feeder cleared - the defect rate is back to normal.",
+     "message_de": "Zuführung frei - die Fehlerquote ist wieder normal."}
+  ]
+}

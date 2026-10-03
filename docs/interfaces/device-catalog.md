@@ -4,7 +4,7 @@
 
 ## SortingLinePLC
 
-Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robot handshake, KLT handling, PackML
+Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robot handshake, KLT handling, PackML, alarms
 
 - Model description: `godot/control/sorting_line/modelDescription.xml`
 - modelIdentifier: `sorting_line_plc` · instantiationToken: `{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e10}`
@@ -25,6 +25,8 @@ Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robo
 | 12 | `klt_b_count` | input | discrete | Int32 |  | 0 | KLT B measured fill count |
 | 13 | `packml_command` | input | discrete | Int32 |  | 0 | PackML command (1 Reset, 2 Start, 3 Stop, 4 Hold, 5 Unhold, 6 Suspend, 7 Unsuspend, 8 Abort, 9 Clear); edge-triggered on change |
 | 14 | `klt_exchange_command` | input | discrete | Int32 |  | 0 | Manual container exchange (1 KLT A, 2 KLT B, 0 none); edge-triggered on change, only if the KLT holds parts |
+| 15 | `cv_fault` | input | discrete | Boolean |  | false | CV01 drive fault (alarm 101, line aborts) |
+| 16 | `rb_protective_stop` | input | discrete | Boolean |  | false | RB01 in protective stop, e.g. fence door open (alarm 201, line held until released) |
 | 50 | `scan_time` | parameter | fixed | Float64 | s | 0.01 | PLC cycle time |
 | 51 | `auto_start` | parameter | fixed | Boolean |  | true | Reset and start automatically |
 | 52 | `belt_speed` | parameter | tunable | Float64 | m/s | 0.25 | Conveyor speed setpoint (recipe) |
@@ -35,6 +37,7 @@ Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robo
 | 57 | `exchange_delay` | parameter | tunable | Float64 | s | 4.0 |  |
 | 58 | `infeed_timeout` | parameter | fixed | Float64 | s | 8.0 | Max time between release and LB01 |
 | 59 | `max_parts_on_belt` | parameter | fixed | Int32 |  | 3 |  |
+| 60 | `sensor_blocked_timeout` | parameter | fixed | Float64 | s | 1.5 | A light barrier blocked longer than this while it must be free (belt running) raises a stuck-signal alarm (301/302) |
 | 100 | `ac_enable` | output | discrete | Boolean |  | false |  |
 | 101 | `ac_infeed_free` | output | discrete | Boolean |  | false |  |
 | 102 | `cv_run` | output | discrete | Boolean |  | false |  |
@@ -61,6 +64,10 @@ Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robo
 | 123 | `sorted_serial` | output | discrete | String |  | "" | Serial of the last sorted part (latched at inspection) |
 | 124 | `sorted_target` | output | discrete | Int32 |  | 0 | KLT of the last sorted part: 1 = KLT A (OK), 2 = KLT B (NOK) |
 | 125 | `sorted_slot` | output | discrete | Int32 |  | 0 | Slot index of the last sorted part in its KLT |
+| 126 | `alarm_code` | output | discrete | Int32 |  | 0 | Highest-priority active alarm (0 none, 101 CV01 drive fault, 201 RB01 protective stop, 202 RB01 fault, 301/302 LB01/LB02 signal stuck, 401 infeed tracking timeout) |
+| 127 | `alarm_text` | output | discrete | String |  | "" | Text of alarm_code (empty when no alarm is active) |
+| 128 | `alarm_count` | output | discrete | Int32 |  | 0 | Number of alarms raised since start |
+| 129 | `horn` | output | discrete | Boolean |  | false | Stack light buzzer: an alarm stops the line |
 
 ## AssemblyCell
 
@@ -75,8 +82,8 @@ Black-box pneumatic cylinder assembly and test cell: releases finished cylinders
 | 2 | `infeed_free` | input | discrete | Boolean |  | false | Interlock: conveyor infeed position is free |
 | 9 | `air_specific_energy` | parameter | fixed | Float64 | Wh/Nl | 0.12 | Electrical energy of the compressor per normal litre |
 | 10 | `takt_time` | parameter | tunable | Float64 | s | 12 |  |
-| 11 | `defect_rate_missing_cap` | parameter | tunable | Float64 |  | 0.05 |  |
-| 12 | `defect_rate_wrong_cap` | parameter | tunable | Float64 |  | 0.03 |  |
+| 11 | `defect_rate_missing_cap` | parameter | tunable | Float64 |  | 0.05 | Probability of a missing protective cap (tunable at runtime: fault injection) |
+| 12 | `defect_rate_wrong_cap` | parameter | tunable | Float64 |  | 0.03 | Probability of a wrong (blue) protective cap (tunable at runtime: fault injection) |
 | 13 | `seed` | parameter | fixed | Int32 |  | 42 |  |
 | 14 | `serial_start` | parameter | fixed | Int32 |  | 1 |  |
 | 15 | `production_year` | parameter | fixed | Int32 |  | 2026 |  |
@@ -98,7 +105,7 @@ Black-box pneumatic cylinder assembly and test cell: releases finished cylinders
 
 ## BeltConveyor
 
-Flat belt conveyor with VFD-driven gear motor: ramped speed, belt travel, electrical power
+Flat belt conveyor with VFD-driven gear motor: ramped speed, belt travel, electrical power, motor fault injection
 
 - Model description: `godot/devices/conveyor/model/modelDescription.xml`
 - modelIdentifier: `conveyor` · instantiationToken: `{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e02}`
@@ -108,18 +115,21 @@ Flat belt conveyor with VFD-driven gear motor: ramped speed, belt travel, electr
 | 1 | `run` | input | discrete | Boolean |  | false | Drive enable (from PLC) |
 | 2 | `reverse` | input | discrete | Boolean |  | false |  |
 | 3 | `speed_setpoint` | input | discrete | Float64 | m/s | 0.25 | Belt speed setpoint (VFD) |
+| 4 | `motor_fault` | input | discrete | Boolean |  | false | Fault injection: gear motor/VFD fault (drive trips, belt coasts down, fault output set) |
 | 10 | `acceleration` | parameter | fixed | Float64 | m/s2 | 0.8 | VFD ramp |
 | 11 | `max_speed` | parameter | fixed | Float64 | m/s | 0.5 |  |
 | 12 | `length` | parameter | fixed | Float64 | m | 3.0 |  |
 | 13 | `standby_power` | parameter | fixed | Float64 | W | 8 | VFD standby |
 | 14 | `no_load_power` | parameter | fixed | Float64 | W | 35 | Motor and gearbox losses while running |
 | 15 | `speed_power_coefficient` | parameter | fixed | Float64 | Ws/m | 120 | Additional power per m/s (belt friction, load) |
+| 16 | `coast_deceleration` | parameter | fixed | Float64 | m/s2 | 1.5 | Deceleration of the unpowered belt (friction) after a drive trip |
 | 20 | `belt_speed` | output | continuous | Float64 | m/s | 0 |  |
 | 21 | `belt_position` | output | continuous | Float64 | m | 0 | Accumulated belt travel |
 | 22 | `running` | output | discrete | Boolean |  | false |  |
 | 23 | `power` | output | continuous | Float64 | W | 0 |  |
 | 24 | `energy` | output | continuous | Float64 | kWh | 0 |  |
 | 25 | `operating_hours` | output | continuous | Float64 | h | 0 | Motor running hours |
+| 26 | `fault` | output | discrete | Boolean |  | false | Drive fault (VFD tripped); the belt does not run while true |
 
 ## KltContainer
 
@@ -139,7 +149,7 @@ Small load carrier (VDA KLT 6428) on a stand with fill-level sensing and exchang
 
 ## LightBarrier
 
-Retro-reflective photoelectric sensor with response-time filter and dark/light-on logic
+Retro-reflective photoelectric sensor with response-time filter and dark/light-on logic, misalignment injection
 
 - Model description: `godot/devices/light_barrier/model/modelDescription.xml`
 - modelIdentifier: `light_barrier` · instantiationToken: `{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e01}`
@@ -147,18 +157,23 @@ Retro-reflective photoelectric sensor with response-time filter and dark/light-o
 | VR | Name | Causality | Variability | Type | Unit | Start | Description |
 |---:|---|---|---|---|---|---|---|
 | 1 | `beam_blocked` | input | discrete | Boolean |  | false | Physical stimulus: an object interrupts the light beam |
+| 2 | `misalignment` | input | discrete | Float64 |  | 0 | Fault injection: 0 aligned; >0 the received light is marginal and the beam drops out randomly (rate proportional to the value, false triggers); 1 the beam is permanently lost (signal stuck) |
 | 10 | `response_time` | parameter | fixed | Float64 | s | 0.01 | Switching delay (filter) for both edges |
 | 11 | `dark_on` | parameter | fixed | Boolean |  | true | true: output is active while the beam is interrupted |
 | 12 | `rated_power` | parameter | fixed | Float64 | W | 1.2 |  |
+| 13 | `seed` | parameter | fixed | Int32 |  | 11 | Random seed of the beam dropouts (deterministic runs) |
+| 14 | `dropout_rate` | parameter | fixed | Float64 | 1/s | 1.5 | Mean beam dropouts per second at misalignment 1 (scaled linearly below 1) |
+| 15 | `dropout_duration` | parameter | fixed | Float64 | s | 0.06 | Duration of one beam dropout |
 | 20 | `signal` | output | discrete | Boolean |  | false | Switching output (PNP) |
 | 21 | `switch_count` | output | discrete | Int32 |  | 0 | Number of activations since start |
 | 22 | `power` | output | continuous | Float64 | W | 0 |  |
 | 23 | `energy` | output | continuous | Float64 | kWh | 0 |  |
 | 24 | `operating_hours` | output | continuous | Float64 | h | 0 |  |
+| 25 | `stability_ok` | output | discrete | Boolean |  | true | Excess-gain diagnostics (IO-Link): false when the received light is marginal (misalignment >= 0.2) |
 
 ## ColorInspectionStation
 
-Quality assurance station with a true-colour sensor: CIELAB delta-E comparison against a taught colour
+Quality assurance station with a true-colour sensor: CIELAB delta-E comparison against a taught colour, lens contamination and drift injection
 
 - Model description: `godot/devices/qa_station/model/modelDescription.xml`
 - modelIdentifier: `qa_station` · instantiationToken: `{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e03}`
@@ -179,6 +194,8 @@ Quality assurance station with a true-colour sensor: CIELAB delta-E comparison a
 | 16 | `seed` | parameter | fixed | Int32 |  | 7 |  |
 | 17 | `sensor_power` | parameter | fixed | Float64 | W | 2.5 |  |
 | 18 | `light_power` | parameter | fixed | Float64 | W | 4 | Ring light, on during measurement |
+| 40 | `contamination` | parameter | tunable | Float64 |  | 0 | Fault injection: dirty lens/light (0 clean, 1 opaque); the measured colour fades towards dark grey, delta-E rises |
+| 41 | `drift` | parameter | tunable | Float64 |  | 0 | Fault injection: calibration drift, additive offset on all measured sRGB channels |
 | 20 | `r` | output | discrete | Float64 |  | 0 |  |
 | 21 | `g` | output | discrete | Float64 |  | 0 |  |
 | 22 | `b` | output | discrete | Float64 |  | 0 |  |
@@ -191,6 +208,30 @@ Quality assurance station with a true-colour sensor: CIELAB delta-E comparison a
 | 29 | `power` | output | continuous | Float64 | W | 0 |  |
 | 30 | `energy` | output | continuous | Float64 | kWh | 0 |  |
 | 31 | `operating_hours` | output | continuous | Float64 | h | 0 |  |
+
+## StackLight
+
+Signal tower with green/amber/red LED segments and buzzer (24 V DC), driven by the line PLC
+
+- Model description: `godot/devices/stack_light/model/modelDescription.xml`
+- modelIdentifier: `stack_light` · instantiationToken: `{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e07}`
+
+| VR | Name | Causality | Variability | Type | Unit | Start | Description |
+|---:|---|---|---|---|---|---|---|
+| 1 | `green` | input | discrete | Boolean |  | false | Green segment (line running) |
+| 2 | `amber` | input | discrete | Boolean |  | false | Amber segment (attention: held, suspended, idle, warning) |
+| 3 | `red` | input | discrete | Boolean |  | false | Red segment (stopped, aborted, alarm) |
+| 4 | `buzzer` | input | discrete | Boolean |  | false | Buzzer |
+| 10 | `lamp_power` | parameter | fixed | Float64 | W | 1.8 | Power of one lit LED segment |
+| 11 | `buzzer_power` | parameter | fixed | Float64 | W | 0.8 |  |
+| 12 | `standby_power` | parameter | fixed | Float64 | W | 0.2 | Electronics (base module) |
+| 20 | `green_on` | output | discrete | Boolean |  | false | Green segment lit |
+| 21 | `amber_on` | output | discrete | Boolean |  | false | Amber segment lit |
+| 22 | `red_on` | output | discrete | Boolean |  | false | Red segment lit |
+| 23 | `buzzer_on` | output | discrete | Boolean |  | false | Buzzer sounding |
+| 24 | `power` | output | continuous | Float64 | W | 0 |  |
+| 25 | `energy` | output | continuous | Float64 | kWh | 0 |  |
+| 26 | `operating_hours` | output | continuous | Float64 | h | 0 |  |
 
 ## UR5e
 
@@ -271,7 +312,7 @@ Universal Robots UR5e with 2-finger gripper: analytic IK, URScript-like movej/mo
 
 ## Line layout `LINE01`
 
-Inspection & sorting line: AC01 -> CV01 (LB01, LB02) -> QS01 -> RB01 -> KLT A/B. World: +X = material flow, Y up, metres.
+Inspection & sorting line: AC01 -> CV01 (LB01, LB02) -> QS01 -> RB01 -> KLT A/B; SL01 stack light on the control cabinet. World: +X = material flow, Y up, metres.
 
 | Device | Type | Position (m) |
 |---|---|---|
@@ -283,6 +324,7 @@ Inspection & sorting line: AC01 -> CV01 (LB01, LB02) -> QS01 -> RB01 -> KLT A/B.
 | RB01 | `ur5e` | (0.25, 0.0, -0.55) |
 | KLTA01 | `klt_container` | (0.75, 0.0, -0.55) |
 | KLTB01 | `klt_container` | (-0.25, 0.0, -0.55) |
+| SL01 | `stack_light` | (-1.62, 1.9, -1.25) |
 
 ### Signal connections (FMI variable wiring, Gauss-Seidel order = device order, PLC last)
 
@@ -298,6 +340,10 @@ Inspection & sorting line: AC01 -> CV01 (LB01, LB02) -> QS01 -> RB01 -> KLT A/B.
 | `PLC01.rb_place_slot` | `RB01.place_slot` |
 | `PLC01.klt_a_exchange` | `KLTA01.exchange` |
 | `PLC01.klt_b_exchange` | `KLTB01.exchange` |
+| `PLC01.light_green` | `SL01.green` |
+| `PLC01.light_amber` | `SL01.amber` |
+| `PLC01.light_red` | `SL01.red` |
+| `PLC01.horn` | `SL01.buzzer` |
 | `AC01.release_count` | `PLC01.ac_release_count` |
 | `AC01.last_serial` | `PLC01.ac_last_serial` |
 | `LB01.signal` | `PLC01.lb01_signal` |
@@ -308,6 +354,8 @@ Inspection & sorting line: AC01 -> CV01 (LB01, LB02) -> QS01 -> RB01 -> KLT A/B.
 | `RB01.job_done` | `PLC01.rb_job_done` |
 | `RB01.part_clear` | `PLC01.rb_part_clear` |
 | `RB01.fault` | `PLC01.rb_fault` |
+| `RB01.protective_stopped` | `PLC01.rb_protective_stop` |
+| `CV01.fault` | `PLC01.cv_fault` |
 | `KLTA01.fill_count` | `PLC01.klt_a_count` |
 | `KLTB01.fill_count` | `PLC01.klt_b_count` |
 

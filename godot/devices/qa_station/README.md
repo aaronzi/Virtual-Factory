@@ -14,3 +14,4 @@ Geometry options: `part_height` (0.235 m), `sensor_height` above the part top (0
 
 Measurement: a rising `trigger` edge starts integration (`integration_time`). Then `r,g,b,hue,delta_e,result_ok` are latched and `result_valid` stays true while `trigger` is held.
 `result_ok = object_present AND deltaE76(measured, taught) <= tolerance_delta_e`.
+Fault injection (tunable parameters, default 0): `contamination` 0..1 fades the perceived colour towards dark grey before the noise (dirty lens: ΔE rises, false rejects from ≈ 0.35), `drift` adds an offset to all channels. See docs/interfaces/scenarios.md.

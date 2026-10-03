@@ -22,3 +22,4 @@ Format: short [MADR](https://adr.github.io/madr/)-style records. New ADR = next 
 | [0015](0015-aimc-bridge.md) | Own AIMC-driven bridge instead of the BaSyx DataBridge or Node-RED | accepted |
 | [0016](0016-bpmn-orchestration.md) | BPMN orchestration on MES level with Operaton | accepted |
 | [0017](0017-aas-operations-delegated.md) | Line commands as AAS Operations delegated to an operations gateway | accepted |
+| [0018](0018-in-world-training-ui.md) | In-world training UI: world-space panels, passive views, live AAS via events | accepted |

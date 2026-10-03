@@ -53,6 +53,10 @@ PALETTE = {
     "led_green": ((0.1, 0.9, 0.2), 0.0, 0.3, 2.0),
     "led_yellow": ((1.0, 0.7, 0.05), 0.0, 0.3, 2.0),
     "lamp_white": ((1.0, 0.98, 0.94), 0.0, 0.3, 6.0),
+    # stack light diffusers: no baked emission, the Godot view switches them (Indicator)
+    "lamp_green": ((0.1, 0.85, 0.25), 0.0, 0.25, 0.0),
+    "lamp_amber": ((1.0, 0.62, 0.05), 0.0, 0.25, 0.0),
+    "lamp_red": ((0.95, 0.08, 0.06), 0.0, 0.25, 0.0),
 }
 
 

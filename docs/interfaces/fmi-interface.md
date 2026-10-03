@@ -58,6 +58,13 @@ outputs with one step delay (≈ PLC I/O delay), the PLC sees device outputs of 
 - The robot FMU state snapshot does not include a running job (snapshots are meant between jobs).
 - Godot's `Transform3D` is single precision; kinematic residuals ≤ 0.2 mm near singularities.
 
+## Fault injection
+
+Faults are ordinary FMI inputs or tunable parameters of the device models (e.g. `CV01.motor_fault`,
+`QS01.contamination`, `LB02.misalignment`), default = no fault. Random effects use a seeded RNG that is only consumed
+while the fault is active, so runs without faults are unchanged and runs with faults are reproducible. Writers:
+training scenarios, UNS commands, AAS operations - see [scenarios.md](scenarios.md).
+
 ## Device catalogue
 
 Generated: [device-catalog.md](device-catalog.md).

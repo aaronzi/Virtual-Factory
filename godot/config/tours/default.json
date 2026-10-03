@@ -1,0 +1,23 @@
+{
+  "_doc": "Demo tour (menu or --vf-tour). position/target in metres (Godot frame). inspect: AAS tag opened at the stop.",
+  "stops": [
+    {"position": [2.3, 2.0, 2.4], "target": [-0.7, 0.85, -0.45], "fly_s": 3, "hold_s": 7,
+     "caption_en": "LINE01 – inspection and sorting of pneumatic cylinders PC-32-80-DA-M. Every device is an FMI model, every asset has an AAS.",
+     "caption_de": "LINE01 – Prüfen und Sortieren von Pneumatikzylindern PC-32-80-DA-M. Jedes Gerät ist ein FMI-Modell, jedes Asset hat eine AAS."},
+    {"position": [-2.4, 1.6, 1.6], "target": [-3.4, 1.0, 0.0], "fly_s": 4, "hold_s": 8, "inspect": "AC01",
+     "caption_en": "The assembly cell AC01 (black box) releases a finished cylinder every 12 s and reports leak rate and stroke time.",
+     "caption_de": "Die Montagezelle AC01 (Black Box) gibt alle 12 s einen fertigen Zylinder aus und meldet Leckrate und Hubzeit."},
+    {"position": [-0.6, 1.5, 1.4], "target": [0.2, 1.0, 0.0], "fly_s": 4, "hold_s": 8, "inspect": "QS01",
+     "caption_en": "QS01 measures the colour of the protective cap (CIELAB ΔE). Red = good part, any other colour = reject.",
+     "caption_de": "QS01 misst die Farbe der Schutzkappe (CIELAB ΔE). Rot = Gutteil, jede andere Farbe = Ausschuss."},
+    {"position": [1.4, 1.7, 1.2], "target": [0.25, 0.6, -0.55], "fly_s": 4, "hold_s": 8, "inspect": "RB01",
+     "caption_en": "The UR5e sorts good parts into KLT A and rejects into KLT B. Its AAS shows live joint values via BaSyx events.",
+     "caption_de": "Der UR5e sortiert Gutteile in KLT A und Ausschuss in KLT B. Seine AAS zeigt Gelenkwerte live über BaSyx-Ereignisse."},
+    {"position": [1.9, 1.5, 1.1], "target": [0.75, 0.5, -0.55], "fly_s": 3, "hold_s": 8, "inspect": "KLTA01",
+     "caption_en": "Each packed cylinder gets its own AAS (quality, carbon footprint, executed processes). Click a part in a KLT to see it.",
+     "caption_de": "Jeder verpackte Zylinder erhält eine eigene AAS (Qualität, CO₂-Fußabdruck, ausgeführte Prozesse). Teil im KLT anklicken."},
+    {"position": [-1.4, 1.55, 2.0], "target": [-2.0, 1.25, 0.75], "fly_s": 4, "hold_s": 8, "inspect": "LINE01",
+     "caption_en": "Operators use the HMI (PackML) and the MES terminal (BPMN tasks); IT systems command the line through its AAS operations.",
+     "caption_de": "Bediener nutzen das HMI (PackML) und das MES-Terminal (BPMN-Aufgaben); IT-Systeme steuern die Linie über ihre AAS-Operationen."}
+  ]
+}

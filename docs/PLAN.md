@@ -24,6 +24,9 @@
 | D11 | Orchestration (M3 review) | **BPMN on MES level** (bpmn.io models, Operaton engine, external tasks in Python); the PLC keeps real-time control (ADR-0016). |
 | D12 | Data bridge (M3 review) | Own **AIMC-driven bridge**; not the archived BaSyx DataBridge, not Node-RED in the core path (ADR-0015). |
 | D13 | Eventing (M3 review) | BaSyx MQTT eventing **on**; submodel-level only, consumers re-read; core flow does not depend on it. |
+| D15 | Operator tasks (M4 review) | BPMN user tasks in the Operaton Tasklist **and** on the in-scene MES terminal / at the KLT. |
+| D16 | Inspector data (M4 review) | In-world AAS inspector refreshes via BaSyx MQTT events, then fetch (no polling). |
+| D17 | Sandbox (M4 review) | Node-RED as optional learner sandbox (compose profile `sandbox`). |
 | D14 | Recipe (M3 review) | ISA-88 recipe leads (structure, limits, BPMN procedure model), IDTA ProcessParameters holds the setpoints; referenced, not duplicated. |
 
 ---

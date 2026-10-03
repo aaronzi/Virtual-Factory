@@ -1,0 +1,59 @@
+keys,en,de
+INSPECTOR_LIVE,● live (BaSyx events),● live (BaSyx-Ereignisse)
+INSPECTOR_OPEN_TYPE,Open type AAS,Typ-AAS öffnen
+INSPECTOR_LOADING,Loading AAS …,AAS wird geladen …
+INSPECTOR_NO_AAS,No AAS found for %s (is the backend running?),Keine AAS für %s gefunden (läuft das Backend?)
+INSPECTOR_HINT,Click a device or a workpiece to inspect its AAS.,Gerät oder Werkstück anklicken um seine AAS zu sehen.
+HMI_RESET,Reset,Rücksetzen
+HMI_START,Start,Start
+HMI_STOP,Stop,Stopp
+HMI_HOLD,Hold,Halten
+HMI_UNHOLD,Unhold,Fortsetzen
+HMI_SUSPEND,Suspend,Unterbrechen
+HMI_UNSUSPEND,Unsuspend,Wiederaufnehmen
+HMI_ABORT,Abort,Abbrechen
+HMI_CLEAR,Clear,Quittieren
+HMI_AUTO_EXCHANGE,Auto KLT exchange,Automatischer KLT-Wechsel
+HMI_EXCHANGE_A,Exchange KLT A,KLT A wechseln
+HMI_EXCHANGE_B,Exchange KLT B,KLT B wechseln
+HMI_STATS,"Parts %d   OK %d   NOK %d   (%.1f %% rejects)\nKLT A %d/%d   KLT B %d/%d","Teile %d   i.O. %d   n.i.O. %d   (%.1f %% Ausschuss)\nKLT A %d/%d   KLT B %d/%d"
+HMI_OEE,"OEE %.0f %%   (A %.0f %%  P %.0f %%  Q %.0f %%)","OEE %.0f %%   (V %.0f %%  L %.0f %%  Q %.0f %%)"
+TASKS_TITLE,MES terminal – operator tasks,MES-Terminal – Bedieneraufgaben
+TASKS_NONE,No open tasks. Tasks appear here when a BPMN process needs an operator.,"Keine offenen Aufgaben. Aufgaben erscheinen hier, sobald ein BPMN-Prozess einen Bediener braucht."
+TASKS_SELECT,Select a task.,Aufgabe auswählen.
+TASKS_COMPLETE,Complete task,Aufgabe abschließen
+TASKS_COMPLETING,Completing …,Wird abgeschlossen …
+TASKS_DONE,Task completed.,Aufgabe abgeschlossen.
+TASKS_FAILED,Could not complete the task (engine unreachable?),Aufgabe konnte nicht abgeschlossen werden (Engine nicht erreichbar?)
+TASKS_COUNT,%d open task(s) · Operaton,%d offene Aufgabe(n) · Operaton
+TASKS_EXCHANGE_HINT,"KLT %s is full. Replace it with an empty KLT, then complete the task (or click the KLT).","KLT %s ist voll. Durch einen leeren KLT ersetzen und die Aufgabe abschließen (oder den KLT anklicken)."
+KLT_EXCHANGE_TASK,Exchange done (complete BPMN task),Wechsel erledigt (BPMN-Aufgabe abschließen)
+KLT_EXCHANGE_NOW,Exchange KLT now,KLT jetzt wechseln
+MENU_TITLE,Virtual Factory,Virtuelle Fabrik
+MENU_LANGUAGE,Language,Sprache
+MENU_QUALITY,Render quality,Grafikqualität
+MENU_SPEED,Simulation speed,Simulationstempo
+MENU_SCENARIOS,Training scenarios,Trainingsszenarien
+MENU_START,Start,Starten
+MENU_STOP,Stop,Beenden
+MENU_TOUR,Demo tour,Demo-Rundgang
+MENU_DATAFLOW,Show data flow,Datenfluss anzeigen
+MENU_HINT,"F1 menu · right mouse + WASD move · click a device, part or panel","F1 Menü · rechte Maustaste + WASD bewegen · Gerät, Teil oder Panel anklicken"
+QUALITY_LOW,Low,Niedrig
+QUALITY_MEDIUM,Medium,Mittel
+QUALITY_HIGH,High,Hoch
+MENU_INFO,"UNS %s · AAS events %d · open tasks %d","UNS %s · AAS-Ereignisse %d · offene Aufgaben %d"
+SCENARIO_RUNNING,Running: %s,Läuft: %s
+SCENARIO_NONE,No scenario running.,Kein Szenario aktiv.
+OVERLAY_NOT_RUNNING,Factory not running,Fabrik läuft nicht
+OVERLAY_SEQUENCE,Sequence: %s   parts on belt: %d,Ablauf: %s   Teile auf dem Band: %d
+OVERLAY_PARTS,Parts: %d   OK: %d   NOK: %d,Teile: %d   i.O.: %d   n.i.O.: %d
+OVERLAY_LAST,Last: %s  %s,Zuletzt: %s  %s
+OVERLAY_ROBOT,Robot step: %d   cycles: %d,Roboterschritt: %d   Zyklen: %d
+OVERLAY_POWER,Line power: %.0f W,Linienleistung: %.0f W
+SEQ_WAIT_PART,wait part,warte auf Teil
+SEQ_POSITIONING,positioning,positionieren
+SEQ_SETTLING,settling,beruhigen
+SEQ_INSPECTING,inspecting,prüfen
+SEQ_WAIT_ROBOT,wait robot,warte auf Roboter
+SEQ_PICKING,picking,greifen

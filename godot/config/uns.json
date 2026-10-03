@@ -78,7 +78,13 @@
     "retain": false,
     "qos": 1,
     "writable": {
-      "PLC01": ["packml_command", "klt_exchange_command", "auto_exchange"]
+      "PLC01": ["packml_command", "klt_exchange_command", "auto_exchange"],
+      "AC01": ["defect_rate_missing_cap", "defect_rate_wrong_cap"],
+      "CV01": ["motor_fault"],
+      "LB01": ["misalignment"],
+      "LB02": ["misalignment"],
+      "QS01": ["contamination", "drift"],
+      "RB01": ["protective_stop"]
     },
     "pulse": ["PLC01.packml_command", "PLC01.klt_exchange_command"]
   }

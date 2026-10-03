@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://core/device/device_node.gd" id="1_dev"]
+[ext_resource type="Script" path="res://devices/stack_light/model/stack_light_model.gd" id="2_model"]
+[ext_resource type="Script" path="res://devices/stack_light/view/stack_light_view.gd" id="3_view"]
+[ext_resource type="PackedScene" path="res://devices/stack_light/view/stack_light.glb" id="4_glb"]
+[ext_resource type="Script" path="res://core/device/device_tag.gd" id="9_tag"]
+
+[node name="StackLight" type="Node3D"]
+script = ExtResource("1_dev")
+model_script = ExtResource("2_model")
+model_description_path = "res://devices/stack_light/model/modelDescription.xml"
+
+[node name="View" type="Node3D" parent="."]
+script = ExtResource("3_view")
+model_scene = ExtResource("4_glb")
+
+[node name="Tag" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.54, 0)
+script = ExtResource("9_tag")

@@ -71,6 +71,19 @@ func update(dt: float) -> void:
 		_enter(ACTING_TARGETS[state])
 
 
+## Commands that cause a transition in `in_state` (for HMIs: enable only these buttons).
+static func allowed_commands(in_state: int) -> Array[int]:
+	var out: Array[int] = []
+	for key: Array in COMMAND_TRANSITIONS:
+		if key[0] == in_state:
+			out.append(key[1])
+	if in_state in STOPPABLE:
+		out.append(Command.STOP)
+	if in_state not in [State.ABORTING, State.ABORTED]:
+		out.append(Command.ABORT)
+	return out
+
+
 func is_acting() -> bool:
 	return ACTING_TARGETS.has(state)
 

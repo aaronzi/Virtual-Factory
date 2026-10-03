@@ -1,0 +1,18 @@
+{
+  "id": "dirty_color_sensor",
+  "title_en": "Dirty colour sensor",
+  "title_de": "Verschmutzter Farbsensor",
+  "description_en": "Dust settles on the lens of the colour sensor QS01. First delta-E creeps up while parts still pass, then good parts are rejected (false rejects). Compare the measured colour (r, g, b, delta_e) with the taught colour and clean the sensor.",
+  "description_de": "Staub legt sich auf die Linse des Farbsensors QS01. Zuerst steigt Delta-E, die Teile sind aber noch in Ordnung, dann werden Gutteile aussortiert (Pseudoausschuss). Vergleichen Sie die gemessene Farbe (r, g, b, delta_e) mit der eingelernten Farbe und reinigen Sie den Sensor.",
+  "steps": [
+    {"at": 10.0, "set": {"QS01.contamination": 0.2},
+     "message_en": "Light contamination: delta-E rises, parts still pass.",
+     "message_de": "Leichte Verschmutzung: Delta-E steigt, Teile sind noch in Ordnung."},
+    {"after": 50.0, "set": {"QS01.contamination": 0.5},
+     "message_en": "Heavy contamination: good parts are rejected.",
+     "message_de": "Starke Verschmutzung: Gutteile werden aussortiert."},
+    {"after": 90.0, "reset": "all",
+     "message_en": "Sensor cleaned.",
+     "message_de": "Sensor gereinigt."}
+  ]
+}

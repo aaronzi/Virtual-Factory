@@ -8,6 +8,9 @@ extends RefCounted
 ## master steps; after_step() detects events and publishes telemetry for the state after the step.
 ## Timestamps use the simulation time base (session start wall clock + master.time).
 
+## Emitted for every domain event published to the broker (e.g. for the data-flow visualisation).
+signal event_published(device: String, event: String)
+
 var session_id := ""
 var layout_name := ""
 ## Published message counters (for diagnostics and rate measurements).
@@ -113,6 +116,7 @@ func _publish_event(d: UnsEvents.Definition, fields: Dictionary, ts: String) -> 
 	if _client.publish(d.topic, UnsConfig.encode(payload), int(section.get("qos", 1)),
 			section.get("retain", false)):
 		stats.events += 1
+		event_published.emit(d.device, d.event)
 
 
 func _on_message(topic: String, payload: PackedByteArray) -> void:
@@ -131,3 +135,7 @@ func _publish_ack(topic: String, ack: Dictionary) -> void:
 
 func _status_topic() -> String:
 	return _config.topic(_config.section("session").get("status_topic", "{root}/status"))
+
+
+func is_broker_connected() -> bool:
+	return _client.is_broker_connected()

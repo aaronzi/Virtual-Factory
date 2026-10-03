@@ -7,6 +7,7 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
   1883/9001 MQTT, 8092 Operaton BPMN (demo/demo), 8095 ops gateway). Services: bridge, mes, ops-gateway (`services/`).
   Do NOT touch the separate `rebac-*` containers (other project on 8080/8082/3000).
 - GDScript tests: `tools/run_godot_tests.sh` (also compiles every script) · line run: `tools/run_line_simulation.sh [s]`
+  · training scenarios: `tools/run_scenarios.sh` · Node-RED sandbox: `--profile sandbox`
 - Python tests: `uv run pytest` (`-m integration` needs the stack) · interface docs: `uv run tools/gen_interface_docs.py`
 - Checks (must pass before commit): `uv run tools/arch_check.py`, `uv run tools/complexity_check.py`,
   `(cd godot && uv run gdlint .)`
@@ -28,6 +29,8 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
 - Renderer is Compatibility (ADR-0010). Keep draw calls ≤ 450 incl. shadows (`--vf-perf-report=5 --vf-perf-warmup=170`).
 - Long Godot runs from the shell: wrap in `perl -e 'alarm N; exec @ARGV' ...` (macOS can throttle background windows).
 - Keep docs (requirements status, interfaces, open issues) in sync with code changes.
+- UI (ADR-0018): `ui/` holds passive views only (world panels, inspector, HMI, terminal, menu); controllers live in
+  `factory/`. Static UI texts are translation keys (`ui/i18n/ui.csv`, en+de). Panels re-render only when dirty.
 - UNS contract: `godot/config/uns.json` (Godot gateway, AID generation and all services read it). BPMN models in
   `bpmn/` (deployed by the MES). Line commands only via LINE01 LineControl operations (delegated to ops-gateway).
 - AAS data: use IDTA templates (aas/templates/idta) where they exist; custom templates only in the YAML DSL with en/de

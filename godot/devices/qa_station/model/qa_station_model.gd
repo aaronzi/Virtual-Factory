@@ -1,6 +1,10 @@
 extends Fmi3CoSimulation
 ## Colour inspection: on a rising trigger edge, integrates for `integration_time`, then compares the
 ## (noisy) measured colour with the taught colour. The result stays valid while `trigger` is true.
+## Fault injection (tunable): `contamination` fades the perceived colour towards DIRT (dirty lens),
+## `drift` adds an offset to all channels (calibration drift); both 0 by default.
+
+const DIRT := Vector3(0.16, 0.15, 0.13)
 
 var _rng := RandomNumberGenerator.new()
 var _meter := EnergyMeter.new()
@@ -39,10 +43,11 @@ func _on_step(_t: float, h: float) -> int:
 
 func _measure() -> void:
 	var sigma: float = _get_var("noise_sigma")
+	var seen := perceived(Vector3(_get_var("measured_r"), _get_var("measured_g"), _get_var("measured_b")))
 	var rgb := Vector3(
-		clampf(_get_var("measured_r") + _rng.randfn(0.0, sigma), 0.0, 1.0),
-		clampf(_get_var("measured_g") + _rng.randfn(0.0, sigma), 0.0, 1.0),
-		clampf(_get_var("measured_b") + _rng.randfn(0.0, sigma), 0.0, 1.0))
+		clampf(seen.x + _rng.randfn(0.0, sigma), 0.0, 1.0),
+		clampf(seen.y + _rng.randfn(0.0, sigma), 0.0, 1.0),
+		clampf(seen.z + _rng.randfn(0.0, sigma), 0.0, 1.0))
 	var taught := Vector3(_get_var("taught_r"), _get_var("taught_g"), _get_var("taught_b"))
 	var de := ColorMath.delta_e76(rgb, taught)
 	_set_var("r", rgb.x)
@@ -53,6 +58,12 @@ func _measure() -> void:
 	_set_var("result_ok", _get_var("object_present") and de <= _get_var("tolerance_delta_e"))
 	_set_var("result_valid", true)
 	_set_var("measure_count", _get_var("measure_count") + 1)
+
+
+## Colour as seen through the (possibly contaminated, drifting) optics, before noise.
+func perceived(surface: Vector3) -> Vector3:
+	var dirt := clampf(_get_var("contamination"), 0.0, 1.0)
+	return surface.lerp(DIRT, dirt) + Vector3.ONE * float(_get_var("drift"))
 
 
 func _on_reset() -> void:

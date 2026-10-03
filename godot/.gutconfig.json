@@ -1,7 +1,7 @@
 {
   "dirs": ["res://core", "res://devices", "res://products", "res://control",
            "res://connectivity", "res://factory", "res://world", "res://player",
-           "res://ui", "res://tests"],
+           "res://ui", "res://scenarios", "res://tests"],
   "include_subdirs": true,
   "prefix": "test_",
   "suffix": ".gd",
