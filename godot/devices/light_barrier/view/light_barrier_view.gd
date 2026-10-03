@@ -7,6 +7,8 @@ var _led: Indicator
 func bind(p_device: DeviceNode) -> void:
 	super.bind(p_device)
 	_led = Indicator.new(part("LedSignal"))
+	for mesh in model_root.find_children("*", "GeometryInstance3D", true, false):
+		(mesh as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF  # tiny
 
 
 func apply(model: Fmi3CoSimulation, _delta: float) -> void:

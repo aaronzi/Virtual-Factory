@@ -19,5 +19,8 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
 - Limits: file ≤ 300 lines, function ≤ 40 lines, line ≤ 110 chars. Exceptions need an inline reason.
 - Device behaviour = `Fmi3CoSimulation` subclass + FMI 3.0 `modelDescription.xml`; no scene-tree access in models.
 - Godot is Y-up, 1 unit = 1 m, SI units everywhere.
-- 3D assets are produced by scripts in `blender/scripts/` (run through the Blender MCP), exported as .glb.
+- 3D assets are produced by scripts in `blender/scripts/` (run via Blender MCP: `exec(open(".../build_<asset>.py").read())`,
+  all: `build_all.py`), exported as .glb; palette colours are sRGB. Animated/switched parts are separate named objects.
+- Renderer is Compatibility (ADR-0010). Keep draw calls ≤ 450 incl. shadows (`--vf-perf-report=5 --vf-perf-warmup=170`).
+- Long Godot runs from the shell: wrap in `perl -e 'alarm N; exec @ARGV' ...` (macOS can throttle background windows).
 - Keep docs (requirements status, interfaces, open issues) in sync with code changes.

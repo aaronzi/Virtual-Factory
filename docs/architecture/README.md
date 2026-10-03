@@ -10,7 +10,7 @@ See [requirements.md](../requirements.md). Top quality goals:
 3. **Performance** on slow hardware and XR-readiness (NFR-01/02)
 
 ## 2. Constraints
-- Godot 4.7 (GDScript), Blender 5.2 via MCP, Eclipse BaSyx Go 1.1.0 (AAS API V3.2), Python 3.12 + basyx-python-sdk.
+- Godot 4.7 (GDScript, Compatibility renderer), Blender 5.2 via MCP, Eclipse BaSyx Go 1.1.0 (AAS API V3.2), Python 3.12 + basyx-python-sdk.
 - Local, single-machine deployment with docker compose. No authentication (local development only).
 - Device models aligned with FMI 3.0 Co-Simulation (ADR-0002).
 
@@ -86,6 +86,8 @@ The Godot application runs natively on the host and connects to `ws://localhost:
 - **Device modules** (model / probe / view / root, services, teach points): [device-modules.md](device-modules.md)
 - **Virtual PLC**: a PLC program is an FMI slave whose variables are the process image; IEC 61131-3 FBs
   (`core/plc/iec_*.gd`), PackML state machine, 10 ms scans ([ADR-0008](../adr/0008-plc-program-as-fmu.md))
+- **3D asset pipeline** (Blender scripts → glb → ModelView, animations from recorded runs): [asset-pipeline.md](asset-pipeline.md)
+- **Rendering/lighting**: Compatibility renderer, unbaked indoor lighting, draw-call budget ([ADR-0010](../adr/0010-compatibility-renderer-indoor-lighting.md))
 - **Physics/transport**: belt `constant_linear_velocity` (Jolt), rigid workpieces, kinematic attach on grasp
   ([ADR-0009](../adr/0009-physical-transport-and-items.md))
 - **UNS topics**, **AAS modelling**: *(planned, M3/M4)* see PLAN.md §3.9–3.12

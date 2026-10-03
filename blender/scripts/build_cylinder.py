@@ -2,6 +2,8 @@
 
 Origin = bottom centre, standing on the rear end cap. Objects: "Body" (all metal parts + label), "Cap".
 Export: godot/products/cylinder/cylinder.glb   Render: docs/screenshots/assets/cylinder.png
+Draw-call budget: the body uses only 4 materials (metal, black, blue fitting, label) because up to ~25
+parts are visible at once (KLTs).
 """
 
 import importlib
@@ -13,27 +15,29 @@ import vf_lib as L  # noqa: E402
 importlib.reload(L)
 L.reset_scene()
 
+METAL = L.material("alu_anodised")
+DARK = L.material("plastic_black")
 CAP_W, CAP_H = 0.047, 0.024
 BARREL_LEN = 0.150
 TOP = 2 * CAP_H + BARREL_LEN  # 0.198
 
 
 def end_cap(name: str, z: float, screws_up: bool):
-    parts = [L.box(name, (CAP_W, CAP_W, CAP_H), (0, 0, z), L.material("alu_cast"), bevel=0.0025)]
+    parts = [L.box(name, (CAP_W, CAP_W, CAP_H), (0, 0, z), METAL, bevel=0.0025)]
     sz = z + CAP_H / 2 if screws_up else z - CAP_H / 2
     for sx in (-1, 1):
         for sy in (-1, 1):
             parts.append(L.cylinder(f"{name}Screw", 0.0036, 0.002, (sx * 0.0165, sy * 0.0165, sz),
-                                    L.material("steel_black"), segments=8))
+                                    DARK, segments=8))
     # supply port with push-in fitting on the -Y face
-    parts.append(L.cylinder(f"{name}PortHex", 0.0062, 0.005, (0, -CAP_W / 2 - 0.0025, z), L.material("brass"),
+    parts.append(L.cylinder(f"{name}PortHex", 0.0062, 0.005, (0, -CAP_W / 2 - 0.0025, z), METAL,
                             axis="Y", segments=6))
     parts.append(L.cylinder(f"{name}Fitting", 0.0055, 0.008, (0, -CAP_W / 2 - 0.009, z),
                             L.material("plastic_blue"), axis="Y", segments=12))
-    parts.append(L.cylinder(f"{name}Ring", 0.0042, 0.003, (0, -CAP_W / 2 - 0.0145, z), L.material("plastic_grey"),
+    parts.append(L.cylinder(f"{name}Ring", 0.0042, 0.003, (0, -CAP_W / 2 - 0.0145, z), DARK,
                             axis="Y", segments=12))
     # cushioning adjustment screw on the +X face
-    parts.append(L.cylinder(f"{name}Cushion", 0.0028, 0.003, (CAP_W / 2 + 0.0015, 0.008, z), L.material("brass"),
+    parts.append(L.cylinder(f"{name}Cushion", 0.0028, 0.003, (CAP_W / 2 + 0.0015, 0.008, z), METAL,
                             axis="X", segments=8))
     return parts
 
@@ -41,9 +45,9 @@ def end_cap(name: str, z: float, screws_up: bool):
 parts = end_cap("RearCap", CAP_H / 2, screws_up=False)
 parts += end_cap("FrontCap", TOP - CAP_H / 2, screws_up=True)
 parts.append(L.extrude_profile("Barrel", L.slot_profile(0.044, 0.006, 0.0015, 0.003), BARREL_LEN,
-                               (0, 0, CAP_H + BARREL_LEN / 2), L.material("alu_anodised")))
-parts.append(L.cylinder("Rod", 0.006, 0.032, (0, 0, TOP + 0.016), L.material("stainless"), segments=16))
-parts.append(L.cylinder("RodNut", 0.0098, 0.006, (0, 0, TOP + 0.024), L.material("steel_zinc"), segments=6))
+                               (0, 0, CAP_H + BARREL_LEN / 2), METAL))
+parts.append(L.cylinder("Rod", 0.006, 0.032, (0, 0, TOP + 0.016), METAL, segments=16))
+parts.append(L.cylinder("RodNut", 0.0098, 0.006, (0, 0, TOP + 0.024), METAL, segments=6))
 parts.append(L.decal("TypePlate", "typeplate_cylinder.png", 0.034, 0.017, (0, -0.0222, CAP_H + 0.085), (90, 0, 0)))
 body = L.join(parts, "Body")
 

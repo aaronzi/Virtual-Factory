@@ -293,6 +293,18 @@ def parent(child, parent_obj, keep_world: bool = True) -> None:
         child.matrix_world = world
 
 
+def fcurves(action) -> list:
+    """All F-curves of an action (Blender 5 layered actions: layers -> strips -> channelbags)."""
+    curves = []
+    for layer in getattr(action, "layers", []):
+        for strip in layer.strips:
+            for bag in getattr(strip, "channelbags", []):
+                curves += list(bag.fcurves)
+    if not curves and hasattr(action, "fcurves"):
+        curves = list(action.fcurves)
+    return curves
+
+
 def triangle_count(objects=None) -> int:
     objects = objects or [o for o in bpy.context.scene.objects if o.type == "MESH"]
     return sum(sum(len(p.vertices) - 2 for p in o.data.polygons) for o in objects if o.type == "MESH")

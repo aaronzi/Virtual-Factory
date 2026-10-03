@@ -10,6 +10,7 @@ const BRACKET_SPACING := 0.8
 var _belt_body: StaticBody3D
 var _belt_material: ShaderMaterial
 var _drums: Array[Node3D] = []
+var _static: Node3D  ## temporary parent of static parts before merging
 
 
 func bind(p_device: DeviceNode) -> void:
@@ -18,15 +19,26 @@ func bind(p_device: DeviceNode) -> void:
 	var g := device.geometry
 	var length: float = g.get("length", 3.0)
 	var gap: float = g.get("guide_gap", 0.08)
-	_place("FrameSection", Vector3.ZERO, length)
-	_place("BeltBody", Vector3.ZERO, length)
 	_belt_material = ShaderMaterial.new()
 	_belt_material.shader = preload("res://devices/conveyor/view/belt.gdshader")
 	_belt_material.set_shader_parameter("length_m", length)
-	(_place("Belt", Vector3.ZERO, length) as MeshInstance3D).material_override = _belt_material
-	_drums.append(_place("DriveEnd", Vector3(length / 2, 0, 0)).get_node("DriveDrum"))
-	_drums.append(_place("IdlerEnd", Vector3(-length / 2, 0, 0)).get_node("IdlerDrum"))
+	var belt := part("Belt").duplicate() as MeshInstance3D
+	add_child(belt)
+	belt.position = part("Belt").position
+	belt.scale.x = length
+	belt.material_override = _belt_material
+	_static = Node3D.new()
+	add_child(_static)
+	_place("FrameSection", Vector3.ZERO, length)
+	_place("BeltBody", Vector3.ZERO, length)
+	for end in [["DriveEnd", "DriveDrum", 1.0], ["IdlerEnd", "IdlerDrum", -1.0]]:
+		var unit := _place(end[0], Vector3(end[2] * length / 2, 0, 0))
+		var drum := unit.get_node(end[1]) as Node3D
+		drum.reparent(self)
+		_drums.append(drum)
 	_place_repeated(length, gap)
+	MeshMerger.merge(_static, self, "StaticParts")
+	_static.queue_free()
 	_build_physics(length, g.get("width", 0.3), gap)
 
 
@@ -53,12 +65,12 @@ func _place_repeated(length: float, gap: float) -> void:
 		_place("FlowArrow", Vector3(x, 0, 0))
 
 
-## Copies a part of the library to `offset` (added to the part's own position) and stretches it
-## along X to `length` metres (parts are modelled 1 m long) if given.
+## Copies a static part of the library to `offset` (added to the part's own position) and stretches it
+## along X to `length` metres (parts are modelled 1 m long) if given. Static parts are merged later.
 func _place(part_name: String, offset: Vector3, length := 0.0) -> Node3D:
 	var src := part(part_name)
 	var copy := src.duplicate() as Node3D
-	add_child(copy)
+	_static.add_child(copy)
 	copy.position = src.position + offset
 	if length > 0.0:
 		copy.scale.x = length

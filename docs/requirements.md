@@ -15,7 +15,7 @@ that mirror a genuine manufacturing environment.
 
 | ID | Requirement | M | Verif. | Status |
 |---|---|---|---|---|
-| FR-01 | The factory produces a realistic product continuously: an ISO 15552 pneumatic cylinder with a red protective end cap. | M1 | D | ◐ |
+| FR-01 | The factory produces a realistic product continuously: an ISO 15552 pneumatic cylinder with a red protective end cap. | M1 | D | ☑ |
 | FR-02 | A "black box" assembly cell placed upstream of the conveyor outputs finished products at a configurable takt. Its internal process stays hidden; it exposes only its interface and its AAS. | M1 | T, D | ☑ |
 | FR-03 | A belt conveyor transports the products. Its speed is configurable and it can be started and stopped by the PLC. | M1 | T, D | ☑ |
 | FR-04 | Light barriers detect products: one at the infeed and one at the inspection position. | M1 | T | ☑ |
@@ -52,8 +52,8 @@ that mirror a genuine manufacturing environment.
 
 | ID | Requirement | M | Verif. | Status |
 |---|---|---|---|---|
-| FR-30 | 3D models are created in Blender (via MCP) and are recognisable but low-poly. | M2 | D | ☐ |
-| FR-31 | Models are animated: products move along the conveyor, robot joints rotate, rollers turn, indicator lights react. | M1/M2 | D | ◐ |
+| FR-30 | 3D models are created in Blender (via MCP) and are recognisable but low-poly. | M2 | D | ☑ |
+| FR-31 | Models are animated: products move along the conveyor, robot joints rotate, rollers turn, indicator lights react. | M1/M2 | D | ☑ |
 | FR-32 | An in-world AAS inspector shows the AAS of any asset, including live values. | M5 | D | ☐ |
 | FR-33 | The UI is available in German and English. | M5 | I | ☐ |
 | FR-34 | A demo mode runs autonomously with a camera tour. A headless/fast-forward mode supports agents. | M5 | D | ☐ |
@@ -62,7 +62,7 @@ that mirror a genuine manufacturing environment.
 
 | ID | Requirement | M | Verif. | Status |
 |---|---|---|---|---|
-| NFR-01 | **Performance:** 60 FPS at 1080p on an Intel Iris Xe-class iGPU. Budget ≤ 250 k triangles and ≤ 300 draw calls. | M2/M6 | T (perf scene), D | ◐ |
+| NFR-01 | **Performance:** 60 FPS at 1080p on an Intel Iris Xe-class iGPU. Budget ≤ 250 k primitives and ≤ 450 draw calls, both including the shadow pass, with full KLTs (ADR-0010). | M2/M6 | T (perf scene), D | ◐ |
 | NFR-02 | **XR-readiness:** VR can be added later without restructuring (1 unit = 1 m, PlayerRig abstraction, world-space UI, XR-capable renderer). The desktop PC is fully supported. | M0–M6 | I | ◐ |
 | NFR-03 | **Modularity:** semantically related aspects are grouped into modules, with high cohesion and low coupling. | all | I, T | ◐ |
 | NFR-04 | **Architecture adherence ≥ 95 %**, measured by `tools/arch_check.py`. Exceptions are documented. | all | T | ◐ |

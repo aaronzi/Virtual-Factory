@@ -33,6 +33,17 @@ Open `godot/project.godot` in Godot 4.7 and press Play, or run:
 The line runs automatically (PackML auto-start). The overlay shows the line state, the inspection results, KLT fill
 levels, robot step and line power. Full KLTs are exchanged automatically after 4 s.
 
+## Rebuilding 3D assets
+Blender 5.2 with the MCP add-on (or the Blender Python console):
+```python
+exec(open("<repo>/blender/scripts/build_all.py").read())
+```
+Decal images: `uv run blender/scripts/make_decals.py`. Afterwards run a Godot import
+(`godot --headless --import` in `godot/`). Demo animation: record with
+`godot --headless --fixed-fps 60 -s res://tests/tools/record_demo_trajectory.gd`, then run
+`blender/scripts/animate_demo.py` in Blender and open `blender/demo_animation.blend`.
+See [architecture/asset-pipeline.md](architecture/asset-pipeline.md).
+
 ## Developer commands
 | Command | Purpose |
 |---|---|
@@ -46,4 +57,4 @@ levels, robot step and line power. Full KLTs are exchanged automatically after 4
 | `uv run tools/gen_interface_docs.py` | Regenerate `docs/interfaces/device-catalog.md` from the FMI model descriptions |
 | `tools/screenshot.sh out.png [delay] [scene] --vf-camera=x,y,z,tx,ty,tz` | Review screenshot (camera override optional) |
 | `godot --path godot -- --vf-perf-report=5` | Performance sample (FPS, draw calls, triangles) |
-| `godot --path godot --rendering-method gl_compatibility` | Low-end renderer (Compatibility) |
+| `godot --path godot --rendering-method forward_plus` | High-end renderer for comparison (default is Compatibility) |

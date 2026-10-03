@@ -1,6 +1,6 @@
 # ADR-0001: Godot 4.7, Mobile renderer, Jolt physics
 
-- Status: accepted (renderer to be re-validated by the M1 performance baseline)
+- Status: renderer decision **superseded by [ADR-0010](0010-compatibility-renderer-indoor-lighting.md)** (M1 checkpoint); Jolt decision accepted
 - Date: 2026-10-03
 
 ## Context

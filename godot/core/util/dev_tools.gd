@@ -5,6 +5,7 @@ extends Node
 ##   --vf-screenshot-delay=<seconds>  wait before capturing (default 2.0)
 ##   --vf-quit-after=<seconds>        quit after the given wall-clock time
 ##   --vf-perf-report=<seconds>       vsync off; after warm-up, sample performance for <seconds>, print, quit
+##   --vf-perf-warmup=<seconds>       warm-up before sampling (default 3; longer = fuller KLTs)
 ##
 ## Used by tools/screenshot.sh to produce review screenshots without the editor.
 
@@ -42,7 +43,7 @@ func _capture_after(delay: float, path: String) -> void:
 
 func _perf_report(seconds: float) -> void:
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
-	await get_tree().create_timer(3.0, true, false, true).timeout
+	await get_tree().create_timer(float(get_arg("vf-perf-warmup", "3")), true, false, true).timeout
 	var frames := 0
 	var draw_calls := 0.0
 	var primitives := 0.0
