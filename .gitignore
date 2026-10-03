@@ -23,3 +23,21 @@ mono_crash.*.json
 *.exe
 # Uncomment if your project does not version PCK files as runtime dependencies.
 # *.pck
+
+# Blender backups / autosaves
+*.blend1
+*.blend2
+*.blend@
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Claude Code personal settings
+.claude/settings.local.json

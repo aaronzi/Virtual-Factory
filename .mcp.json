@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "blender": {
+      "type": "stdio",
+      "command": "blender-mcp",
+      "args": [],
+      "env": {}
+    },
+    "godot": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@coding-solo/godot-mcp@0.1.1"
+      ],
+      "env": {
+        "GODOT_PATH": "/Applications/Godot.app/Contents/MacOS/Godot"
+      }
+    }
+  }
+}
