@@ -12,6 +12,8 @@ from typing import Any
 
 import paho.mqtt.client as paho
 
+from .auth import mqtt_credentials
+
 log = logging.getLogger(__name__)
 
 
@@ -29,13 +31,18 @@ class Message:
 
 
 class MqttClient:
-    def __init__(self, client_id: str, host: str = "localhost", port: int = 1883):
+    def __init__(self, client_id: str, host: str = "localhost", port: int = 1883,
+                 credentials: tuple[str, str] | None = None):
+        """credentials: broker account; default VF_MQTT_USER / VF_MQTT_PASSWORD (secure profile)."""
         self.host, self.port = host, port
         self.messages: queue.Queue[Message] = queue.Queue()
         self.connected = threading.Event()
         self._subscriptions: dict[str, int] = {}
         self._client = paho.Client(paho.CallbackAPIVersion.VERSION2, client_id=client_id, clean_session=True)
         self._client.reconnect_delay_set(1, 30)
+        credentials = credentials or mqtt_credentials()
+        if credentials:
+            self._client.username_pw_set(*credentials)
         self._client.on_connect = self._on_connect
         self._client.on_disconnect = self._on_disconnect
         self._client.on_message = self._on_message

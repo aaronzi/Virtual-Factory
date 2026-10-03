@@ -10,11 +10,12 @@ from pathlib import Path
 from typing import AsyncIterator
 from urllib.parse import urlparse
 
-from asyncua import Server, ua
+from asyncua import Server
 
 from provisioner.build import REPO, load_assets
 from provisioner.interfaces_opcua import device_models, field_types
 from vf_common.opcua_plc import AddressSpace, address_space
+from vf_common.opcua_security import OpcUaSecurity, secure_server
 
 from .address_space import PlcAddressSpace
 from .backplane import Backplane
@@ -45,15 +46,15 @@ class CommModule:
 
 
 @asynccontextmanager
-async def comm_module(space: AddressSpace, opcua_bind: str, backplane_host: str,
-                      backplane_port: int) -> AsyncIterator[CommModule]:
+async def comm_module(space: AddressSpace, opcua_bind: str, backplane_host: str, backplane_port: int,
+                      security: OpcUaSecurity | None = None) -> AsyncIterator[CommModule]:
     server = Server()
     await server.init()
     server.set_endpoint(opcua_bind)
     server.set_server_name(f"{space.instance} communication module (Virtual Factory, simulated)")
     await server.set_application_uri(f"{space.namespace}:server")
-    # Security policies and user tokens are a hook for the Keycloak phase (open issue O49): None/Anonymous.
-    server.set_security_policy([ua.SecurityPolicyType.NoSecurity])
+    # open profile: None/Anonymous; secure profile (ADR-0027): Basic256Sha256 SignAndEncrypt + user tokens
+    await secure_server(server, security or OpcUaSecurity(), f"{space.namespace}:server")
     holder: list[Backplane] = []
 
     async def write(variable: str, value):

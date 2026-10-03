@@ -2,15 +2,22 @@ class_name HttpJson
 extends Node
 ## Minimal async JSON over HTTP for the in-world UI (one HTTPRequest per call, freed afterwards).
 ## `await request(...)` returns {"ok": bool, "status": int, "data": Variant, "body": PackedByteArray}.
+## Secure profile (ADR-0027): every request carries `Authorization: Bearer <bearer_token>` (set by the
+## OidcSession of the UI), unless the client has its own `authorization` header (e.g. Basic for Operaton).
+
+## Access token of the logged-in user, shared by all clients ("" = open profile, no header).
+static var bearer_token := ""
 
 @export var timeout_s := 10.0
+## Own Authorization header value of this client (e.g. "Basic ..."); overrides the bearer token.
+var authorization := ""
 
 
 func request(url: String, method := HTTPClient.METHOD_GET, body: Variant = null) -> Dictionary:
 	var http := HTTPRequest.new()
 	http.timeout = timeout_s
 	add_child(http)
-	var headers := PackedStringArray(["Accept: application/json"])
+	var headers := _headers()
 	var payload := ""
 	if body != null:
 		headers.append("Content-Type: application/json")
@@ -43,13 +50,22 @@ func request_many(urls: Array) -> Array:
 				"data": _parse(raw), "body": raw}
 			remaining[0] -= 1
 			http.queue_free())
-		if http.request(urls[i], PackedStringArray(["Accept: application/json"])) != OK:
+		if http.request(urls[i], _headers()) != OK:
 			out[i] = {"ok": false, "status": 0, "data": null, "body": PackedByteArray()}
 			remaining[0] -= 1
 			http.queue_free()
 	while remaining[0] > 0:
 		await get_tree().process_frame
 	return out
+
+
+func _headers() -> PackedStringArray:
+	var headers := PackedStringArray(["Accept: application/json"])
+	if authorization != "":
+		headers.append("Authorization: " + authorization)
+	elif bearer_token != "":
+		headers.append("Authorization: Bearer " + bearer_token)
+	return headers
 
 
 ## JSON body -> Variant; binary bodies (thumbnails, files) -> null without a parse error.

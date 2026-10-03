@@ -1,0 +1,7 @@
+[
+  {
+    "issuer": "http://localhost:8180/realms/virtual-factory",
+    "audience": "virtual-factory-api",
+    "discoveryUrl": "http://keycloak:8080/realms/virtual-factory/.well-known/openid-configuration"
+  }
+]

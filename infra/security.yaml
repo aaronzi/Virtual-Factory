@@ -1,0 +1,157 @@
+# Security model of the optional "secure" profile (ADR-0027, docs/architecture/security.md).
+#
+# Single source for the generated configuration (uv run tools/gen_security_config.py [--check]):
+#   infra/keycloak/virtual-factory-realm.json        Keycloak realm (roles, users, clients)
+#   infra/basyx/security/*.json                      BaSyx Go ABAC rules + OIDC trust list
+#   infra/mosquitto/secure/{acl,passwords}           Mosquitto accounts and topic ACLs
+# All passwords and client secrets are LOCAL DEFAULTS for training (open issue O34) - never reuse them.
+
+realm: virtual-factory
+issuer: http://localhost:8180/realms/virtual-factory   # public issuer (KC_HOSTNAME), also used inside compose
+discovery_url: http://keycloak:8080/realms/virtual-factory/.well-known/openid-configuration
+audience: virtual-factory-api                          # audience mapper on every client
+user_password: virtualfactory                          # all training users (local default, O34)
+
+roles:
+  # people (realm roles); "public" = anonymous visitor or a client acting for the public
+  operator: Line operator - reads the line AAS, invokes LineControl, acknowledges alarms
+  quality: Quality engineer - reads the line AAS, passports and quality data
+  maintenance: Maintenance technician - condition monitoring, maintenance windows, LineControl Maintain
+  planner: Production planner (ERP) - orders, maintenance windows, LineControl
+  auditor: Auditor - reads everything (AAS, passports, supplier batches), writes nothing
+  authority: Market surveillance authority - extended passport (composition, BoM, technical, quality data)
+  recycler: Recycler / repairer - extended passport (composition, circularity, BoM)
+  public: Public passport sections only (same as an anonymous request)
+
+users:   # username: [realm roles]
+  operator1: [operator]
+  quality1: [quality]
+  maintenance1: [maintenance]
+  planner1: [planner]
+  auditor1: [auditor]
+  authority1: [authority]
+  recycler1: [recycler]
+
+services:   # confidential clients (client credentials); service account role svc-<name>
+  mes: Workpiece AAS and passports, BPMN workers
+  bridge: AIMC bridge (UNS -> AAS)
+  ops-gateway: Delegated AAS operations
+  sustainability: Carbon footprint, energy values
+  erp: ERP simulator
+  alarms: Alarms and events
+  maintenance: Predictive maintenance
+  supplier: Supplier portal (supplier environment)
+  edge: OPC UA edge connector
+  resolver: GS1 Digital Link resolver (acts for the public)
+service_extra_roles:
+  resolver: [public]
+
+clients:   # interactive clients
+  vf-godot: {type: public, password_grant: true, device_grant: true,
+             description: "Godot training UI (desktop/XR): password grant for training users"}
+  vf-aas-ui: {type: public, redirect: "http://localhost:3001/*", origin: "http://localhost:3001",
+              description: BaSyx AAS web UI (authorization code + PKCE)}
+  vf-grafana: {type: confidential, redirect: "http://localhost:3002/login/generic_oauth",
+               origin: "http://localhost:3002", description: Grafana (generic OAuth)}
+
+# -- BaSyx Go ABAC (main AAS environment 8091, DPP API 8093, supplier environment 8191) --------------------
+# grant: roles (ANONYMOUS = request without token), rights, objects (what), optional conditions:
+#   aas_prefix / sm_prefix: id starts with <id_base>/aas|sm/<prefix>; id_short / not_id_short: submodel idShort;
+#   sections: only these submodels are referenced (DPP API: passport sections)
+objects:
+  everything: [/description, /shells, /shells/*, /submodels, /submodels/*, /concept-descriptions,
+               /concept-descriptions/*, /shell-descriptors, /shell-descriptors/*, /submodel-descriptors,
+               /submodel-descriptors/*, /lookup/shells, /lookup/shells/*, /lookup/shellsByAssetLink,
+               /serialization, /query/*]
+  registry: [/description, /shell-descriptors, /shell-descriptors/*, /submodel-descriptors,
+             /submodel-descriptors/*, /lookup/shells, /lookup/shells/*, /lookup/shellsByAssetLink]
+  submodels: [/submodels, /submodels/*]
+  shells: [/shells, /shells/*]
+  submodel_refs: [/shells/*/submodel-refs, /shells/*/submodel-refs/*]
+  concept_descriptions: [/concept-descriptions, /concept-descriptions/*]
+  description: [/description]
+  dpp: [/v1/dpps, /v1/dpps/*, /v1/dppsByProductId/*, /v1/dppsByIdAndDate/*, /v1/dppsByProductIds]
+
+groups:
+  plant_readers: [operator, quality, maintenance, planner, auditor, svc-mes, svc-bridge, svc-ops-gateway,
+                  svc-sustainability, svc-maintenance, svc-edge]
+  line_commanders: [operator, planner, maintenance, svc-mes, svc-maintenance]
+  public: [ANONYMOUS, public]
+
+passport:   # DPP sections (submodel idShorts) per audience, ADR-0023/0027
+  public: [Nameplate, ContactInformations, CarbonFootprint, ProductCircularity, HandoverDocumentation,
+           DppMetadata]
+  recycler: [ProductMaterialComposition, HierarchicalStructures]
+  authority: [ProductMaterialComposition, HierarchicalStructures, TechnicalData, QualityInspection,
+              ExecutedProcesses]
+
+aas_env:
+  - {roles: [ANONYMOUS, public, authority, recycler, svc-resolver], rights: [READ], objects: description}
+  - {roles: "@plant_readers", rights: [READ], objects: everything}
+  - {roles: [svc-resolver], rights: [READ], objects: registry}
+  # public passport sections of the workpieces and the product type (passport page documents, attachments)
+  - {roles: "@public", rights: [READ], objects: submodels, id_short: "@passport.public"}
+  - {roles: [recycler], rights: [READ], objects: submodels,
+     id_short: ["@passport.public", "@passport.recycler"]}
+  - {roles: [authority], rights: [READ], objects: submodels,
+     id_short: ["@passport.public", "@passport.authority"]}
+  - {roles: "@line_commanders", rights: [EXECUTE], objects: submodels, id_short: [LineControl]}
+  # write ownership (ADR-0025): each service writes only the submodels it owns
+  - {roles: [svc-mes], rights: [CREATE, UPDATE, DELETE], objects: shells, aas_prefix: WP_}
+  - {roles: [svc-mes], rights: [CREATE, UPDATE], objects: submodels, sm_prefix: WP_,
+     not_id_short: [CarbonFootprint]}
+  - {roles: [svc-mes], rights: [DELETE], objects: submodels, sm_prefix: WP_}
+  - {roles: [svc-mes], rights: [UPDATE], objects: submodels, sm_prefix: KLT,
+     id_short: [HierarchicalStructures]}
+  - {roles: [svc-mes], rights: [UPDATE], objects: submodels, sm_prefix: LINE01,
+     id_short: [ProcessVariablesForManufacturingKPICalculation]}
+  - {roles: [svc-sustainability], rights: [CREATE, UPDATE], objects: submodels, sm_prefix: WP_,
+     id_short: [CarbonFootprint]}
+  - {roles: [svc-sustainability], rights: [CREATE], objects: submodel_refs}
+  - {roles: [svc-sustainability, svc-bridge], rights: [UPDATE], objects: submodels,
+     id_short: [EnergyConsumption]}
+  - {roles: [svc-bridge], rights: [UPDATE], objects: submodels, id_short: [OperationalData]}
+  - {roles: [svc-maintenance], rights: [UPDATE], objects: submodels, id_short: [ConditionMonitoring, Reliability]}
+  - {roles: [svc-mes, svc-sustainability], rights: [CREATE, UPDATE], objects: concept_descriptions}
+
+dpp_api:   # sections: the passport shows only these submodels (fragment filter on the AAS submodel references)
+  - {roles: "@public", rights: [READ], objects: dpp, sections: "@passport.public"}
+  - {roles: [recycler], rights: [READ], objects: dpp, sections: ["@passport.public", "@passport.recycler"]}
+  - {roles: [authority], rights: [READ], objects: dpp, sections: ["@passport.public", "@passport.authority"]}
+  - {roles: [auditor, quality, svc-mes, svc-sustainability], rights: [READ], objects: dpp}
+
+supplier_env:   # same realm, supplier-scoped rules (simplification of a federated IdP / dataspace, ADR-0027)
+  - {roles: [ANONYMOUS, public], rights: [READ], objects: description}
+  - {roles: [svc-supplier, svc-sustainability, svc-mes, operator, quality, maintenance, planner, auditor,
+             authority, recycler], rights: [READ], objects: everything}
+  - {roles: [svc-supplier], rights: [CREATE, UPDATE, DELETE], objects: shells}
+  - {roles: [svc-supplier], rights: [CREATE, UPDATE, DELETE], objects: submodels}
+  - {roles: [svc-supplier], rights: [CREATE, UPDATE], objects: concept_descriptions}
+
+# -- Mosquitto (password file + ACL per topic tree) ---------------------------------------------------------
+# {root} = topic_root of godot/config/uns.json; {opcua_device} = each controller on the OPC UA path
+mqtt:
+  godot:            # shop-floor simulation (UNS gateway) and its in-world UI (AAS event feed)
+    write: ["{root}/+/+", "{root}/+/event/+", "{root}/+/cmd-resp/+", "{root}/session", "{root}/status"]
+    read: ["{root}/+/cmd/+", "vf/basyx/#"]
+    deny: ["{root}/maintenance/#", "{root}/sandbox/#"]
+  edge:
+    write: ["{root}/{opcua_device}/+", "{root}/{opcua_device}/event/+", "{root}/{opcua_device}/cmd-resp/+"]
+    read: ["{root}/{opcua_device}/cmd/+", "vf/basyx/#"]
+  ops-gateway:
+    write: ["{root}/+/cmd/+"]
+    read: ["{root}/#", "vf/basyx/#"]
+  maintenance:
+    write: ["{root}/maintenance/#"]
+    read: ["{root}/#", "vf/basyx/#"]
+  basyx:
+    write: ["vf/basyx/#"]
+  mes: {read: ["{root}/#", "vf/basyx/#"]}
+  bridge: {read: ["{root}/#", "vf/basyx/#"]}
+  historian: {read: ["{root}/#"]}
+  alarms: {read: ["{root}/#"]}
+  sustainability: {read: ["{root}/#", "vf/basyx/#"]}
+  nodered:          # learner sandbox: reads the UNS, publishes only below {root}/sandbox
+    write: ["{root}/sandbox/#"]
+    read: ["{root}/#", "vf/basyx/#"]
+  explorer: {read: ["#"]}   # MQTT Explorer / mosquitto_sub (read-only)

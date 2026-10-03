@@ -97,7 +97,16 @@ Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 | bpmn | `operaton/operaton:2.1.5` (in-memory H2) | 8092 (REST, Cockpit, Tasklist) |
 | supplier-aas-env | `eclipsebasyx/aasenvironment-go:1.1.0`, **second, separately operated AAS environment** of the suppliers: company AAS, supplier product types, batch AAS; own `supplier-db` (`postgres:18`, tmpfs), `supplier-config` and one-shot `supplier-provisioner` (`provisioner build --data supplier` → `infra/basyx/preload-supplier`); no eventing (ADR-0028) | 8191 |
 | supplier | `vf-services:dev`, supplier portal: despatch advices per lot, publishes the batch AAS in the supplier environment (ADR-0028) | 8190 |
+| keycloak (secure profile only) | `keycloak/keycloak:26.7.4` (dev mode), realm `virtual-factory` imported from `infra/keycloak/` (generated from `infra/security.yaml`); issuer `http://localhost:8180/realms/virtual-factory` (ADR-0027) | 8180 |
+| bpmn-users (secure profile only) | `curlimages/curl:8.17.0`, one-shot: Operaton engine users per service | – |
 | nodered (optional, profile `sandbox`) | `nodered/node-red:4.1.15-22`, learner sandbox outside the core data path; flows from `infra/nodered/`, edits in volume `vf_nodered-data`, no auth | 1880 |
+
+**Secure profile** ([ADR-0027](../adr/0027-optional-security-profile-keycloak-abac.md), [security.md](security.md)):
+`docker compose -f infra/docker-compose.yml -f infra/docker-compose.secure.yml up -d` keeps every container and
+port but adds Keycloak and switches aas-env, dpp-api and supplier-aas-env to ABAC (`infra/basyx/security`), the
+broker to accounts + ACLs (`infra/mosquitto/secure`), plc-comm to Basic256Sha256 SignAndEncrypt with user names,
+the services to client-credential tokens and token-checked APIs, Operaton, Grafana, Node-RED and the AAS web UI to
+logins. Godot joins with `--vf-secure`.
 
 Desktop builds (macOS universal, Windows/Linux x86_64) come from `tools/export_builds.sh`
 (`godot/export_presets.cfg`). The Godot application runs natively on the host and connects to `ws://localhost:9001`,
@@ -155,6 +164,11 @@ the compose hosts (`aas-env`, `supplier-aas-env`) with `VF_AAS_ENDPOINT_MAP`.
   rate from Reliability as fallback), opens a BPMN MaintenanceOrder, the ERP keeps the line free at the next
   order boundary, the line is taken into maintenance and the part change is confirmed only through LineControl /
   Control Component (skill `Maintain`, `SetUnitMode`).
+- **Security** ([ADR-0027](../adr/0027-optional-security-profile-keycloak-abac.md), [security.md](security.md)):
+  open by default for training; an optional secure profile adds OIDC identities (Keycloak realm, one client per
+  service, roles per person), BaSyx Go ABAC with write ownership per service and passport sections per role,
+  broker ACLs, OPC UA SignAndEncrypt + user tokens and logins for all UIs - generated from one model
+  (`infra/security.yaml`); the AID describes the endpoint security of the running profile.
 - **OT protocols**: PLC01 on OPC UA (communication module `plc-comm` fed over a backplane link, PackML structure
   after OPC 30050, edge connector OPC UA → UNS, AID with an OPC UA interface, ops gateway calls methods); robot,
   assembly cell, KLT stations, stack light and the field devices' twins publish MQTT directly

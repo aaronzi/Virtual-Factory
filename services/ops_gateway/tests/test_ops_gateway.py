@@ -283,3 +283,15 @@ def test_operation_variables(config):
     assert [v["value"]["idShort"] for v in out] == ["Accepted", "State", "Message"]
     gw, _ = _gateway(config, "EXECUTE")
     assert health(gw)["endpoints"]["PackMLCommand"]["affordance"] == "packml_command"
+
+
+def test_delegated_operation_needs_a_commander_token_in_the_secure_profile():
+    """BaSyx forwards the caller's bearer token to the delegation target (ADR-0027)."""
+    from ops_gateway.server import authorize
+    from vf_common.testing_tokens import token, verifier
+    v = verifier()
+    assert authorize(None, None) == (0, "anonymous")  # open profile
+    assert authorize(v, None)[0] == 401
+    assert authorize(v, "Bearer " + token(["quality"], "quality1"))[0] == 403
+    assert authorize(v, "Bearer " + token(["operator"])) == (0, "operator1")
+    assert authorize(v, "Bearer " + token(["svc-mes"], "service-account-vf-mes"))[0] == 0

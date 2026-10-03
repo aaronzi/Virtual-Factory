@@ -18,7 +18,7 @@ import time
 import httpx
 
 from vf_common.basyx import BasyxClient, BasyxError
-from vf_common.http_api import ApiError, Request, Response, Router, serve
+from vf_common.http_api import ApiError, Guard, Request, Response, Router, serve
 
 from .articles import Catalogue
 from .batch_aas import BatchPublisher
@@ -29,14 +29,14 @@ ENV = os.environ.get
 
 
 def router(portal: Portal) -> Router:
-    r = Router()
-    r.add("GET", "/health", lambda q: {"status": "ok", "despatchAdvices": len(portal.advices)})
+    r = Router(Guard.from_env())
+    r.add("GET", "/health", lambda q: {"status": "ok", "despatchAdvices": len(portal.advices)}, public=True)
     r.add("GET", "/api/articles", lambda q: [
         {"tag": a.tag, "manufacturerPartId": a.part_id, "customerPartId": a.customer_part_id, "gtin": a.gtin,
          "supplier": a.company.name, "lotPattern": a.profile["lot"]["pattern"]}
         for a in portal.catalogue.articles.values()])
     r.add("GET", "/api/despatch-advices", lambda q: list(portal.advices.values()))
-    r.add("POST", "/api/despatch-advices", lambda q: _advice(portal, q))
+    r.add("POST", "/api/despatch-advices", lambda q: _advice(portal, q), ("svc-erp",))  # the customer's ERP
     return r
 
 

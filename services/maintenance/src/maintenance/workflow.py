@@ -25,6 +25,8 @@ from typing import Callable
 
 import httpx
 
+from vf_common.auth import service_auth
+
 from .advice import iso
 from .monitor import Monitor
 
@@ -34,7 +36,7 @@ log = logging.getLogger("maintenance.workflow")
 class ErpWindows:
     def __init__(self, base_url: str, timeout: float = 10.0):
         self.base_url = base_url.rstrip("/")
-        self.http = httpx.Client(timeout=timeout)
+        self.http = httpx.Client(timeout=timeout, auth=service_auth())
 
     def request(self, order: str, start: str, reason: str) -> dict:
         response = self.http.post(f"{self.base_url}/api/maintenance-windows",

@@ -1,6 +1,7 @@
 # Conformance report (M7, 2026-10-03)
 
-All numbers are produced by the checks in CI (`.github/workflows/ci.yml`) or by the commands named below.
+All numbers are produced by the checks in CI (`.github/workflows/ci.yml`, `.github/workflows/integration.yml`) or by
+the commands named below.
 
 ## 1. Architecture and code quality
 
@@ -11,6 +12,7 @@ All numbers are produced by the checks in CI (`.github/workflows/ci.yml`) or by 
 | GDScript lint | clean | `(cd godot && uv run gdlint .)` |
 | GDScript unit tests (GUT) | 109 passing, every script compiles | `tools/run_godot_tests.sh` |
 | Python tests | 96 passing (+21 integration tests against the running stack, incl. the DPP API) | `uv run pytest`, `uv run pytest -m integration` |
+| Stack integration suite (CI workflow *Integration*) | 39 integration tests passing against the full compose stack with a UNS/OPC UA-linked headless factory (two sessions), 0 skips allowed; ~8 min locally | `tools/ci_integration.sh` ([development.md](development.md)) |
 | Line integration run | 300 simulated seconds: throughput, OK/NOK accounting, KLT and robot invariants | `tools/run_line_simulation.sh 300` |
 | Training scenarios | 5 scenarios (+ E-stop alarm 100 in the unit tests), expected PLC reaction (alarm, HELD/ABORTED, rejects) | `tools/run_scenarios.sh` |
 | Device interface catalogue up to date | generated from the FMI model descriptions | `uv run tools/gen_interface_docs.py --check` |

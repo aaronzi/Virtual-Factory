@@ -10,6 +10,8 @@ from typing import Any
 
 import httpx
 
+from .auth import bpmn_auth
+
 
 class BpmnError(RuntimeError):
     pass
@@ -44,7 +46,8 @@ def from_variables(variables: dict[str, dict] | None) -> dict[str, Any]:
 
 class BpmnClient:
     def __init__(self, base_url: str, timeout: float = 30.0):
-        self.http = httpx.Client(base_url=base_url.rstrip("/"), timeout=timeout)
+        """Secure profile: basic auth of the service's engine user (VF_BPMN_USER / VF_BPMN_PASSWORD)."""
+        self.http = httpx.Client(base_url=base_url.rstrip("/"), timeout=timeout, auth=bpmn_auth())
 
     def engine_ready(self) -> bool:
         try:

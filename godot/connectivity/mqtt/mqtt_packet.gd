@@ -73,17 +73,25 @@ static func read_u16(buffer: PackedByteArray, offset: int) -> int:
 # --- encoders -----------------------------------------------------------------------------------
 
 ## CONNECT with clean session. `will` (optional): {"topic", "payload": PackedByteArray, "qos", "retain"}.
-static func connect_packet(client_id: String, keepalive_s: int, will := {}) -> PackedByteArray:
+## `username` / `password` (optional, secure profile): broker account (password only together with a user).
+static func connect_packet(client_id: String, keepalive_s: int, will := {}, username := "",
+		password := "") -> PackedByteArray:
 	var body := encode_string("MQTT")
 	var flags := 0x02
 	if not will.is_empty():
 		flags |= 0x04 | (int(will.get("qos", 0)) << 3) | (0x20 if will.get("retain", false) else 0)
+	if username != "":
+		flags |= 0x80 | (0x40 if password != "" else 0)
 	body.append_array(PackedByteArray([PROTOCOL_LEVEL, flags]))
 	body.append_array(encode_u16(keepalive_s))
 	body.append_array(encode_string(client_id))
 	if not will.is_empty():
 		body.append_array(encode_string(will.topic))
 		body.append_array(encode_bytes(will.payload))
+	if username != "":
+		body.append_array(encode_string(username))
+		if password != "":
+			body.append_array(encode_bytes(password.to_utf8_buffer()))
 	return _packet(Type.CONNECT << 4, body)
 
 

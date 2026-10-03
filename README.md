@@ -37,6 +37,7 @@ Or run a desktop build (`tools/export_builds.sh` → `build/VirtualFactory-{maco
 - Interfaces: [FMI](docs/interfaces/fmi-interface.md) · [UNS](docs/interfaces/uns.md) ·
   [AAS model](docs/interfaces/aas-model.md) · [services](docs/interfaces/services.md) · [scenarios](docs/interfaces/scenarios.md)
 - [Conformance report](docs/conformance-report.md) · [open issues](docs/open-issues.md) · [plan](docs/PLAN.md)
+- [Development and CI](docs/development.md): checks, CI workflows, integration suite (`tools/ci_integration.sh`)
 
 ## Repository layout
 | Path | Content |

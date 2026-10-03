@@ -14,11 +14,15 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
   supplier-aas-env (second BaSyx environment; data in aas/data/supplier with `idBase` per company;
   `uv run -m provisioner check|build|upload --data supplier`).
   Grafana dashboards: infra/grafana/dashboards/*.json.
+  Secure profile (ADR-0027): `docker compose -f infra/docker-compose.yml -f infra/docker-compose.secure.yml up -d
+  --build` (Keycloak 8180, users/password in docs/architecture/security.md), back: `... -f infra/docker-compose.yml
+  up -d --remove-orphans`; tests `uv run pytest -m secure`; Godot `--vf-secure`.
   Do NOT touch the separate `rebac-*` containers (other project on 8080/8082/3000).
 - GDScript tests: `tools/run_godot_tests.sh` (also compiles every script) · line run: `tools/run_line_simulation.sh [s]`
   · training scenarios: `tools/run_scenarios.sh` · Node-RED sandbox: `--profile sandbox`
   · desktop builds: `tools/export_builds.sh [macOS|Windows|Linux]` → build/ (needs Godot 4.7.2 export templates)
-- Python tests: `uv run pytest` (`-m integration` needs the stack) · interface docs: `uv run tools/gen_interface_docs.py`
+- Python tests: `uv run pytest` (`-m integration` needs the stack; full CI run incl. stack + linked Godot:
+  `tools/ci_integration.sh`, see docs/development.md) · interface docs: `uv run tools/gen_interface_docs.py`
 - Checks (must pass before commit): `uv run tools/arch_check.py`, `uv run tools/complexity_check.py`,
   `(cd godot && uv run gdlint .)`
 - Screenshot: `tools/screenshot.sh docs/screenshots/<name>.png [delay] [scene] --vf-camera=x,y,z,tx,ty,tz`
@@ -51,5 +55,7 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
   (`pcf-calculate`); orders are released only by the ERP (BPMN `OrderReleased`); `infra/alarms.json` mirrors
   `line_alarms.gd` (test). Shipped passports persist across sessions; serials never repeat (retentive counter,
   `--vf-serial-start`, `--vf-retain=off`).
+- Security model only in `infra/security.yaml` → `uv run tools/gen_security_config.py [--check]`; never hand-edit the
+  generated realm, ABAC rules or MQTT ACL files.
 - AAS data: use IDTA templates (aas/templates/idta) where they exist; custom templates only in the YAML DSL with en/de
   texts. Quote YAML texts containing ',' or ':' in flow maps. Device interfaces (AID/AIMC) are generated - never hand-write.

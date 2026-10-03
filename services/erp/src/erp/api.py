@@ -22,7 +22,7 @@
 
 from __future__ import annotations
 
-from vf_common.http_api import ApiError, Request, Response, Router
+from vf_common.http_api import ApiError, Guard, Request, Response, Router
 
 from .maintenance import add_routes as add_maintenance_routes
 from .page import status_page
@@ -30,29 +30,31 @@ from .receipts import GoodsReceipts
 from .release import OrderRelease, Settings
 from .store import ErpStore
 
+PLANNER, MES = ("planner",), ("svc-mes",)  # roles of the write routes (secure profile, ADR-0027)
+
 
 def router(store: ErpStore, release: OrderRelease, settings: Settings,
            receipts: GoodsReceipts | None = None) -> Router:
     receipts = receipts or GoodsReceipts(store)
-    r = Router()
+    r = Router(Guard.from_env())
     r.add("GET", "/", lambda q: Response(200, status_page(), "text/html; charset=utf-8"))
     r.add("GET", "/health", lambda q: {"status": "ok", "orders": len(store.orders),
-                                       "open": [o.id for o in store.open_orders()]})
+                                       "open": [o.id for o in store.open_orders()]}, public=True)
     r.add("GET", "/api/materials", lambda q: [m.to_dict() for m in store.materials.values()])
     r.add("GET", "/api/orders", lambda q: [o.to_b2mml() for o in store.orders.values()
                                            if not q.params.get("state") or o.state == q.params["state"]])
-    r.add("POST", "/api/orders", lambda q: _create(store, release, q))
+    r.add("POST", "/api/orders", lambda q: _create(store, release, q), PLANNER)
     r.add("GET", r"/api/orders/(?P<id>[\w-]+)", lambda q: _order(store, q.match["id"]).to_b2mml())
     r.add("POST", r"/api/orders/(?P<id>[\w-]+)/release",
-          lambda q: _release(release, _order(store, q.match["id"])))
-    r.add("POST", "/api/production-performance", lambda q: _confirm(store, q))
+          lambda q: _release(release, _order(store, q.match["id"])), PLANNER)
+    r.add("POST", "/api/production-performance", lambda q: _confirm(store, q), MES)
     r.add("GET", "/api/batches", lambda q: [b.to_dict() for b in store.batches.values()])
     r.add("POST", "/api/goods-receipts", lambda q: Response(201, receipts.receive(
         str(q.body["material"]), str(q.body["lot"]),
-        int(q.body["quantity"]) if q.body.get("quantity") is not None else None)))
-    r.add("POST", "/api/material-staging", lambda q: _stage(receipts, q))
+        int(q.body["quantity"]) if q.body.get("quantity") is not None else None)), (*PLANNER, *MES))
+    r.add("POST", "/api/material-staging", lambda q: _stage(receipts, q), MES)
     r.add("GET", "/api/settings", lambda q: settings.to_dict())
-    r.add("PUT", "/api/settings", lambda q: _settings(settings, q))
+    r.add("PUT", "/api/settings", lambda q: _settings(settings, q), PLANNER)
     add_maintenance_routes(r, release.windows, store)
     return r
 

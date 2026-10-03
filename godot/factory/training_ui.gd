@@ -5,7 +5,8 @@ extends Node
 ## `--vf-aas-url=`, `--vf-bpmn-url=`, `--vf-resolver-url=`, `--vf-alarms-url=`,
 ## `--vf-aas-events=<broker url|off>` (default:
 ## broker of uns.json), `--vf-inspect=<asset tag | serial | asset id>` opens the inspector at start;
-## `--vf-estop=1` presses the E-stop.
+## `--vf-estop=1` presses the E-stop. Secure compose profile (ADR-0027): `--vf-secure` logs the training
+## user in (token for AAS, DPP, alarms) and uses the broker / Operaton accounts (SecureProfile).
 
 const BACKEND := "res://config/backend.json"
 const UNS := "res://config/uns.json"
@@ -25,12 +26,15 @@ var dataflow: DataFlowController
 var fence_door: FenceDoorController
 var safety: SafetyCircuit
 var hover: HoverHighlight
+var secure: SecureProfile
+var session: OidcSession
 
 
 func setup(p_factory: Node, p_rig: PlayerRig) -> void:
 	factory = p_factory
 	rig = p_rig
 	config = _load_json(BACKEND)
+	_start_login()
 	aas = AasClient.new()
 	aas.base_url = DevTools.get_arg("vf-aas-url", config.get("aas_url", "http://localhost:8091"))
 	aas.id_base = config.get("id_base", aas.id_base)
@@ -67,6 +71,12 @@ func setup(p_factory: Node, p_rig: PlayerRig) -> void:
 			inspector.open_asset(asset_id_for(inspect)))
 	if DevTools.get_arg("vf-estop") != "":
 		get_tree().create_timer(1.0).timeout.connect(safety.toggle_estop)
+
+
+## Secure profile: login of the training user (token for AAS, DPP, alarms; ADR-0027), no-op otherwise.
+func _start_login() -> void:
+	secure = SecureProfile.new(config)
+	session = secure.start_login(self)
 
 
 func _process(_delta: float) -> void:
@@ -128,6 +138,7 @@ func _setup_fence_door() -> void:
 func _setup_tasks() -> void:
 	var bpmn := BpmnTasks.new()
 	bpmn.base_url = DevTools.get_arg("vf-bpmn-url", config.get("bpmn_url", bpmn.base_url))
+	bpmn.authorization = secure.bpmn_authorization()
 	add_child(bpmn)
 	tasks = TaskController.new()
 	tasks.poll_s = config.get("task_poll_s", 2.0)
@@ -189,6 +200,7 @@ func _start_feed() -> void:
 		url = _load_json(UNS).get("broker", {}).get("websocket", "ws://localhost:9001")
 	var client := MqttClient.new()
 	client.client_id = "vf-ui-%06x" % (randi() & 0xFFFFFF)
+	secure.apply_mqtt(client)
 	feed = AasEventFeed.new(client, config.get("aas_events_topic", "vf/basyx/#"))
 	if feed.start(url) != OK:
 		feed = null

@@ -12,6 +12,8 @@ import threading
 
 import httpx
 
+from vf_common.auth import service_auth
+
 from .lots import COMPONENTS, parse
 
 log = logging.getLogger("mes.staging")
@@ -20,7 +22,7 @@ log = logging.getLogger("mes.staging")
 class LotStaging:
     def __init__(self, erp_url: str | None, timeout: float = 30.0):
         self.erp_url = (erp_url or "").rstrip("/")
-        self.http = httpx.Client(timeout=timeout) if self.erp_url else None
+        self.http = httpx.Client(timeout=timeout, auth=service_auth()) if self.erp_url else None
         self._reported: set[tuple[str, str]] = set()
         self._pending: set[tuple[str, str]] = set()
         self._queue: queue.Queue[tuple[str, str]] = queue.Queue()

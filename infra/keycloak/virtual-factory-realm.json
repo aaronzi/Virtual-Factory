@@ -1,0 +1,894 @@
+{
+  "realm": "virtual-factory",
+  "displayName": "Virtual Factory (training, local defaults)",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": false,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 3600,
+  "oauth2DeviceCodeLifespan": 600,
+  "oauth2DevicePollingInterval": 5,
+  "roles": {
+    "realm": [
+      {
+        "name": "operator",
+        "description": "Line operator - reads the line AAS, invokes LineControl, acknowledges alarms"
+      },
+      {
+        "name": "quality",
+        "description": "Quality engineer - reads the line AAS, passports and quality data"
+      },
+      {
+        "name": "maintenance",
+        "description": "Maintenance technician - condition monitoring, maintenance windows, LineControl Maintain"
+      },
+      {
+        "name": "planner",
+        "description": "Production planner (ERP) - orders, maintenance windows, LineControl"
+      },
+      {
+        "name": "auditor",
+        "description": "Auditor - reads everything (AAS, passports, supplier batches), writes nothing"
+      },
+      {
+        "name": "authority",
+        "description": "Market surveillance authority - extended passport (composition, BoM, technical, quality data)"
+      },
+      {
+        "name": "recycler",
+        "description": "Recycler / repairer - extended passport (composition, circularity, BoM)"
+      },
+      {
+        "name": "public",
+        "description": "Public passport sections only (same as an anonymous request)"
+      },
+      {
+        "name": "svc-mes",
+        "description": "Service account: Workpiece AAS and passports, BPMN workers"
+      },
+      {
+        "name": "svc-bridge",
+        "description": "Service account: AIMC bridge (UNS -> AAS)"
+      },
+      {
+        "name": "svc-ops-gateway",
+        "description": "Service account: Delegated AAS operations"
+      },
+      {
+        "name": "svc-sustainability",
+        "description": "Service account: Carbon footprint, energy values"
+      },
+      {
+        "name": "svc-erp",
+        "description": "Service account: ERP simulator"
+      },
+      {
+        "name": "svc-alarms",
+        "description": "Service account: Alarms and events"
+      },
+      {
+        "name": "svc-maintenance",
+        "description": "Service account: Predictive maintenance"
+      },
+      {
+        "name": "svc-supplier",
+        "description": "Service account: Supplier portal (supplier environment)"
+      },
+      {
+        "name": "svc-edge",
+        "description": "Service account: OPC UA edge connector"
+      },
+      {
+        "name": "svc-resolver",
+        "description": "Service account: GS1 Digital Link resolver (acts for the public)"
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "operator1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Operator",
+      "lastName": "Training",
+      "requiredActions": [],
+      "email": "operator1@virtual-factory.example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "virtualfactory",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "operator"
+      ]
+    },
+    {
+      "username": "quality1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Quality",
+      "lastName": "Training",
+      "requiredActions": [],
+      "email": "quality1@virtual-factory.example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "virtualfactory",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "quality"
+      ]
+    },
+    {
+      "username": "maintenance1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Maintenance",
+      "lastName": "Training",
+      "requiredActions": [],
+      "email": "maintenance1@virtual-factory.example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "virtualfactory",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "maintenance"
+      ]
+    },
+    {
+      "username": "planner1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Planner",
+      "lastName": "Training",
+      "requiredActions": [],
+      "email": "planner1@virtual-factory.example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "virtualfactory",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "planner"
+      ]
+    },
+    {
+      "username": "auditor1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Auditor",
+      "lastName": "Training",
+      "requiredActions": [],
+      "email": "auditor1@virtual-factory.example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "virtualfactory",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "auditor"
+      ]
+    },
+    {
+      "username": "authority1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Authority",
+      "lastName": "Training",
+      "requiredActions": [],
+      "email": "authority1@virtual-factory.example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "virtualfactory",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "authority"
+      ]
+    },
+    {
+      "username": "recycler1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Recycler",
+      "lastName": "Training",
+      "requiredActions": [],
+      "email": "recycler1@virtual-factory.example",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "virtualfactory",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "recycler"
+      ]
+    },
+    {
+      "username": "service-account-vf-mes",
+      "enabled": true,
+      "serviceAccountClientId": "vf-mes",
+      "realmRoles": [
+        "svc-mes"
+      ]
+    },
+    {
+      "username": "service-account-vf-bridge",
+      "enabled": true,
+      "serviceAccountClientId": "vf-bridge",
+      "realmRoles": [
+        "svc-bridge"
+      ]
+    },
+    {
+      "username": "service-account-vf-ops-gateway",
+      "enabled": true,
+      "serviceAccountClientId": "vf-ops-gateway",
+      "realmRoles": [
+        "svc-ops-gateway"
+      ]
+    },
+    {
+      "username": "service-account-vf-sustainability",
+      "enabled": true,
+      "serviceAccountClientId": "vf-sustainability",
+      "realmRoles": [
+        "svc-sustainability"
+      ]
+    },
+    {
+      "username": "service-account-vf-erp",
+      "enabled": true,
+      "serviceAccountClientId": "vf-erp",
+      "realmRoles": [
+        "svc-erp"
+      ]
+    },
+    {
+      "username": "service-account-vf-alarms",
+      "enabled": true,
+      "serviceAccountClientId": "vf-alarms",
+      "realmRoles": [
+        "svc-alarms"
+      ]
+    },
+    {
+      "username": "service-account-vf-maintenance",
+      "enabled": true,
+      "serviceAccountClientId": "vf-maintenance",
+      "realmRoles": [
+        "svc-maintenance"
+      ]
+    },
+    {
+      "username": "service-account-vf-supplier",
+      "enabled": true,
+      "serviceAccountClientId": "vf-supplier",
+      "realmRoles": [
+        "svc-supplier"
+      ]
+    },
+    {
+      "username": "service-account-vf-edge",
+      "enabled": true,
+      "serviceAccountClientId": "vf-edge",
+      "realmRoles": [
+        "svc-edge"
+      ]
+    },
+    {
+      "username": "service-account-vf-resolver",
+      "enabled": true,
+      "serviceAccountClientId": "vf-resolver",
+      "realmRoles": [
+        "svc-resolver",
+        "public"
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "vf-mes",
+      "name": "vf-mes",
+      "description": "Workpiece AAS and passports, BPMN workers",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {},
+      "secret": "vf-mes-local-secret",
+      "clientAuthenticatorType": "client-secret"
+    },
+    {
+      "clientId": "vf-bridge",
+      "name": "vf-bridge",
+      "description": "AIMC bridge (UNS -> AAS)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {},
+      "secret": "vf-bridge-local-secret",
+      "clientAuthenticatorType": "client-secret"
+    },
+    {
+      "clientId": "vf-ops-gateway",
+      "name": "vf-ops-gateway",
+      "description": "Delegated AAS operations",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {},
+      "secret": "vf-ops-gateway-local-secret",
+      "clientAuthenticatorType": "client-secret"
+    },
+    {
+      "clientId": "vf-sustainability",
+      "name": "vf-sustainability",
+      "description": "Carbon footprint, energy values",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {},
+      "secret": "vf-sustainability-local-secret",
+      "clientAuthenticatorType": "client-secret"
+    },
+    {
+      "clientId": "vf-erp",
+      "name": "vf-erp",
+      "description": "ERP simulator",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {},
+      "secret": "vf-erp-local-secret",
+      "clientAuthenticatorType": "client-secret"
+    },
+    {
+      "clientId": "vf-alarms",
+      "name": "vf-alarms",
+      "description": "Alarms and events",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {},
+      "secret": "vf-alarms-local-secret",
+      "clientAuthenticatorType": "client-secret"
+    },
+    {
+      "clientId": "vf-maintenance",
+      "name": "vf-maintenance",
+      "description": "Predictive maintenance",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {},
+      "secret": "vf-maintenance-local-secret",
+      "clientAuthenticatorType": "client-secret"
+    },
+    {
+      "clientId": "vf-supplier",
+      "name": "vf-supplier",
+      "description": "Supplier portal (supplier environment)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {},
+      "secret": "vf-supplier-local-secret",
+      "clientAuthenticatorType": "client-secret"
+    },
+    {
+      "clientId": "vf-edge",
+      "name": "vf-edge",
+      "description": "OPC UA edge connector",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {},
+      "secret": "vf-edge-local-secret",
+      "clientAuthenticatorType": "client-secret"
+    },
+    {
+      "clientId": "vf-resolver",
+      "name": "vf-resolver",
+      "description": "GS1 Digital Link resolver (acts for the public)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {},
+      "secret": "vf-resolver-local-secret",
+      "clientAuthenticatorType": "client-secret"
+    },
+    {
+      "clientId": "vf-godot",
+      "name": "vf-godot",
+      "description": "Godot training UI (desktop/XR): password grant for training users",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {
+        "oauth2.device.authorization.grant.enabled": "true"
+      }
+    },
+    {
+      "clientId": "vf-aas-ui",
+      "name": "vf-aas-ui",
+      "description": "BaSyx AAS web UI (authorization code + PKCE)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:3001/*"
+      },
+      "redirectUris": [
+        "http://localhost:3001/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3001"
+      ]
+    },
+    {
+      "clientId": "vf-grafana",
+      "name": "vf-grafana",
+      "description": "Grafana (generic OAuth)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "implicitFlowEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "vf-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "virtual-factory-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles-claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:3002/*"
+      },
+      "redirectUris": [
+        "http://localhost:3002/login/generic_oauth"
+      ],
+      "webOrigins": [
+        "http://localhost:3002"
+      ],
+      "secret": "vf-grafana-local-secret",
+      "clientAuthenticatorType": "client-secret"
+    }
+  ]
+}

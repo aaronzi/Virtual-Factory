@@ -13,6 +13,8 @@ from typing import Any
 
 import httpx
 
+from .auth import service_auth
+
 
 class BasyxError(RuntimeError):
     def __init__(self, method: str, path: str, response: httpx.Response):
@@ -25,9 +27,12 @@ def b64(identifier: str) -> str:
 
 
 class BasyxClient:
-    def __init__(self, base_url: str, timeout: float = 15.0, client: httpx.Client | None = None):
+    def __init__(self, base_url: str, timeout: float = 15.0, client: httpx.Client | None = None,
+                 auth: httpx.Auth | None = None):
+        """auth: default = the service's client credentials in the secure profile (vf_common.auth)."""
         self.base_url = base_url.rstrip("/")
-        self.http = client or httpx.Client(base_url=self.base_url, timeout=timeout)
+        self.http = client or httpx.Client(base_url=self.base_url, timeout=timeout,
+                                           auth=auth or service_auth())
 
     def close(self) -> None:
         self.http.close()

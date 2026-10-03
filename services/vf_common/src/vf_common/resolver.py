@@ -25,6 +25,7 @@ from dataclasses import dataclass, field
 import httpx
 
 from .aid import semantic_of
+from .auth import service_auth
 from .basyx import BasyxClient, BasyxError
 from .registry import InfrastructureClient, RegistryConfig, endpoint_href, repository_base
 
@@ -72,7 +73,8 @@ class AasResolver:
 
     @classmethod
     def from_env(cls, auth: httpx.Auth | None = None) -> AasResolver:
-        return cls(RegistryConfig.from_env(), auth=auth)
+        """auth: default = the service's client credentials in the secure profile (vf_common.auth)."""
+        return cls(RegistryConfig.from_env(), auth=auth or service_auth())
 
     # -- discovery ---------------------------------------------------------------------------------
 

@@ -1,0 +1,53 @@
+name: Integration
+
+# Full stack (infra/docker-compose.yml + docker-compose.ci.yml) with a UNS-linked headless factory and
+# `pytest -m integration` (tools/ci_integration.sh, docs/development.md). A skipped test fails the job.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: integration-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: 4.7.2
+
+jobs:
+  stack-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          lfs: true  # AASX thumbnails/documents (provisioner, workpiece passports) and the Godot 3D assets
+      - uses: astral-sh/setup-uv@v10.2.0
+      - run: uv sync
+      - name: Install Godot
+        run: |
+          curl -sSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip
+          echo "GODOT_PATH=$PWD/Godot_v${GODOT_VERSION}-stable_linux.x86_64" >> "$GITHUB_ENV"
+      - uses: docker/setup-buildx-action@v4
+      - name: Build vf-services:dev (layer cache in the GitHub Actions cache)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: services/Dockerfile
+          tags: vf-services:dev
+          load: true
+          cache-from: type=gha,scope=vf-services
+          cache-to: type=gha,scope=vf-services,mode=max
+      - name: Stack, two factory sessions, pytest -m integration
+        env:
+          VF_CI_NO_BUILD: "1"
+          VF_CI_ARTIFACTS: ${{ runner.temp }}/ci-integration
+        run: tools/ci_integration.sh
+      - name: Upload logs and JUnit report
+        if: failure() || cancelled()
+        uses: actions/upload-artifact@v7
+        with:
+          name: integration-logs
+          path: ${{ runner.temp }}/ci-integration
+          retention-days: 14

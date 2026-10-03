@@ -2,6 +2,10 @@
 
 BaSyx POSTs the input OperationVariables (JSON array of {"value": <SubmodelElement>}) to
 /operations/<OperationIdShort> and returns the response array as the operation's output arguments.
+
+Secure profile (ADR-0027): BaSyx Go forwards the caller's `Authorization` header to the delegation target,
+so the gateway validates that bearer token itself (vf_common.jwt_auth) and accepts only the roles in
+COMMANDERS - the same roles that the ABAC rules of the AAS environment allow to invoke LineControl.
 """
 
 from __future__ import annotations
@@ -10,10 +14,13 @@ import json
 import logging
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+from vf_common.jwt_auth import InvalidToken, JwtVerifier, bearer
+
 from .gateway import LineGateway, Result
 from .skills import SkillExecutor
 
 log = logging.getLogger("ops-gateway")
+COMMANDERS = ("operator", "planner", "maintenance", "svc-mes", "svc-maintenance")
 
 
 WITH_STATE = {"ExecutePackMLCommand", "ExecuteSkill", "SetUnitMode"}
@@ -61,7 +68,20 @@ def input_arguments(body: bytes) -> dict[str, str]:
             for v in data if isinstance(v, dict) and "value" in v}
 
 
-def make_handler(gw: LineGateway) -> type[BaseHTTPRequestHandler]:
+def authorize(verifier: JwtVerifier | None, authorization: str | None) -> tuple[int, str]:
+    """(0, caller) if the call may proceed, else (HTTP status, reason)."""
+    if verifier is None:
+        return 0, "anonymous"
+    try:
+        caller = verifier.verify(bearer(authorization))
+    except InvalidToken as exc:
+        return 401, f"authentication required: {exc}"
+    if not caller.has_any(COMMANDERS):
+        return 403, f"{caller.name} may not command the line (roles: {', '.join(COMMANDERS)})"
+    return 0, caller.name
+
+
+def make_handler(gw: LineGateway, verifier: JwtVerifier | None = None) -> type[BaseHTTPRequestHandler]:
     ops = operations(gw)
 
     class Handler(BaseHTTPRequestHandler):
@@ -76,13 +96,18 @@ def make_handler(gw: LineGateway) -> type[BaseHTTPRequestHandler]:
             if not self.path.startswith("/operations/") or name not in ops:
                 self._send(404, {"error": f"unknown operation {name}"})
                 return
+            status, caller = authorize(verifier, self.headers.get("Authorization"))
+            if status:
+                log.warning("%s refused: %s", name, caller)
+                self._send(status, {"error": caller})
+                return
             try:
                 args = input_arguments(self.rfile.read(int(self.headers.get("Content-Length", 0))))
             except (ValueError, KeyError, TypeError) as exc:
                 self._send(400, {"error": f"invalid operation variables: {exc}"})
                 return
             result = ops[name](args)
-            log.info("%s(%s) -> accepted=%s %s", name, args, result.accepted, result.message)
+            log.info("%s(%s) by %s -> accepted=%s %s", name, args, caller, result.accepted, result.message)
             self._send(200, output_variables(result, with_state=name in WITH_STATE))
 
         def _send(self, status: int, body) -> None:
@@ -99,8 +124,8 @@ def make_handler(gw: LineGateway) -> type[BaseHTTPRequestHandler]:
     return Handler
 
 
-def serve(gw: LineGateway, port: int) -> ThreadingHTTPServer:
-    return ThreadingHTTPServer(("0.0.0.0", port), make_handler(gw))
+def serve(gw: LineGateway, port: int, verifier: JwtVerifier | None = None) -> ThreadingHTTPServer:
+    return ThreadingHTTPServer(("0.0.0.0", port), make_handler(gw, verifier))
 
 
 def _prop(id_short: str, value_type: str, value: str) -> dict:

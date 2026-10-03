@@ -43,6 +43,7 @@ TEXT = {
     "model": ("Product type (model-level passport)", "Produkttyp (Pass auf Modellebene)"),
     "phase": ("Life cycle phases", "Lebenszyklusphasen"), "method": ("Method", "Methode"),
     "published": ("Published", "Veröffentlicht"),
+    "login": (", login required", ", Anmeldung erforderlich"),
 }
 STYLE = (Path(__file__).parent / "passport.css").read_text(encoding="utf-8")
 
@@ -118,7 +119,12 @@ def _documents(links: list[Link], lang: str) -> str:
 
 
 def _restricted(dpp: dict, lang: str) -> str:
-    names = [de if lang == "de" else en for sem, (en, de) in RESTRICTED.items() if dpp.get(sem)]
+    """Sections for authorised parties: restricted ones in the passport, and (secure profile) every section
+    listed in contentSpecificationIds that the DPP API withheld from the public role."""
+    listed = set(dpp.get("contentSpecificationIds") or [])
+    withheld = {sem: (en, de) for sem, _, en, de in PUBLIC if sem in listed and not dpp.get(sem)}
+    names = [de if lang == "de" else en for sem, (en, de) in {**RESTRICTED, **withheld}.items()
+             if dpp.get(sem) or sem in listed]
     if not names:
         return ""
     return (f'<h2>{t("restricted", lang)}</h2><div class="card"><ul>'
@@ -128,6 +134,6 @@ def _restricted(dpp: dict, lang: str) -> str:
 
 def _machine(links: list[Link], lang: str) -> str:
     items = "".join(f'<li><a href="{escape(k.href)}">{scalar(k.as_target(lang)["title"], lang)}</a> '
-                    f'<span class="muted">({escape(k.media_type)})</span></li>'
-                    for k in links if k.media_type == "application/json")
+                    f'<span class="muted">({escape(k.media_type)}{t("login", lang) if k.restricted else ""})'
+                    f'</span></li>' for k in links if k.media_type == "application/json")
     return f'<h2>{t("machine", lang)}</h2><div class="card"><ul>{items}</ul></div>' if items else ""

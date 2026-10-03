@@ -1,0 +1,253 @@
+{
+  "AllAccessPermissionRules": {
+    "DEFATTRIBUTES": [
+      {
+        "name": "anonymous",
+        "attributes": [
+          {
+            "GLOBAL": "ANONYMOUS"
+          }
+        ]
+      },
+      {
+        "name": "realm_roles",
+        "attributes": [
+          {
+            "CLAIMPATH": "/realm_access/roles"
+          }
+        ]
+      }
+    ],
+    "DEFOBJECTS": [
+      {
+        "name": "dpp",
+        "objects": [
+          {
+            "ROUTE": "/v1/dpps"
+          },
+          {
+            "ROUTE": "/v1/dpps/*"
+          },
+          {
+            "ROUTE": "/v1/dppsByProductId/*"
+          },
+          {
+            "ROUTE": "/v1/dppsByIdAndDate/*"
+          },
+          {
+            "ROUTE": "/v1/dppsByProductIds"
+          }
+        ]
+      }
+    ],
+    "rules": [
+      {
+        "ACL": {
+          "USEATTRIBUTES": "anonymous",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "dpp"
+        ],
+        "FORMULA": {
+          "$boolean": true
+        },
+        "FILTER": {
+          "FRAGMENT": "$aas#submodels[]",
+          "MATCH": true,
+          "CONDITION": {
+            "$regex": [
+              {
+                "$field": "$aas#submodels[].keys[].value"
+              },
+              {
+                "$strVal": "/sm/[^/]+/(Nameplate|ContactInformations|CarbonFootprint|ProductCircularity|HandoverDocumentation|DppMetadata)/[^/]+$"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "dpp"
+        ],
+        "FORMULA": {
+          "$contains": [
+            {
+              "$attribute": {
+                "CLAIMPATH": "/realm_access/roles"
+              }
+            },
+            {
+              "$strVal": "public"
+            }
+          ]
+        },
+        "FILTER": {
+          "FRAGMENT": "$aas#submodels[]",
+          "MATCH": true,
+          "CONDITION": {
+            "$regex": [
+              {
+                "$field": "$aas#submodels[].keys[].value"
+              },
+              {
+                "$strVal": "/sm/[^/]+/(Nameplate|ContactInformations|CarbonFootprint|ProductCircularity|HandoverDocumentation|DppMetadata)/[^/]+$"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "dpp"
+        ],
+        "FORMULA": {
+          "$contains": [
+            {
+              "$attribute": {
+                "CLAIMPATH": "/realm_access/roles"
+              }
+            },
+            {
+              "$strVal": "recycler"
+            }
+          ]
+        },
+        "FILTER": {
+          "FRAGMENT": "$aas#submodels[]",
+          "MATCH": true,
+          "CONDITION": {
+            "$regex": [
+              {
+                "$field": "$aas#submodels[].keys[].value"
+              },
+              {
+                "$strVal": "/sm/[^/]+/(Nameplate|ContactInformations|CarbonFootprint|ProductCircularity|HandoverDocumentation|DppMetadata|ProductMaterialComposition|HierarchicalStructures)/[^/]+$"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "dpp"
+        ],
+        "FORMULA": {
+          "$contains": [
+            {
+              "$attribute": {
+                "CLAIMPATH": "/realm_access/roles"
+              }
+            },
+            {
+              "$strVal": "authority"
+            }
+          ]
+        },
+        "FILTER": {
+          "FRAGMENT": "$aas#submodels[]",
+          "MATCH": true,
+          "CONDITION": {
+            "$regex": [
+              {
+                "$field": "$aas#submodels[].keys[].value"
+              },
+              {
+                "$strVal": "/sm/[^/]+/(Nameplate|ContactInformations|CarbonFootprint|ProductCircularity|HandoverDocumentation|DppMetadata|ProductMaterialComposition|HierarchicalStructures|TechnicalData|QualityInspection|ExecutedProcesses)/[^/]+$"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "dpp"
+        ],
+        "FORMULA": {
+          "$or": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "auditor"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "quality"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-mes"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-sustainability"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

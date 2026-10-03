@@ -1,0 +1,30 @@
+# AAS Web UI infrastructure of the SECURE profile (ADR-0027): OAuth2 login at Keycloak (authorization code +
+# PKCE, public client vf-aas-ui); the UI sends the user's token to the AAS environment (ABAC).
+infrastructures:
+  default: vf
+
+  vf:
+    name: Virtual Factory (BaSyx Go, secured)
+    components:
+      aasDiscovery:
+        baseUrl: "http://localhost:8091/lookup/shells"
+      aasRegistry:
+        baseUrl: "http://localhost:8091/shell-descriptors"
+        hasDiscoveryIntegration: true
+      submodelRegistry:
+        baseUrl: "http://localhost:8091/submodel-descriptors"
+      aasRepository:
+        baseUrl: "http://localhost:8091/shells"
+        hasRegistryIntegration: true
+      submodelRepository:
+        baseUrl: "http://localhost:8091/submodels"
+        hasRegistryIntegration: true
+      conceptDescriptionRepository:
+        baseUrl: "http://localhost:8091/concept-descriptions"
+    security:
+      type: oauth2
+      config:
+        issuer: "http://localhost:8180/realms/virtual-factory"
+        clientId: vf-aas-ui
+        flow: auth_code
+        scope: "openid profile"

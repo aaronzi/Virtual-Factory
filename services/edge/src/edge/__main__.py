@@ -1,9 +1,11 @@
 """Entry point: python -m edge - the edge connector (ADR-0024): subscribes to the OPC UA servers described in
 the AIDs on the AAS server and publishes to the UNS; forwards UNS commands as OPC UA method calls.
 
-Environment: VF_AAS_URL, VF_MQTT_URL, VF_OPCUA_ENDPOINTS (endpoint rewriting, see vf_common.opcua_client),
-VF_EDGE_PUBLISHING_MS (default: telemetry.min_interval_s of the UNS registry), VF_AAS_EVENTS_TOPIC (BaSyx
-change events: a changed AID re-configures the connector), LOG_LEVEL."""
+The AIDs are found through the registries (vf_common.registry_aas, ADR-0023).
+Environment: VF_AAS_URL / VF_AAS_REGISTRIES, VF_MQTT_URL, VF_OPCUA_ENDPOINTS (endpoint rewriting, see
+vf_common.opcua_client), VF_EDGE_PUBLISHING_MS (default: telemetry.min_interval_s of the UNS registry),
+VF_AAS_EVENTS_TOPIC (BaSyx change events: a changed AID re-configures the connector), LOG_LEVEL; secure
+profile (ADR-0027): VF_OIDC_* (client credentials), VF_MQTT_USER/PASSWORD, VF_OPCUA_* (security)."""
 
 from __future__ import annotations
 
@@ -12,8 +14,10 @@ import json
 import logging
 import os
 
-from vf_common.basyx import BasyxClient
+from vf_common.aid import AasSource
 from vf_common.mqtt import Message, MqttClient
+from vf_common.registry_aas import RegistryAas
+from vf_common.resolver import AasResolver
 from vf_common.uns import Uns, broker_address
 
 from .config import AssetLink, resolve
@@ -23,7 +27,7 @@ log = logging.getLogger("edge")
 
 
 class Edge:
-    def __init__(self, aas: BasyxClient, mqtt: MqttClient, publishing_ms: float, events_topic: str | None,
+    def __init__(self, aas: AasSource, mqtt: MqttClient, publishing_ms: float, events_topic: str | None,
                  retry_s: float = 5.0):
         self.aas, self.mqtt, self.publishing_ms, self.retry_s = aas, mqtt, publishing_ms, retry_s
         self.events_prefix = events_topic.rstrip("#") if events_topic else None
@@ -109,7 +113,7 @@ def main() -> None:
         mqtt.subscribe(events, qos=0)
     mqtt.start()
     default_ms = float(Uns.load().config["telemetry"].get("min_interval_s", 0.1)) * 1000.0
-    edge = Edge(BasyxClient(env("VF_AAS_URL", "http://localhost:8091")), mqtt,
+    edge = Edge(RegistryAas(AasResolver.from_env()), mqtt,
                 float(env("VF_EDGE_PUBLISHING_MS", default_ms)), events)
     asyncio.run(edge.run())
 

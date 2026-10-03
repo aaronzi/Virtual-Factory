@@ -4,7 +4,8 @@ opc.tcp://<host>:4840 plus the backplane port 4841 for the simulated CPU (Godot)
 Environment: VF_PLC_INSTANCE (PLC01), VF_OPCUA_BIND (endpoint of the registry with host 0.0.0.0),
 VF_BACKPLANE_BIND (0.0.0.0:<port of the registry's backplane URL>), LOG_LEVEL.
 The address space is engineered from the FMI model description of the instance (asset data) and the UNS
-registry (opcua.servers.<instance>)."""
+registry (opcua.servers.<instance>). Secure profile (ADR-0027): VF_OPCUA_SECURITY=sign_encrypt,
+VF_OPCUA_USERS (vf_common.opcua_security)."""
 
 from __future__ import annotations
 
@@ -12,6 +13,8 @@ import asyncio
 import logging
 import os
 from urllib.parse import urlparse
+
+from vf_common.opcua_security import OpcUaSecurity
 
 from .backplane import Backplane
 from .module import bind_endpoint, comm_module, engineer, load_uns
@@ -25,9 +28,11 @@ async def run(instance: str) -> None:
     default_port = urlparse(uns["opcua"]["servers"][instance]["backplane"]).port or 4841
     host, _, port = (os.environ.get("VF_BACKPLANE_BIND") or f"0.0.0.0:{default_port}").rpartition(":")
     bind = os.environ.get("VF_OPCUA_BIND") or bind_endpoint(space.endpoint)
-    async with comm_module(space, bind, host, int(port)) as module:
-        log.info("OPC UA server %s (namespace %s, %d nodes, %d event types), listening on %s", space.endpoint,
-                 space.namespace, len(space.nodes), len(space.events), bind)
+    security = OpcUaSecurity.from_env()
+    async with comm_module(space, bind, host, int(port), security) as module:
+        log.info("OPC UA server %s (namespace %s, %d nodes, %d event types), listening on %s, security %s",
+                 space.endpoint, space.namespace, len(space.nodes), len(space.events), bind,
+                 "Basic256Sha256 SignAndEncrypt + user name" if security.secure else "None/Anonymous")
         await _report(module.backplane)
 
 

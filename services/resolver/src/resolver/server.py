@@ -5,6 +5,9 @@
         ?linkType=linkset|all  or  Accept: application/linkset+json   200 linkset (RFC 9264)
     GET /passport/01/{gtin}[/21/{serial}]   human-readable passport page (?lang=en|de, else Accept-Language)
     GET /.well-known/gs1resolver            resolver description;  GET /health
+Secure profile (ADR-0027): a linkType whose target holds restricted data (vf:aas, vf:aasDescriptor) is only
+redirected with a valid bearer token of the realm; otherwise 401 with a login hint (token endpoint). The
+passport page and the linkset stay public (the passport shows the sections of the role "public").
 """
 
 from __future__ import annotations
@@ -16,6 +19,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
 
 from vf_common.digital_link import InvalidDigitalLink, parse_path
+from vf_common.jwt_auth import InvalidToken, bearer
 
 from . import page
 from .links import DEFAULT_LINK, GS1, VF, expand, link_header, linkset
@@ -57,7 +61,28 @@ def handle(resolver: DigitalLinkResolver, path: str, query: str, headers: dict[s
         return Reply(200, json.dumps(linkset(res.anchor, res.links, lang), ensure_ascii=False).encode(),
                      {"Content-Type": LINKSET, **vary})
     target = (res.link(expand(link_type)) if link_type else None) or res.link(DEFAULT_LINK)
+    if target.restricted:
+        refused = _authorize(resolver, headers.get("authorization"), target)
+        if refused:
+            return refused
     return Reply(307, b"", {"Location": target.href, **vary})
+
+
+def _authorize(resolver, authorization: str | None, target) -> Reply | None:
+    """None if the caller may follow a restricted link, else 401 with a login hint."""
+    verifier = getattr(resolver, "verifier", None)
+    if verifier is None:
+        return None
+    try:
+        verifier.verify(bearer(authorization))
+        return None
+    except InvalidToken as exc:
+        hint = {"error": f"login required for {target.link_type}: {exc}",
+                "login": {"token_endpoint": getattr(resolver, "token_url", ""), "client_id": "vf-godot",
+                          "grant_types": ["password", "urn:ietf:params:oauth:grant-type:device_code"]}}
+        reply = _json(401, hint)
+        reply.headers["WWW-Authenticate"] = 'Bearer realm="virtual-factory"'
+        return reply
 
 
 def description(resolver: DigitalLinkResolver) -> dict:

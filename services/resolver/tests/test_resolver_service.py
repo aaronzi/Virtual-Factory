@@ -97,3 +97,41 @@ def test_linkset_groups_targets_by_link_type():
     links = build_links(DL, URLS, None, None, None)
     entry = linkset(DL.uri(), links)["linkset"][0]
     assert set(entry) == {"anchor", DEFAULT_LINK, GS1 + "pip", GS1 + "sustainabilityInfo"}
+
+
+class SecuredResolver(FakeResolver):
+    """Secure profile: restricted links (AAS, descriptor) need a bearer token of the realm (ADR-0027)."""
+    token_url = "http://localhost:8180/realms/virtual-factory/protocol/openid-connect/token"
+
+    def __init__(self):
+        super().__init__()
+        from vf_common.testing_tokens import verifier
+        self.verifier = verifier()
+
+    def resolve(self, dl):
+        links = build_links(dl, URLS, DPP, "http://localhost:8091/shells/abc",
+                            "http://localhost:8091/shell-descriptors/abc", protect=True)
+        return Resolution(dl, dl.uri(), None, DPP, links)
+
+
+def test_restricted_link_types_need_a_token_in_the_secure_profile():
+    from vf_common.testing_tokens import token
+    path = f"/01/04099999032808/21/{SERIAL}"
+    refused = handle(SecuredResolver(), path, "linkType=vf:aas", {})
+    hint = json.loads(refused.body)
+    assert refused.status == 401 and "Bearer" in refused.headers["WWW-Authenticate"]
+    assert hint["login"]["token_endpoint"].endswith("/token")
+    ok = handle(SecuredResolver(), path, "linkType=vf:aas", {"authorization": "Bearer " + token(["auditor"])})
+    assert ok.status == 307 and ok.headers["Location"] == "http://localhost:8091/shells/abc"
+    assert handle(SecuredResolver(), path, "linkType=vf:dpp", {}).status == 307  # DPP API filters by role
+    page = render(SecuredResolver().resolve(DL), "en", "http://x")
+    assert "login required" in page
+
+
+def test_passport_page_names_sections_withheld_from_the_public_role():
+    material = "https://virtual-factory.example/ids/smt/ProductMaterialComposition/1/0/Submodel"
+    dpp = {**DPP, "contentSpecificationIds": [material]}
+    res = Resolution(DL, DL.uri(), None, dpp, build_links(DL, URLS, dpp, None, None))
+    html = render(res, "en", "http://x")
+    assert "For authorised parties only" in html and "Material composition" in html
+    assert 'id="materials"' not in html

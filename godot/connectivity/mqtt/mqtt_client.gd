@@ -9,6 +9,8 @@ extends RefCounted
 ##   reconnect (subscribers get the retained state again; events sent during an outage are lost).
 ## - Incoming QoS 1 messages are acknowledged with PUBACK. QoS 2 is not supported.
 ## - A broker outage is reported with one warning; the next one only after a successful connection.
+## - Optional user name / password in CONNECT (secure profile); CONNACK 4/5 (bad credentials / not
+##   authorised) is reported like an outage and retried with backoff.
 
 signal connected
 signal disconnected
@@ -23,6 +25,9 @@ const CONNECT_TIMEOUT_MS := 10000
 var client_id := "vf-%08x" % (randi() & 0x7FFFFFFF)
 var keepalive_s := 30
 var broker_url := ""
+## Broker account (secure profile, ADR-0027); empty = anonymous.
+var username := ""
+var password := ""
 var state := State.IDLE
 ## Number of successful connections (reconnects = connections - 1).
 var connections := 0
@@ -103,7 +108,7 @@ func poll() -> void:
 		return
 	if state == State.CONNECTING and _transport.state == MqttTransport.State.OPEN:
 		state = State.AWAITING_CONNACK
-		_send(MqttPacket.connect_packet(client_id, keepalive_s, _will))
+		_send(MqttPacket.connect_packet(client_id, keepalive_s, _will, username, password))
 	if state != State.CONNECTED and now - _attempt_started_ms > CONNECT_TIMEOUT_MS:
 		_connection_lost("connect timeout")
 		return

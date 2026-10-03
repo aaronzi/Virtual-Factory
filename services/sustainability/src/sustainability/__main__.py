@@ -20,7 +20,7 @@ from vf_common.basyx import BasyxClient
 from vf_common.bpmn import BpmnClient
 from vf_common.bpmn_worker import Worker
 from vf_common.historian import HistorianConfig, InfluxClient
-from vf_common.http_api import Response, Router, serve
+from vf_common.http_api import Guard, Response, Router, serve
 from vf_common.mqtt import MqttClient
 from vf_common.resolver import AasResolver
 from vf_common.uns import Uns, broker_address
@@ -66,9 +66,9 @@ class Sustainability:
             time.sleep(3)
 
     def router(self) -> Router:
-        router = Router()
+        router = Router(Guard.from_env())
         router.add("GET", "/health", lambda r: {"status": "ok", "session": self.session,
-                                                "footprints": len(self.kpis.parts)})
+                                                "footprints": len(self.kpis.parts)}, public=True)
         router.add("GET", "/api/kpis", lambda r: self.kpis.values(self.plant.latest))
         router.add("GET", "/api/footprints", lambda r: self.kpis.recent(int(r.params.get("limit", 50))))
         router.add("GET", r"/api/footprints/(?P<serial>[\w-]+)", self._footprint)

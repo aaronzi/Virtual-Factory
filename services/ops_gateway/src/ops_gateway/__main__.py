@@ -1,7 +1,8 @@
 """Entry point: python -m ops_gateway (configuration via environment variables, see
 docs/interfaces/services.md). Topics are resolved from the AAS (ADR-0020), not from the UNS registry;
 endpoints of an OPC UA interface are called over OPC UA (ADR-0024, VF_OPCUA_ENDPOINTS rewrites the AID
-server address)."""
+server address). Secure profile (ADR-0027): VF_OIDC_ISSUER etc. enable the bearer token check of the
+delegation endpoint, VF_OPCUA_* the OPC UA security, VF_MQTT_USER/PASSWORD the broker account."""
 
 from __future__ import annotations
 
@@ -10,6 +11,7 @@ import os
 import threading
 
 from vf_common import ids
+from vf_common.jwt_auth import verifier_from_env
 from vf_common.mqtt import MqttClient
 from vf_common.registry_aas import RegistryAas
 from vf_common.resolver import AasResolver, until_resolved
@@ -54,7 +56,7 @@ def main() -> None:
     threading.Thread(target=configure, daemon=True, name="aas-config").start()
     http_port = int(env("VF_OPS_PORT", "8095"))
     logging.getLogger("ops-gateway").info("listening on :%d (line asset %s)", http_port, line_asset)
-    serve(gateway, http_port).serve_forever()
+    serve(gateway, http_port, verifier_from_env()).serve_forever()  # token check in the secure profile
 
 
 if __name__ == "__main__":

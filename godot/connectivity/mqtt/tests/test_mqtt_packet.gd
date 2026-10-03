@@ -114,3 +114,12 @@ func test_stream_parser_reports_malformed_stream() -> void:
 	parser.feed(PackedByteArray([0x30, 0xFF, 0xFF, 0xFF, 0xFF, 0x01]))
 	assert_eq(parser.next(), {})
 	assert_ne(parser.error, "")
+
+
+func test_connect_with_user_name_and_password() -> void:
+	var packet := P.connect_packet("c", 30, {}, "godot", "pw")
+	assert_eq(packet[9], 0x02 | 0x80 | 0x40, "clean session + user name + password flags")
+	var body: PackedByteArray = P.decode(packet).body
+	assert_eq(body.slice(10), PackedByteArray([0, 1, 99, 0, 5]) + "godot".to_utf8_buffer()
+		+ PackedByteArray([0, 2]) + "pw".to_utf8_buffer())
+	assert_eq(P.connect_packet("c", 30, {}, "u")[9], 0x02 | 0x80, "user name without password")

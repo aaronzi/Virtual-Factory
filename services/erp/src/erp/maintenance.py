@@ -22,6 +22,9 @@ from vf_common.http_api import ApiError, Request, Response, Router
 
 from .store import now_iso
 
+# who may open / close maintenance windows (secure profile, ADR-0027)
+WINDOW_ROLES = ("planner", "maintenance", "svc-maintenance")
+
 STARTS = ("OrderBoundary", "Immediate")
 OPEN = ("Requested", "Active")
 
@@ -111,7 +114,9 @@ def add_routes(r: Router, windows: MaintenanceWindows, store) -> None:
             raise ApiError(404, f"unknown maintenance window {q.match['id']}") from exc
 
     r.add("GET", "/api/maintenance-windows", lambda q: [w.to_dict() for w in windows.windows.values()])
-    r.add("POST", "/api/maintenance-windows", create)
+    r.add("POST", "/api/maintenance-windows", create, WINDOW_ROLES)
     r.add("GET", r"/api/maintenance-windows/(?P<id>[\w-]+)", one)
-    r.add("POST", r"/api/maintenance-windows/(?P<id>[\w-]+)/complete", lambda q: one(q, "Completed"))
-    r.add("POST", r"/api/maintenance-windows/(?P<id>[\w-]+)/cancel", lambda q: one(q, "Cancelled"))
+    r.add("POST", r"/api/maintenance-windows/(?P<id>[\w-]+)/complete", lambda q: one(q, "Completed"),
+          WINDOW_ROLES)
+    r.add("POST", r"/api/maintenance-windows/(?P<id>[\w-]+)/cancel", lambda q: one(q, "Cancelled"),
+          WINDOW_ROLES)

@@ -1,0 +1,372 @@
+{
+  "AllAccessPermissionRules": {
+    "DEFATTRIBUTES": [
+      {
+        "name": "anonymous",
+        "attributes": [
+          {
+            "GLOBAL": "ANONYMOUS"
+          }
+        ]
+      },
+      {
+        "name": "realm_roles",
+        "attributes": [
+          {
+            "CLAIMPATH": "/realm_access/roles"
+          }
+        ]
+      }
+    ],
+    "DEFOBJECTS": [
+      {
+        "name": "description",
+        "objects": [
+          {
+            "ROUTE": "/description"
+          }
+        ]
+      },
+      {
+        "name": "everything",
+        "objects": [
+          {
+            "ROUTE": "/description"
+          },
+          {
+            "ROUTE": "/shells"
+          },
+          {
+            "ROUTE": "/shells/*"
+          },
+          {
+            "ROUTE": "/submodels"
+          },
+          {
+            "ROUTE": "/submodels/*"
+          },
+          {
+            "ROUTE": "/concept-descriptions"
+          },
+          {
+            "ROUTE": "/concept-descriptions/*"
+          },
+          {
+            "ROUTE": "/shell-descriptors"
+          },
+          {
+            "ROUTE": "/shell-descriptors/*"
+          },
+          {
+            "ROUTE": "/submodel-descriptors"
+          },
+          {
+            "ROUTE": "/submodel-descriptors/*"
+          },
+          {
+            "ROUTE": "/lookup/shells"
+          },
+          {
+            "ROUTE": "/lookup/shells/*"
+          },
+          {
+            "ROUTE": "/lookup/shellsByAssetLink"
+          },
+          {
+            "ROUTE": "/serialization"
+          },
+          {
+            "ROUTE": "/query/*"
+          }
+        ]
+      },
+      {
+        "name": "shells",
+        "objects": [
+          {
+            "ROUTE": "/shells"
+          },
+          {
+            "ROUTE": "/shells/*"
+          }
+        ]
+      },
+      {
+        "name": "submodels",
+        "objects": [
+          {
+            "ROUTE": "/submodels"
+          },
+          {
+            "ROUTE": "/submodels/*"
+          }
+        ]
+      },
+      {
+        "name": "concept_descriptions",
+        "objects": [
+          {
+            "ROUTE": "/concept-descriptions"
+          },
+          {
+            "ROUTE": "/concept-descriptions/*"
+          }
+        ]
+      }
+    ],
+    "rules": [
+      {
+        "ACL": {
+          "USEATTRIBUTES": "anonymous",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "description"
+        ],
+        "FORMULA": {
+          "$boolean": true
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "description"
+        ],
+        "FORMULA": {
+          "$contains": [
+            {
+              "$attribute": {
+                "CLAIMPATH": "/realm_access/roles"
+              }
+            },
+            {
+              "$strVal": "public"
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "everything"
+        ],
+        "FORMULA": {
+          "$or": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-supplier"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-sustainability"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-mes"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "operator"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "quality"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "maintenance"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "planner"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "auditor"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "authority"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "recycler"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "CREATE",
+            "UPDATE",
+            "DELETE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "shells"
+        ],
+        "FORMULA": {
+          "$contains": [
+            {
+              "$attribute": {
+                "CLAIMPATH": "/realm_access/roles"
+              }
+            },
+            {
+              "$strVal": "svc-supplier"
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "CREATE",
+            "UPDATE",
+            "DELETE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$contains": [
+            {
+              "$attribute": {
+                "CLAIMPATH": "/realm_access/roles"
+              }
+            },
+            {
+              "$strVal": "svc-supplier"
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "CREATE",
+            "UPDATE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "concept_descriptions"
+        ],
+        "FORMULA": {
+          "$contains": [
+            {
+              "$attribute": {
+                "CLAIMPATH": "/realm_access/roles"
+              }
+            },
+            {
+              "$strVal": "svc-supplier"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

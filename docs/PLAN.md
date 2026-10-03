@@ -461,7 +461,9 @@ BaSyx Go MQTT eventing (experimental, submodel granularity only) is **on** since
 | Architecture | `tools/arch_check.py`, `gdlint`, `import-linter` | Adherence ≥ 95 %, size limits |
 | Visual | Screenshot hook | Reference screenshots per milestone (sent to you) |
 
-GitHub Actions CI (`aaronzi/Virtual-Factory`): lint, unit tests, schema and architecture checks. Integration runs are local or nightly.
+GitHub Actions CI (`aaronzi/Virtual-Factory`): lint, unit tests, schema and architecture checks; workflow *Integration*
+(push to master, manual): full stack + UNS-linked headless factory, `pytest -m integration`
+(`tools/ci_integration.sh`, [development.md](development.md)).
 
 ---
 

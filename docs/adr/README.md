@@ -31,5 +31,6 @@ Format: short [MADR](https://adr.github.io/madr/)-style records. New ADR = next 
 | [0024](0024-plc-opc-ua-server-and-edge-connector.md) | PLC01 on OPC UA: communication module, backplane link and edge connector | accepted |
 | [0025](0025-service-decomposition-sustainability-erp.md) | Service decomposition: sustainability service, ERP order simulator, persistent passports | accepted |
 | [0026](0026-alarm-management-isa-18-2-timescaledb.md) | Alarm management after ISA-18.2 in an alarms & events service on TimescaleDB | accepted |
+| [0027](0027-optional-security-profile-keycloak-abac.md) | Optional secure profile: Keycloak, BaSyx Go ABAC, broker ACLs, OPC UA security | accepted |
 | [0028](0028-supplier-environment-batch-aas-federated-footprints.md) | Supplier data exchange: second AAS environment, batch AAS and federated batch footprints | accepted |
 | [0029](0029-predictive-maintenance-condition-monitoring.md) | Predictive maintenance: wear in the device models, RUL from the historian, maintenance orders in BPMN | accepted |

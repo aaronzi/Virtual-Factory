@@ -169,6 +169,14 @@ Godot PLC01 (FMU, CPU) --backplane tcp:4841--> plc-comm (OPC UA server :4840) --
 - Client limits: QoS 0/1 only; outgoing QoS 1 messages are not resent after a reconnect (retained telemetry is
   republished; events sent during an outage are lost, visible as `seq` gaps).
 
+## Secure profile (ADR-0027)
+With `infra/docker-compose.secure.yml` the broker has no anonymous access: every client has its own account and
+a topic ACL (`infra/mosquitto/secure/acl`, generated from `infra/security.yaml`). The Godot gateway (`godot`)
+publishes telemetry, events, acks and the session and subscribes to commands; the edge (`edge`) publishes only
+PLC01; **only `ops-gateway` may publish `{root}/+/cmd/+`**; `maintenance` publishes `{root}/maintenance/#`;
+consumers (historian, alarms, MES, bridge, sustainability) only read; `explorer` is a read-only account for MQTT
+Explorer. Godot takes its account from `--vf-secure` / `--vf-uns-user=` / `--vf-uns-password=`.
+
 ## Consumers
 
 | Consumer | Uses |

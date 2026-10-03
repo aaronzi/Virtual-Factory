@@ -19,6 +19,8 @@ from datetime import datetime, timezone
 
 import httpx
 
+from vf_common.auth import service_auth
+
 from .lots import COMPONENTS, parse
 
 log = logging.getLogger("mes.orders")
@@ -82,7 +84,7 @@ def performance(order_id: str, status: str, good: int, scrap: int,
 class ErpClient:
     def __init__(self, base_url: str | None, timeout: float = 5.0):
         self.base_url = (base_url or "").rstrip("/")
-        self.http = httpx.Client(timeout=timeout) if self.base_url else None
+        self.http = httpx.Client(timeout=timeout, auth=service_auth()) if self.base_url else None
 
     def confirm(self, order_id: str, status: str, good: int, scrap: int,
                 consumed: list[dict] | None = None, strict: bool = False) -> bool:

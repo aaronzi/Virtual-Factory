@@ -1,0 +1,1404 @@
+{
+  "AllAccessPermissionRules": {
+    "DEFATTRIBUTES": [
+      {
+        "name": "anonymous",
+        "attributes": [
+          {
+            "GLOBAL": "ANONYMOUS"
+          }
+        ]
+      },
+      {
+        "name": "realm_roles",
+        "attributes": [
+          {
+            "CLAIMPATH": "/realm_access/roles"
+          }
+        ]
+      }
+    ],
+    "DEFOBJECTS": [
+      {
+        "name": "description",
+        "objects": [
+          {
+            "ROUTE": "/description"
+          }
+        ]
+      },
+      {
+        "name": "everything",
+        "objects": [
+          {
+            "ROUTE": "/description"
+          },
+          {
+            "ROUTE": "/shells"
+          },
+          {
+            "ROUTE": "/shells/*"
+          },
+          {
+            "ROUTE": "/submodels"
+          },
+          {
+            "ROUTE": "/submodels/*"
+          },
+          {
+            "ROUTE": "/concept-descriptions"
+          },
+          {
+            "ROUTE": "/concept-descriptions/*"
+          },
+          {
+            "ROUTE": "/shell-descriptors"
+          },
+          {
+            "ROUTE": "/shell-descriptors/*"
+          },
+          {
+            "ROUTE": "/submodel-descriptors"
+          },
+          {
+            "ROUTE": "/submodel-descriptors/*"
+          },
+          {
+            "ROUTE": "/lookup/shells"
+          },
+          {
+            "ROUTE": "/lookup/shells/*"
+          },
+          {
+            "ROUTE": "/lookup/shellsByAssetLink"
+          },
+          {
+            "ROUTE": "/serialization"
+          },
+          {
+            "ROUTE": "/query/*"
+          }
+        ]
+      },
+      {
+        "name": "registry",
+        "objects": [
+          {
+            "ROUTE": "/description"
+          },
+          {
+            "ROUTE": "/shell-descriptors"
+          },
+          {
+            "ROUTE": "/shell-descriptors/*"
+          },
+          {
+            "ROUTE": "/submodel-descriptors"
+          },
+          {
+            "ROUTE": "/submodel-descriptors/*"
+          },
+          {
+            "ROUTE": "/lookup/shells"
+          },
+          {
+            "ROUTE": "/lookup/shells/*"
+          },
+          {
+            "ROUTE": "/lookup/shellsByAssetLink"
+          }
+        ]
+      },
+      {
+        "name": "submodels",
+        "objects": [
+          {
+            "ROUTE": "/submodels"
+          },
+          {
+            "ROUTE": "/submodels/*"
+          }
+        ]
+      },
+      {
+        "name": "shells",
+        "objects": [
+          {
+            "ROUTE": "/shells"
+          },
+          {
+            "ROUTE": "/shells/*"
+          }
+        ]
+      },
+      {
+        "name": "submodel_refs",
+        "objects": [
+          {
+            "ROUTE": "/shells/*/submodel-refs"
+          },
+          {
+            "ROUTE": "/shells/*/submodel-refs/*"
+          }
+        ]
+      },
+      {
+        "name": "concept_descriptions",
+        "objects": [
+          {
+            "ROUTE": "/concept-descriptions"
+          },
+          {
+            "ROUTE": "/concept-descriptions/*"
+          }
+        ]
+      }
+    ],
+    "rules": [
+      {
+        "ACL": {
+          "USEATTRIBUTES": "anonymous",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "description"
+        ],
+        "FORMULA": {
+          "$boolean": true
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "description"
+        ],
+        "FORMULA": {
+          "$or": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "public"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "authority"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "recycler"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-resolver"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "everything"
+        ],
+        "FORMULA": {
+          "$or": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "operator"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "quality"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "maintenance"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "planner"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "auditor"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-mes"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-bridge"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-ops-gateway"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-sustainability"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-maintenance"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-edge"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "registry"
+        ],
+        "FORMULA": {
+          "$contains": [
+            {
+              "$attribute": {
+                "CLAIMPATH": "/realm_access/roles"
+              }
+            },
+            {
+              "$strVal": "svc-resolver"
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "anonymous",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$or": [
+            {
+              "$eq": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "Nameplate"
+                }
+              ]
+            },
+            {
+              "$eq": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "ContactInformations"
+                }
+              ]
+            },
+            {
+              "$eq": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "CarbonFootprint"
+                }
+              ]
+            },
+            {
+              "$eq": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "ProductCircularity"
+                }
+              ]
+            },
+            {
+              "$eq": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "HandoverDocumentation"
+                }
+              ]
+            },
+            {
+              "$eq": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "DppMetadata"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "public"
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "Nameplate"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "ContactInformations"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "CarbonFootprint"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "ProductCircularity"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "HandoverDocumentation"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "DppMetadata"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "recycler"
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "Nameplate"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "ContactInformations"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "CarbonFootprint"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "ProductCircularity"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "HandoverDocumentation"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "DppMetadata"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "ProductMaterialComposition"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "HierarchicalStructures"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "READ"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "authority"
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "Nameplate"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "ContactInformations"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "CarbonFootprint"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "ProductCircularity"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "HandoverDocumentation"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "DppMetadata"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "ProductMaterialComposition"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "HierarchicalStructures"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "TechnicalData"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "QualityInspection"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "ExecutedProcesses"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "EXECUTE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "$contains": [
+                    {
+                      "$attribute": {
+                        "CLAIMPATH": "/realm_access/roles"
+                      }
+                    },
+                    {
+                      "$strVal": "operator"
+                    }
+                  ]
+                },
+                {
+                  "$contains": [
+                    {
+                      "$attribute": {
+                        "CLAIMPATH": "/realm_access/roles"
+                      }
+                    },
+                    {
+                      "$strVal": "planner"
+                    }
+                  ]
+                },
+                {
+                  "$contains": [
+                    {
+                      "$attribute": {
+                        "CLAIMPATH": "/realm_access/roles"
+                      }
+                    },
+                    {
+                      "$strVal": "maintenance"
+                    }
+                  ]
+                },
+                {
+                  "$contains": [
+                    {
+                      "$attribute": {
+                        "CLAIMPATH": "/realm_access/roles"
+                      }
+                    },
+                    {
+                      "$strVal": "svc-mes"
+                    }
+                  ]
+                },
+                {
+                  "$contains": [
+                    {
+                      "$attribute": {
+                        "CLAIMPATH": "/realm_access/roles"
+                      }
+                    },
+                    {
+                      "$strVal": "svc-maintenance"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "$eq": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "LineControl"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "CREATE",
+            "UPDATE",
+            "DELETE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "shells"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-mes"
+                }
+              ]
+            },
+            {
+              "$starts-with": [
+                {
+                  "$field": "$aas#id"
+                },
+                {
+                  "$strVal": "https://virtual-factory.example/ids/aas/WP_"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "CREATE",
+            "UPDATE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-mes"
+                }
+              ]
+            },
+            {
+              "$starts-with": [
+                {
+                  "$field": "$sm#id"
+                },
+                {
+                  "$strVal": "https://virtual-factory.example/ids/sm/WP_"
+                }
+              ]
+            },
+            {
+              "$ne": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "CarbonFootprint"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "DELETE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-mes"
+                }
+              ]
+            },
+            {
+              "$starts-with": [
+                {
+                  "$field": "$sm#id"
+                },
+                {
+                  "$strVal": "https://virtual-factory.example/ids/sm/WP_"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "UPDATE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-mes"
+                }
+              ]
+            },
+            {
+              "$starts-with": [
+                {
+                  "$field": "$sm#id"
+                },
+                {
+                  "$strVal": "https://virtual-factory.example/ids/sm/KLT"
+                }
+              ]
+            },
+            {
+              "$eq": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "HierarchicalStructures"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "UPDATE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-mes"
+                }
+              ]
+            },
+            {
+              "$starts-with": [
+                {
+                  "$field": "$sm#id"
+                },
+                {
+                  "$strVal": "https://virtual-factory.example/ids/sm/LINE01"
+                }
+              ]
+            },
+            {
+              "$eq": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "ProcessVariablesForManufacturingKPICalculation"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "CREATE",
+            "UPDATE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-sustainability"
+                }
+              ]
+            },
+            {
+              "$starts-with": [
+                {
+                  "$field": "$sm#id"
+                },
+                {
+                  "$strVal": "https://virtual-factory.example/ids/sm/WP_"
+                }
+              ]
+            },
+            {
+              "$eq": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "CarbonFootprint"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "CREATE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodel_refs"
+        ],
+        "FORMULA": {
+          "$contains": [
+            {
+              "$attribute": {
+                "CLAIMPATH": "/realm_access/roles"
+              }
+            },
+            {
+              "$strVal": "svc-sustainability"
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "UPDATE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "$contains": [
+                    {
+                      "$attribute": {
+                        "CLAIMPATH": "/realm_access/roles"
+                      }
+                    },
+                    {
+                      "$strVal": "svc-sustainability"
+                    }
+                  ]
+                },
+                {
+                  "$contains": [
+                    {
+                      "$attribute": {
+                        "CLAIMPATH": "/realm_access/roles"
+                      }
+                    },
+                    {
+                      "$strVal": "svc-bridge"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "$eq": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "EnergyConsumption"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "UPDATE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-bridge"
+                }
+              ]
+            },
+            {
+              "$eq": [
+                {
+                  "$field": "$sm#idShort"
+                },
+                {
+                  "$strVal": "OperationalData"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "UPDATE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "submodels"
+        ],
+        "FORMULA": {
+          "$and": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-maintenance"
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "ConditionMonitoring"
+                    }
+                  ]
+                },
+                {
+                  "$eq": [
+                    {
+                      "$field": "$sm#idShort"
+                    },
+                    {
+                      "$strVal": "Reliability"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "ACL": {
+          "USEATTRIBUTES": "realm_roles",
+          "RIGHTS": [
+            "CREATE",
+            "UPDATE"
+          ],
+          "ACCESS": "ALLOW"
+        },
+        "USEOBJECTS": [
+          "concept_descriptions"
+        ],
+        "FORMULA": {
+          "$or": [
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-mes"
+                }
+              ]
+            },
+            {
+              "$contains": [
+                {
+                  "$attribute": {
+                    "CLAIMPATH": "/realm_access/roles"
+                  }
+                },
+                {
+                  "$strVal": "svc-sustainability"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+# CI overrides for the integration suite (tools/ci_integration.sh):
+#   docker compose -f infra/docker-compose.yml -f infra/docker-compose.ci.yml up -d
+# - ERP standing orders of 2 parts, so the order-to-confirmation and maintenance tests never wait behind a
+#   48-part order (test_erp_integration.py would skip, test_maintenance_integration.py would stop mid-order)
+# - healthchecks for the services that have none in the base file, so readiness is visible in `ps`
+# - the AAS Web UI is not needed by any test (profile "ui": not pulled or started); Node-RED stays in
+#   "sandbox"
+# Host ports stay as in the base file: the tests address the services on localhost.
+
+x-http-health: &http-health
+  interval: 5s
+  timeout: 5s
+  retries: 24
+  start_period: 10s
+
+services:
+  erp:
+    environment:
+      VF_ERP_STANDING_QTY: "2"
+
+  aas-ui:
+    profiles: ["ui"]
+
+  mqtt:
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/broker/version", "-C", "1", "-W", "3"]
+
+  influxdb3:
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:8181/health"]
+
+  bpmn:
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:8080/engine-rest/engine"]
+
+  grafana:
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000/api/health"]
+
+  ops-gateway:
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "/app/.venv/bin/python", "-c",
+             "import urllib.request as u; u.urlopen('http://localhost:8095/health', timeout=3)"]
+
+  resolver:
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "/app/.venv/bin/python", "-c",
+             "import urllib.request as u; u.urlopen('http://localhost:8096/health', timeout=3)"]
+
+  plc-comm:
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "/app/.venv/bin/python", "-c",
+             "import socket; socket.create_connection(('localhost', 4840), 3).close()"]

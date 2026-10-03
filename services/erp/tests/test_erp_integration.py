@@ -2,8 +2,8 @@
 order created in the ERP is released to the MES (BPMN ProductionOrder) as soon as LINE01 is free, the line
 produces it and the MES confirms good quantity, scrap and the consumed component lots; the ERP books the
 consumption against batches. Needs a UNS-connected factory; skipped while LINE01 is busy with an order that
-needs more than 4 further parts (start the stack with VF_ERP_STANDING_QTY=2 for CI); waits at most 10
-minutes."""
+needs more than 4 further parts (CI: infra/docker-compose.ci.yml sets VF_ERP_STANDING_QTY=2); waits at most
+10 minutes."""
 
 from __future__ import annotations
 

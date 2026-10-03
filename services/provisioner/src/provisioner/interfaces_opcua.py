@@ -18,11 +18,11 @@ from vf_common.opcua_plc import AddressSpace, Node, address_space, servers
 
 from .fmi import JSON_TYPES, ModelDescription, read_model_description
 from .interfaces import AID, WOT, _affordance, _ext, _prop, _schema
+from .security_profile import opcua_definitions
 
 INTERFACE = "InterfaceOPCUA"
 CONTENT_TYPE = "application/octet-stream"  # OPC UA binary encoding (UA TCP)
 SECURITY = ("opcua_channel_sc", "opcua_authentication_sc")
-SECURITY_POLICY_NONE = "http://opcfoundation.org/UA/SecurityPolicy#None"
 BROWSE_PATH = "http://opcfoundation.org/UA/WoT-Binding/browsePath"
 
 
@@ -58,12 +58,8 @@ def opcua_interface(tag: str, instance: str, md: ModelDescription, uns: dict,
         "_idShort": INTERFACE, "title": f"{tag} OPC UA server (communication module of the controller)",
         "EndpointMetadata": {
             "base": space.endpoint, "contentType": CONTENT_TYPE, "security": sec,
-            # security hook (Keycloak phase, open issue O49): today None / Anonymous only
-            "securityDefinitions": {
-                "opcua_channel_sc": {"scheme": "ua_channelsec", "uav_securityMode": "None",
-                                     "uav_securityPolicy": SECURITY_POLICY_NONE},
-                "opcua_authentication_sc": {"scheme": "ua_authentication",
-                                            "uav_userIdentityToken": "Anonymous"}},
+            # None/Anonymous, or Basic256Sha256 SignAndEncrypt + UserName in the secure profile (ADR-0027)
+            "securityDefinitions": opcua_definitions(),
         },
         "InteractionMetadata": {"properties": {"property_name": props},
                                 **({"actions": actions} if actions else {}),

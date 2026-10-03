@@ -1,7 +1,8 @@
 /**
  * Virtual Factory - Node-RED learner sandbox (optional, compose profile "sandbox").
  *
- * Local development only: no admin authentication, no HTTPS. Do not expose port 1880 beyond localhost.
+ * Local development only: no admin authentication (secure profile: editor login), no HTTPS. Do not expose
+ * port 1880 beyond localhost.
  *
  * Mounted read-only at /vf/settings.js (passed with --settings). The editable flow file lives in the named
  * volume "vf_nodered-data" at /data/flows.json; it is seeded once from infra/nodered/flows.json
@@ -17,7 +18,13 @@ module.exports = {
     // and stops Node-RED from generating a key and warning about it. Not for production use.
     credentialSecret: false,
 
-    // No adminAuth: anyone who can reach localhost:1880 can edit and deploy flows (sandbox only).
+    // Open profile: no adminAuth - anyone who can reach localhost:1880 can edit and deploy flows (sandbox only).
+    // Secure profile (ADR-0027): editor login with VF_NODERED_ADMIN_USER / VF_NODERED_ADMIN_HASH (bcrypt).
+    adminAuth: process.env.VF_NODERED_ADMIN_HASH ? {
+        type: "credentials",
+        users: [{ username: process.env.VF_NODERED_ADMIN_USER || "admin",
+                  password: process.env.VF_NODERED_ADMIN_HASH, permissions: "*" }],
+    } : undefined,
 
     httpRequestTimeout: 30000,          // ms; AAS operations wait up to clientTimeoutDuration (15 s)
     mqttReconnectTime: 5000,

@@ -11,6 +11,7 @@ extends Node3D
 ## Retentive AC01 serial counter (RetentiveCounters): --vf-serial-start=<n>, --vf-retain=off.
 ## Training scenarios: `scenarios` (ScenarioRunner, stepped after UNS commands);
 ##   --vf-scenario=<id> starts one at launch.
+## Secure compose profile (ADR-0027): the broker account of SecureProfile (--vf-secure, --vf-uns-user=...).
 
 signal built(builder: FactoryBuilder)
 
@@ -89,7 +90,9 @@ func _start_links(uns_url: String, backplane_url: String) -> void:
 	if uns_url != "off":
 		if uns_url == "":
 			uns_url = registry.get("broker", {}).get("websocket", "ws://localhost:9001")
-		uns = UnsGateway.new(builder.master, MqttClient.new(), registry, layout_path.get_file())
+		var client := MqttClient.new()
+		SecureProfile.new().apply_mqtt(client)
+		uns = UnsGateway.new(builder.master, client, registry, layout_path.get_file())
 		if uns.start(uns_url) != OK:
 			uns = null
 	config = uns.get_config() if uns else UnsConfig.new(registry)

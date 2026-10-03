@@ -8,10 +8,10 @@ import json
 from vf_common import ids
 
 from .fmi import FmiVariable, ModelDescription
+from .security_profile import mqtt_scheme
 
 AID = "AssetInterfacesDescription"
 INTERFACE = "InterfaceMQTT"
-NOSEC = f"{INTERFACE}.EndpointMetadata.securityDefinitions.nosec_sc"
 WOT = "https://www.w3.org/2019/wot/"
 JSON_SCHEMA = WOT + "json-schema#"
 RDF_TYPE = "https://www.w3.org/1999/02/22-rdf-syntax-ns#type"
@@ -36,7 +36,8 @@ def aid_values(tag: str, instance: str, md: ModelDescription, uns: dict, title: 
 def _mqtt_values(tag: str, instance: str, md: ModelDescription, uns: dict, title: str) -> dict:
     device = instance.lower()
     root = uns["topic_root"]
-    sec = [{"ref": f"sm:{tag}/{AID}#{NOSEC}"}]
+    scheme, _ = mqtt_scheme()  # nosec, or basic in the secure profile (ADR-0027)
+    sec = [{"ref": f"sm:{tag}/{AID}#{INTERFACE}.EndpointMetadata.securityDefinitions.{scheme}"}]
     props = []
     for var in md.by_causality("output"):
         topic = uns["telemetry"]["topic"].format(root=root, device=device, variable=var.name)
@@ -54,7 +55,7 @@ def _mqtt_values(tag: str, instance: str, md: ModelDescription, uns: dict, title
     interface = {
         "_idShort": INTERFACE, "title": title,
         "EndpointMetadata": {"base": uns["broker"]["base"], "contentType": uns["payload"]["content_type"],
-                             "security": sec, "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}}},
+                             "security": sec, "securityDefinitions": dict([mqtt_scheme()])},
         "InteractionMetadata": {"properties": {"property_name": props},
                                 **({"actions": actions} if actions else {}),
                                 **({"events": events} if events else {})},
@@ -119,12 +120,12 @@ def _affordance(kind: str, title: str, elements: list[dict]) -> dict:
 def _form(tag: str, id_short: str, op: str, topic: str, cfg: dict, packet: str) -> dict:
     """WoT form (MQTT binding). AID 1.1 holds one form per affordance (`forms`); a second form of an action
     (`ackForms`) carries the same semanticId td#hasForm and is told apart by `op`."""
-    nosec = {"type": "ModelReference", "keys": [
+    scheme = {"type": "ModelReference", "keys": [
         {"type": "Submodel", "value": ids.submodel_id(tag, AID, "1")},
         {"type": "SubmodelElementCollection", "value": INTERFACE},
         {"type": "SubmodelElementCollection", "value": "EndpointMetadata"},
         {"type": "SubmodelElementCollection", "value": "securityDefinitions"},
-        {"type": "SubmodelElementCollection", "value": "nosec_sc"}]}
+        {"type": "SubmodelElementCollection", "value": mqtt_scheme()[0]}]}
     return {"modelType": "SubmodelElementCollection", "idShort": id_short,
             "semanticId": _ext(WOT + "td#hasForm"),
             "value": [_prop("op", op, WOT + "hypermedia#hasOperationType"),
@@ -133,7 +134,7 @@ def _form(tag: str, id_short: str, op: str, topic: str, cfg: dict, packet: str) 
                       {"modelType": "SubmodelElementList", "idShort": "security",
                        "typeValueListElement": "ReferenceElement",
                        "semanticId": _ext(WOT + "td#hasSecurityConfiguration"),
-                       "value": [{"modelType": "ReferenceElement", "value": nosec}]},
+                       "value": [{"modelType": "ReferenceElement", "value": scheme}]},
                       _prop("mqv_retain", str(cfg["retain"]).lower(), WOT + "mqtt#hasRetainFlag"),
                       _prop("mqv_qos", str(cfg["qos"]), WOT + "mqtt#hasQoSFlag"),
                       _prop("mqv_controlPacket", packet, WOT + "mqtt#ControlPacket")]}

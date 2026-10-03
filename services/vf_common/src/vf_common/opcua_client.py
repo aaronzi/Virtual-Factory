@@ -4,7 +4,8 @@ endpoint (asyncua, automatic reconnect with subscription re-creation), nodes res
 
 Endpoint rewriting: the AID describes the server as seen from the host (opc.tcp://localhost:4840/...); inside
 the compose network the services use VF_OPCUA_ENDPOINTS="opc.tcp://localhost:4840=opc.tcp://plc-comm:4840"
-(comma-separated prefix replacements)."""
+(comma-separated prefix replacements). Secure profile: Basic256Sha256 SignAndEncrypt + user token from
+VF_OPCUA_* (vf_common.opcua_security, ADR-0027)."""
 
 from __future__ import annotations
 
@@ -16,6 +17,7 @@ from asyncua import Client, Node, ua
 from asyncua.ua.status_codes import get_name_and_doc
 
 from .opcua_plc import parse_href
+from .opcua_security import OpcUaSecurity, secure_client
 
 log = logging.getLogger(__name__)
 _ARG_TYPES = {ua.VariantType.Double: float, ua.VariantType.Float: float, ua.VariantType.Int32: int,
@@ -62,8 +64,11 @@ def typed_argument(argument: ua.Argument, value) -> ua.Variant:
 class UaSession:
     """Client session to one server endpoint; nodes, method parents and argument types are cached."""
 
-    def __init__(self, endpoint: str, timeout: float = 4.0, request_timeout: float = 3.0):
+    def __init__(self, endpoint: str, timeout: float = 4.0, request_timeout: float = 3.0,
+                 security: OpcUaSecurity | None = None):
         self.endpoint = endpoint
+        self.security = security or OpcUaSecurity.from_env()
+        self._secured = False
         self.client = Client(endpoint, timeout=timeout, auto_reconnect=True,
                              reconnect_max_delay=10.0, reconnect_request_timeout=request_timeout)
         self.client.name = self.client.description = "Virtual Factory service"
@@ -78,6 +83,9 @@ class UaSession:
         async with self._connect_lock:
             while not self.connected:
                 try:
+                    if not self._secured:  # secure profile: fetches the server certificate (GetEndpoints)
+                        await secure_client(self.client, self.security)
+                        self._secured = True
                     await self.client.connect()
                     self.connected = True
                     log.info("OPC UA session to %s established", self.endpoint)

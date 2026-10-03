@@ -81,7 +81,34 @@ maintenance windows' purpose; the ERP keeps the window records (ADR-0029).
 | `VF_OPCUA_ENDPOINTS` | – | ops-gateway, edge: rewrites AID OPC UA endpoints, `from=to[,from=to]` prefix replacements (compose: `opc.tcp://localhost:4840=opc.tcp://plc-comm:4840`) |
 | `VF_PLC_INSTANCE` / `VF_OPCUA_BIND` / `VF_BACKPLANE_BIND` | `PLC01` / registry endpoint on `0.0.0.0` / `0.0.0.0:4841` | plc-comm: controller instance, OPC UA listen endpoint, backplane listen address |
 | `VF_EDGE_PUBLISHING_MS` | `telemetry.min_interval_s` × 1000 (100) | edge: OPC UA subscription publishing interval |
+| `VF_OIDC_TOKEN_URL` / `VF_OIDC_CLIENT_ID` / `VF_OIDC_CLIENT_SECRET` | – (secure profile: `http://keycloak:8080/realms/virtual-factory/protocol/openid-connect/token`, `vf-<service>`, `vf-<service>-local-secret`) | all AAS / HTTP clients: client-credential token (`vf_common.auth`), sent to BaSyx, DPP API, ERP, supplier portal; unset = no Authorization header |
+| `VF_OIDC_ISSUER` / `VF_OIDC_JWKS_URL` / `VF_OIDC_AUDIENCE` | – (secure profile: `http://localhost:8180/realms/virtual-factory`, `http://keycloak:8080/…/certs`, `virtual-factory-api`) | erp, alarms, maintenance, sustainability, supplier, resolver, ops-gateway: bearer token check of their own endpoints (`vf_common.jwt_auth`); unset = open |
+| `VF_MQTT_USER` / `VF_MQTT_PASSWORD` | – (secure profile: account per service, `infra/mosquitto/secure`) | all MQTT clients |
+| `VF_BPMN_USER` / `VF_BPMN_PASSWORD` | – (secure profile: `mes`, `sustainability`, `maintenance`, `erp`) | BPMN clients: basic auth of the Operaton REST API |
+| `VF_OPCUA_SECURITY` / `VF_OPCUA_USER` / `VF_OPCUA_PASSWORD` / `VF_OPCUA_USERS` / `VF_OPCUA_PKI_DIR` | `none` (secure profile: `sign_encrypt`) | plc-comm (server: `VF_OPCUA_USERS="name:password:operate\|read,…"`), edge, ops-gateway (client user token), `vf_common.opcua_security` |
+| `VF_SECURITY_PROFILE` | `open` (secure profile: `secure`) | provisioner: security definitions written into the AID (OPC UA SignAndEncrypt/UserName, MQTT `basic_sc`) |
+| `VF_RESOLVER_TOKEN_URL` | – | resolver: token endpoint named in the 401 login hint of restricted links |
 | `VF_REPO` | repository root | all (asset data, templates, `uns.json`, `bpmn/`) |
+
+## Secure profile (ADR-0027)
+
+`docker compose -f infra/docker-compose.yml -f infra/docker-compose.secure.yml up -d --build` - same services,
+authenticated ([security.md](../architecture/security.md) has the roles × resources matrix):
+
+| Service | Outgoing (client) | Incoming (resource server) |
+|---|---|---|
+| bridge, mes, sustainability, maintenance, edge, ops-gateway, erp, supplier, resolver | client credentials `vf-<service>` (role `svc-<service>`), token cached, refreshed, one retry on 401 | – |
+| erp, alarms, maintenance, sustainability, supplier | – | bearer token on every route except `/health` (401); write routes need a role (403): ERP orders/settings `planner`, confirmations/staging `svc-mes`, maintenance windows `planner`/`maintenance`/`svc-maintenance`; alarms ack/shelve `operator`/`maintenance` (the journal records the token's user); maintenance evaluate/settings `maintenance`/`planner`; supplier despatch advices `svc-erp` |
+| ops-gateway | OPC UA user `ops-gateway` (operate) | delegated operations: BaSyx forwards the caller's token; roles `operator`, `planner`, `maintenance`, `svc-mes`, `svc-maintenance` |
+| resolver | role `public` towards the DPP API | `linkType=vf:aas` / `vf:aasDescriptor` need a realm token (401 + `{"login": {"token_endpoint", "client_id": "vf-godot", …}}`) |
+| aas-env, dpp-api, supplier-aas-env | – | BaSyx Go ABAC (`infra/basyx/security/*.rules.json`, trust list with `discoveryUrl`) |
+| plc-comm | – | OPC UA Basic256Sha256 SignAndEncrypt, user names `edge`, `ops-gateway` (operate), `explorer` (read) |
+| mqtt | – | accounts + ACL (`infra/mosquitto/secure/acl`), no anonymous access |
+| bpmn | – | basic auth (users per service from `bpmn-users`, admin `demo`) |
+
+Token for manual calls: `curl -s -d grant_type=password -d client_id=vf-godot -d username=operator1
+-d password=virtualfactory http://localhost:8180/realms/virtual-factory/protocol/openid-connect/token`
+(`access_token` → `Authorization: Bearer …`).
 
 ## bridge
 
@@ -504,7 +531,8 @@ curl -X POST -H 'Content-Type: application/json' "http://localhost:8091/submodel
 ## plc-comm
 
 The communication module of PLC01 (ADR-0024): one process with the OPC UA server (asyncua 2.0.1,
-`opc.tcp://0.0.0.0:4840/vf/plc01`, security None / Anonymous - O49) and the backplane server (TCP 4841) for the
+`opc.tcp://0.0.0.0:4840/vf/plc01`, security None / Anonymous; secure profile: only Basic256Sha256 SignAndEncrypt
+with user name tokens from `VF_OPCUA_USERS`, method calls for `operate` accounts - ADR-0027, O57) and the backplane server (TCP 4841) for the
 simulated CPU in Godot. The address space is built at start-up from the FMI model description of PLC01 (asset data)
 and `opcua.servers.PLC01` in `godot/config/uns.json`; node list in [uns.md](uns.md#opc-ua-path-plc01).
 - One CPU at a time (a new connection replaces the old one). Every image message updates the changed nodes with the
@@ -516,8 +544,10 @@ and `opcua.servers.PLC01` in `godot/config/uns.json`; node list in [uns.md](uns.
 
 ## edge
 
-The edge connector (ADR-0024) reads every AID on the AAS server that has an OPC UA and an MQTT interface (today
-PLC01) and bridges them affordance by affordance (pairing by name):
+The edge connector (ADR-0024) reads every AID that has an OPC UA and an MQTT interface (today PLC01; found through
+the submodel registry like the other services, `RegistryAas`, ADR-0023) and bridges them affordance by
+affordance (pairing by name). Secure profile: OPC UA Basic256Sha256 SignAndEncrypt as user `edge`, broker account
+`edge` (writes only PLC01 telemetry, events and acks):
 
 | OPC UA (southbound) | UNS (northbound) |
 |---|---|

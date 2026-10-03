@@ -14,6 +14,8 @@ import threading
 
 import httpx
 
+from vf_common.auth import service_auth
+
 from .master_data import Material
 from .store import ErpStore
 
@@ -26,7 +28,7 @@ class SupplierPortal:
 
     def __init__(self, base_url: str, timeout: float = 20.0):
         self.base_url = base_url.rstrip("/")
-        self.http = httpx.Client(timeout=timeout)
+        self.http = httpx.Client(timeout=timeout, auth=service_auth())
 
     def despatch_advice(self, material: Material, lot: str) -> dict | None:
         """Despatch advice of the lot, None if the supplier does not know it; RuntimeError if unreachable."""

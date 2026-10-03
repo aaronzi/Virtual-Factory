@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import os
 
+from vf_common.jwt_auth import verifier_from_env
 from vf_common.resolver import AasResolver
 
 from .links import Urls
@@ -19,7 +20,8 @@ def main() -> None:
     port = int(env("VF_RESOLVER_PORT", "8096"))
     urls = Urls(resolver=env("VF_RESOLVER_PUBLIC_URL", f"http://localhost:{port}"),
                 dpp=env("VF_DPP_PUBLIC_URL", "http://localhost:8093"))
-    resolver = DigitalLinkResolver(AasResolver.from_env(), env("VF_DPP_URL", "http://localhost:8093"), urls)
+    resolver = DigitalLinkResolver(AasResolver.from_env(), env("VF_DPP_URL", "http://localhost:8093"), urls,
+                                   verifier=verifier_from_env(), token_url=env("VF_RESOLVER_TOKEN_URL", ""))
     logging.getLogger("resolver").info("GS1 Digital Link resolver on :%d (public %s)", port, urls.resolver)
     serve(resolver, port).serve_forever()
 

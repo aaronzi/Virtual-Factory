@@ -75,9 +75,7 @@ def test_command_round_trip_basyx_ops_gateway_opcua(cpu_linked):
     assert health["endpoints"]["PackMLCommand"]["protocol"] == "opcua"
     aas = BasyxClient("http://localhost:8091")
     line_control = ids.submodel_id("LINE01", "LineControl", "1")
-    start = time.perf_counter()
-    held = aas.invoke(line_control, "ExecutePackMLCommand", {"Command": "Hold"})
-    hold_s = time.perf_counter() - start
+    held, hold_s = _hold_in_execute(aas, line_control)
     try:
         assert held["Accepted"] == "true" and held["State"] == "HELD", held
         assert _read("PLC01.Status.StateCurrent")[0].Value.Value == 11
@@ -85,6 +83,22 @@ def test_command_round_trip_basyx_ops_gateway_opcua(cpu_linked):
         resumed = aas.invoke(line_control, "ExecutePackMLCommand", {"Command": "Unhold"})
     assert resumed["Accepted"] == "true" and resumed["State"] == "EXECUTE", resumed
     print(f"Hold via BaSyx -> ops gateway -> OPC UA -> PLC -> state HELD observed: {hold_s * 1000:.0f} ms")
+
+
+def _hold_in_execute(aas: BasyxClient, line_control: str) -> tuple[dict, float]:
+    """Hold is only allowed in EXECUTE; at every order boundary the line passes STOPPED for ~2 s (standing
+    orders of 2 parts in CI: about once a minute). Wait for EXECUTE; if the boundary falls between the read
+    and the command, the gateway rejects it with 'not allowed in state' - then wait for EXECUTE again."""
+    for _ in range(3):
+        deadline = time.monotonic() + 60
+        while _read("PLC01.Status.StateCurrent")[0].Value.Value != 6:
+            assert time.monotonic() < deadline, "line not in EXECUTE within 60 s"
+            time.sleep(0.2)
+        start = time.perf_counter()
+        held = aas.invoke(line_control, "ExecutePackMLCommand", {"Command": "Hold"})
+        if held["Accepted"] == "true" or "is not allowed in state" not in held.get("Message", ""):
+            return held, time.perf_counter() - start
+    return held, time.perf_counter() - start
 
 
 def test_uns_receives_plc01_from_the_edge(cpu_linked):

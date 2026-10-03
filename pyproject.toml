@@ -40,5 +40,6 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["services", "tools/tests"]
-markers = ["integration: needs the running docker compose stack (infra/)"]
-addopts = "-m 'not integration'"
+markers = ["integration: needs the running docker compose stack (infra/)",
+           "secure: needs the running SECURE compose stack (infra/docker-compose.secure.yml, ADR-0027)"]
+addopts = "-m 'not integration and not secure'"

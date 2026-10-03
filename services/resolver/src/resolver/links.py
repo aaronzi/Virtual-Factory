@@ -3,7 +3,7 @@ their RFC 9264 linkset representation as GS1-conformant resolvers serve it."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from urllib.parse import quote
 
 from vf_common.basyx import b64
@@ -17,6 +17,8 @@ PIP = GS1 + "pip"
 HANDOVER = "0173-1#01-AHF578#003"
 DOCUMENT_LINK_TYPES = {"02-04": GS1 + "certificationInfo", "03-01": GS1 + "instructions",
                        "03-05": GS1 + "instructions"}
+# targets that need a token of the realm in the secure profile (ADR-0027); the DPP API is role-filtered itself
+PROTECTED_LINK_TYPES = (VF + "aas", VF + "aasDescriptor")
 
 
 @dataclass(frozen=True)
@@ -33,6 +35,7 @@ class Link:
     title: dict[str, str]           # language -> title
     media_type: str = "text/html"
     hreflang: tuple[str, ...] = field(default=())
+    restricted: bool = False        # secure profile: the resolver redirects only with a valid bearer token
 
     def as_target(self, lang: str = "en") -> dict:
         target = {"href": self.href, "title": self.title.get(lang) or next(iter(self.title.values()), ""),
@@ -51,8 +54,9 @@ def expand(link_type: str) -> str:
 
 
 def build_links(dl: DigitalLink, urls: Urls, dpp: dict | None, shell_href: str | None,
-                descriptor_url: str | None) -> list[Link]:
-    """All links of a resolved Digital Link; the passport page is the default link."""
+                descriptor_url: str | None, protect: bool = False) -> list[Link]:
+    """All links of a resolved Digital Link; the passport page is the default link. protect: mark the links to
+    restricted data (PROTECTED_LINK_TYPES) as restricted (secure profile)."""
     page = f"{urls.resolver.rstrip('/')}/passport{dl.path}"
     both = ("en", "de")
     links = [Link(DEFAULT_LINK, page, {"en": "Digital product passport", "de": "Digitaler Produktpass"},
@@ -74,6 +78,8 @@ def build_links(dl: DigitalLink, urls: Urls, dpp: dict | None, shell_href: str |
         links.append(Link(VF + "aasDescriptor", descriptor_url,
                           {"en": "AAS descriptor (registry)", "de": "VWS-Deskriptor (Registry)"},
                           "application/json"))
+    if protect:
+        links = [replace(k, restricted=True) if k.link_type in PROTECTED_LINK_TYPES else k for k in links]
     return links
 
 

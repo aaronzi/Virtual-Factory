@@ -28,5 +28,16 @@
     -1.05
   ],
   "terminal_yaw_deg": -10.0,
-  "grafana_url": "http://localhost:3002/d/vf-line01-live/line01-live"
+  "grafana_url": "http://localhost:3002/d/vf-line01-live/line01-live",
+  "secure": {
+    "_doc": "Local defaults of the secure compose profile (ADR-0027, open issue O34), used only with --vf-secure / VF_SECURE=1; override with --vf-user/--vf-password, --vf-uns-user/--vf-uns-password, --vf-bpmn-user/--vf-bpmn-password or VF_* environment variables (factory/secure_profile.gd).",
+    "token_url": "http://localhost:8180/realms/virtual-factory/protocol/openid-connect/token",
+    "client_id": "vf-godot",
+    "user": "operator1",
+    "password": "virtualfactory",
+    "mqtt_user": "godot",
+    "mqtt_password": "godot-local-secret",
+    "bpmn_user": "godot",
+    "bpmn_password": "godot-local-secret"
+  }
 }

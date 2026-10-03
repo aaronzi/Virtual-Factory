@@ -1,0 +1,267 @@
+# Virtual Factory - optional SECURE profile (ADR-0027, docs/architecture/security.md)
+#
+# Usage (from repo root), on top of the base file - switches the existing services to authenticated mode:
+#   docker compose -f infra/docker-compose.yml -f infra/docker-compose.secure.yml up -d --build
+# Back to the open training profile (removes Keycloak and recreates the changed services):
+#   docker compose -f infra/docker-compose.yml up -d --remove-orphans
+#
+# What changes:
+#   keycloak (8180)      realm "virtual-factory" imported from ./keycloak (generated from ./security.yaml)
+#   aas-env, dpp-api,    BaSyx Go ABAC with OIDC/JWT validation (./basyx/security, ABAC_ENABLED=true)
+#   supplier-aas-env
+#   aas-ui               OAuth2 login (authorization code + PKCE, client vf-aas-ui)
+#   mqtt                 no anonymous access: password file + ACL per topic tree (./mosquitto/secure)
+#   plc-comm             OPC UA Basic256Sha256 SignAndEncrypt + user name tokens; edge / ops gateway log in
+#   provisioner          AID security definitions of the secure endpoints (VF_SECURITY_PROFILE=secure)
+#   services             client-credential tokens (VF_OIDC_*), own broker accounts, own BPMN engine users;
+#                        their REST APIs and the ops gateway validate bearer tokens
+#   bpmn                 Operaton with authentication (users per service, created by bpmn-users)
+#   grafana              Keycloak login (generic OAuth), anonymous access off
+#   nodered              admin login (sandbox profile)
+# All passwords / secrets are local defaults (open issue O34, docs/user-guide.md "Secure profile").
+
+x-oidc: &oidc
+  VF_OIDC_TOKEN_URL: http://keycloak:8080/realms/virtual-factory/protocol/openid-connect/token
+  VF_OIDC_ISSUER: http://localhost:8180/realms/virtual-factory          # iss of every token (KC_HOSTNAME)
+  VF_OIDC_JWKS_URL: http://keycloak:8080/realms/virtual-factory/protocol/openid-connect/certs
+  VF_OIDC_AUDIENCE: virtual-factory-api
+
+x-abac: &abac
+  ABAC_ENABLED: "true"
+  ABAC_POLICY_FILE_IMPORT: always          # the rules file is the source of truth (DB on tmpfs anyway)
+  OIDC_TRUSTLISTPATH: /security/trustlist.json
+
+x-keycloak-ready: &keycloak-ready
+  keycloak:
+    condition: service_healthy
+
+x-opcua-client: &opcua-client
+  VF_OPCUA_SECURITY: sign_encrypt
+
+services:
+  keycloak:
+    # Identity provider. Dev mode (H2 in the container): the realm is re-imported at every start, no TLS.
+    # Production: `start` with a database, TLS, a real hostname, rotated secrets (security.md).
+    image: keycloak/keycloak:26.7.4
+    command: ["start-dev", "--import-realm"]
+    ports:
+      - "8180:8080"
+    environment:
+      KC_HOSTNAME: http://localhost:8180          # issuer of all tokens, also for clients inside compose
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"     # token/JWKS endpoints reachable as http://keycloak:8080
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin          # master realm admin console, local default (O34)
+      KC_BOOTSTRAP_ADMIN_PASSWORD: virtualfactory
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import:ro
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q UP <&3"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 20s
+    restart: unless-stopped
+
+  provisioner:
+    environment:
+      VF_SECURITY_PROFILE: secure                 # AID: OPC UA Basic256Sha256/UserName, MQTT basic
+
+  aas-env:
+    environment:
+      <<: *abac
+      ABAC_MODELPATH: /security/aas-env.rules.json
+      BASYX_EVENTING_MQTT_USERNAME: basyx
+      BASYX_EVENTING_MQTT_PASSWORD: basyx-local-secret
+    volumes:
+      - ./basyx/security:/security:ro
+    depends_on: *keycloak-ready
+
+  dpp-api:
+    environment:
+      <<: *abac
+      ABAC_MODELPATH: /security/dpp-api.rules.json
+    volumes:
+      - ./basyx/security:/security:ro
+    depends_on: *keycloak-ready
+
+  supplier-aas-env:
+    environment:
+      <<: *abac
+      ABAC_MODELPATH: /security/supplier-env.rules.json
+    volumes:
+      - ./basyx/security:/security:ro
+    depends_on: *keycloak-ready
+
+  aas-ui:
+    volumes:
+      - ./basyx/basyx-infra.secure.yml:/basyx-infra.yml:ro
+
+  mqtt:
+    # the plain password list is hashed inside the container at start (mosquitto_passwd -U)
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        cp /vf/passwords /mosquitto/passwd && chmod 0700 /mosquitto/passwd && mosquitto_passwd -U
+        /mosquitto/passwd && chown mosquitto:mosquitto /mosquitto/passwd && exec mosquitto -c /vf/mosquitto.conf
+    volumes:
+      - ./mosquitto/secure:/vf:ro
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-u", "explorer", "-P", "explorer-local-secret", "-t", "$$SYS/broker/version",
+             "-C", "1", "-W", "3"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+
+  bpmn:
+    environment:
+      OPERATON_BPM_RUN_AUTH_ENABLED: "true"       # REST API needs basic auth (admin demo/demo, O34)
+
+  bpmn-users:
+    # One-shot: engine users per service and for the Godot task terminal (no fine-grained authorizations, O58)
+    image: curlimages/curl:8.17.0
+    entrypoint: ["/bin/sh", "/bpmn-users.sh"]
+    volumes:
+      - ./secure/bpmn-users.sh:/bpmn-users.sh:ro
+    depends_on:
+      bpmn:
+        condition: service_started
+
+  grafana:
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
+      GF_AUTH_GENERIC_OAUTH_NAME: Keycloak
+      GF_AUTH_GENERIC_OAUTH_CLIENT_ID: vf-grafana
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: vf-grafana-local-secret
+      GF_AUTH_GENERIC_OAUTH_SCOPES: openid profile email
+      GF_AUTH_GENERIC_OAUTH_USE_PKCE: "true"
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: http://localhost:8180/realms/virtual-factory/protocol/openid-connect/auth
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: http://keycloak:8080/realms/virtual-factory/protocol/openid-connect/token
+      GF_AUTH_GENERIC_OAUTH_API_URL: http://keycloak:8080/realms/virtual-factory/protocol/openid-connect/userinfo
+      GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH: preferred_username
+      GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: "true"
+      # realm roles -> Grafana roles; users without one of these roles cannot log in (strict)
+      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: >-
+        contains(roles[*], 'planner') && 'Editor' || contains(roles[*], 'maintenance') && 'Editor' ||
+        contains(roles[*], 'quality') && 'Editor' || contains(roles[*], 'operator') && 'Viewer' ||
+        contains(roles[*], 'auditor') && 'Viewer'
+      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT: "true"
+    depends_on: *keycloak-ready
+
+  nodered:
+    environment:
+      VF_NODERED_ADMIN_USER: admin                # bcrypt of the local default "virtualfactory" (O34)
+      VF_NODERED_ADMIN_HASH: "$$2b$$08$$G/PeJDM0QairdqqJLS5vAOjKSFS4hLFeTjtQhh4pZe9qFaDS6Be1S"
+
+  # -- services: client credentials (VF_OIDC_CLIENT_*), token validation of their own APIs (VF_OIDC_ISSUER),
+  #    broker account (VF_MQTT_*), BPMN engine user (VF_BPMN_*) -------------------------------------------
+  bridge:
+    environment:
+      <<: *oidc
+      VF_OIDC_CLIENT_ID: vf-bridge
+      VF_OIDC_CLIENT_SECRET: vf-bridge-local-secret
+      VF_MQTT_USER: bridge
+      VF_MQTT_PASSWORD: bridge-local-secret
+    depends_on: *keycloak-ready
+
+  mes:
+    environment:
+      <<: *oidc
+      VF_OIDC_CLIENT_ID: vf-mes
+      VF_OIDC_CLIENT_SECRET: vf-mes-local-secret
+      VF_MQTT_USER: mes
+      VF_MQTT_PASSWORD: mes-local-secret
+      VF_BPMN_USER: mes
+      VF_BPMN_PASSWORD: mes-local-secret
+    depends_on: *keycloak-ready
+
+  ops-gateway:
+    environment:
+      <<: [*oidc, *opcua-client]
+      VF_OIDC_CLIENT_ID: vf-ops-gateway
+      VF_OIDC_CLIENT_SECRET: vf-ops-gateway-local-secret
+      VF_MQTT_USER: ops-gateway
+      VF_MQTT_PASSWORD: ops-gateway-local-secret
+      VF_OPCUA_USER: ops-gateway
+      VF_OPCUA_PASSWORD: ops-gateway-local-secret
+    depends_on: *keycloak-ready
+
+  plc-comm:
+    environment:
+      VF_OPCUA_SECURITY: sign_encrypt
+      # name:password:operate|read - operate may call the command methods (O49)
+      VF_OPCUA_USERS: >-
+        edge:edge-local-secret:operate,ops-gateway:ops-gateway-local-secret:operate,
+        explorer:explorer-local-secret:read
+
+  edge:
+    environment:
+      <<: [*oidc, *opcua-client]
+      VF_OIDC_CLIENT_ID: vf-edge
+      VF_OIDC_CLIENT_SECRET: vf-edge-local-secret
+      VF_MQTT_USER: edge
+      VF_MQTT_PASSWORD: edge-local-secret
+      VF_OPCUA_USER: edge
+      VF_OPCUA_PASSWORD: edge-local-secret
+    depends_on: *keycloak-ready
+
+  sustainability:
+    environment:
+      <<: *oidc
+      VF_OIDC_CLIENT_ID: vf-sustainability
+      VF_OIDC_CLIENT_SECRET: vf-sustainability-local-secret
+      VF_MQTT_USER: sustainability
+      VF_MQTT_PASSWORD: sustainability-local-secret
+      VF_BPMN_USER: sustainability
+      VF_BPMN_PASSWORD: sustainability-local-secret
+    depends_on: *keycloak-ready
+
+  erp:
+    environment:
+      <<: *oidc
+      VF_OIDC_CLIENT_ID: vf-erp
+      VF_OIDC_CLIENT_SECRET: vf-erp-local-secret
+      VF_BPMN_USER: erp
+      VF_BPMN_PASSWORD: erp-local-secret
+    depends_on: *keycloak-ready
+
+  alarms:
+    environment:
+      <<: *oidc
+      VF_OIDC_CLIENT_ID: vf-alarms
+      VF_OIDC_CLIENT_SECRET: vf-alarms-local-secret
+      VF_MQTT_USER: alarms
+      VF_MQTT_PASSWORD: alarms-local-secret
+    depends_on: *keycloak-ready
+
+  maintenance:
+    environment:
+      <<: *oidc
+      VF_OIDC_CLIENT_ID: vf-maintenance
+      VF_OIDC_CLIENT_SECRET: vf-maintenance-local-secret
+      VF_MQTT_USER: maintenance
+      VF_MQTT_PASSWORD: maintenance-local-secret
+      VF_BPMN_USER: maintenance
+      VF_BPMN_PASSWORD: maintenance-local-secret
+    depends_on: *keycloak-ready
+
+  historian:
+    environment:
+      VF_MQTT_USER: historian
+      VF_MQTT_PASSWORD: historian-local-secret
+
+  resolver:
+    environment:
+      <<: *oidc
+      VF_OIDC_CLIENT_ID: vf-resolver               # role "public": the passport page shows public sections
+      VF_OIDC_CLIENT_SECRET: vf-resolver-local-secret
+      VF_RESOLVER_TOKEN_URL: http://localhost:8180/realms/virtual-factory/protocol/openid-connect/token
+    depends_on: *keycloak-ready
+
+  supplier:
+    environment:
+      <<: *oidc
+      VF_OIDC_CLIENT_ID: vf-supplier
+      VF_OIDC_CLIENT_SECRET: vf-supplier-local-secret
+    depends_on: *keycloak-ready

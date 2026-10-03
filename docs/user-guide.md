@@ -39,6 +39,41 @@ Stop it with `docker compose -f infra/docker-compose.yml down`. The databases (A
 engine and the ERP are ephemeral.
 After changing code in `services/`, rebuild with `docker compose -f infra/docker-compose.yml up -d --build`.
 
+## Secure profile (optional)
+The default stack is deliberately open. To train with identities, roles and protected interfaces
+([ADR-0027](adr/0027-optional-security-profile-keycloak-abac.md), [security concept](architecture/security.md)):
+```bash
+docker compose -f infra/docker-compose.yml -f infra/docker-compose.secure.yml up -d --build
+/Applications/Godot.app/Contents/MacOS/Godot --path godot -- --vf-secure      # factory + training UI log in
+uv run pytest -m secure                                                        # checks with real tokens
+docker compose -f infra/docker-compose.yml up -d --remove-orphans              # back to the open profile
+```
+Same ports as above plus Keycloak http://localhost:8180 (admin console: `admin` / `virtualfactory`). All
+passwords are **local defaults** (open issue O34/O56) - never reuse them outside this training stack:
+
+| Login | Password | Use |
+|---|---|---|
+| `operator1`, `quality1`, `maintenance1`, `planner1`, `auditor1`, `authority1`, `recycler1` (realm `virtual-factory`) | `virtualfactory` | AAS web UI (button *Login*), Grafana (*Sign in with Keycloak*), Godot (`--vf-user=`, default `operator1`), tokens for curl |
+| MQTT `explorer` (read-only) | `explorer-local-secret` | MQTT Explorer / `mosquitto_sub -u explorer -P …`; service accounts see `infra/mosquitto/secure/passwords` |
+| OPC UA `explorer` (read-only, Basic256Sha256 SignAndEncrypt) | `explorer-local-secret` | UaExpert (trust the self-signed server certificate) |
+| Operaton `demo` (admin) | `demo` | Cockpit / Tasklist; service users `mes`, `godot`, … created by `bpmn-users` |
+| Node-RED editor `admin` (profile `sandbox`) | `virtualfactory` | editor login; the example flows need the broker account `nodered` / `nodered-local-secret` and a bearer token for AAS calls |
+
+What changes for a learner: anonymous requests to the AAS environment see only the public passport submodels and
+get 401/403 for everything else; the passport (DPP API, resolver page) shows sections per role - try
+`curl http://localhost:8093/v1/dppsByProductId/https%3A%2F%2Fvirtual-factory.example%2F01%2F04099999032808` without
+and with the token of `recycler1`; a service that writes another service's submodel gets 403 (logs); only the ops
+gateway may publish UNS commands; the OPC UA server refuses anonymous and unencrypted sessions. A token for curl:
+```bash
+TOKEN=$(curl -s -d grant_type=password -d client_id=vf-godot -d username=operator1 -d password=virtualfactory \
+  http://localhost:8180/realms/virtual-factory/protocol/openid-connect/token | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8091/shells
+```
+Godot options: `--vf-secure` (or `VF_SECURE=1`) uses the defaults of `godot/config/backend.json` (`secure`);
+override with `--vf-user=`/`--vf-password=`, `--vf-uns-user=`/`--vf-uns-password=`, `--vf-bpmn-user=`/
+`--vf-bpmn-password=` or the `VF_*` environment variables. The security model is generated from
+`infra/security.yaml` (`uv run tools/gen_security_config.py`).
+
 ## Desktop builds
 ```bash
 tools/export_builds.sh            # all three, or: tools/export_builds.sh macOS
@@ -421,6 +456,7 @@ See [architecture/asset-pipeline.md](architecture/asset-pipeline.md).
 | `tools/run_godot_tests.sh` | GDScript unit tests (GUT, headless) |
 | `uv run pytest` | Python unit tests |
 | `uv run pytest -m integration` | Integration tests against the running stack |
+| `tools/ci_integration.sh` | Integration suite end to end: fresh stack, two headless factory sessions, pytest, skip check ([development.md](development.md)) |
 | `uv run tools/arch_check.py` | Architecture conformance (≥ 95 %) |
 | `uv run tools/complexity_check.py` | Function length limits |
 | `(cd godot && uv run gdlint .)` | GDScript lint |
