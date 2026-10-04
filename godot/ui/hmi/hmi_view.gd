@@ -27,7 +27,9 @@ func _init() -> void:
 	var root := VBoxContainer.new()
 	add_child(root)
 	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 12)
 	head.add_child(UiTheme.label("LINE01", 24))
+	head.add_child(_ack_button())  # in the header row: a row of its own would push the KLT row off the panel
 	_state = UiTheme.label("-", 24, UiTheme.MUTED)
 	_state.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_state.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -36,10 +38,11 @@ func _init() -> void:
 	_stats = UiTheme.label("", 17)
 	_oee = UiTheme.label("", 17, UiTheme.ACCENT.lightened(0.3))
 	_alarm = UiTheme.label("", 17, UiTheme.ALARM)
-	_alarm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS  # one line: the layout has no spare row
+	_alarm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_alarm.visible = false  # shown instead of the OEE line while an alarm is active: constant height
 	root.add_child(_stats)
 	root.add_child(_oee)
-	root.add_child(_alarm_row())
+	root.add_child(_alarm)
 	root.add_child(_command_grid())
 	root.add_child(_klt_row())
 
@@ -58,6 +61,8 @@ func update_status(s: Dictionary) -> void:
 	var q: float = s.get("quality", 0.0)
 	_oee.text = tr("HMI_OEE") % [a * p * q * 100.0, a * 100.0, p * 100.0, q * 100.0]
 	_alarm.text = s.get("alarm", "")
+	_alarm.visible = _alarm.text != ""
+	_oee.visible = not _alarm.visible
 	var unacked: int = s.get("unacked", -1)
 	_ack.visible = unacked >= 0
 	_ack.disabled = unacked <= 0
@@ -68,17 +73,14 @@ func update_status(s: Dictionary) -> void:
 	_auto.set_pressed_no_signal(s.get("auto_exchange", true))
 
 
-## Alarm text (one line, the layout has no spare row) and the acknowledge button of the alarm management.
-func _alarm_row() -> HBoxContainer:
-	var row := HBoxContainer.new()
-	_alarm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(_alarm)
+## Acknowledge button of the alarm management (hidden without the alarms service).
+func _ack_button() -> Button:
 	_ack = Button.new()
 	_ack.add_theme_font_size_override("font_size", 15)
+	_ack.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_ack.visible = false
 	_ack.pressed.connect(func() -> void: ack_pressed.emit())
-	row.add_child(_ack)
-	return row
+	return _ack
 
 
 func _command_grid() -> GridContainer:

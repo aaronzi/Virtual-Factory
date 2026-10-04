@@ -31,12 +31,13 @@ func setup(p_master: CoSimMaster, p_commands: LocalCommands, stand: Node3D) -> v
 	view.exchange_pressed.connect(func(k: int) -> void: commands.write(PLC + ".klt_exchange_command", k, true))
 	view.ack_pressed.connect(_acknowledge)
 	panel = WorldPanel.new()
-	panel.size_m = Vector2(0.48, 0.34)
+	panel.size_m = Vector2(0.48, 0.32)
 	panel.pixels_per_meter = 1100.0
 	panel.refresh_hz = 1.0 / REFRESH_S
 	panel.set_content(view)
 	stand.add_child(panel)
-	panel.position = Vector3(0.0, 1.3, 0.043)  # over the screen of the stand (front = +Z)
+	# over the screen of the stand (front = +Z); bottom edge kept above the key shelf, which hides it from above
+	panel.position = Vector3(0.0, 1.315, 0.043)
 
 
 func _process(delta: float) -> void:
