@@ -6,12 +6,27 @@
 [ext_resource type="PackedScene" path="res://player/desktop_rig.tscn" id="4_rig"]
 [ext_resource type="Script" path="res://ui/status_overlay/status_overlay.gd" id="5_overlay"]
 
+[sub_resource type="ProceduralSkyMaterial" id="SkyMaterial_interior"]
+sky_top_color = Color(0.34, 0.38, 0.42, 1)
+sky_horizon_color = Color(0.64, 0.66, 0.66, 1)
+ground_bottom_color = Color(0.12, 0.14, 0.13, 1)
+ground_horizon_color = Color(0.44, 0.46, 0.45, 1)
+sky_energy_multiplier = 0.65
+ground_energy_multiplier = 0.5
+
+[sub_resource type="Sky" id="Sky_interior"]
+sky_material = SubResource("SkyMaterial_interior")
+radiance_size = 1
+process_mode = 3
+
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
 background_color = Color(0.45, 0.48, 0.5, 1)
 ambient_light_source = 2
+sky = SubResource("Sky_interior")
+reflected_light_source = 2
 ambient_light_color = Color(0.84, 0.87, 0.92, 1)
-ambient_light_energy = 0.42
+ambient_light_energy = 0.24
 tonemap_mode = 2
 tonemap_exposure = 1.0
 
@@ -24,7 +39,7 @@ environment = SubResource("Environment_main")
 [node name="HighBayLight" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.939693, -0.290183, 0.181116, 0, 0.529919, 0.848048, -0.34202, -0.797267, 0.497623, 0, 7, 0)
 light_color = Color(1, 0.98, 0.95, 1)
-light_energy = 0.6
+light_energy = 0.48
 shadow_enabled = true
 shadow_opacity = 0.75
 directional_shadow_mode = 1
@@ -33,7 +48,7 @@ directional_shadow_max_distance = 20.0
 [node name="FillLight" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866025, 0.25, -0.433013, 0, 0.866025, 0.5, 0.5, 0.433013, -0.75, 0, 7, 0)
 light_color = Color(0.9, 0.94, 1, 1)
-light_energy = 0.3
+light_energy = 0.16
 
 [node name="Hall" type="Node3D" parent="."]
 script = ExtResource("2_hall")

@@ -12,6 +12,7 @@ import sys
 
 sys.path.insert(0, "/Users/zielstor/Documents/GitProjects/Virtual-Factory/blender/scripts")
 import vf_lib as L  # noqa: E402
+import vf_surfaces as S  # noqa: E402
 
 importlib.reload(L)
 L.reset_scene()
@@ -25,8 +26,15 @@ yellow = L.material("paint_yellow")
 
 
 def floor():
-    parts = [L.box("Concrete", (LX, LY, 0.1), (0, 0, -0.05), concrete),
-             L.box("Epoxy", (18.0, 10.0, 0.004), (0, 1.0, 0.002), L.material("paint_grey", color=(0.27, 0.35, 0.33)))]
+    cement = S.image_tile("concrete", (0.36, 0.355, 0.34), 0.88)
+    epoxy = S.image_tile("epoxy", (0.25, 0.29, 0.28), 0.57)
+    parts = [S.project_uv(L.box("Concrete", (LX, LY, 0.1), (0, 0, -0.05), cement)),
+             S.project_uv(L.box("Epoxy", (18.0, 10.0, 0.004), (0, 1.0, 0.002), epoxy))]
+    seam = L.material("paint_grey", color=(0.19, 0.21, 0.2))
+    for x in range(-15, 18, 3):
+        parts.append(L.plane("ExpansionJoint", 0.012, LY, (x, 0, 0.0045), seam))
+    for y in range(-9, 12, 3):
+        parts.append(L.plane("ExpansionJoint", LX, 0.012, (0, y, 0.0045), seam))
     # production zone outline and pedestrian walkway (Blender y = -Godot z)
     for (x, y, w, d) in ((0, 6.0, 18.0, 0.1), (0, -4.0, 18.0, 0.1), (-9.0, 1.0, 0.1, 10.0), (9.0, 1.0, 0.1, 10.0),
                          (0, -5.5, 34.0, 0.1), (0, -7.0, 34.0, 0.1)):
@@ -41,6 +49,11 @@ def structure():
     xs = [-LX / 2 + i * BAY for i in range(int(LX / BAY) + 1)]
     for x in xs:
         for y in (-LY / 2 + 0.2, LY / 2 - 0.2):
+            parts.append(L.box("ColumnBase", (0.55, 0.55, 0.04), (x, y, 0.025), steel))
+            for dx in (-0.2, 0.2):
+                for dy in (-0.2, 0.2):
+                    parts.append(L.cylinder("Anchor", 0.022, 0.045, (x + dx, y + dy, 0.05),
+                                            L.material("steel_zinc"), segments=6))
             parts.append(L.box("ColumnWeb", (0.3, 0.012, HE), (x, y, HE / 2), steel))
             parts.append(L.box("ColumnFlangeA", (0.02, 0.3, HE), (x - 0.14, y, HE / 2), steel))
             parts.append(L.box("ColumnFlangeB", (0.02, 0.3, HE), (x + 0.14, y, HE / 2), steel))
@@ -51,8 +64,11 @@ def structure():
         parts.append(L.box("Purlin", (LX, 0.12, 0.2), (0, y, HE + 0.7), steel))
     for x in (xs[0] + BAY / 2, xs[-1] - BAY / 2):
         for sign in (-1, 1):
-            parts.append(L.cylinder("Brace", 0.02, (BAY ** 2 + (HE - 1) ** 2) ** 0.5,
-                                    (x, sign * (LY / 2 - 0.15), HE / 2 + 0.5), steel, axis="Z", segments=6))
+            brace = L.cylinder("Brace", 0.02, (BAY ** 2 + (HE - 1) ** 2) ** 0.5,
+                               (x, sign * (LY / 2 - 0.15), HE / 2 + 0.5), steel, segments=6)
+            import math
+            brace.rotation_euler.y = sign * math.atan2(BAY, HE - 1)
+            parts.append(brace)
     return L.join(parts, "Structure")
 
 

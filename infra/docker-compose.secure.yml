@@ -147,6 +147,8 @@ services:
         contains(roles[*], 'quality') && 'Editor' || contains(roles[*], 'operator') && 'Viewer' ||
         contains(roles[*], 'auditor') && 'Viewer'
       GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT: "true"
+    volumes:  # own Grafana database: users synced from Keycloak must not mix with the open profile's state
+      - grafana-data-secure:/var/lib/grafana
     depends_on: *keycloak-ready
 
   nodered:
@@ -265,3 +267,6 @@ services:
       VF_OIDC_CLIENT_ID: vf-supplier
       VF_OIDC_CLIENT_SECRET: vf-supplier-local-secret
     depends_on: *keycloak-ready
+
+volumes:
+  grafana-data-secure:  # Grafana database of the secure profile (OAuth users, dashboard edits)

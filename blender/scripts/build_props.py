@@ -26,8 +26,18 @@ def dark():
     return L.material("paint_anthracite")
 
 
-def mesh_mat():
-    return L.material("glass", color=(0.08, 0.09, 0.1))
+def wire_mesh(cx, cy, length, h, along_x):
+    """Opaque welded wires: one batched surface, no alpha overdraw or sorting artifacts."""
+    parts = []
+    width = length - 0.1
+    for i in range(int(width / 0.05) + 1):
+        u = -width / 2 + i * 0.05
+        pos = (cx + u, cy, h / 2 + 0.05) if along_x else (cx, cy + u, h / 2 + 0.05)
+        parts.append(L.box("VerticalWire", (0.003, 0.003, h - 0.25), pos, dark()))
+    for i in range(int((h - 0.25) / 0.1) + 1):
+        size = (width, 0.003, 0.003) if along_x else (0.003, width, 0.003)
+        parts.append(L.box("HorizontalWire", size, (cx, cy, 0.175 + i * 0.1), dark()))
+    return parts
 
 
 def fence_panel(name, x0, y0, x1, y1, h=2.0):
@@ -36,13 +46,12 @@ def fence_panel(name, x0, y0, x1, y1, h=2.0):
     along_x = abs(x1 - x0) > abs(y1 - y0)
     length = abs(x1 - x0) if along_x else abs(y1 - y0)
     size = (length - 0.08, 0.02, 0.03) if along_x else (0.02, length - 0.08, 0.03)
-    infill = (length - 0.1, 0.004, h - 0.25) if along_x else (0.004, length - 0.1, h - 0.25)
     side = (0.03, 0.02, h - 0.2) if along_x else (0.02, 0.03, h - 0.2)
     off = ((length / 2 - 0.055), 0) if along_x else (0, (length / 2 - 0.055))
     return [L.box(f"{name}Top", size, (cx, cy, h - 0.03), dark()), L.box(f"{name}Bot", size, (cx, cy, 0.17), dark()),
             L.box(f"{name}SideA", side, (cx - off[0], cy - off[1], 0.15 + (h - 0.2) / 2), dark()),
-            L.box(f"{name}SideB", side, (cx + off[0], cy + off[1], 0.15 + (h - 0.2) / 2), dark()),
-            L.box(f"{name}Mesh", infill, (cx, cy, 0.15 + (h - 0.2) / 2), mesh_mat())]
+            L.box(f"{name}SideB", side, (cx + off[0], cy + off[1], 0.15 + (h - 0.2) / 2), dark())
+            ] + wire_mesh(cx, cy, length, h, along_x)
 
 
 def post(x, y, h=2.0):

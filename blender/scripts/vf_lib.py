@@ -172,7 +172,11 @@ def cylinder(name: str, radius: float, depth: float, location=(0, 0, 0), mat=Non
     rot = {"X": Matrix.Rotation(math.pi / 2, 4, "Y"), "Y": Matrix.Rotation(math.pi / 2, 4, "X"),
            "Z": Matrix.Identity(4)}[axis]
     bmesh.ops.transform(bm, matrix=rot, verts=bm.verts)
-    return _new_object(name, bm, mat, location)
+    obj = _new_object(name, bm, mat, location)
+    for poly in obj.data.polygons:
+        poly.use_smooth = True
+    obj.data.set_sharp_from_angle(angle=math.radians(40))
+    return obj
 
 
 def extrude_profile(name: str, outline, length: float, location=(0, 0, 0), mat=None, axis: str = "Z"):
@@ -318,6 +322,9 @@ def triangle_count(objects=None) -> int:
 # --- output ---------------------------------------------------------------------------------------
 
 def export_glb(path: Path, animations: bool = False) -> None:
+    import importlib
+    import vf_finish
+    importlib.reload(vf_finish).prepare()
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.export_scene.gltf(filepath=str(path), export_format="GLB", use_selection=False,
                               export_apply=True, export_yup=True, export_animations=animations,
@@ -338,8 +345,8 @@ def render_preview(name: str, target=(0, 0, 0), distance: float = 1.0, elevation
     scene.render.engine = "BLENDER_EEVEE"
     scene.render.resolution_x, scene.render.resolution_y = size
     scene.render.film_transparent = False
-    scene.view_settings.view_transform = "Standard"
-    scene.view_settings.look = "None"
+    scene.view_settings.view_transform = "AgX"
+    scene.view_settings.look = "AgX - Medium High Contrast"
     scene.view_settings.exposure = 0.0
     world = scene.world or bpy.data.worlds.new("World")
     scene.world = world

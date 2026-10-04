@@ -102,6 +102,9 @@ anonymous sessions and SecurityPolicy None are refused.
 | AAS web UI, Grafana | browser | authorization code + PKCE (`vf-aas-ui` public, `vf-grafana` confidential) | Grafana maps realm roles to Viewer/Editor, users without a mapped role cannot log in |
 | Passport page | anyone | none (resolver's own token, role `public`) | restricted links answer 401 with the token endpoint as login hint |
 
+The secure profile keeps its own Grafana database (volume `vf_grafana-data-secure`): users created by the Keycloak
+login must not mix with the open profile's state (that broke the OAuth login after a profile switch).
+
 Issuer handling: Keycloak runs with `KC_HOSTNAME=http://localhost:8180` and dynamic back-channel URLs, so all
 tokens carry the same `iss` whether they were obtained from the host or from `http://keycloak:8080` inside
 compose; BaSyx loads the OIDC metadata from `discoveryUrl` (compose host), the services fetch the JWKS from
