@@ -438,7 +438,8 @@ Labels and interactions stay available at every setting. Low retains loaded text
 it reduces rendering work, not necessarily memory. [Screenshots](screenshots/README.md) and
 [budgets / target hardware limitations](architecture/visual-quality.md).
 
-Developer options (after `--`): `--vf-lang=de`, `--vf-quality=0|1|2`, `--vf-tour`, `--vf-dataflow`,
+Developer options (after `--`): `--vf-lang=de`, `--vf-quality=0|1|2`,
+`--vf-tour[=<path>.json]` (demo tour or a custom camera path), `--vf-dataflow`,
 `--vf-inspect=<AAS tag | serial | asset id>`, `--vf-estop=1` (press the E-stop), `--vf-scenario=<id>`, `--vf-ui=off`,
 `--vf-xr` (OpenXR headset, see [xr-readiness](architecture/xr-readiness.md)), `--vf-aas-url=…`, `--vf-bpmn-url=…`,
 `--vf-aas-events=<broker url|off>`. Endpoints: `godot/config/backend.json`.

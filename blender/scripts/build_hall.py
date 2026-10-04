@@ -32,17 +32,19 @@ def floor():
     epoxy = S.image_tile("epoxy", (0.25, 0.29, 0.28), 0.57)
     parts = [S.project_uv(L.box("Concrete", (LX, LY, 0.1), (0, 0, -0.05), cement)),
              S.project_uv(L.box("Epoxy", (18.0, 10.0, 0.004), (0, 1.0, 0.002), epoxy))]
+    # floor layers with >= 2 mm between coplanar surfaces (depth precision at 30 m, otherwise z-fighting flicker):
+    # concrete 0, epoxy top 4 mm, joints 6 mm, markings top 9 mm, contact-shadow cards 11 mm (vf_grounding.py)
     seam = L.material("paint_grey", color=(0.19, 0.21, 0.2))
     for x in range(-15, 18, 3):
-        parts.append(L.plane("ExpansionJoint", 0.006, LY, (x, 0, 0.0045), seam))
+        parts.append(L.plane("ExpansionJoint", 0.006, LY, (x, 0, 0.006), seam))
     for y in range(-9, 12, 3):
-        parts.append(L.plane("ExpansionJoint", LX, 0.006, (0, y, 0.0045), seam))
+        parts.append(L.plane("ExpansionJoint", LX, 0.006, (0, y, 0.006), seam))
     # production zone outline and pedestrian walkway (Blender y = -Godot z)
     for (x, y, w, d) in ((0, 6.0, 18.0, 0.1), (0, -4.0, 18.0, 0.1), (-9.0, 1.0, 0.1, 10.0), (9.0, 1.0, 0.1, 10.0),
                          (0, -5.5, 34.0, 0.1), (0, -7.0, 34.0, 0.1)):
-        parts.append(L.box("Marking", (w, d, 0.004), (x, y, 0.005), yellow))
+        parts.append(L.box("Marking", (w, d, 0.004), (x, y, 0.007), yellow))
     for k in range(-16, 17, 2):
-        parts.append(L.box("Hatch", (0.6, 0.1, 0.004), (k, -6.25, 0.005), yellow))
+        parts.append(L.box("Hatch", (0.6, 0.1, 0.004), (k, -6.25, 0.007), yellow))
     return L.join(parts, "Floor")
 
 
@@ -88,8 +90,9 @@ def walls():
         z = plinth_h + 0.25 + k * 0.5
         if win_z0 < z < win_z1:
             continue
-        for y in (-LY / 2 + 0.065, LY / 2 - 0.065):
-            parts.append(L.box("Rib", (LX, 0.01, 0.02), (0, y, z), L.material("paint_white", color=(0.7, 0.72, 0.72))))
+        for y in (-LY / 2 + 0.069, LY / 2 - 0.069):  # back face just inside the panel (no coplanar faces)
+            # panel profile in the panel colour: thin dark-edged ribs crawled (aliasing) at grazing angles
+            parts.append(L.box("Rib", (LX, 0.02, 0.035), (0, y, z), panel))
     # sectional door (east wall), personnel door + emergency exit sign (north wall)
     parts += [L.box("SectionalDoor", (0.08, 4.0, 4.5), (LX / 2 - 0.07, -4.0, 2.25), L.material("paint_grey",
                                                                                             color=(0.6, 0.63, 0.66))),

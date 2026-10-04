@@ -3,7 +3,7 @@ extends Node
 ## Executes the desktop menu: language, quality preset, simulation speed (physics ticks scale with time,
 ## so the co-simulation step stays 1/60 s), training scenarios (factory.scenarios), demo tour and data-flow
 ## view, and opens the Grafana dashboard in the browser (backend.json `grafana_url`, ADR-0022).
-## Dev args: --vf-lang=de, --vf-quality=0..2, --vf-tour (start the demo tour), --vf-dataflow,
+## Dev args: --vf-lang=de, --vf-quality=0..2, --vf-tour[=<path>.json] (start the demo tour), --vf-dataflow,
 ## --vf-grafana-url=<url>.
 
 const TOUR := "res://config/tours/default.json"
@@ -31,7 +31,9 @@ func setup(p_ui: TrainingUi) -> void:
 		OS.shell_open(DevTools.get_arg("vf-grafana-url", dashboard_url(ui.config))))
 	tour = CameraTour.new()
 	tour.rig = ui.rig
-	tour.load_tour(TOUR)
+	var tour_arg := DevTools.get_arg("vf-tour")
+	# a custom camera path (review, flicker tests) or the demo tour
+	tour.load_tour(tour_arg if tour_arg.ends_with(".json") else TOUR)
 	tour.caption_changed.connect(menu.set_caption)
 	tour.stop_reached.connect(func(stop: Dictionary) -> void:
 		if stop.has("inspect"):

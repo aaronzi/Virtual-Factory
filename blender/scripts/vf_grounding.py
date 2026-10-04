@@ -6,12 +6,15 @@ Each card follows its asset, never the hall layout. No physics or live AO pass.
 import bpy
 import numpy as np
 
+# Card height above the hall floor: clearly above the epoxy coat (top 4 mm) and the floor markings (top 9 mm,
+# build_hall.py) - a card in the same plane as the floor z-fights and flickers when the camera moves.
+CARD_Z = 0.011
 FOOTPRINTS = {
-    "assembly_cell": (1.7, 1.65, 0.004),
-    "klt_container": (0.48, 0.68, 0.004),
-    "ur5e": (0.48, 0.48, -0.747),
-    "control_cabinet": (0.84, 0.44, 0.004),
-    "hmi_stand": (0.43, 0.43, 0.004),
+    "assembly_cell": (1.7, 1.65, CARD_Z),
+    "klt_container": (0.48, 0.68, CARD_Z),
+    "ur5e": (0.48, 0.48, CARD_Z - 0.75),  # origin = pedestal top, 0.75 m above the floor
+    "control_cabinet": (0.84, 0.44, CARD_Z),
+    "hmi_stand": (0.43, 0.43, CARD_Z),
 }
 
 
