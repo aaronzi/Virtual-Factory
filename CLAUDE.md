@@ -39,6 +39,8 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
 - Module dependency rules in `docs/architecture/dependency-rules.yaml`: `core` depends on nothing; other modules
   only on `core`; `devices/<type>` isolated from each other; `factory` is the only composition root.
 - Limits: file ≤ 300 lines, function ≤ 40 lines, line ≤ 110 chars. Exceptions need an inline reason.
+- RefCounted classes: connect owned objects' signals to methods, not to lambdas that touch members (the lambda
+  captures self → reference cycle, the whole simulation leaks at exit; CI fails on Godot exit leak reports).
 - Device behaviour = `Fmi3CoSimulation` subclass + FMI 3.0 `modelDescription.xml`; no scene-tree access in models.
 - Godot is Y-up, 1 unit = 1 m, SI units everywhere.
 - 3D assets are produced by scripts in `blender/scripts/` (run via Blender MCP: `exec(open(".../build_<asset>.py").read())`,

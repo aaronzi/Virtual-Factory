@@ -60,3 +60,10 @@ Running single integration tests by hand against a running stack and factory is 
 - Godot keeps the retentive serial counter in its user directory (`~/.local/share/godot/app_userdata/` on
   Linux, `~/Library/Application Support/Godot/app_userdata/` on macOS): serials continue across runs, so a
   serial is never reused while the AAS database survives.
+
+## Godot exit leak check
+The CI integration run fails if the first (cleanly quitting) factory session reports leaked objects or resources at
+exit. Typical cause: a lambda that touches members of a RefCounted object (e.g. `UnsGateway`) connected to a signal
+of an object it owns - the lambda captures `self`, the two keep each other alive and with them the co-simulation
+master and all device models. Connect such signals to methods instead. Locally: `godot --verbose --path godot --
+--vf-quit-after=20` and look for "Leaked instance" / "Resource still in use" at the end of the output.

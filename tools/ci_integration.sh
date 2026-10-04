@@ -80,6 +80,10 @@ start_factory 1 "$SESSION1_S"  # quits by itself: Godot ends on SIGTERM without 
 with_timeout $((SESSION1_S + 120)) bash -c "while kill -0 $GODOT_PID 2>/dev/null; do sleep 2; done"
 wait "$GODOT_PID" || true
 GODOT_PID=""
+LEAKS=0  # session 1 quits cleanly: Godot's exit report must not list leaked objects (e.g. lambda reference cycles)
+if grep -E "instances were leaked at exit|resources still in use at exit" "$OUT/godot-session1.log" >&2; then
+  LEAKS=1
+fi
 uv run tools/ci_integration.py shipped --timeout 60
 
 step "factory session 2: linked, producing, all test preconditions met"
@@ -98,4 +102,5 @@ step "skip check"
 ALLOW=()
 for pattern in ${VF_CI_ALLOW_SKIP:-}; do ALLOW+=(--allow "$pattern"); done
 uv run tools/ci_integration.py skips "$OUT/junit.xml" "${ALLOW[@]+"${ALLOW[@]}"}" || TESTS=1
+[ "$LEAKS" = 0 ] || { echo "factory session 1 leaked objects at exit (see godot-session1.log)" >&2; TESTS=1; }
 exit "$TESTS"

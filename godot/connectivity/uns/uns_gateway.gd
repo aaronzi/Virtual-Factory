@@ -47,7 +47,7 @@ func start(url: String) -> Error:
 	var qos := int(_config.section("commands").get("qos", 1))
 	for topic: String in commands.topics():
 		_client.subscribe(topic, qos)
-	_client.connected.connect(func() -> void: _birth_pending = true)
+	_client.connected.connect(_on_connected)  # method callable: a lambda would capture self (leak cycle)
 	_client.message_received.connect(_on_message)
 	return _client.connect_to_broker(url)
 
@@ -118,6 +118,10 @@ func _publish_event(d: UnsEvents.Definition, fields: Dictionary, ts: String) -> 
 			section.get("retain", false)):
 		stats.events += 1
 		event_published.emit(d.device, d.event)
+
+
+func _on_connected() -> void:
+	_birth_pending = true
 
 
 func _on_message(topic: String, payload: PackedByteArray) -> void:
