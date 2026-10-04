@@ -1,13 +1,15 @@
 X-BREAK - iCalendar extension property (RFC 5545, section 3.8.8.2 "Non-Standard Properties")
 Production calendar of LINE01, VF Pneumatics GmbH, Plant 01 (IDTA 02067 Production Calendar)
 
-Purpose:     Marks a VEVENT as a break in which the asset is not planned to produce.
-Value type:  BOOLEAN (TRUE / FALSE); default FALSE if the property is absent.
-Used in:     VEVENT (recurring collective breaks, 10:00-10:30 and 18:00-18:30, Mon-Fri).
-Example:     X-BREAK:TRUE
+Purpose:     Lists the break periods inside a VEVENT in which the asset is not planned to produce.
+Value type:  Comma separated list of PERIOD values (RFC 5545 section 3.3.9): <start>/<end> or <start>/<duration>.
+Used in:     The shift events (collective breaks 10:00-10:30 in the early shift and 18:00-18:30 in the late shift).
+Example:     X-BREAK:20250915T080000Z/PT30M
 
 Interpretation:
-- A break occurrence is subtracted from overlapping production slots (X-PRODUCTION-DAY:TRUE).
+- The period is given for the first occurrence of the event. For recurring events it applies to every occurrence
+  at the same offset from the event start (the break starts 4 hours after the start of the early shift).
+- A break is subtracted from the shift it lies in (planned down time, ISO 22400-2); the remainder is the planned
+  busy time.
 - During a break the line is brought into the PackML state Held by the MES and resumed (Unhold) afterwards;
-  the break time counts as planned down time, not as unit down time (ISO 22400-2).
-- CATEGORIES:BREAK is set in addition for clients that ignore non-standard properties.
+  the break time counts as planned down time, not as unit down time.
