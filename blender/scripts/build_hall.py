@@ -65,6 +65,9 @@ def structure():
         parts.append(L.box("GirderFlangeT", (0.25, LY, 0.02), (x, 0, HE + 0.6), steel))
         parts.append(L.box("GirderFlangeB", (0.25, LY, 0.02), (x, 0, HE), steel))
     for y in [-LY / 2 + i * 2.0 for i in range(int(LY / 2.0) + 1)]:
+        # eave purlins just inside the wall line: at y = ±LY/2 they filled the wall's top 20 cm exactly and their
+        # inner face was coplanar with the wall's inner face (z-fighting band along the ceiling edge)
+        y = max(min(y, LY / 2 - 0.2), -LY / 2 + 0.2)
         parts.append(L.box("Purlin", (LX, 0.12, 0.2), (0, y, HE + 0.7), steel))
     for x in (xs[0] + BAY / 2, xs[-1] - BAY / 2):
         for sign in (-1, 1):
