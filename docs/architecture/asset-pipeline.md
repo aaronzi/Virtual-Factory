@@ -47,11 +47,11 @@ flowchart LR
   | Assembly cell | 2,698 | 14 |
   | UR5e | 4,244 | 17 |
   | Stack light | 956 | 4 |
-  | Hall | 8,578 | 16 |
+  | Hall | 8,600 | 17 |
   | Cabinet | 410 | 5 |
   | HMI stand | 324 | 5 |
   | Fence / door | 2,350 | 5 |
-  | **Total** | **25,630** | **109** |
+  | **Total** | **25,652** | **110** |
 
   These count mesh definitions, not runtime instances, imported LODs or shadow passes. The twelve GLBs
   occupy **3.80 MiB** on disk; this is not their GPU memory usage. Runtime budgets and quality options are
@@ -62,6 +62,12 @@ flowchart LR
   to embed the new models/previews. LINE01 uses `factory-line.png`. See the
   [screenshot inventory](../screenshots/README.md) for live attachment refresh and historical captures.
 
+- **Baked lighting** ([ADR-0031](../adr/0031-baked-static-lighting.md)): GLBs with static geometry are imported
+  with lightmap UV2 (`meshes/light_baking=2`, 5 cm texel size). The `.glb.unwrap_cache` written next to them is
+  committed, so every machine gets the same UV2 and the bake stays valid. The hall floor is two objects: `Floor`
+  (slab, outer joints and walkway) and `FloorZone` (epoxy production zone with its joints and outline, top
+  faces only), so the bake can give the production zone a finer texel density. After changing a static asset
+  or the layout, run `tools/bake_lighting.sh` ([development.md](../development.md#baked-lighting)).
 - **Collision** is never taken from the visual models: views add simple box shapes in code (belt, guides, KLT walls,
   hall), so visuals can change without affecting physics.
 - **Animations:**

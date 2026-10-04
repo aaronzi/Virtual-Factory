@@ -18,6 +18,7 @@ func bind(p_device: DeviceNode) -> void:
 	_finger_a = part("FingerA")
 	_finger_b = part("FingerB")
 	_model_tcp = part("TCP")
+	MovingParts.mark(_joints[0])  # links and gripper stay dynamic under baked lighting (ADR-0031)
 	_tcp = device.get_node("Base/TCP")
 
 

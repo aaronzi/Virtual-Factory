@@ -5,6 +5,7 @@
 
 > Historical lighting values and the 450-call budget below are superseded by
 > [ADR-0030](0030-scalable-factory-visuals.md). The Compatibility renderer decision remains valid.
+> Static geometry uses baked lighting since [ADR-0031](0031-baked-static-lighting.md).
 
 ## Context
 

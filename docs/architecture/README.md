@@ -45,7 +45,7 @@ flowchart LR
 | Realistic data flow | OT/IT split: devices + virtual PLC in Godot → MQTT UNS → edge services → AAS (ADR-0005); the PLC exposes an OPC UA server (separate communication module) read by an edge connector, smart devices publish MQTT (ADR-0024) |
 | Interchangeable devices | FMI-3-aligned model interface, one folder per device type, composition root (ADR-0002, ADR-0006) |
 | Standards-based twins | IDTA submodel templates, AID/AIMC-driven bridge, AAS Operations for control |
-| Slow hardware / XR | Mobile renderer, low-poly assets, baked lighting, PlayerRig abstraction (ADR-0001, ADR-0003) |
+| Slow hardware / XR | Compatibility renderer, quality presets, baked static lighting, PlayerRig abstraction (ADR-0010, ADR-0030, ADR-0031, ADR-0003) |
 | Measurable architecture | `tools/arch_check.py`, gdlint, `tools/complexity_check.py` in CI |
 
 ## 5. Building block view
@@ -147,7 +147,11 @@ the compose hosts (`aas-env`, `supplier-aas-env`) with `VF_AAS_ENDPOINT_MAP`.
 - **Fault injection / training**: faults are FMI inputs/tunable parameters, PLC alarms with PackML reactions,
   data-driven scenarios (`godot/scenarios`, `godot/config/scenarios`): [interfaces/scenarios.md](../interfaces/scenarios.md)
 - **3D asset pipeline** (Blender scripts → glb → ModelView, animations from recorded runs): [asset-pipeline.md](asset-pipeline.md)
-- **Rendering/lighting**: Compatibility renderer, unbaked indoor lighting, draw-call budget ([ADR-0010](../adr/0010-compatibility-renderer-indoor-lighting.md))
+- **Rendering/lighting**: Compatibility renderer ([ADR-0010](../adr/0010-compatibility-renderer-indoor-lighting.md)),
+  quality presets and budgets ([ADR-0030](../adr/0030-scalable-factory-visuals.md)). Static geometry is baked with
+  LightmapGI (indirect light, sky occlusion, key-light shadowmask); the real-time shadow map holds only moving
+  parts, which are lit by the baked light probes ([ADR-0031](../adr/0031-baked-static-lighting.md),
+  `world/lighting/`, re-bake with `tools/bake_lighting.sh`)
 - **Physics/transport**: belt `constant_linear_velocity` (Jolt), rigid workpieces, kinematic attach on grasp
   ([ADR-0009](../adr/0009-physical-transport-and-items.md))
 - **AAS modelling**: [interfaces/aas-model.md](../interfaces/aas-model.md). Template-based generation

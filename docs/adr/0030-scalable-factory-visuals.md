@@ -1,6 +1,7 @@
 # ADR-0030: Scalable factory visuals
 
-- Status: accepted; supersedes ADR-0010's lighting values and single rendering budget
+- Status: accepted; supersedes ADR-0010's lighting values and single rendering budget; static lighting is baked
+  since [ADR-0031](0031-baked-static-lighting.md)
 - Date: 2026-10-04
 
 ## Context

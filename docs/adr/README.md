@@ -14,7 +14,7 @@ Format: short [MADR](https://adr.github.io/madr/)-style records. New ADR = next 
 | [0007](0007-gut-for-gdscript-tests.md) | GUT for GDScript tests | accepted |
 | [0008](0008-plc-program-as-fmu.md) | PLC program as an FMI co-simulation slave | accepted |
 | [0009](0009-physical-transport-and-items.md) | Physical transport with Jolt rigid bodies | accepted |
-| [0010](0010-compatibility-renderer-indoor-lighting.md) | Compatibility renderer as default; indoor lighting without baking | accepted |
+| [0010](0010-compatibility-renderer-indoor-lighting.md) | Compatibility renderer as default; indoor lighting without baking | accepted, lighting superseded by 0030/0031 |
 | [0011](0011-template-based-aas-generation.md) | Template-based AAS generation from vendored IDTA templates | accepted |
 | [0012](0012-control-component-packml-on-interface.md) | Control Components with PackML state on the asset interface | accepted, runtime use refined by 0020 |
 | [0013](0013-aas-interfaces-generated-from-fmi.md) | AAS interface descriptions generated from FMI model descriptions | accepted |
@@ -34,4 +34,5 @@ Format: short [MADR](https://adr.github.io/madr/)-style records. New ADR = next 
 | [0027](0027-optional-security-profile-keycloak-abac.md) | Optional secure profile: Keycloak, BaSyx Go ABAC, broker ACLs, OPC UA security | accepted |
 | [0028](0028-supplier-environment-batch-aas-federated-footprints.md) | Supplier data exchange: second AAS environment, batch AAS and federated batch footprints | accepted |
 | [0029](0029-predictive-maintenance-condition-monitoring.md) | Predictive maintenance: wear in the device models, RUL from the historian, maintenance orders in BPMN | accepted |
-| [0030](0030-scalable-factory-visuals.md) | Scalable factory visuals: coherent presets, Blender finishes, revised performance targets | accepted |
+| [0030](0030-scalable-factory-visuals.md) | Scalable factory visuals: coherent presets, Blender finishes, revised performance targets | accepted, lighting extended by 0031 |
+| [0031](0031-baked-static-lighting.md) | Baked lighting for static geometry, real-time shadows only for moving parts | accepted |

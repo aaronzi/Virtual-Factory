@@ -66,6 +66,10 @@ func _add_prop(spec: Dictionary, root: Node3D) -> void:
 	prop.rotation_degrees.y = spec.get("rotation_deg", 0.0)
 	if spec.has("asset"):
 		prop.set_meta("asset_tag", spec.asset)
+	for part_name: String in spec.get("moving_parts", []):  # e.g. a hinged door: not baked (ADR-0031)
+		var part := prop.find_child(part_name, true, false)
+		if part:
+			MovingParts.mark(part)
 	props.append(prop)
 
 

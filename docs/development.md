@@ -61,6 +61,38 @@ Running single integration tests by hand against a running stack and factory is 
   Linux, `~/Library/Application Support/Godot/app_userdata/` on macOS): serials continue across runs, so a
   serial is never reused while the AAS database survives.
 
+## Baked lighting
+
+Static geometry uses a LightmapGI bake ([ADR-0031](adr/0031-baked-static-lighting.md)) in
+`godot/world/lighting/baked/<layout>/`. Re-bake after changing the layout, a static GLB, its import settings or
+the light setup in `factory/main.tscn`:
+
+```bash
+tools/bake_lighting.sh            # layout line1; about a minute, opens a Godot editor window briefly
+```
+
+1. Headless: `world/lighting/bake_scene_builder.gd` builds `factory/main.tscn` as at runtime. It mirrors
+   every static mesh, classified by `BakedLighting.role`, into `bake_scene.scn`, which is not versioned.
+   Merged conveyor parts are unwrapped to `meshes/*.res`. It also writes `manifest.json`, the
+   fingerprint of every baked mesh.
+2. Editor with `--rendering-method forward_plus`: `addons/vf_lightmap_bake` triggers the editor's
+   "Bake Lightmaps" into `lighting.lmbake`, `lighting.exr` and `lighting_shadow.png`. Godot cannot bake with
+   the Compatibility renderer, headless or from a running game.
+3. Import settings the editor changes for other textures are restored, then the project is re-imported.
+
+Commit the changed files below `godot/world/lighting/baked/<layout>/` and any new `*.glb.unwrap_cache`.
+The cache keeps the importer's lightmap UV2 identical on every machine. Bake parameters such as texel
+density, bounces, ambient energy and key-light penumbra are set in `settings.json`.
+
+- Static meshes need lightmap UV2: GLB imports use `meshes/light_baking=2` with
+  `meshes/lightmap_texel_size=0.05`.
+- A part that moves at runtime must be marked: `MovingParts.mark(node)` in a device view, or
+  `"moving_parts"` for a layout prop. Otherwise it is baked and its shadow stays behind.
+- Stale bakes: the runtime compares the manifest with the built scene. On a mismatch it keeps real-time
+  shadows and warns "Baked lighting ... is stale". `factory/tests/test_baked_lighting_bake.gd` fails until
+  the bake is redone.
+- `--vf-baked-lighting=off` starts without the bake, for comparisons.
+
 ## Godot exit leak check
 
 The CI integration run fails if the first (cleanly quitting) factory session reports leaked objects or resources at

@@ -47,3 +47,4 @@ infra/basyx/preload/*.aasx
 infra/basyx/preload-supplier/*.aasx
 aas/build/
 /build/
+godot/world/lighting/baked/*/bake_scene.scn

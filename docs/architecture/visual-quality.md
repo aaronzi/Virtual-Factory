@@ -2,7 +2,8 @@
 
 The F1 menu switches complete presets immediately. Medium is the default, including when no developer
 arguments are supplied. `--vf-quality=0|1|2` selects the same presets at startup.
-Decision: [ADR-0030](../adr/0030-scalable-factory-visuals.md).
+Decisions: [ADR-0030](../adr/0030-scalable-factory-visuals.md), baked lighting
+[ADR-0031](../adr/0031-baked-static-lighting.md).
 
 | Setting | Low | Medium | High |
 |---|---|---|---|
@@ -14,9 +15,11 @@ Decision: [ADR-0030](../adr/0030-scalable-factory-visuals.md).
 | Concrete/epoxy colour textures | Flat fallback colours | 512 px, mipmaps | 512 px, mipmaps |
 | Concrete/epoxy roughness and normal maps | Off | Off | On |
 | Filtered coating/metal variation | Off | Reduced | Full |
-| Directional shadows / atlas | Off | 2048 px | 4096 px |
+| Baked lightmap and static shadows (shadowmask) | On | On | On |
+| Real-time shadows (moving parts only) / atlas | Off (no casters) | 2048 px, soft low | 4096 px, soft high |
 | Static hall reflection probe | Off | Off | On, box projected, update once |
-| Baked local vertex shading / contact cards | On | On | On |
+| Baked local vertex shading | On | On | On |
+| Contact-shadow cards | Hidden (baked) | Hidden (baked) | Hidden (baked) |
 | Draw-call review budget | 350 | 550 | 650 |
 | Primitive review budget | 125,000 | 250,000 | 350,000 |
 
@@ -63,6 +66,37 @@ The previous live default-camera baseline was 350 calls / 46,998 primitives, but
 it is not an apples-to-apples speed comparison. Batching limits the cost of the added geometry without
 claiming a measured before/after FPS improvement.
 
+## Baked lighting
+
+Static geometry uses a LightmapGI bake with a key-light shadowmask
+([ADR-0031](../adr/0031-baked-static-lighting.md); procedure in [development.md](../development.md#baked-lighting)).
+The real-time shadow map holds only moving parts. Measured on 2026-10-04 with the frozen fixture above
+(`--vf-inspect=RB01`, 1920×1080, Apple M4 Pro), interleaved with a checkout of the previous commit.
+Values are steady-state per-frame medians; the maxima are 68 calls higher in frames that re-render a
+world panel.
+
+| View / preset | Draw calls before → after | Primitives before → after |
+|---|---:|---:|
+| Default camera, Low | 240 → 235 | 37,896 → 37,612 |
+| Default camera, Medium | 414 → 373 | 74,206 → 63,730 |
+| Default camera, High | 414 → 373 | 96,856 → 85,932 |
+| Robot close-up, Low | 225 → 220 | 36,094 → 36,066 |
+| Robot close-up, Medium | 459 → 394 | 101,414 → 80,306 |
+| Robot close-up, High | 565 → 394 | 114,167 → 89,066 |
+
+Mean frame times of `tools/benchmark_visuals.sh` (two interleaved runs each, before → after): Low 3.24–3.51 →
+3.79–3.84 ms, Medium 3.99–4.78 → 4.04–4.15 ms, High 3.82–3.97 → 3.96–4.04 ms. Medium and High are unchanged
+within run-to-run noise. Low pays about 0.3 ms for the lightmap and the shadowmask lookup; Low previously had
+no shadows at all. Its real-time range is 0.1 m with no casters, so no shadow-map lookups are made.
+Startup is about 0.35 s longer (2.7 → 3.05 s to a running scene, lightmap shader variants and data).
+Godot reports 8.6 MiB more video memory on High. On macOS the BPTC lightmap is decoded to RGBA16F at load.
+
+Some samples ran at a 6.90 ms (145 Hz) cap when macOS throttled the window; those were discarded. A slow pan
+on High counted the frame-to-frame luminance alternations of the floor band (`--write-movie`,
+`--vf-tour=<path>.json`). The result was 647 per frame with the bake, against 703 with real-time static
+shadows, so there is no flicker regression. Static surfaces no longer receive real-time shadows, so they
+cannot show shadow acne.
+
 ## Acceptance on target hardware
 
 Desktop goal: at least 30 FPS (33.3 ms/frame) at 1080p output on a lower-tier laptop with a modest dedicated
@@ -80,9 +114,11 @@ OpenXR multiview and eye resolution. See [XR readiness](xr-readiness.md). No Que
 
 1. Run `blender/scripts/build_all.py` through Blender MCP; it regenerates `.blend`, `.glb` and asset previews.
 2. Run Godot `--headless --path godot --import`, then `uv run tools/inspect_visual_assets.py`.
-3. Run `tools/run_godot_tests.sh`, `tools/run_line_simulation.sh`, and the render benchmark above.
-4. Run `tools/update_visual_screenshots.sh` (local backend needed for inspector/data-flow content).
-5. Run `uv run -m provisioner build`, then `uv run tools/check_aasx.py`. Existing running AAS environments
+3. Run `tools/bake_lighting.sh` if static assets or the layout changed
+   ([baked lighting](../development.md#baked-lighting)); the GUT suite fails on a stale bake.
+4. Run `tools/run_godot_tests.sh`, `tools/run_line_simulation.sh`, and the render benchmark above.
+5. Run `tools/update_visual_screenshots.sh` (local backend needed for inspector/data-flow content).
+6. Run `uv run -m provisioner build`, then `uv run tools/check_aasx.py`. Existing running AAS environments
    require their visual attachments to be refreshed separately; see [screenshot inventory](../screenshots/README.md).
 
 The regression tests inspect real imported assets and check High → Low → High restoration, door hierarchy,
@@ -91,4 +127,5 @@ robot joint names and vertex-colour batching. See `godot/world/tests/test_qualit
 References: Godot [mesh LOD threshold](https://docs.godotengine.org/en/stable/classes/class_viewport.html#class-viewport-property-mesh-lod-threshold),
 [vertex colour conversion](https://docs.godotengine.org/en/stable/classes/class_basematerial3d.html#class-basematerial3d-property-vertex-color-is-srgb),
 [reflection probe](https://docs.godotengine.org/en/stable/classes/class_reflectionprobe.html),
+[LightmapGI](https://docs.godotengine.org/en/stable/classes/class_lightmapgi.html),
 Meta [mobile performance](https://developers.meta.com/vr/documentation/unity/po-perf-opt-mobile/).

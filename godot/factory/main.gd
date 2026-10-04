@@ -7,6 +7,7 @@ const PACKML_NAMES := ["UNDEFINED", "CLEARING", "STOPPED", "STARTING", "IDLE", "
 const SEQ_NAMES := ["SEQ_WAIT_PART", "SEQ_POSITIONING", "SEQ_SETTLING", "SEQ_INSPECTING", "SEQ_WAIT_ROBOT",
 	"SEQ_PICKING"]
 const POWER_SOURCES := ["AC01", "CV01", "LB01", "LB02", "QS01", "RB01"]
+const BAKED_LIGHTING := "res://world/lighting/baked/%s"  ## per layout, made by tools/bake_lighting.sh
 
 var training_ui: TrainingUi
 
@@ -22,6 +23,7 @@ func _ready() -> void:
 	($DesktopRig as DesktopRig).bounds = AABB(hall.to_global(interior.position) + Vector3(0, 0.3, 0),
 		interior.size - Vector3(0, 0.3, 0))
 	_apply_camera_arg(DevTools.get_arg("vf-camera"))
+	_apply_baked_lighting()
 	var mouse := DevTools.get_arg("vf-mouse").split_floats(",")  # --vf-mouse=x,y (screenshots of hover)
 	if mouse.size() == 2:
 		Input.warp_mouse.call_deferred(Vector2(mouse[0], mouse[1]))
@@ -51,6 +53,15 @@ func _select_rig() -> PlayerRig:
 	desktop.get_view_camera().current = false
 	desktop.process_mode = Node.PROCESS_MODE_DISABLED
 	return xr
+
+
+## Baked static lighting for the layout (ADR-0031); --vf-baked-lighting=off keeps real-time shadows only.
+func _apply_baked_lighting() -> void:
+	if _factory.builder.devices.is_empty() or DevTools.get_arg("vf-baked-lighting") == "off":
+		return
+	var layout_name: String = _factory.layout_path.get_file().get_slice(".", 0)
+	if BakedLighting.apply(self, BAKED_LIGHTING % layout_name):
+		print("[Lighting] baked lighting: ", BAKED_LIGHTING % layout_name)
 
 
 ## --vf-camera=x,y,z,tx,ty,tz places the player rig (review screenshots).

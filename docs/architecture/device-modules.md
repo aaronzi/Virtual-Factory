@@ -21,6 +21,9 @@ Rules:
 - Teach points are `Marker3D` nodes (e.g. `PickPoint`, `SlotOrigin`); the layout's `teach` section copies
   their positions into other devices' parameters, expressed in the target device's frame.
 - Views are greybox (primitive) views in M1; Blender views replace them in M2 without touching models.
+- Views mark nodes they move with `MovingParts.mark()` (e.g. robot `J1`, conveyor drums); props declare them as
+  `moving_parts` in the layout (fence `Door`). Everything else is static and gets baked lighting
+  ([ADR-0031](../adr/0031-baked-static-lighting.md)); a new or changed device needs `tools/bake_lighting.sh`.
 
 - Fault injection = FMI inputs/tunable parameters of the model (no back doors into views or probes); random fault
   effects use the model's `seed` parameter. Listed in `uns.json` `commands.writable` to be writable over MQTT.

@@ -13,9 +13,14 @@ Current captures (2026-10-04, Compatibility renderer):
 | [Data flow](factory-dataflow.png) | Current geometry with OT/IT overlay |
 | [Quality menu](factory-quality-menu.png) | Quality selector and preset explanation |
 | [Asset previews](assets/) | Blender studio renders used by AAS thumbnails and Models3D |
+| [Baked lighting: line](m10-baked-line-high.png), [robot](m10-baked-robot-high.png), [cell](m10-baked-cell-high.png), [fence](m10-baked-fence-high.png) | High before/after [ADR-0031](../adr/0031-baked-static-lighting.md), eye height 2–4 m from the line |
+| [Baked lighting: Medium](m10-baked-line-medium.png), [Low](m10-baked-fence-low.png) | Same comparison on Medium and Low (Low previously had no shadows) |
+
+The `factory-*` captures predate the baked lighting; the `m10-baked-*` images show the current lighting.
 
 ![High](factory-high.png)
 ![Low](factory-low.png)
+![Baked lighting, fence on High](m10-baked-fence-high.png)
 
 Regenerate assets/previews through Blender MCP with `blender/scripts/build_all.py`, import into Godot,
 then run `tools/update_visual_screenshots.sh`. Screenshots disable outbound simulation links and retention;

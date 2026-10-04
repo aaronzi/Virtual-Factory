@@ -35,6 +35,7 @@ func bind(p_device: DeviceNode) -> void:
 		var unit := _place(end[0], Vector3(end[2] * length / 2, 0, 0))
 		var drum := unit.get_node(end[1]) as Node3D
 		drum.reparent(self)
+		MovingParts.mark(drum)
 		_drums.append(drum)
 	_place_repeated(length, gap)
 	MeshMerger.merge(_static, self, "StaticParts")

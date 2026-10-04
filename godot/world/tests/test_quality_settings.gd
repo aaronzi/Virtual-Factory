@@ -12,7 +12,7 @@ func test_quality_round_trip_preserves_assets() -> void:
 	var wire := fence.find_child("DetailDoorWire", true, false) as MeshInstance3D
 	assert_not_null(wire)
 	assert_eq(wire.get_parent().name, &"Door", "wire follows the hinged door")
-	var floor_mesh := hall.find_child("Floor", true, false) as MeshInstance3D
+	var floor_mesh := hall.find_child("FloorZone", true, false) as MeshInstance3D  # epoxy production zone
 	var epoxy: BaseMaterial3D
 	for surface in floor_mesh.mesh.get_surface_count():
 		var mat := floor_mesh.mesh.surface_get_material(surface)

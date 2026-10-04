@@ -1,7 +1,9 @@
 """Factory hall: 36 × 24 m steel portal frame building, 8 m eaves, closed walls and roof.
 
 Origin = floor centre. Blender X = along the line (Godot X), Blender Y = depth (Godot -Z), Z up.
-Objects: "Floor" (concrete + epoxy zone + markings), "Structure" (columns, girders, purlins, bracing),
+Objects: "Floor" (concrete slab, joints and walkway markings outside the production zone), "FloorZone" (epoxy
+production zone with its joints and outline; a separate object so the lightmap bake gives it a finer texel
+density, ADR-0031), "Structure" (columns, girders, purlins, bracing),
 "Walls" (plinth, sandwich panels, windows, doors), "Roof" (panels + skylight bands), "Lights" (emissive
 LED high-bay fixtures), "Services" (cable trays, signs, fire extinguishers).
 Export: godot/world/hall/hall.glb
@@ -27,25 +29,43 @@ panel = L.material("paint_white", color=(0.78, 0.8, 0.8))
 yellow = L.material("paint_yellow")
 
 
+ZONE = (-9.0, 9.0, -4.0, 6.0)  # epoxy production zone x0, x1, y0, y1 (Blender coordinates)
+
+
+def _joint_segments(c: float, lo: float, hi: float, across, along):
+    """Splits a joint line at the zone edges into (start, end, inside) pieces. `c` is its cross position, `across`
+    and `along` the zone interval across and along it. Lines on a zone edge stay outside (under the outline)."""
+    if not across[0] < c < across[1]:
+        return [(lo, hi, False)]
+    return [(lo, along[0], False), (along[0], along[1], True), (along[1], hi, False)]
+
+
 def floor():
     cement = S.image_tile("concrete", (0.36, 0.355, 0.34), 0.88)
     epoxy = S.image_tile("epoxy", (0.25, 0.29, 0.28), 0.57)
-    parts = [S.project_uv(L.box("Concrete", (LX, LY, 0.1), (0, 0, -0.05), cement)),
-             S.project_uv(L.box("Epoxy", (18.0, 10.0, 0.004), (0, 1.0, 0.002), epoxy))]
+    outer = [S.project_uv(L.box("Concrete", (LX, LY, 0.1), (0, 0, -0.05), cement))]
+    # epoxy coat as its top face only (a box bottom would only waste lightmap texels)
+    zone = [S.project_uv(L.plane("Epoxy", ZONE[1] - ZONE[0], ZONE[3] - ZONE[2],
+                                 ((ZONE[0] + ZONE[1]) / 2, (ZONE[2] + ZONE[3]) / 2, 0.004), epoxy))]
     # floor layers with >= 2 mm between coplanar surfaces (depth precision at 30 m, otherwise z-fighting flicker):
     # concrete 0, epoxy top 4 mm, joints 6 mm, markings top 9 mm, contact-shadow cards 11 mm (vf_grounding.py)
     seam = L.material("paint_grey", color=(0.19, 0.21, 0.2))
     for x in range(-15, 18, 3):
-        parts.append(L.plane("ExpansionJoint", 0.006, LY, (x, 0, 0.006), seam))
+        for a, b, inside in _joint_segments(x, -LY / 2, LY / 2, ZONE[:2], ZONE[2:]):
+            (zone if inside else outer).append(L.plane("ExpansionJoint", 0.006, b - a, (x, (a + b) / 2, 0.006), seam))
     for y in range(-9, 12, 3):
-        parts.append(L.plane("ExpansionJoint", LX, 0.006, (0, y, 0.006), seam))
-    # production zone outline and pedestrian walkway (Blender y = -Godot z)
-    for (x, y, w, d) in ((0, 6.0, 18.0, 0.1), (0, -4.0, 18.0, 0.1), (-9.0, 1.0, 0.1, 10.0), (9.0, 1.0, 0.1, 10.0),
-                         (0, -5.5, 34.0, 0.1), (0, -7.0, 34.0, 0.1)):
-        parts.append(L.box("Marking", (w, d, 0.004), (x, y, 0.007), yellow))
+        for a, b, inside in _joint_segments(y, -LX / 2, LX / 2, ZONE[2:], ZONE[:2]):
+            (zone if inside else outer).append(L.plane("ExpansionJoint", b - a, 0.006, ((a + b) / 2, y, 0.006), seam))
+    # production zone outline (Blender y = -Godot z)
+    for (x, y, w, d) in ((0, 6.0, 18.0, 0.1), (0, -4.0, 18.0, 0.1), (-9.0, 1.0, 0.1, 10.0), (9.0, 1.0, 0.1, 10.0)):
+        zone.append(L.box("Marking", (w, d, 0.004), (x, y, 0.007), yellow))
+    # pedestrian walkway
+    for (x, y, w, d) in ((0, -5.5, 34.0, 0.1), (0, -7.0, 34.0, 0.1)):
+        outer.append(L.box("Marking", (w, d, 0.004), (x, y, 0.007), yellow))
     for k in range(-16, 17, 2):
-        parts.append(L.box("Hatch", (0.6, 0.1, 0.004), (k, -6.25, 0.007), yellow))
-    return L.join(parts, "Floor")
+        outer.append(L.box("Hatch", (0.6, 0.1, 0.004), (k, -6.25, 0.007), yellow))
+    L.join(zone, "FloorZone")
+    return L.join(outer, "Floor")
 
 
 def structure():

@@ -430,11 +430,13 @@ Everything an operator needs is in the 3D scene (world-space panels, ready for V
 
 | Preset | Visual behaviour |
 |---|---|
-| Low | Coarser mesh LOD, simplified fence, flat floor materials, no dynamic shadows, 75% render scale |
-| Medium (default) | Detailed fencing, textured floor, shadows, 2× MSAA |
-| High | Finer LOD, floor normal/roughness maps, richer finishes, hall reflections, sharper shadows, 4× MSAA |
+| Low | Coarser mesh LOD, simplified fence, flat floor materials, baked static shadows only, 75% render scale |
+| Medium (default) | Detailed fencing, textured floor, baked shadows plus real-time shadows of moving parts, 2× MSAA |
+| High | Finer LOD, floor normal/roughness maps, richer finishes, hall reflections, softer real-time shadows, 4× MSAA |
 
-Labels and interactions stay available at every setting. Low retains loaded textures for quick switching;
+Shadows and indirect light of the static equipment are baked ([ADR-0031](adr/0031-baked-static-lighting.md)) and
+look the same on every preset; the robot, the fence door and the workpieces cast real-time shadows on Medium and
+High. Labels and interactions stay available at every setting. Low retains loaded textures for quick switching;
 it reduces rendering work, not necessarily memory. [Screenshots](screenshots/README.md) and
 [budgets / target hardware limitations](architecture/visual-quality.md).
 

@@ -1,0 +1,15 @@
+{
+  "quality": 2,
+  "bounces": 3,
+  "texel_scale": 2.0,
+  "texel_scale_overrides": {
+    "Hall/hall/Floor": 0.25,
+    "Hall/hall/FloorZone": 2.0
+  },
+  "max_texture_size": 4096,
+  "supersampling": true,
+  "environment_color": [0.84, 0.87, 0.92],
+  "environment_energy": 0.14,
+  "unwrap_texel_size": 0.05,
+  "key_light_angular_distance": 2.0
+}

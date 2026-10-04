@@ -42,3 +42,6 @@
 *.res  filter=lfs diff=lfs merge=lfs -text
 *.scn  filter=lfs diff=lfs merge=lfs -text
 *.mesh filter=lfs diff=lfs merge=lfs -text
+# Baked lighting (ADR-0031): LightmapGI data and the importer's lightmap-UV2 cache (keeps UV2 identical)
+*.lmbake        filter=lfs diff=lfs merge=lfs -text
+*.unwrap_cache  filter=lfs diff=lfs merge=lfs -text
