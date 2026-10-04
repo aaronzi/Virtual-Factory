@@ -35,6 +35,7 @@ static func _make() -> Theme:
 	t.set_stylebox("pressed", "Button", _box(ACCENT.darkened(0.2), 6))
 	t.set_stylebox("disabled", "Button", _box(Color(0.17, 0.18, 0.2), 6))
 	t.set_stylebox("normal", "LineEdit", _box(PANEL.lightened(0.08), 4))
+	t.set_stylebox("normal", "TextEdit", _box(PANEL.lightened(0.08), 4))  # multi-line form values
 	t.set_constant("v_separation", "Tree", 6)
 	t.set_constant("separation", "VBoxContainer", 10)
 	t.set_constant("separation", "HBoxContainer", 10)

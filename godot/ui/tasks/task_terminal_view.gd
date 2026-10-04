@@ -6,6 +6,8 @@ extends PanelContainer
 signal task_selected(task_id: String)
 signal complete_pressed(task_id: String, values: Dictionary)
 
+const LONG_TEXT := 32  # form values longer than this get a multi-line field
+
 var _list: ItemList
 var _title: Label
 var _info: Label
@@ -28,6 +30,10 @@ func _init() -> void:
 	_list.custom_minimum_size = Vector2(300, 120)
 	_list.item_selected.connect(func(i: int) -> void: task_selected.emit(_task_ids[i]))
 	body.add_child(_list)
+	# the task description and form can be longer than the panel: scrollable (wheel/trackpad/thumbstick)
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	var detail := VBoxContainer.new()
 	detail.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_title = UiTheme.label("", 24)
@@ -35,13 +41,15 @@ func _init() -> void:
 	_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_form = GridContainer.new()
 	_form.columns = 2
+	_form.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_complete = Button.new()
 	_complete.text = "TASKS_COMPLETE"
 	_complete.disabled = true
 	_complete.pressed.connect(_on_complete)
 	for c in [_title, _info, _form, _complete]:
 		detail.add_child(c)
-	body.add_child(detail)
+	scroll.add_child(detail)
+	body.add_child(scroll)
 	root.add_child(body)
 	_status = UiTheme.label("", 16, UiTheme.MUTED)
 	root.add_child(_status)
@@ -76,7 +84,9 @@ func show_task(task: Dictionary, info: String, form: Dictionary) -> void:
 		child.queue_free()
 	_fields.clear()
 	for name: String in form:
-		_form.add_child(UiTheme.label(name, 18, UiTheme.MUTED))
+		var label := UiTheme.label(name, 18, UiTheme.MUTED)
+		label.size_flags_vertical = Control.SIZE_SHRINK_BEGIN  # next to the first line of multi-line values
+		_form.add_child(label)
 		var field := _field(String(form[name].get("type", "String")), form[name].get("value"))
 		_form.add_child(field)
 		_fields[name] = field
@@ -117,7 +127,16 @@ static func _field(type: String, value: Variant) -> Control:
 			s.max_value = 1e6
 			s.value = float(value) if value != null else 0.0
 			return s
+	var text := str(value) if value != null else ""
+	if text.length() > LONG_TEXT or "\n" in text:  # e.g. maintenance instructions: wrapped, all lines visible
+		var t := TextEdit.new()
+		t.text = text
+		t.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+		t.scroll_fit_content_height = true
+		t.custom_minimum_size.x = 260
+		t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		return t
 	var e := LineEdit.new()
-	e.text = str(value) if value != null else ""
+	e.text = text
 	e.custom_minimum_size.x = 260
 	return e
