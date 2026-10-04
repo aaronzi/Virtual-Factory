@@ -4,6 +4,7 @@
 - Date: 2026-10-03
 
 ## Context
+
 Until M6 every FMI output was written into the device AAS (OperationalData process values, ~117 AIMC mappings,
 robot joints and belt position at up to 10 Hz) and the MES kept a 30-minute power ring buffer as an IDTA TimeSeries
 `InternalSegment` (one `PUT` of the whole segment per device every 10 s). This loaded the AAS server with values
@@ -11,6 +12,7 @@ nobody reads from the AAS (risk R5), the history was short and coarse (one power
 instance PCF used a rolling line average, independent of what happened to the individual part (risk R9).
 
 ## Decision
+
 - **Historian**: InfluxDB 3 Core (open source, `influxdb:3.12.0-core`, port 8181, no authentication, data on
   tmpfs = per session like the AAS DB; HTTP line-protocol writes and SQL queries `/api/v3/query_sql`). Its ~72 h
   query window of Core is irrelevant for per-session data. A Python service `historian` subscribes to the UNS
@@ -36,6 +38,7 @@ instance PCF used a rolling line average, independent of what happened to the in
   entries (A1-A3 total, A1 components, A3 manufacturing with energy details).
 
 ## Alternatives
+
 - TimescaleDB on the existing Postgres: SQL as well, but couples the historian to the BaSyx database and needs a
   schema per device; InfluxDB's schemaless line protocol matches "one field per FMI output" directly.
 - Keeping `InternalSegment` records in the AAS: simple for AAS-only clients, but the write load grows with the
@@ -43,8 +46,9 @@ instance PCF used a rolling line average, independent of what happened to the in
 - `ExternalSegment` (files): suits handover of finished series, not a live session.
 
 ## Consequences
-+ AAS write load drops (no 10 Hz signals, no ring-buffer PUTs); full-resolution history of every output.
-+ The AAS still tells *what* is recorded (record semantics with units) and *where/how* to get it (Endpoint/Query).
-+ The PCF reflects production: parts that waited on a held line carry more energy.
-− Clients need to speak the database's API (InfluxDB SQL over HTTP); the LinkedSegment Query is DB-specific.
-− One more container (634 MB image) and service; InfluxDB data is lost with `down` (intended).
+
+- \+ AAS write load drops (no 10 Hz signals, no ring-buffer PUTs); full-resolution history of every output.
+- \+ The AAS still tells *what* is recorded (record semantics with units) and *where/how* to get it (Endpoint/Query).
+- \+ The PCF reflects production: parts that waited on a held line carry more energy.
+- − Clients need to speak the database's API (InfluxDB SQL over HTTP); the LinkedSegment Query is DB-specific.
+- − One more container (634 MB image) and service; InfluxDB data is lost with `down` (intended).

@@ -4,12 +4,14 @@
 - Date: 2026-10-03
 
 ## Context
+
 The MES coordinates slower, cross-system activities: creating and filling workpiece AAS along the process,
 production orders, exceptions that need an operator. Hard-coded logic hides the process; a BPMN model makes it
 visible and editable (bpmn.io), which is valuable for training. Real-time control (sorting decision, PackML state
 machine) must stay in the PLC.
 
 ## Decision
+
 - **Operaton 2.1.5** (Apache 2.0 fork of Camunda 7 CE, which reached end of life in 2025) as engine, container
   `bpmn` (port 8092: REST, Cockpit, Tasklist; local user demo/demo; in-memory H2 = ephemeral like the AAS server).
   CIB seven was the alternative; Operaton has monthly releases and arm64 images. Camunda 8 was ruled out because of
@@ -26,7 +28,8 @@ machine) must stay in the PLC.
 - All service tasks are **external tasks** handled by Python workers in the MES (no Java code in the engine).
 
 ## Consequences
-+ The process is visible live in Cockpit (token positions, incidents) and the operator tasks appear in Tasklist.
-+ Clear split: PLC = real-time control, BPMN = orchestration of IT activities and human tasks.
-− One more container (~400 MB image, JVM). Message correlation needs retries because UNS events can arrive before
+
+- \+ The process is visible live in Cockpit (token positions, incidents) and the operator tasks appear in Tasklist.
+- \+ Clear split: PLC = real-time control, BPMN = orchestration of IT activities and human tasks.
+- − One more container (~400 MB image, JVM). Message correlation needs retries because UNS events can arrive before
   the instance waits for them (handled in the MES).

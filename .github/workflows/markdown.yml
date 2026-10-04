@@ -1,0 +1,42 @@
+name: Markdown
+
+# Style (markdownlint, config .markdownlint-cli2.yaml) and relative links/anchors (lychee, offline) of all Markdown
+# files. Runs only when Markdown files or this tooling change.
+on:
+  push:
+    branches: [master]
+    paths:
+      - "**/*.md"
+      - .markdownlint-cli2.yaml
+      - lychee.toml
+      - .github/workflows/markdown.yml
+  pull_request:
+    paths:
+      - "**/*.md"
+      - .markdownlint-cli2.yaml
+      - lychee.toml
+      - .github/workflows/markdown.yml
+  workflow_dispatch:
+
+concurrency:
+  group: markdown-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7  # no LFS: only text files are checked
+      - name: markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v24.2.0
+        with:
+          globs: "**/*.md"
+      - name: Relative links and anchors (offline)
+        uses: lycheeverse/lychee-action@v2.9.0
+        with:
+          lycheeVersion: v0.24.2
+          args: --config lychee.toml --no-progress "./**/*.md"
+          fail: true

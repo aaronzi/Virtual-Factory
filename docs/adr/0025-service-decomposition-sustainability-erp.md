@@ -4,6 +4,7 @@
 - Date: 2026-10-03
 
 ## Context
+
 `services/mes` had grown into a monolith: workpiece AAS and passports, quality, KLT contents, ISO 22400 KPIs, BPMN
 workers and message correlation, but also the production-based product carbon footprint (historian energy,
 allocation, losses) and the plant energy/CO₂e values. Production orders existed only as a Tasklist form; nothing
@@ -13,7 +14,9 @@ these responsibilities between systems with their own data ownership (ISA-95 lev
 outlive the production session (ESPR: available for the product's lifetime).
 
 ## Decision
+
 **Sustainability service** (`services/sustainability`, port 8097) owns the product carbon footprint:
+
 - It executes the new BPMN service task `pcf-calculate` of WorkpieceLifecycle, placed directly after the MES task
   `workpiece-record-packing` (external task pattern, ADR-0016). Chosen over a UNS subscription to `part_sorted`
   and over BaSyx change events: the task runs only after the MES has written the packed workpiece AAS (no race on
@@ -68,6 +71,7 @@ deterministic), and the MES refuses to overwrite the passport of a shipped unit 
 incident).
 
 ## Alternatives
+
 - **PCF on `part_sorted` (UNS)**: fully decoupled from BPMN, but races with the MES writing the packed AAS and
   needs the release data cached per serial; failures would be invisible.
 - **PCF on BaSyx change events** (packed ExecutedProcesses): the AAS as integration point, but no session or lots in
@@ -83,11 +87,12 @@ incident).
   MES serial assignment (serialization service) is the realistic target but changes the cell interface.
 
 ## Consequences
-+ Clear ownership: MES - workpiece AAS/passport composition; sustainability - CarbonFootprint and energy values;
+
+- \+ Clear ownership: MES - workpiece AAS/passport composition; sustainability - CarbonFootprint and energy values;
   ERP - orders and batches. Phase B2/B3 plug in behind existing interfaces (SupplierFootprints, the external-task
   pattern).
-+ Passports of shipped parts survive sessions and are served by the DPP API; rejects/lost units are cleaned up.
-+ Orders with confirmations and lot consumption close the loop ERP ↔ MES ↔ line.
-− Two more services; the order stop/restart between standing orders is visible on the line (a few seconds).
-− The AAS server grows with shipped passports (tmpfs DB, wiped with `down`; O53). Passports written before this
+- \+ Passports of shipped parts survive sessions and are served by the DPP API; rejects/lost units are cleaned up.
+- \+ Orders with confirmations and lot consumption close the loop ERP ↔ MES ↔ line.
+- − Two more services; the order stop/restart between standing orders is visible on the line (a few seconds).
+- − The AAS server grows with shipped passports (tmpfs DB, wiped with `down`; O53). Passports written before this
   change, or with serials reused by older builds, are not repaired automatically.

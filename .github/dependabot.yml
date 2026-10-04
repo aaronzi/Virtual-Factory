@@ -1,0 +1,36 @@
+# Dependency updates for every ecosystem in the repository. Weekly, grouped to keep the PR count low; major
+# versions come as separate PRs because they may need code or config changes.
+# Not covered (no Dependabot ecosystem): GODOT_VERSION in the workflows and the vendored GUT addon (godot/addons/gut).
+version: 2
+updates:
+  - package-ecosystem: github-actions  # .github/workflows/*.yml
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: uv  # uv workspace: pyproject.toml files + uv.lock
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      python-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: docker  # services/Dockerfile (base image of all Python services)
+    directory: /services
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker-compose  # images pinned in infra/docker-compose*.yml (BaSyx, Keycloak, Grafana, ...)
+    directory: /infra
+    schedule:
+      interval: weekly
+    groups:
+      basyx:
+        patterns: ["eclipsebasyx/*"]
+      compose-minor-patch:
+        update-types: [minor, patch]
+        exclude-patterns: ["eclipsebasyx/*"]

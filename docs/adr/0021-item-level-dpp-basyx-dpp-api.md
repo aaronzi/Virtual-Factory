@@ -6,6 +6,7 @@
   [ADR-0016](0016-bpmn-orchestration.md)
 
 ## Context
+
 The workpiece instance AAS created by the MES carried only a thin passport: Nameplate, DppMetadata, actual PCF,
 production log and quality data. Documents, contacts, as-built technical data, traceability, material composition
 and circularity existed only on the product type. The DppMetadata id (`…/dpp/item/<serial>`) differed from the AAS
@@ -13,6 +14,7 @@ id. The user wants to add the **BaSyx Go DPP API** (`eclipsebasyx/dppapi-go:1.1.
 produced part through it.
 
 Facts from the DPP API source (v1.1.0), verified against the running stack:
+
 - It reads passports straight from the AAS database (same PostgreSQL as the AAS environment).
 - `GET /v1/dpps/{dppId}` loads the AAS with id = dppId and needs `DppMetadata.digitalProductPassportId` = dppId,
   otherwise 404 (documented BaSyx limitation; the DPP specification allows different ids).
@@ -23,6 +25,7 @@ Facts from the DPP API source (v1.1.0), verified against the running stack:
 - Managed File attachments are rendered as links `{GENERAL_EXTERNALURL}/submodels/{id}/submodel-elements/{path}/attachment`.
 
 ## Decision
+
 **Ids.** DPP id = AAS id (`https://virtual-factory.example/ids/aas/WP_<serial>`). We keep the AAS id scheme of
 `vf_common.ids` and do not switch the AAS id to a `/dpp/...` URL. Godot, the store, KLT contents and references
 all address workpieces by AAS id. A second id kind for the same object would only add a mapping. The product id
@@ -75,6 +78,7 @@ are not enabled: they need BaSyx history in the AAS environment as well, and tha
 value write.
 
 ## Consequences
+
 - `GET http://localhost:8093/v1/dpps/<urlencoded AAS id>` and `…/dppsByProductId/<urlencoded Digital Link>`
   return the item passport. The Godot inspector offers *Open passport (DPP API)* for workpieces.
 - The BaSyx web UI (aas-gui) has no DPP view. It keeps showing the same AAS and submodels from port 8091.

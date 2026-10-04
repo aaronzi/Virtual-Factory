@@ -6,6 +6,7 @@
   [ADR-0025](0025-service-decomposition-sustainability-erp.md)
 
 ## Context
+
 The PCF of a part (aas-model.md §6a) took the component footprints (A1) from the CarbonFootprint of the component
 type AAS (`CMP_*`): one declared average per type, the same for every batch. The as-built BoM recorded the batch of
 every component (reported by AC01, `part_released.lots`), but batches had no data of their own, and all AAS lived
@@ -17,10 +18,12 @@ resolve through a list of environments, and ADR-0025 put the interface `Supplier
 batch)` with `ChainedFootprints` into the sustainability service for exactly this step.
 
 ## Decision
+
 **1. A supplier AAS environment, operated separately.** A second BaSyx Go stack (`supplier-db` PostgreSQL,
 `supplier-config`, `supplier-provisioner`, `aasenvironment-go:1.1.0` as `supplier-aas-env` on port **8191**,
 `GENERAL_EXTERNALURL=http://localhost:8191`, registry integration on, no MQTT eventing, no DPP API). The plant's
 services reach it only through discovery/registry and the supplier portal's REST API, never through its database.
+
 - **One environment for the four suppliers** (Druckguss Pfalz, Dichtungstechnik Süd, Normteile Rhein-Neckar,
   Kunststofftechnik Westrich) - a hosted "supplier hub" as SMEs use it. Each company keeps **its own id namespace**
   (`idBase: https://virtual-factory.example/<company>/ids` in the asset data, new optional key of the template
@@ -46,6 +49,7 @@ despatch-advice`) and stores the reference to the supplier batch in its batch ma
 Link, AAS id, shell link, material certificate, batch PCF, despatch advice number). The portal publishes the batch
 AAS when it issues the despatch advice - idempotent, once per lot. In-house lots (`L<YYWW>-n`) get no despatch
 advice; their batches still appear with the backflush (ADR-0025).
+
 - Batch AAS (blueprint `aas/data/supplier/blueprints/batch_instance.yaml`, tag `BATCH_<lot>`, derivedFrom the type,
   globalAssetId `https://virtual-factory.example/01/<GTIN>/10/<lot>`, specific asset ids `manufacturerPartId`,
   `batchId`, `customerPartId`): **BatchInformation** (custom template in the YAML DSL - no IDTA template covers
@@ -110,6 +114,7 @@ repository client with a data-plane client carrying the EDR token; the `Supplier
 fallback stay. Open issue O59.
 
 ## Alternatives
+
 - **One environment per supplier**: most realistic for large suppliers, no new behaviour for the plant (the
   registry list grows), four times the containers - see 1.
 - **Supplier data copied into the plant environment** (supplier uploads into our repository): no federation, and
@@ -120,13 +125,14 @@ fallback stay. Open issue O59.
   a foreign environment's AAS id is less robust than an asset id resolved by discovery, and contradicts HS 1.1.
 
 ## Consequences
-+ Part PCFs use supplier primary data for the five purchased components (about 30 % of A1 by mass of CO₂e) and say
+
+- \+ Part PCFs use supplier primary data for the five purchased components (about 30 % of A1 by mass of CO₂e) and say
   so (data-quality properties, KPIs `avgPrimaryDataShare`, `avgSupplierSpecificShareA1`); batches without supplier
   data degrade gracefully to the declared average.
-+ The federation of ADR-0023 is exercised end to end: services and the Godot inspector resolve AAS of a second
+- \+ The federation of ADR-0023 is exercised end to end: services and the Godot inspector resolve AAS of a second
   environment by asset id; the as-built BoM links each part to the supplier's batch.
-+ The ERP batch master links goods receipts to despatch advices, certificates and batch AAS.
-− Five more containers (supplier-db, -config, -provisioner, -aas-env, supplier portal); the supplier DB is on
+- \+ The ERP batch master links goods receipts to despatch advices, certificates and batch AAS.
+- − Five more containers (supplier-db, -config, -provisioner, -aas-env, supplier portal); the supplier DB is on
   tmpfs like the plant's, so batch AAS disappear with `down` (they are re-created on the next staging report,
   with identical values).
-− The batch lifecycle is a simulation shortcut (O60); data quality covers only the primary data share (O61).
+- − The batch lifecycle is a simulation shortcut (O60); data quality covers only the primary data share (O61).

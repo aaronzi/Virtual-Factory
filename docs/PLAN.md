@@ -50,7 +50,8 @@
 | GitHub MCP plugin | ⚠️ failed to connect (auth header) | Doesn't matter; the `gh` CLI works. |
 | To be installed by me (project-local) | ➕ | GUT 9.6.1 (tests), own GDScript MQTT 3.1.1 client (M4; replaced godot-mqtt V1.4), gdtoolkit (`gdlint`/`gdformat`), `eclipse-mosquitto:2` image, Python: `paho-mqtt`, `httpx`, `pydantic`, `fastapi`+`uvicorn`, `xmlschema`, `aas-test-engines`, `pytest`, `import-linter`. |
 
-**Result: every prerequisite for implementation is met.** The open items are either installed project-locally in M0 or not needed until later (export templates, VR).
+**Result: every prerequisite for implementation is met.** The open items are either installed project-locally in M0 or
+not needed until later (export templates, VR).
 
 ---
 
@@ -58,7 +59,11 @@
 
 ### 2.1 Product: pneumatic cylinder `PC-32-80-DA-M`
 
-The product is a double-acting ISO 15552 profile cylinder from VF Pneumatics GmbH: bore 32 mm, stroke 80 mm, magnetic piston, M10×1.25 rod thread, roughly 0.6 kg and roughly 225 × 45 × 45 mm. It leaves the assembly cell **standing upright on its rear end cap**, rod pointing up. The last assembly step presses on a **red PE protective end cap** that covers the front end cap and the rod thread. Real manufacturers ship cylinders this way so the rod and thread are protected. The colour sensor above the belt therefore looks straight at the cap:
+The product is a double-acting ISO 15552 profile cylinder from VF Pneumatics GmbH: bore 32 mm, stroke 80 mm, magnetic
+piston, M10×1.25 rod thread, roughly 0.6 kg and roughly 225 × 45 × 45 mm. It leaves the assembly cell **standing upright
+on its rear end cap**, rod pointing up. The last assembly step presses on a **red PE protective end cap** that covers
+the front end cap and the rod thread. Real manufacturers ship cylinders this way so the rod and thread are protected.
+The colour sensor above the belt therefore looks straight at the cap:
 
 | Sensor sees | Meaning | Result | Default rate |
 |---|---|---|---|
@@ -83,11 +88,14 @@ Defect rates, colour noise and lighting effects can be configured per scenario.
 | 90 | Protective end cap | PE-LD, **red** | 1 | 0.005 kg |
 
 **Recipe**: an ISA-88 master recipe. The black box performs operations 10–70, the line performs 80–90.
-10 rod/piston pre-assembly → 20 seal insertion → 30 barrel insertion → 40 end-cap mounting (torque 6 Nm) → 50 leak test (6 bar, pressure decay) → 60 function test (stroke time) → 70 fit protective cap → **80 visual inspection** (expected colour + tolerance) → **90 sort & pack** (KLT, 12 per box).
+10 rod/piston pre-assembly → 20 seal insertion → 30 barrel insertion → 40 end-cap mounting (torque 6 Nm) → 50 leak test
+(6 bar, pressure decay) → 60 function test (stroke time) → 70 fit protective cap → **80 visual inspection** (expected
+colour + tolerance) → **90 sort & pack** (KLT, 12 per box).
 
 ### 2.2 Line layout and process flow
 
-ISA-95 hierarchy: Enterprise *VF Pneumatics GmbH* › Site *Plant 01* › Area *Final Assembly* › Line *LINE01 – Inspection & Sorting*.
+ISA-95 hierarchy: Enterprise *VF Pneumatics GmbH* › Site *Plant 01* › Area *Final Assembly* › Line *LINE01 – Inspection
+& Sorting*.
 
 ```mermaid
 flowchart LR
@@ -104,16 +112,23 @@ flowchart LR
 
 **Cycle** (default takt 12 s, about 300 parts/h, 1× real time, fast-forward up to 10×):
 
-1. **AC01** (black box) releases a finished cylinder onto the belt infeed when `enable ∧ infeed_free`. It publishes the serial number and its own test data (leak rate, stroke time).
-2. **LB01** detects the part at the infeed. The PLC pushes the serial into its tracking FIFO and the infeed counts as occupied until the part has passed (interlock back to AC01).
+1. **AC01** (black box) releases a finished cylinder onto the belt infeed when `enable ∧ infeed_free`. It publishes the
+   serial number and its own test data (leak rate, stroke time).
+2. **LB01** detects the part at the infeed. The PLC pushes the serial into its tracking FIFO and the infeed counts as
+   occupied until the part has passed (interlock back to AC01).
 3. **CV01** (0.25 m/s, VFD-driven) carries the part to the inspection position.
 4. **LB02** is interrupted. After a debounce and positioning delay the PLC stops the belt.
-5. **QS01/CS01** measures RGB/hue and compares it with the recipe's taught colour and tolerance. It reports OK/NOK in about 300 ms.
+5. **QS01/CS01** measures RGB/hue and compares it with the recipe's taught colour and tolerance. It reports OK/NOK in
+   about 300 ms.
 6. The PLC commands **RB01** with job `PICK_PLACE`, pick pose = inspection position, target A/B, next slot.
-7. RB01 picks (approach → linear down → close gripper → lift), places into the KLT slot, returns home (about 7 s). The belt restarts as soon as the part is lifted.
-8. When a KLT is full (12 slots) its stack light turns amber and the PLC requests a box exchange. In operator-training mode the operator does it; in demo/agent mode it auto-exchanges after a timeout. Meanwhile the line goes to PackML *Held* or *Suspended* (configurable).
+7. RB01 picks (approach → linear down → close gripper → lift), places into the KLT slot, returns home (about 7 s). The
+   belt restarts as soon as the part is lifted.
+8. When a KLT is full (12 slots) its stack light turns amber and the PLC requests a box exchange. In operator-training
+   mode the operator does it; in demo/agent mode it auto-exchanges after a timeout. Meanwhile the line goes to
+   PackML *Held* or *Suspended* (configurable).
 
-Further realistic elements: a safety fence with a door switch around RB01 (door open → protective stop), E-stop buttons, a stack light per cell, a control cabinet with PLC01, HMI01 on a stand, and floor markings.
+Further realistic elements: a safety fence with a door switch around RB01 (door open → protective stop), E-stop buttons,
+a stack light per cell, a control cabinet with PLC01, HMI01 on a stand, and floor markings.
 
 ### 2.3 Device behaviour summary
 
@@ -173,13 +188,18 @@ flowchart TB
   AG -.->|optional| MQ
 ```
 
-**Why this split.** In a real plant, devices don't write to AAS. The PLC talks to field devices, an edge layer moves data into the IT world, and an MES owns orders and product genealogy. This is the pattern we teach. It also means any device or the PLC could later be swapped for real hardware or a real PLC (OpenPLC, Codesys) without touching the IT side.
+**Why this split.** In a real plant, devices don't write to AAS. The PLC talks to field devices, an edge layer moves
+data into the IT world, and an MES owns orders and product genealogy. This is the pattern we teach. It also means any
+device or the PLC could later be swapped for real hardware or a real PLC (OpenPLC, Codesys) without touching the IT
+side.
 
-**Agents** control the factory through **standard AAS Operations** (BaSyx Go delegates them via the `invocationDelegation` qualifier to the operation gateway) and observe it through submodels, or optionally straight from MQTT. That gives a clean, standards-based testbed API.
+**Agents** control the factory through **standard AAS Operations** (BaSyx Go delegates them via the
+`invocationDelegation` qualifier to the operation gateway) and observe it through submodels, or optionally straight from
+MQTT. That gives a clean, standards-based testbed API.
 
 ### 3.2 Repository layout
 
-```
+```text
 Virtual-Factory/
 ├── godot/                     # Godot project (res://)
 │   ├── core/                  # framework, no domain knowledge
@@ -236,18 +256,27 @@ flowchart TD
   - Devices don't know each other.
   - The PLC doesn't know device classes. It only sees its *process image*.
   - The MQTT gateway only sees *tags*.
-- **`factory` is the single composition root.** It reads the layout, instantiates device scenes, and wires three kinds of connections:
+- **`factory` is the single composition root.** It reads the layout, instantiates device scenes, and wires three kinds
+  of connections:
   1. FMU output → FMU/PLC input
   2. PLC tag → UNS topic
   3. device → AAS id
-- **Interaction between modules happens only through the FMI variable interface** (value references) and a small set of `core` interfaces (`Interactable`, `PlayerRig`, `TagSource`). There's no global event bus with domain events; it's a common coupling trap.
-- Python: `vf_common` ← services. Services never import each other and communicate only via MQTT or BaSyx. This is enforced with `import-linter`.
-- **Measured, not claimed:** `tools/arch_check.py` parses `preload/load/extends/class_name` references, builds the module graph, checks it against `docs/architecture/dependency-rules.yaml` and reports adherence as a percentage. Allowed exceptions are listed with an ADR reference. Target ≥ 95 %.
-- **Complexity limits** (via `gdlint`): ≤ 300 lines per file, ≤ 40 lines per function, ≤ 1 class per file. Exceptions are documented inline (`# gdlint:ignore` + reason).
+- **Interaction between modules happens only through the FMI variable interface** (value references) and a small set of
+  `core` interfaces (`Interactable`, `PlayerRig`, `TagSource`). There's no global event bus with domain events; it's a
+  common coupling trap.
+- Python: `vf_common` ← services. Services never import each other and communicate only via MQTT or BaSyx. This is
+  enforced with `import-linter`.
+- **Measured, not claimed:** `tools/arch_check.py` parses `preload/load/extends/class_name` references, builds the
+  module graph, checks it against `docs/architecture/dependency-rules.yaml` and reports adherence as a percentage.
+  Allowed exceptions are listed with an ADR reference. Target ≥ 95 %.
+- **Complexity limits** (via `gdlint`): ≤ 300 lines per file, ≤ 40 lines per function, ≤ 1 class per file. Exceptions
+  are documented inline (`# gdlint:ignore` + reason).
 
 ### 3.4 FMI-3-aligned device model interface (GDScript)
 
-Each device's *behaviour* is a pure-logic **co-simulation slave** with no rendering and no scene tree access, so it runs and is testable headless. Its *interface* is described by a genuine **FMI 3.0 `modelDescription.xml`**, validated against the official FMI 3.0 XSD in CI.
+Each device's *behaviour* is a pure-logic **co-simulation slave** with no rendering and no scene tree access, so it runs
+and is testable headless. Its *interface* is described by a genuine **FMI 3.0 `modelDescription.xml`**, validated
+against the official FMI 3.0 XSD in CI.
 
 | FMI 3.0 C API | GDScript (`Fmi3CoSimulation` base class) |
 |---|---|
@@ -261,7 +290,9 @@ Each device's *behaviour* is a pure-logic **co-simulation slave** with no render
 | `fmi3Reset / Terminate / FreeInstance` | `reset() / terminate() / free_instance()` |
 | `fmi3Status` | `enum Fmi3Status { OK, WARNING, DISCARD, ERROR, FATAL }` |
 
-Variables follow FMI semantics: `valueReference`, `causality` (parameter/input/output/local), `variability` (fixed/tunable/discrete/continuous), `unit`, `start`. The **co-simulation master** runs a fixed-step Gauss-Seidel scheme at the physics tick (60 Hz; the PLC scans every 10 ms of sim time, sub-stepped). Each step:
+Variables follow FMI semantics: `valueReference`, `causality` (parameter/input/output/local), `variability`
+(fixed/tunable/discrete/continuous), `unit`, `start`. The **co-simulation master** runs a fixed-step Gauss-Seidel scheme
+at the physics tick (60 Hz; the PLC scans every 10 ms of sim time, sub-stepped). Each step:
 
 1. Environment probes sample the physical stimuli (raycasts, surface colour).
 2. Inputs are set.
@@ -272,11 +303,12 @@ Variables follow FMI semantics: `valueReference`, `causality` (parameter/input/o
 
 FMI 3 *Clocks* and *Model Exchange* are deliberately out of scope (see ADR). Edges are discrete Boolean outputs.
 
-**Extension point:** an `Fmi3NativeAdapter` (GDExtension wrapping the FMI 3 C API) could load *real* `.fmu` binaries behind the same interface, e.g. a Modelica conveyor model. The interface needs no changes for that.
+**Extension point:** an `Fmi3NativeAdapter` (GDExtension wrapping the FMI 3 C API) could load *real* `.fmu` binaries
+behind the same interface, e.g. a Modelica conveyor model. The interface needs no changes for that.
 
 ### 3.5 Device module anatomy (the unit of extensibility)
 
-```
+```text
 devices/light_barrier/
 ├── model/light_barrier_model.gd     # extends Fmi3CoSimulation (behaviour only)
 ├── model/modelDescription.xml       # FMI 3.0 interface (single source for the variable list)
@@ -291,34 +323,50 @@ devices/light_barrier/
 
 **Adding a new device type** means adding a new folder plus a layout entry. Nothing else changes.
 
-**Reorganising the factory** means editing `config/layouts/line1.layout.json`, which holds device instances, transforms, connections, PLC IO map and UNS mapping. It is an SSP-inspired structure, but JSON. A drag-and-drop layout edit mode is an M5 stretch goal. The same layout file tells the provisioner which machine AAS to create, so there is a **single source of truth**.
+**Reorganising the factory** means editing `config/layouts/line1.layout.json`, which holds device instances, transforms,
+connections, PLC IO map and UNS mapping. It is an SSP-inspired structure, but JSON. A drag-and-drop layout edit mode is
+an M5 stretch goal. The same layout file tells the provisioner which machine AAS to create, so there is a **single
+source of truth**.
 
 ### 3.6 Physics and transport
 
-- The conveyor belt is a `StaticBody3D` with `constant_linear_velocity` set from the FMU output `belt_speed`. Workpieces are `RigidBody3D` (Jolt) and are carried realistically: they accumulate when the belt is stopped and slide on the belt.
+- The conveyor belt is a `StaticBody3D` with `constant_linear_velocity` set from the FMU output `belt_speed`. Workpieces
+  are `RigidBody3D` (Jolt) and are carried realistically: they accumulate when the belt is stopped and slide on the
+  belt.
 - The belt texture scrolls in a shader and the rollers rotate, both driven by `belt_position`.
-- Grasping: when the gripper closes on a part inside its grip zone, the part is frozen and re-parented to the TCP. On release it's unfrozen and drops into the KLT.
+- Grasping: when the gripper closes on a part inside its grip zone, the part is frozen and re-parented to the TCP. On
+  release it's unfrozen and drops into the KLT.
 - Workpieces are pooled, so continuous production doesn't allocate.
 - Fallback (if physics proves unstable): a kinematic path follower behind the same conveyor interface (ADR).
 
 ### 3.7 Robot (UR5e)
 
-- Real **UR5e DH parameters** (d1 0.1625, a2 −0.425, a3 −0.3922, d4 0.1333, d5 0.0997, d6 0.0996 m), joint limits and joint speed limits (180 °/s).
-- `ur_kinematics.gd`: forward kinematics plus **closed-form analytic IK** (up to 8 solutions; the one closest to the current configuration is chosen; elbow-up enforced).
+- Real **UR5e DH parameters** (d1 0.1625, a2 −0.425, a3 −0.3922, d4 0.1333, d5 0.0997, d6 0.0996 m), joint limits and
+  joint speed limits (180 °/s).
+- `ur_kinematics.gd`: forward kinematics plus **closed-form analytic IK** (up to 8 solutions; the one closest to the
+  current configuration is chosen; elbow-up enforced).
 - `trajectory.gd`: synchronised trapezoidal `movej` and Cartesian `movel` (IK per step), modelled after URScript semantics.
-- `ur5e_model.gd`: the FMU plus the program state machine (HOME → APPROACH → DESCEND → GRASP → LIFT → MOVE → PLACE → RELEASE → RETREAT → HOME).
-- Pick and place poses are computed from the layout (not hard-coded joint angles), so moving the robot, belt or KLTs still works after reorganisation.
+- `ur5e_model.gd`: the FMU plus the program state machine (HOME → APPROACH → DESCEND → GRASP → LIFT → MOVE → PLACE →
+  RELEASE → RETREAT → HOME).
+- Pick and place poses are computed from the layout (not hard-coded joint angles), so moving the robot, belt or KLTs
+  still works after reorganisation.
 
 ### 3.8 Virtual PLC and line control
 
-- A cyclic scan with a process image (`%I`, `%Q`, `%M`), plus IEC 61131-3 standard function blocks implemented as small classes: `TON`, `TOF`, `TP`, `R_TRIG`, `F_TRIG`, `CTU`, `SR`.
-- The program `SortingLine` is written as an SFC-style step chain. A part-tracking FIFO keyed on serial number connects AC01 → LB01 → LB02 → QS01 → RB01 → KLT.
-- **PackML (ISA-TR88.00.02) unit state machine** for the line: Stopped, Starting, Idle, Execute, Holding/Held, Suspending/Suspended, Completing/Complete, Aborting/Aborted, Clearing, Resetting, Stopping. Commands are Start/Stop/Hold/Unhold/Suspend/Unsuspend/Reset/Abort/Clear. This is the industry-standard control surface and maps cleanly onto agent operations.
+- A cyclic scan with a process image (`%I`, `%Q`, `%M`), plus IEC 61131-3 standard function blocks implemented as small
+  classes: `TON`, `TOF`, `TP`, `R_TRIG`, `F_TRIG`, `CTU`, `SR`.
+- The program `SortingLine` is written as an SFC-style step chain. A part-tracking FIFO keyed on serial number connects
+  AC01 → LB01 → LB02 → QS01 → RB01 → KLT.
+- **PackML (ISA-TR88.00.02) unit state machine** for the line: Stopped, Starting, Idle, Execute, Holding/Held,
+  Suspending/Suspended, Completing/Complete, Aborting/Aborted, Clearing, Resetting, Stopping. Commands are
+  Start/Stop/Hold/Unhold/Suspend/Unsuspend/Reset/Abort/Clear. This is the industry-standard control surface and maps
+  cleanly onto agent operations.
 - Recipe parameters (takt, belt speed, taught colour, tolerance, KLT capacity) are downloaded from the MES at order start.
 
 ### 3.9 UNS topic structure (MQTT)
 
-`vf/plant01/final-assembly/line01/<device>/<class>/<datapoint>` where `<class>` is one of `state | telemetry | event | cmd | cmd-resp`.
+`vf/plant01/final-assembly/line01/<device>/<class>/<datapoint>` where `<class>` is one of
+`state | telemetry | event | cmd | cmd-resp`.
 
 ```jsonc
 // vf/plant01/final-assembly/line01/cv01/telemetry/belt_speed   (QoS 0)
@@ -331,7 +379,8 @@ devices/light_barrier/
 ```
 
 - State topics are retained.
-- Godot publishes a session birth message (`line01/plc01/state/session`). The MES uses it to start a new session, which wipes the previous workpiece instance AAS (D8).
+- Godot publishes a session birth message (`line01/plc01/state/session`). The MES uses it to start a new session, which
+  wipes the previous workpiece instance AAS (D8).
 - The topic registry `config/uns.json` is the single source. Docs and the AID submodels are generated from it.
 - **As implemented (M4):** see [docs/interfaces/uns.md](interfaces/uns.md); the examples above are the original sketch.
 
@@ -344,7 +393,8 @@ devices/light_barrier/
 | **mes** | Session management. Creates the workpiece instance AAS on `part_released`. Records quality, genealogy and process steps. Computes the **instance PCF** (material PCF from the type BoM + allocated process energy × grid factor). Maintains line KPIs (OEE per ISO 22400) and production orders, and downloads recipes to the PLC. | MQTT ↔ AAS REST |
 | **ops_gateway** | HTTP endpoint for BaSyx Operation delegation. Translates AAS Operation calls (Start/Stop/Hold/Reset line, CreateOrder, SetSpeedOverride, TeachColor, ExchangeKLT) into MQTT `cmd` messages, waits for `cmd-resp` and returns the output variables. | AAS → HTTP → MQTT |
 
-Model building and serialisation use `basyx-python-sdk` 2.2. REST calls use the RWTH `aas-python-http-client` if it covers what we need; otherwise a thin `httpx` wrapper in `vf_common`. Decision in M3.
+Model building and serialisation use `basyx-python-sdk` 2.2. REST calls use the RWTH `aas-python-http-client` if it
+covers what we need; otherwise a thin `httpx` wrapper in `vf_common`. Decision in M3.
 
 ### 3.11 BaSyx Go environment (`infra/docker-compose.yml`, project `vf`)
 
@@ -357,11 +407,13 @@ Model building and serialisation use `basyx-python-sdk` 2.2. REST calls use the 
 | `mqtt` | `eclipse-mosquitto:2` (TCP + WebSocket listeners) | **1883 / 9001** |
 | `databridge`, `mes`, `ops-gateway` | built from `services/` | 8095 (ops) |
 
-BaSyx Go MQTT eventing (experimental, submodel granularity only) is **on** since M4 (D13): CloudEvents on `vf/basyx/...`, used by the bridge to reload mappings.
+BaSyx Go MQTT eventing (experimental, submodel granularity only) is **on** since M4 (D13): CloudEvents on
+`vf/basyx/...`, used by the bridge to reload mappings.
 
 ### 3.12 AAS model
 
-**ID scheme**
+#### ID scheme
+
 - `https://virtual-factory.example/ids/aas/<assetTag>`
 - `…/ids/asset/<assetTag>`
 - `…/ids/sm/<assetTag>/<Submodel>/<version>`
@@ -375,34 +427,44 @@ BaSyx Go MQTT eventing (experimental, submodel granularity only) is **on** since
 | **Machines** AC01, CV01, LB01, LB02, QS01 (+CS01), RB01 (+GR01), PLC01, KLT-A01/B01 | Instance (with `derivedFrom` device-type AAS for LB, the Type/Instance teaching example) | DigitalNameplate, TechnicalData, ContactInformation, CarbonFootprint (embodied PCF of the device), **OperationalData** (custom: state, power, energy, operating hours, cycles, operational CO₂e), **TimeSeries** (02008 v1.1, power and key signals), **AssetInterfacesDescription** (MQTT/UNS), **AssetInterfacesMappingConfiguration**, **SimulationModels** (IDTA 02005 Provision of Simulation Models, referencing the FMI model description), HandoverDocumentation (optional) |
 | **Line LINE01** | Instance | HierarchicalStructures (line → machines), **ProductionKPIs** (aligned with 02066 Process Variables for Manufacturing KPIs / ISO 22400), **LineControl** (custom, with **Operations** delegated to ops_gateway), ProductionCalendar (02067, optional) |
 
-- **Standards adherence:** IDTA templates are used wherever one exists, in their latest published versions with exact semantic IDs.
-- **Custom submodels**, where no IDTA template exists (energy consumption, quality inspection, recipe, production log), get their own semantic IDs, concept descriptions (ECLASS IRDIs where available) and a deviation note in the docs.
-- **Metamodel version:** BaSyx Go speaks V3.2 and converts V3.0/3.1 input. Compatibility with SDK 2.2 output gets verified in M3 (risk R2).
+- **Standards adherence:** IDTA templates are used wherever one exists, in their latest published versions with exact
+  semantic IDs.
+- **Custom submodels**, where no IDTA template exists (energy consumption, quality inspection, recipe, production log),
+  get their own semantic IDs, concept descriptions (ECLASS IRDIs where available) and a deviation note in the docs.
+- **Metamodel version:** BaSyx Go speaks V3.2 and converts V3.0/3.1 input. Compatibility with SDK 2.2 output gets
+  verified in M3 (risk R2).
 
 **Instance PCF (simplified, documented):**
+
 - PCF = Σ(BoM item mass × material emission factor) + Σ_devices(E_device,allocated × grid factor).
 - Device energy is allocated over the part's residence time, shared between the parts in process.
 - The factors live in `aas/data/emission_factors.yaml` with sources. The grid factor (DE mix) is configurable.
 
 ### 3.13 Graphics, performance and XR-readiness
 
-- **Renderer:** *Mobile* (Vulkan/Metal/D3D12, XR-capable, cheap). M1 includes a quick Compatibility (GL) test as a fallback for very old hardware, recorded in an ADR. Quality presets: Low / Medium / High.
+- **Renderer:** *Mobile* (Vulkan/Metal/D3D12, XR-capable, cheap). M1 includes a quick Compatibility (GL) test as a
+  fallback for very old hardware, recorded in an ADR. Quality presets: Low / Medium / High.
 - **Budgets:**
   - Whole scene ≤ 250 k triangles, ≤ 300 draw calls.
   - Textures mostly ≤ 1K. Colour comes from shared trim/atlas materials or vertex colour.
   - Robot ≤ 12 k triangles, conveyor ≤ 4 k, product ≤ 1.2 k with an automatic LOD.
   - Target **60 FPS at 1080p on an Intel Iris Xe-class iGPU**, leaving headroom for future stereo at 72–90 FPS.
-- **Lighting:** baked LightmapGI for the static hall, one directional light, a few spots, one reflection probe. No SDFGI or volumetrics.
+- **Lighting:** baked LightmapGI for the static hall, one directional light, a few spots, one reflection probe. No SDFGI
+  or volumetrics.
 - **XR-ready rules:**
   - 1 unit = 1 m.
-  - All gameplay goes through the `PlayerRig` interface. `DesktopRig` is built now; `XRRig` with XROrigin3D + godot-xr-tools comes later.
-  - Interactions go through an `Interactable` component (pointer enter/exit/press) that a mouse ray drives today and an XR controller ray can drive later.
+  - All gameplay goes through the `PlayerRig` interface. `DesktopRig` is built now; `XRRig` with XROrigin3D +
+    godot-xr-tools comes later.
+  - Interactions go through an `Interactable` component (pointer enter/exit/press) that a mouse ray drives today and an
+    XR controller ray can drive later.
   - Core UI is **world-space panels** (a SubViewport on a quad). Screen-space HUD only for desktop extras.
   - No hard camera cuts in core flows.
 
 ### 3.14 Blender pipeline
 
-- Every asset is generated by a **versioned Python script** (`blender/scripts/build_<asset>.py`) run through the Blender MCP, saved as `blender/<asset>.blend` (LFS) and exported to glTF binary (`.glb`) in the device's `view/` folder. That keeps the models reproducible, reviewable and easy to tweak.
+- Every asset is generated by a **versioned Python script** (`blender/scripts/build_<asset>.py`) run through the Blender
+  MCP, saved as `blender/<asset>.blend` (LFS) and exported to glTF binary (`.glb`) in the device's `view/` folder. That
+  keeps the models reproducible, reviewable and easy to tweak.
 - **Conventions:**
   - Real-world dimensions.
   - Origins at the pivots.
@@ -429,21 +491,27 @@ BaSyx Go MQTT eventing (experimental, submodel granularity only) is **on** since
   | Props | pallets, racks |
 
 - **Animation:**
-  - At runtime, motion is **driven by the simulation** (joint angles and belt speed come from the device models), which a data-driven twin needs.
+  - At runtime, motion is **driven by the simulation** (joint angles and belt speed come from the device models), which
+    a data-driven twin needs.
   - Blender still authors baked clips, exported as glTF animations:
     - UR5e `demo_pick_place` (all six joints plus gripper)
     - conveyor `belt_run` (roller rotation)
     - `product_flow` (cylinder travelling along the belt)
     - stack-light blink
-  - The clips serve as preview renders for your review, the demo "attract mode", and a playback fallback when the simulation is paused.
+  - The clips serve as preview renders for your review, the demo "attract mode", and a playback fallback when the
+    simulation is paused.
   - I'll send turntable or preview renders of each asset for feedback.
 
 ### 3.15 UI and training features (M5)
 
-- **AAS Inspector:** point at any asset to open its AAS in a world-space panel: shells, submodels, live values, Type/Instance links. Data comes via discovery → shell → submodel. Clicking a part in a KLT shows *its* instance AAS (quality, PCF, genealogy).
-- **Data-flow visualisation** (education mode): animated "packets" that follow the real path for a selected signal, sensor → PLC → MQTT → bridge → AAS, with labels.
+- **AAS Inspector:** point at any asset to open its AAS in a world-space panel: shells, submodels, live values,
+  Type/Instance links. Data comes via discovery → shell → submodel. Clicking a part in a KLT shows *its* instance AAS
+  (quality, PCF, genealogy).
+- **Data-flow visualisation** (education mode): animated "packets" that follow the real path for a selected signal,
+  sensor → PLC → MQTT → bridge → AAS, with labels.
 - HMI panel (PackML buttons, counters, OEE), stack lights, KLT exchange interaction.
-- **Scenarios / fault injection:** missing-cap rate, sensor contamination/drift, light barrier misalignment, robot protective stop (fence door), conveyor motor fault, KLT full, MQTT/BaSyx outage (store-and-forward in the bridge).
+- **Scenarios / fault injection:** missing-cap rate, sensor contamination/drift, light barrier misalignment, robot
+  protective stop (fence door), conveyor motor fault, KLT full, MQTT/BaSyx outage (store-and-forward in the bridge).
 - **Demo mode:** autonomous run with a camera tour. Fast-forward and a headless mode for agents.
 - i18n DE/EN for all UI strings.
 
@@ -470,9 +538,14 @@ GitHub Actions CI (`aaronzi/Virtual-Factory`): lint, unit tests, schema and arch
 ## 5. Documentation deliverables
 
 - `docs/requirements.md`: functional (FR-xx) and non-functional (NFR-xx) requirements, traced to milestones and tests.
-- `docs/architecture/`: **arc42**. Sections: context, building blocks, runtime views (sequence diagram of one part's life cycle, the agent operation flow, session start), deployment, crosscutting concepts (FMI interface, UNS, ID scheme, AAS modelling, physics, XR-readiness), quality scenarios, conformance report.
-- `docs/interfaces/`: FMI mapping, a **device catalogue generated from `modelDescription.xml`**, the UNS topic catalogue (generated from `uns.yaml`), the AAS model (submodels, semantic IDs, custom concept descriptions), the Operations API for agents.
-- `docs/implementation-concepts.md`, `docs/adr/NNNN-*.md`, `docs/open-issues.md`, `docs/user-guide.md` (setup, controls, scenarios).
+- `docs/architecture/`: **arc42**. Sections: context, building blocks, runtime views (sequence diagram of one part's
+  life cycle, the agent operation flow, session start), deployment, crosscutting concepts (FMI interface, UNS, ID
+  scheme, AAS modelling, physics, XR-readiness), quality scenarios, conformance report.
+- `docs/interfaces/`: FMI mapping, a **device catalogue generated from `modelDescription.xml`**, the UNS topic catalogue
+  (generated from `uns.yaml`), the AAS model (submodels, semantic IDs, custom concept descriptions), the Operations API
+  for agents.
+- `docs/implementation-concepts.md`, `docs/adr/NNNN-*.md`, `docs/open-issues.md`, `docs/user-guide.md` (setup, controls,
+  scenarios).
 
 ---
 
@@ -514,9 +587,12 @@ Rough proportions of effort: M1 and M2 are the largest. M3 and M4 are medium. M0
 
 ## 8. Smaller defaults I chose (tell me if you want them different)
 
-- **Product interpretation:** the "red lid" is the *red protective end cap* on the rod end of an upright cylinder. Defects are a missing cap (grey) or a wrong cap (blue).
-- **Two light barriers** (infeed + inspection position) instead of one. Same device type, two instances; it shows Type/Instance reuse and enables the interlock and tracking.
-- Inspection and pick happen at **the same stop position** at the end of the belt. One robot, two KLTs; the reject KLT is red, following plant convention.
+- **Product interpretation:** the "red lid" is the *red protective end cap* on the rod end of an upright cylinder.
+  Defects are a missing cap (grey) or a wrong cap (blue).
+- **Two light barriers** (infeed + inspection position) instead of one. Same device type, two instances; it shows
+  Type/Instance reuse and enables the interlock and tracking.
+- Inspection and pick happen at **the same stop position** at the end of the belt. One robot, two KLTs; the reject KLT
+  is red, following plant convention.
 - A generic **2-finger gripper** (form factor like common UR grippers) without a brand.
 - Takt 12 s, belt 0.25 m/s, 3 m belt, 12 parts per KLT.
 - Physics-based transport (Jolt) with a kinematic fallback.

@@ -4,6 +4,7 @@
 - Date: 2026-10-03
 
 ## Context
+
 The PLC of LINE01 raises alarms with PackML reactions (godot/control/sorting_line/line_alarms.gd), but the IT side
 only saw `alarm_code`/`alarm_text` - the highest-priority alarm at the moment, no history, no acknowledgement, no
 operator accountability and no alarm system performance figures. ANSI/ISA-18.2 (IEC 62682) and EEMUA 191 describe
@@ -12,6 +13,7 @@ acknowledgement, shelving and designed suppression, a journal of every transitio
 (alarm rate per operator, floods, standing/stale alarms, bad actors, chattering).
 
 ## Decision
+
 - **Alarm source**: the PLC exposes its complete alarm word as the new FMI output `PLC01.active_alarms` (all active
   codes in priority order, e.g. `100,201`; empty when none) - published as UNS telemetry like every output, so
   consequential alarms hidden behind a higher one (E-stop → protective stop) are visible. `alarm_code` is used as
@@ -40,6 +42,7 @@ acknowledgement, shelving and designed suppression, a journal of every transitio
   controller in `factory/`, REST client in `connectivity/alarms`.
 
 ## Alternatives
+
 - **ClickHouse**: excellent for high-rate append-only analytics, but ISA-18.2 needs state updates in place (alarm
   state, occurrence acknowledged/cleared), transactional upserts and joins with the master database at low event
   rates (a few per second); ClickHouse mutations and joins are awkward for that, and Grafana needs a plugin. Plain
@@ -55,10 +58,11 @@ acknowledgement, shelving and designed suppression, a journal of every transitio
   later without changing its state model.
 
 ## Consequences
-+ Operator accountability (who acknowledged/shelved when), a journal of the whole UNS event stream and KPIs
+
+- \+ Operator accountability (who acknowledged/shelved when), a journal of the whole UNS event stream and KPIs
   comparable to EEMUA 191 benchmarks; suppression keeps an E-stop from flooding the operator with its
   consequences.
-+ One more database container (~300 MB image) with its own retention; Grafana gets a second data source.
-− Shelving and acknowledgement live in the IT alarm system; the PLC alarm itself is not acknowledged (no latching
+- \+ One more database container (~300 MB image) with its own retention; Grafana gets a second data source.
+- − Shelving and acknowledgement live in the IT alarm system; the PLC alarm itself is not acknowledged (no latching
   alarms in the PLC). No authentication: any client can acknowledge (local use, O34 pattern).
-− Alarm times are receive times; with faster-than-real-time simulation they differ from the UNS `ts` (O54).
+- − Alarm times are receive times; with faster-than-real-time simulation they differ from the UNS `ts` (O54).

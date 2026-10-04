@@ -1,14 +1,62 @@
 name: CI
 
+# Code checks; documentation-only changes (Markdown, screenshots, Blender sources) don't trigger it - see
+# markdown.yml. The Godot job runs only when the Godot project or its test scripts change.
 on:
   push:
     branches: [master]
+    paths:
+      - "**"
+      - "!**/*.md"
+      - "!docs/**"
+      - "!blender/**"
+      - "!.github/**"
+      - "!.markdownlint-cli2.yaml"
+      - "!LICENSE*"
+      - docs/interfaces/device-catalog.md         # generated, checked by gen_interface_docs --check
+      - docs/architecture/dependency-rules.yaml   # input of arch_check
+      - .github/workflows/ci.yml
   pull_request:
+    paths:
+      - "**"
+      - "!**/*.md"
+      - "!docs/**"
+      - "!blender/**"
+      - "!.github/**"
+      - "!.markdownlint-cli2.yaml"
+      - "!LICENSE*"
+      - docs/interfaces/device-catalog.md         # generated, checked by gen_interface_docs --check
+      - docs/architecture/dependency-rules.yaml   # input of arch_check
+      - .github/workflows/ci.yml
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true  # a newer commit supersedes the running checks
+
+permissions:
+  contents: read
 
 env:
   GODOT_VERSION: 4.7.2
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      godot: ${{ steps.filter.outputs.godot }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v4.0.3
+        id: filter
+        with:
+          filters: |
+            godot:
+              - "godot/**"
+              - "tools/run_godot_tests.sh"
+              - "tools/run_line_simulation.sh"
+              - ".github/workflows/ci.yml"
+
   python-and-checks:
     runs-on: ubuntu-latest
     steps:
@@ -30,6 +78,8 @@ jobs:
         run: uv run gdlint .
 
   godot-tests:
+    needs: changes
+    if: needs.changes.outputs.godot == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

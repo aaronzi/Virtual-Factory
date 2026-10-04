@@ -3,6 +3,7 @@
 Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` (arc42) + `docs/adr/`.
 
 ## Commands
+
 - Backend: `docker compose -f infra/docker-compose.yml up -d [--build]` (project `vf`). Ports: 8091 AAS env,
   3001 UI, 1883/9001 MQTT, 8092 Operaton BPMN (demo/demo), 8093 BaSyx DPP API, 8094 maintenance, 8095 ops
   gateway, 8096 GS1 resolver, 8097 sustainability, 8098 ERP (status page), 8099 alarms, 8181 InfluxDB 3,
@@ -36,6 +37,7 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
   with `$include: "file#Key"`. DPP id = AAS id (BaSyx DPP API, ADR-0021).
 
 ## Rules
+
 - Module dependency rules in `docs/architecture/dependency-rules.yaml`: `core` depends on nothing; other modules
   only on `core`; `devices/<type>` isolated from each other; `factory` is the only composition root.
 - Limits: file ≤ 300 lines, function ≤ 40 lines, line ≤ 110 chars. Exceptions need an inline reason.

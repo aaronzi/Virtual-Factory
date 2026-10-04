@@ -1,0 +1,5 @@
+# Link check of the Markdown docs (CI: .github/workflows/markdown.yml). Offline: only repository-relative links and
+# their #anchors are checked; external URLs (and localhost endpoints of the running stack) are not fetched.
+offline = true
+include_fragments = "anchor-only"
+exclude_path = ["(^|/)godot/addons/", "(^|/)\\.venv/", "(^|/)build/", "(^|/)node_modules/"]

@@ -4,11 +4,13 @@
 - Date: 2026-10-03
 
 ## Context
+
 User decision at the M1 checkpoint: slow PCs come first, mobile platforms are not a target, and standalone VR may
 come later. M1 measurements: Compatibility was about 1.75× faster than Mobile on the same scene.
 The hall gets a roof, so the scene must stay well lit without daylight.
 
 ## Decision
+
 - `rendering_method = gl_compatibility` (OpenGL 3.3 / ES 3.0) for all platforms. It is also the usual choice for
   standalone XR in Godot.
 - Lighting without baked lightmaps (no editor bake step, works headless/CI):
@@ -35,7 +37,8 @@ NFR-01 budget updated: **≤ 450 draw calls and ≤ 250 k primitives, both inclu
 The original ≤ 300 did not account for the shadow pass.
 
 ## Consequences
-+ Runs on old iGPUs, and the same renderer can serve standalone XR.
-− No SSAO/SDFGI/volumetrics, so contact shadows come only from the directional shadow map.
-− Lighting is "studio-like" rather than physically accurate per luminaire. Baked LightmapGI (supported for rendering
+
+- \+ Runs on old iGPUs, and the same renderer can serve standalone XR.
+- − No SSAO/SDFGI/volumetrics, so contact shadows come only from the directional shadow map.
+- − Lighting is "studio-like" rather than physically accurate per luminaire. Baked LightmapGI (supported for rendering
   in Compatibility) is an optional future improvement (O7).

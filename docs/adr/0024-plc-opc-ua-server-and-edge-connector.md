@@ -6,6 +6,7 @@
   [ADR-0020](0020-control-component-and-aid-drive-commands.md); extends [ADR-0013](0013-aas-interfaces-generated-from-fmi.md)
 
 ## Context
+
 Until now the simulation published every device, including the line PLC, directly to MQTT (Godot UNS gateway),
 and the AID of every asset described only that MQTT interface. A real line controller does not speak UNS: it exposes
 an OPC UA server (increasingly with the PackML companion specification OPC 30050), and an edge gateway subscribes to
@@ -16,7 +17,9 @@ Godot has no OPC UA stack, and none is maintained for GDScript; a C++ GDExtensio
 pure-GDScript, export-everywhere setup and the CI on plain Godot binaries.
 
 ## Decision
+
 **Split the PLC like real hardware: CPU in Godot, communication module as a separate process.**
+
 - The PLC program stays an FMU in Godot (ADR-0008). A new GDScript class `PlcBackplane`
   (`godot/connectivity/plc_link/`) links the CPU to the **communication module** `plc-comm` (new service,
   `services/plc_comm`, Python asyncua 2.0.1) over a "backplane": newline-delimited JSON over TCP, port 4841, the CPU
@@ -50,6 +53,7 @@ pure-GDScript, export-everywhere setup and the CI on plain Godot binaries.
 
 **Edge connector** (`services/edge`, new service). It reads every AID that has an OPC UA *and* an MQTT interface
 and pairs the affordances by name (the AID describes the same data point twice):
+
 - property: OPC UA monitored item (sampling 0, queue 50, publishing interval = `telemetry.min_interval_s`, 100 ms)
   → retained UNS telemetry `{"v", "ts"}`, `ts` = SourceTimestamp (the simulation time base, as before);
 - event: OPC UA event of the type in the form → UNS event (flat JSON, `seq` = the PLC's event counter);
@@ -71,6 +75,7 @@ own MQTT telemetry as device twins (their I/O image is also in the PLC's tag tab
 
 **AID with an OPC UA interface (generated).** The provisioner adds `InterfaceOPCUA`
 (`InterfaceTemplateForOPCUA` of AID 1.1) for every controller in `opcua.servers`, next to `InterfaceMQTT`:
+
 - `EndpointMetadata.base` = server endpoint, `contentType` application/octet-stream (UA binary), security
   `opcua_channel_sc` (uav_securityMode None, uav_securityPolicy …#None) and `opcua_authentication_sc`
   (uav_userIdentityToken Anonymous) - the hook for the security phase.
@@ -99,13 +104,14 @@ maintenance check). `ExecuteSkill` applies the requested mode through `UnitModeC
 rejects it with "stop the line first" in other states.
 
 ## Consequences
-+ The OT side looks like a plant: PLC with an OPC UA server (browsable with UaExpert / asyncua), an edge connector,
+
+- \+ The OT side looks like a plant: PLC with an OPC UA server (browsable with UaExpert / asyncua), an edge connector,
   PackML methods; the AID describes the real southbound interface and is used at runtime by two services.
-+ UNS consumers are unchanged; the training data-flow view shows PLC01 → OPC UA server → edge → broker while the
+- \+ UNS consumers are unchanged; the training data-flow view shows PLC01 → OPC UA server → edge → broker while the
   backplane is linked.
-+ Unit modes are applied (prerequisite for the maintenance phase).
-− Two more containers and one more hop: PLC01 telemetry/events now take backplane → OPC UA subscription (100 ms
+- \+ Unit modes are applied (prerequisite for the maintenance phase).
+- − Two more containers and one more hop: PLC01 telemetry/events now take backplane → OPC UA subscription (100 ms
   publishing interval) → MQTT instead of a direct publish (measured in docs/architecture/runtime-ot-it.md).
-− The address space is "OPC 30050 structured", not conformant (O48). Security is None/Anonymous (O49). The edge has
+- − The address space is "OPC 30050 structured", not conformant (O48). Security is None/Anonymous (O49). The edge has
   no store-and-forward buffer: events during an MQTT outage are lost as before (O50 extends O17 to the edge).
-− The backplane carries the simulation's session id to the PLC (a simulation concept, documented in uns.md).
+- − The backplane carries the simulation's session id to the PLC (a simulation concept, documented in uns.md).

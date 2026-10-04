@@ -1,0 +1,22 @@
+# Markdown style for the docs, checked in CI (.github/workflows/markdown.yml).
+# Rules: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+config:
+  default: true
+  MD004:
+    style: dash  # unordered lists use "-"
+  MD013:
+    line_length: 120  # prose; tables and code blocks may be wider (long identifiers, URLs, aligned data)
+    tables: false
+    code_blocks: false
+  MD033:
+    allowed_elements: [a]  # <a id="..."> anchors for stable deep links
+  MD024:
+    siblings_only: true  # repeated headings like "Context" under different parents are fine
+  MD060: false  # table pipe alignment: compact tables are easier to maintain in diffs than aligned ones
+globs:
+  - "**/*.md"
+ignores:
+  - "godot/addons/**"
+  - "**/node_modules/**"
+  - ".venv/**"
+  - "build/**"

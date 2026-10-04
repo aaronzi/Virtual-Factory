@@ -9,4 +9,5 @@ VDA small load carrier (KLT 6428, 600 × 400 × 280 mm) on a stand: A = good par
 | View + actuator | `view/klt_greybox_view.gd`: box and stand. On an exchange event the items inside are retired. Provides palletizing teach markers `SlotOrigin`, `SlotRowEnd`, `SlotColEnd` |
 | Geometry | `model/klt_geometry.gd` |
 
-Geometry options: `color` (html), `stand_height` (0.55 m), `pick_height` (robot grip height above the part bottom, 0.15 m), `slot_span_x` (0.2), `slot_span_z` (0.36).
+Geometry options: `color` (html), `stand_height` (0.55 m), `pick_height` (robot grip height above the part bottom,
+0.15 m), `slot_span_x` (0.2), `slot_span_z` (0.36).

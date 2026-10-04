@@ -4,12 +4,14 @@
 - Date: 2026-10-03
 
 ## Context
+
 M5 adds the operator and learner interface: an AAS inspector for every asset (including each workpiece), the line
 HMI, the MES terminal with the BPMN user tasks (M4 review: tasks in the Tasklist *and* in the scene), training
 scenarios, a demo tour and a data-flow visualisation. The UI must stay XR-ready (ADR-0003) and respect the module
 rules (ADR-0006: `ui` depends only on `core`).
 
 ## Decision
+
 - **World-space panels** (`ui/world_panel`): a Control in a SubViewport on a quad; the `PointerRouter` raycasts the
   `PlayerRig` pointer each frame and forwards hover/press/release to `Interactable`s (`core/interaction`), which
   turn hits into viewport mouse events. Desktop mouse and a later XR controller ray use the same path. Physics
@@ -30,7 +32,8 @@ rules (ADR-0006: `ui` depends only on `core`).
   them live.
 
 ## Consequences
-+ The same panels work in VR later; the UI module stays independent of the backend clients and of devices.
-+ Learners see the real data path (data-flow view is driven by real UNS and BaSyx events).
-− SubViewport panels cost one render target each (4 panels, updated only when visible).
-− The inspector depends on the backend; without it the panel shows "no AAS found" while the factory keeps running.
+
+- \+ The same panels work in VR later; the UI module stays independent of the backend clients and of devices.
+- \+ Learners see the real data path (data-flow view is driven by real UNS and BaSyx events).
+- − SubViewport panels cost one render target each (4 panels, updated only when visible).
+- − The inspector depends on the backend; without it the panel shows "no AAS found" while the factory keeps running.

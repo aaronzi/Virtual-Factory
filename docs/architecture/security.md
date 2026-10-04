@@ -5,7 +5,7 @@ learners should see data flows, not fight logins. The optional **secure profile*
 ([ADR-0027](../adr/0027-optional-security-profile-keycloak-abac.md)) switches the *same* services to an
 authenticated, role-based mode that mirrors a realistic Industrie 4.0 deployment:
 
-```
+```bash
 docker compose -f infra/docker-compose.yml -f infra/docker-compose.secure.yml up -d --build
 ```
 
@@ -31,7 +31,7 @@ default secrets, denial of service, supply chain, physical access to the backpla
 
 ## 2. Trust boundaries
 
-```
+```text
  Browser / Godot (host)            ─── TB1: host → compose stack (HTTP 8091/8093/8096/…, ws 9001, opc.tcp 4840)
    │ user token (password grant / auth code + PKCE)
    ▼

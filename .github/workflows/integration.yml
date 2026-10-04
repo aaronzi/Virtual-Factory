@@ -2,14 +2,29 @@ name: Integration
 
 # Full stack (infra/docker-compose.yml + docker-compose.ci.yml) with a UNS-linked headless factory and
 # `pytest -m integration` (tools/ci_integration.sh, docs/development.md). A skipped test fails the job.
+# Runs only for changes that can affect the running stack (not for docs, Blender sources or other workflows).
 on:
   push:
     branches: [master]
+    paths:
+      - "**"
+      - "!**/*.md"
+      - "!docs/**"
+      - "!blender/**"
+      - "!.github/**"
+      - "!.markdownlint-cli2.yaml"
+      - "!LICENSE*"
+      - "!godot/**/tests/**"   # GUT unit tests run in ci.yml
+      - "!tools/run_godot_tests.sh"
+      - .github/workflows/integration.yml
   workflow_dispatch:
 
 concurrency:
   group: integration-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 env:
   GODOT_VERSION: 4.7.2

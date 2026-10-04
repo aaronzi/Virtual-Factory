@@ -7,6 +7,7 @@
   [ADR-0025](0025-service-decomposition-sustainability-erp.md), [ADR-0028](0028-supplier-environment-batch-aas-federated-footprints.md)
 
 ## Context
+
 Everything in the stack was open: anonymous MQTT, unauthenticated AAS / DPP / service APIs, OPC UA
 None/Anonymous, Grafana anonymous, Operaton demo/demo, Node-RED without login (O34, O46, O49). That is right for
 learning data flows, but a training on Industrie 4.0 must also show how a real plant protects its digital twins:
@@ -14,6 +15,7 @@ identities, roles, ownership of data, passport access levels, OT channel securit
 stay unchanged.
 
 Facts verified against BaSyx Go v1.1.0 (source and running containers, real Keycloak tokens):
+
 - `ABAC_ENABLED` activates OIDC (trust list: exact `iss`, `aud`, JWKS from the discovery document or
   `discoveryUrl`) and the ABAC engine. The AASX preload is imported without a token. Requests without a token are
   anonymous (`GLOBAL=ANONYMOUS`); rules for anonymous also apply to authenticated callers.
@@ -28,6 +30,7 @@ Facts verified against BaSyx Go v1.1.0 (source and running containers, real Keyc
   user name tokens and a permission ruleset per session user.
 
 ## Decision
+
 **Profile mechanics.** A compose override `infra/docker-compose.secure.yml` on top of the unchanged base file
 adds Keycloak and switches the existing services (environment, mounted rules, entrypoints) to authenticated mode;
 `docker compose -f infra/docker-compose.yml up -d --remove-orphans` returns to the open profile. All application
@@ -90,6 +93,7 @@ sections and names the withheld ones (from `contentSpecificationIds`); `linkType
 (`vf:aas`, `vf:aasDescriptor`) need a realm token - otherwise 401 with the token endpoint as login hint.
 
 ## Consequences
+
 - The open profile is unchanged (no variables → no headers, no checks; all default tests green). The secure
   profile is verified by `uv run pytest -m secure` against the running secure stack (real tokens: anonymous write
   refused, MES cannot write CarbonFootprint, sustainability can, public vs. recycler passport, consumer cannot
@@ -102,6 +106,7 @@ sections and names the withheld ones (from `contentSpecificationIds`); `linkType
   O56–O58.
 
 ## Alternatives considered
+
 - **Second compose file with copies of all services** - rejected: the profile must switch the existing
   services, not run a parallel stack.
 - **Mosquitto JWT auth plugin (go-auth)** - stronger (same identities as HTTP), but an extra image and plugin

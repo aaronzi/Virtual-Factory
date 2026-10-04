@@ -4,6 +4,7 @@
 - Date: 2026-10-03
 
 ## Context
+
 The device models never degraded: the line ran identically forever, the IDTA Reliability and
 MaintenanceInstructions templates were vendored but unused, and maintenance existed only as an interval plan of
 the robot (UR5E_TYPE). Predictive maintenance is a core Industrie 4.0 use case for training: a measurable
@@ -11,6 +12,7 @@ degradation, a prognosis that can be explained, a maintenance order that is plan
 technician task, the confirmation of the part change to the machine and the record in the digital twin.
 
 ## Decision
+
 **Degradation in the device model (FMI).** The fingers of gripper GR01 wear (abrasive pad wear, linear in the
 grips after Archard). It lives in the robot FMU RB01 (`devices/ur5e/model/gripper_wear.gd`, pure, seeded) because
 the gripper has no interface of its own. Smart-gripper diagnostics as FMI outputs: `finger_wear` (jaw position
@@ -26,6 +28,7 @@ scenario `gripper_wear` accelerates the wear 100 000-fold (training).
 **Maintenance service** (`services/maintenance`, port 8094, `infra/maintenance.json`): every 10 s it reads the
 component's history from the historian (SQL, rows of the session since the last part change, newest 200) and
 computes
+
 - health index HI = 1 - wear / limit;
 - remaining useful life by a least-squares line wear = a + b · cycles (wear is linear in the cycles): RUL =
   (limit - fitted wear) / b, one-sided 90 % lower bound with b + 1.28 s_b, hours at the throughput of the last
@@ -41,6 +44,7 @@ no trend). Results are published to the UNS (`{root}/maintenance/{component}/{in
 dashboard **Maintenance** (uid `vf-maintenance`).
 
 **AAS submodels and ownership** (GR01, after ADR-0025 each service writes only its own data):
+
 - `Reliability` (IDTA 1.0, IEC 62683): design sets of the gripper unit and the finger set (useful life,
   B10, MTTF) - manufacturer data, provisioned; the maintenance service appends and owns the observed set
   `…FingerSetObserved` (mean achieved grips per finger change, B10 from a Weibull wear-out model with assumed
@@ -55,12 +59,13 @@ dashboard **Maintenance** (uid `vf-maintenance`).
   maintenance service (changed values only).
 
 **Maintenance workflow** = BPMN process `MaintenanceOrder` (bpmn/maintenance_order.bpmn, deployed by the MES
-with all models, business key MO-<year>-<seq>, external tasks executed by the maintenance service):
+with all models, business key `MO-<year>-<seq>`, external tasks executed by the maintenance service):
 plan (user task: next order boundary or immediately) → ERP maintenance window → wait until the window is active
 → LineControl `ExecuteSkill(Maintain, Maintenance)` → technician user task (steps from MaintenanceInstructions;
 MES terminal or Tasklist) → `ExecuteSkill(Maintain, Maintenance, {"gripper_maintenance_reset": true})`, the
 device confirms on the UNS → `SetUnitMode(Production)`, window completed → MaintenanceRecord + observed
 Reliability, order closed.
+
 - **ERP maintenance windows** (`erp/maintenance.py`): a capacity reservation like a PM order on the work centre.
   While one is open the ERP releases no production order; a window requested during an order becomes active
   at the order boundary (the MES stops the line at order end anyway); `Immediate` interrupts the running order,
@@ -80,6 +85,7 @@ Reliability, order closed.
 (historian → maintenance → AAS / BPMN), training scenario `gripper_wear`.
 
 ## Alternatives
+
 - **Degradation in the IT layer only** (simulated sensor values): no effect on the machine, no failure mode.
 - **Wear model as a separate gripper FMU**: the gripper has no own controller or interface in the plant
   (TechnicalData: robot tool I/O); a separate FMU would need extra wiring for one grip event.
@@ -92,11 +98,12 @@ Reliability, order closed.
   alarm source decoupled exactly like the PLC.
 
 ## Consequences
-+ Realistic loop with observable symptoms, a checkable prognosis, planning around production orders, operator
+
+- \+ Realistic loop with observable symptoms, a checkable prognosis, planning around production orders, operator
   tasks, a confirmed part change and the record in the twin; the Reliability and MaintenanceInstructions
   templates are now used with real content.
-+ The line run and the other scenarios are unchanged (design wear 4e-10 m/grip).
-− One more service; ERP windows are in memory like the orders (O51). Wear state is not retentive: each Godot
+- \+ The line run and the other scenarios are unchanged (design wear 4e-10 m/grip).
+- − One more service; ERP windows are in memory like the orders (O51). Wear state is not retentive: each Godot
   session starts with new fingers (O62). The prognosis covers one wear mechanism and a linear model; observed
   B10 values from an accelerated scenario are not field data (O63). No authentication on the maintenance API
   and task completion (O64, security phase).

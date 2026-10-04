@@ -62,8 +62,35 @@ Running single integration tests by hand against a running stack and factory is 
   serial is never reused while the AAS database survives.
 
 ## Godot exit leak check
+
 The CI integration run fails if the first (cleanly quitting) factory session reports leaked objects or resources at
 exit. Typical cause: a lambda that touches members of a RefCounted object (e.g. `UnsGateway`) connected to a signal
 of an object it owns - the lambda captures `self`, the two keep each other alive and with them the co-simulation
 master and all device models. Connect such signals to methods instead. Locally: `godot --verbose --path godot --
 --vf-quit-after=20` and look for "Leaked instance" / "Resource still in use" at the end of the output.
+
+## CI workflows and dependency updates
+
+| Workflow | Runs on | Triggered by changes to |
+|---|---|---|
+| `ci.yml` | push to master, pull requests, manual | code, AAS data, config, infra (not Markdown, `docs/` except the generated device catalogue and the dependency rules, `blender/`, other workflows); the Godot job only for `godot/**` and its test scripts (`dorny/paths-filter`) |
+| `integration.yml` | push to master, manual | everything that can affect the running stack (not docs, Blender sources, GUT test files, other workflows) |
+| `markdown.yml` | push to master, pull requests, manual | `**/*.md`, `.markdownlint-cli2.yaml`, `lychee.toml` |
+
+All workflows cancel a running job of the same branch when a newer commit arrives. Markdown checks locally:
+
+```bash
+npx --yes markdownlint-cli2
+```
+
+```bash
+lychee --config lychee.toml --no-progress "./**/*.md"
+```
+
+`markdownlint-cli2 --fix` applies the safe fixes. Style: `.markdownlint-cli2.yaml` (prose lines ≤ 120 chars, tables and
+code blocks exempt, `-` for lists, `<a id>` anchors allowed). Links: `lychee.toml` (offline, relative links and
+anchors).
+
+Dependabot (`.github/dependabot.yml`) checks weekly: GitHub Actions, the uv workspace (`pyproject.toml`/`uv.lock`),
+the services' Dockerfile and the images in `infra/docker-compose*.yml` (BaSyx images grouped). `GODOT_VERSION` in the
+workflows and the vendored GUT addon are updated manually.

@@ -12,6 +12,7 @@ checked by `tools/arch_check.py`). It plugs into the factory only via its FMI va
 | Root | `DeviceNode` | Owns the model, collects probes/views, `world_to_device_frame()`, markers | — |
 
 Rules:
+
 - Scene file `devices/<type>/<type>.tscn` (naming convention used by `FactoryBuilder`).
 - Layout options for views/probes come from `DeviceNode.geometry`; model parameters come from the layout's
   `parameters`.

@@ -6,12 +6,14 @@
 - Date: 2026-10-03
 
 ## Context
+
 IT systems, workflows and AI agents should command the line through its AAS, not through MQTT topics they would have
 to know. Control Component 2.0 (ADR-0012) describes skills and endpoints but has no invocable operations. BaSyx Go
 1.1.0 supports operation invocation with **invocation delegation** (qualifier `invocationDelegation` = URL); the
 delegate URL must be allow-listed (`SMREPO_DELEGATION_TRUSTED_HOSTS`), including the resolved IP address.
 
 ## Decision
+
 - Custom template **LineControl** (LINE01) with Operations `ExecutePackMLCommand(Command)`, `ExchangeContainer(Container)`
   and `SetAutoExchange(Enabled)`, each with outputs `Accepted`, (`State`), `Message`, references to the controller
   AAS, its Control Component Instance and the current-state element.
@@ -22,7 +24,8 @@ delegate URL must be allow-listed (`SMREPO_DELEGATION_TRUSTED_HOSTS`), including
 - The gateway runs with a fixed IP in the compose network (172.30.42.95) because of BaSyx's resolved-address check.
 
 ## Consequences
-+ One call on the AAS (`POST .../LineControl/.../ExecutePackMLCommand/invoke`) starts or holds the line, end to end in
+
+- \+ One call on the AAS (`POST .../LineControl/.../ExecutePackMLCommand/invoke`) starts or holds the line, end to end in
   well under a second; the BPMN order process uses the same path.
-+ Rejections are explicit and explain the state model (useful for training and for agents).
-− The delegation allow-list is deployment configuration (host + IP); a different network layout needs an update.
+- \+ Rejections are explicit and explain the state model (useful for training and for agents).
+- − The delegation allow-list is deployment configuration (host + IP); a different network layout needs an update.

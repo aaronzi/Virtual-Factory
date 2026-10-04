@@ -17,12 +17,14 @@ Decision: VR is not implemented now, but the architecture must allow adding it w
 | Text legibility | ◐ | Panels at 1000–1100 px/m and 17–30 px fonts are readable at 0.6–1.2 m on desktop; to be checked in a headset |
 
 ## Enabling VR (when a headset is available)
+
 1. Project settings: `xr/openxr/enabled = true`, `xr/shaders/enabled = true` (Windows/Linux with an OpenXR
    runtime such as SteamVR or the Meta runtime).
 2. Start with `--vf-xr --vf-quality=0`.
 3. Add an XR export preset (Android for standalone headsets needs the OpenXR vendors plugin).
 
 ## Open points
+
 - Scrolling uses `PlayerRig.pointer_scrolled` (wheel steps): desktop mouse wheel/trackpad, XR right thumbstick
   up/down (the left thumbstick moves, right left/right snap-turns); the PointerRouter forwards it to the panel
   under the ray (O32).

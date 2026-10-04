@@ -45,6 +45,7 @@ See the [conformance report](conformance-report.md): 100 % architecture adherenc
 ## 5. Limitations and next steps
 
 Tracked in [open-issues.md](open-issues.md). The most relevant:
+
 - VR is prepared but not tested on a headset (R10, O32); an XR menu panel is missing.
 - PCF production losses are shared per session, so early parts carry noisy loss shares (R9); generated black-box
   cell data (O23).

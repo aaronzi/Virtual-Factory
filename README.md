@@ -15,23 +15,26 @@ AAS operations.
 ![Training UI: AAS inspector in the factory](docs/screenshots/m5-inspector-rb01.png)
 
 ## Quick start
+
 ```bash
 docker compose -f infra/docker-compose.yml up -d     # BaSyx Go, AAS Web UI, MQTT, Operaton, bridge, MES, ops gateway
 /Applications/Godot.app/Contents/MacOS/Godot --path godot
 ```
+
 Or run a desktop build (`tools/export_builds.sh` → `build/VirtualFactory-{macos,windows,linux}.zip`).
 
 | What | Where |
 |---|---|
 | Factory (click devices/parts for their AAS, Esc menu) | Godot app |
-| AAS Web UI / AAS API | http://localhost:3001 · http://localhost:8091 |
-| Digital product passports (BaSyx DPP API) | http://localhost:8093/swagger |
-| BPMN Cockpit / Tasklist (demo/demo) | http://localhost:8092/operaton/app/ |
+| AAS Web UI / AAS API | <http://localhost:3001> · <http://localhost:8091> |
+| Digital product passports (BaSyx DPP API) | <http://localhost:8093/swagger> |
+| BPMN Cockpit / Tasklist (demo/demo) | <http://localhost:8092/operaton/app/> |
 | MQTT (UNS) | localhost:1883, ws://localhost:9001 |
-| Live dashboard *LINE01 live* (Grafana; read-only, log in as admin/editor to edit) | http://localhost:3002 |
-| Node-RED sandbox (optional, `--profile sandbox`) | http://localhost:1880 |
+| Live dashboard *LINE01 live* (Grafana; read-only, log in as admin/editor to edit) | <http://localhost:3002> |
+| Node-RED sandbox (optional, `--profile sandbox`) | <http://localhost:1880> |
 
 ## Documentation
+
 - [User guide](docs/user-guide.md) · [scenario walkthrough](docs/training/scenario-walkthrough.md)
 - [Requirements](docs/requirements.md) · [architecture (arc42)](docs/architecture/README.md) · [ADRs](docs/adr/README.md)
 - Interfaces: [FMI](docs/interfaces/fmi-interface.md) · [UNS](docs/interfaces/uns.md) ·
@@ -41,6 +44,7 @@ Or run a desktop build (`tools/export_builds.sh` → `build/VirtualFactory-{maco
 - [Development and CI](docs/development.md): checks, CI workflows, integration suite (`tools/ci_integration.sh`)
 
 ## Repository layout
+
 | Path | Content |
 |---|---|
 | `godot/` | Godot 4.7 project: device models (FMI-3-aligned), virtual PLC, UNS gateway, training UI, 3D world |

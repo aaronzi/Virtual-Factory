@@ -4,12 +4,14 @@
 - Date: 2026-10-03
 
 ## Context
+
 The historian (ADR-0019) records every UNS value of a session in InfluxDB 3 Core, but the only ways to look at it
 were SQL over HTTP and the AAS TimeSeries LinkedSegment. Trainers and learners want a live process view (state,
 output, quality, energy) next to the 3D factory, without accounts for every viewer, while trainers must be able to
 adapt the dashboards.
 
 ## Decision
+
 - **Grafana OSS** `grafana/grafana:13.2.3` as compose service `grafana`, host port 3002. Configuration in
   `infra/grafana/` (read-only mounts): `grafana.ini`, provisioning of the data source and the dashboard provider,
   the dashboard JSON `dashboards/line01-live.json` (source of truth) and a small entrypoint wrapper.
@@ -40,6 +42,7 @@ adapt the dashboards.
 - The training UI menu has an entry *Open dashboard (Grafana)* (`backend.json` `grafana_url`, `OS.shell_open`).
 
 ## Alternatives
+
 - **InfluxQL v1 compatibility** (`/query`) of InfluxDB 3: works without gRPC, but InfluxQL lacks window functions,
   CTEs and subqueries needed for counters, OEE and state look-back; SQL is also what the AAS LinkedSegment uses.
 - **Grafana "Infinity"/JSON API on `/api/v3/query_sql`**: needs a community plugin download and loses the
@@ -50,9 +53,10 @@ adapt the dashboards.
   dashboard itself is editable when logged in.
 
 ## Consequences
-+ Live process view for every visitor without login, consistent with the AAS (same historian, same columns).
-+ Dashboard as code in the repository; data source and dashboard survive restarts and `down`.
-− One more container (~450 MB image). Local default passwords (O34); anonymous viewers can run arbitrary read
+
+- \+ Live process view for every visitor without login, consistent with the AAS (same historian, same columns).
+- \+ Dashboard as code in the repository; data source and dashboard survive restarts and `down`.
+- − One more container (~450 MB image). Local default passwords (O34); anonymous viewers can run arbitrary read
   queries through the data source proxy (InfluxDB has no auth anyway).
-− UNS timestamps are simulation time: at 2×/4× speed they run ahead of the wall clock, so data appears "in the
+- − UNS timestamps are simulation time: at 2×/4× speed they run ahead of the wall clock, so data appears "in the
   future" of a relative time range (O43). The OEE performance uses the default takt, not a changed `takt_time` (O42).

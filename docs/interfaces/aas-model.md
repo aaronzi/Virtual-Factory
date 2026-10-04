@@ -121,6 +121,7 @@ the FMI model description, the layout or the UNS registry.
 | DataRetentionPolicies | I 1.0 | | ● | | | | | | | | | | | |
 
 Rationale for the main choices:
+
 - **Product passport (DPP/DBP):**
   - DppMetadata, Nameplate, TechnicalData, CarbonFootprint and HandoverDocumentation come from IDTA.
   - Material composition and circularity use custom generalisations of the DBP templates. The DBP versions contain
@@ -174,12 +175,14 @@ Rationale for the main choices:
 
   `href` uses the expanded NodeId with the namespace URI (`nsu=`), so it does not depend on the namespace index;
   the browse path uses index 2, which `plc-comm` guarantees (it warns otherwise). Example (packml_state):
+
   ```json
   {"idShort": "packml_state", "type": "integer", "title": "PackML state (ISA-TR88: 2 Stopped, 4 Idle, …)",
    "observable": true, "forms": {"href": "?id=nsu=urn:virtual-factory:plant01:line01:plc01;s=PLC01.Status.StateCurrent",
    "security": ["→ opcua_channel_sc", "→ opcua_authentication_sc"],
    "uav_browsePath": "/0:Objects/2:PLC01/2:Status/2:StateCurrent"}}
   ```
+
 - **Process values (slim AAS, ADR-0019):** every FMI output gets a concept description (unit, definition) and is
   described in the AID, but the AAS stores only **state and slow values**: OperationalData process values and AIMC
   mappings exist for outputs with FMI variability `discrete` (Boolean/Int32/String and per-event Float64 values such
@@ -308,8 +311,8 @@ nominal between min/max).
      supplier batch footprints. Per component the service reports `dataQuality` (`primary`/`secondary`) on
      `/api/footprints`.
   The declared type PCF (4.2 kg) additionally covers upstream manufacturing at suppliers.
-- **EnergyConsumption** (devices + LINE01 totals): `OperationalCO2eq`, `LastUpdate`, `MeasurementStart` (session
-  start) maintained by the sustainability service; `TimeSeries` references the device's TimeSeries submodel (history in the
+- **EnergyConsumption** (devices + LINE01 totals): `OperationalCO2eq`, `LastUpdate`, `MeasurementStart` (session start)
+  maintained by the sustainability service; `TimeSeries` references the device's TimeSeries submodel (history in the
   historian, see §3; the MES no longer writes time-series records).
 - **LINE01 KPIs** (02066): production, busy, delay (Suspended) and down time from PackML state durations; good,
   inspected, produced, scrap quantities from the PLC counters.
@@ -355,7 +358,7 @@ Every workpiece AAS is a self-contained passport of its part, readable through t
 **As-built BoM (IDTA 02011-1-1 HierarchicalStructures 1.1, ArcheType Full).** Same node idShorts and BulkCounts as
 the type BoM (the sustainability service reads the type BoM for the component footprints):
 
-```
+```text
 EntryNode (SelfManagedEntity, globalAssetId = Digital Link of the part)
 ├─ Barrel (CoManagedEntity, displayName "Barrel, batch L2609-0419")
 │    BulkCount 1 · BatchId L2609-0419 · SameAs → PC3280_TYPE/HierarchicalStructures/EntryNode.Barrel
@@ -419,6 +422,7 @@ RB01 AID action `gripper_maintenance_reset`).
 ## 7. Asset data format (`aas/data/assets/<TAG>.yaml`)
 
 See `services/vf_common/src/vf_common/aas/environment.py` and `instantiate.py`. In short:
+
 - `tag`, `idShort`, `kind`, `assetType`, `displayName`, `description`, `derivedFrom`, `thumbnail`,
   `specificAssetIds`, `globalAssetId` (optional, default `…/ids/asset/<TAG>`; also used by `${asset:TAG}`),
   `idBase` (optional id namespace of another organisation, e.g. a supplier in `aas/data/supplier/`; replaces

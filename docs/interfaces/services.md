@@ -3,7 +3,7 @@
 All services are Python packages in `services/` (one image `vf-services:dev`, repository mounted read-only at `/repo`)
 and run in the compose stack `infra/docker-compose.yml`. The Godot simulation runs on the host.
 
-```
+```text
 Godot (FMUs, PLC) ──UNS/MQTT──► bridge ──REST $value──► BaSyx Go (AAS) ◄──REST── mes ◄──external tasks── Operaton
        ▲                          ▲                        │      ▲               │  ▲                    (BPMN)
        │                          └─── AIMC/AID (REST) ────┘      │ invoke        │  └──UNS events (MQTT)
@@ -232,7 +232,7 @@ referenced when the MES replaces the shell and are deleted with it. Serial numbe
   MaterialConsumedActual (article, lot, parts × BulkCount). A PLC counter restart (new session) keeps the order's
   progress (baseline rebased). Order tasks retry every 15 s for an hour (line/ERP unavailable) before an incident.
 
-**External-task topics**
+### External-task topics
 
 | Topic | Process | Effect |
 |---|---|---|
@@ -341,9 +341,9 @@ curl -s "$SUP/lookup/shells?assetIds=$(link gtin 04099994010016)"   # supplier t
 ISA-18.2 alarm management and UNS event journal (ADR-0026), port 8099, database `alarms-db` (TimescaleDB).
 
 - **Inputs** (UNS registry): `{root}/plc01/active_alarms` (alarm word: all active PLC alarms, e.g. `100,201`;
-  `alarm_code` as fallback until it arrives), `{root}/maintenance/active_alarms` (advisory alarm word of the
-  maintenance service, source MAINTENANCE, merged with the PLC alarms; ADR-0029), `{root}/plc01/packml_state`, session/status, `{root}/+/event/+`,
-  `{root}/+/cmd/+`, `{root}/+/cmd-resp/+`.
+  `alarm_code` as fallback until it arrives), `{root}/maintenance/active_alarms` (advisory alarm word of the maintenance
+  service, source MAINTENANCE, merged with the PLC alarms; ADR-0029), `{root}/plc01/packml_state`, session/status,
+  `{root}/+/event/+`, `{root}/+/cmd/+`, `{root}/+/cmd-resp/+`.
 - **Master alarm database** `infra/alarms.json`: per code texts en/de, priority (Critical/High/Medium/Low), class,
   PLC reaction, response time, consequence, remedy, `suppressed_by` (consequential alarms, e.g. 201 while the E-stop
   100 is active) and `suppress_in_states` (e.g. 401 while STOPPED/ABORTED); shelving maximum 8 h; stale after 1 h;
@@ -473,8 +473,8 @@ API call. Lot changes per feeder: [aas-model.md §6b](aas-model.md#6b-item-level
 
 `POST /operations/{ExecutePackMLCommand|SetUnitMode|ExchangeContainer|SetAutoExchange|ExecuteSkill}` with the
 OperationVariable array sent by BaSyx; returns the output variables (`Accepted`, `State` for
-ExecutePackMLCommand/SetUnitMode/ExecuteSkill, `Message`). PackML commands are checked against the state model before they are sent and confirmed by the resulting
-state. Timeouts: 3 s acknowledgement / OPC UA call, 10 s state.
+ExecutePackMLCommand/SetUnitMode/ExecuteSkill, `Message`). PackML commands are checked against the state model before
+they are sent and confirmed by the resulting state. Timeouts: 3 s acknowledgement / OPC UA call, 10 s state.
 
 **Transport per endpoint (ADR-0024).** An endpoint whose AID affordance is in an interface with an `opc.tcp://`
 base is executed over OPC UA: actions are method calls (`href` = method, called on its parent object, argument
@@ -487,7 +487,7 @@ robot RB01's MQTT interface, ADR-0029); the asyncua client reconnects by itself.
 **Configuration from the AAS (ADR-0020).** Nothing about topics is configured in the gateway or read from
 `uns.json`:
 
-```
+```text
 LINE01/LineControl.ControlComponent ──► PLC01/ControlComponentInstance
     Endpoints.PackMLState     ──EndpointReference──► AID properties.packml_state  (OPC UA: href = node;
     Endpoints.UnitMode        ───────────────────► AID properties.unit_mode         MQTT: topic, value key v)
@@ -531,10 +531,12 @@ curl -X POST -H 'Content-Type: application/json' "http://localhost:8091/submodel
 ## plc-comm
 
 The communication module of PLC01 (ADR-0024): one process with the OPC UA server (asyncua 2.0.1,
-`opc.tcp://0.0.0.0:4840/vf/plc01`, security None / Anonymous; secure profile: only Basic256Sha256 SignAndEncrypt
-with user name tokens from `VF_OPCUA_USERS`, method calls for `operate` accounts - ADR-0027, O57) and the backplane server (TCP 4841) for the
-simulated CPU in Godot. The address space is built at start-up from the FMI model description of PLC01 (asset data)
-and `opcua.servers.PLC01` in `godot/config/uns.json`; node list in [uns.md](uns.md#opc-ua-path-plc01).
+`opc.tcp://0.0.0.0:4840/vf/plc01`, security None / Anonymous; secure profile: only Basic256Sha256 SignAndEncrypt with
+user name tokens from `VF_OPCUA_USERS`, method calls for `operate` accounts - ADR-0027, O57) and the backplane server
+(TCP 4841) for the simulated CPU in Godot. The address space is built at start-up from the FMI model description of
+PLC01 (asset data) and `opcua.servers.PLC01` in `godot/config/uns.json`; node list in
+[uns.md](uns.md#opc-ua-path-plc01).
+
 - One CPU at a time (a new connection replaces the old one). Every image message updates the changed nodes with the
   CPU's timestamp; without CPU all process values are BadNoCommunication and `Diagnostics.CpuConnected` is false.
 - Method call → `write` on the backplane → CPU applies it between two master steps → `result` → status code
@@ -572,7 +574,7 @@ never resolves, so clients put the path onto this resolver (as the inspector act
 | `GET /01/{gtin}/21/{serial}`, `GET /01/{gtin}` | 307 → default link (passport page); `Link` header with the linkset and all links; 404 unknown, 400 bad GTIN |
 | `?linkType=gs1:pip` / `gs1:certificationInfo` / `gs1:instructions` / `gs1:sustainabilityInfo` / `vf:dpp` / `vf:aas` / `vf:aasDescriptor` | 307 → first link of that type (default link if missing) |
 | `?linkType=linkset` (or `all`), `Accept: application/linkset+json` | 200 RFC 9264 linkset, relation keys are full link-type URIs (`https://gs1.org/voc/…`, `https://virtual-factory.example/voc/…`) |
-| `GET /passport/01/{gtin}[/21/{serial}]` | passport page (HTML, `?lang=en|de` or `Accept-Language`): public DPP sections only |
+| `GET /passport/01/{gtin}[/21/{serial}]` | passport page (HTML, `?lang=en\|de` or `Accept-Language`): public DPP sections only |
 | `GET /.well-known/gs1resolver`, `GET /health` | resolver description, health |
 
 Resolution: discovery (`globalAssetId` = canonical Digital Link) → registry descriptor (AAS links), and DPP API

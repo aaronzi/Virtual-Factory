@@ -339,7 +339,6 @@ The services resolve the same way at start-up: the bridge reads ~10 AIMC submode
 the ops gateway finds `LineControl` from `…/ids/asset/LINE01`, and the MES finds AID events, LineControl, PLC01
 OperationalData and the product type.
 
-
 ## 7. Supplier batch: staging, despatch advice, batch AAS, federated PCF (ADR-0028)
 
 ```mermaid

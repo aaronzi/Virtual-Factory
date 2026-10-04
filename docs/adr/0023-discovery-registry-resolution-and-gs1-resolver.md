@@ -6,6 +6,7 @@
   [ADR-0021](0021-item-level-dpp-basyx-dpp-api.md)
 
 ## Context
+
 All clients (bridge, MES, ops gateway, Godot inspector) built AAS and submodel ids from the id scheme
 (`vf_common.ids.aas_id(tag)`, `submodel_id(tag, idShort, version)`, `AasClient.aas_id`) and called the AAS
 repository at one fixed URL. Real deployments do not work like that. A client knows an **asset id** (globalAssetId
@@ -15,6 +16,7 @@ company's environment. The products already carry GS1 Digital Links as globalAss
 resolved them, and the part model showed a fake data matrix.
 
 Facts verified on the running BaSyx Go AAS environment 1.1.0 (port 8091):
+
 - `/lookup/shells?assetIds=<base64url({"name","value"})>` (discovery) is populated from the shells, including
   specific asset ids (`serialNumber`, `manufacturerPartId`); several `assetIds` must all match.
 - `GENERAL_AASREGISTRYINTEGRATION` / `GENERAL_SUBMODELREGISTRYINTEGRATION` register every shell and submodel,
@@ -25,9 +27,11 @@ Facts verified on the running BaSyx Go AAS environment 1.1.0 (port 8091):
 - The DPP API (8093) finds an item passport by product id = globalAssetId (`/v1/dppsByProductId/<DL>`).
 
 ## Decision
+
 **Resolution chain in all clients.** `vf_common.resolver.AasResolver` implements
 asset id → discovery → AAS id → AAS registry → shell endpoint, submodel ids → submodel registry → idShort,
 semanticId, endpoint → repository client for that endpoint.
+
 - `RegistryConfig` lists **several environments** (`VF_AAS_REGISTRIES`: `name=base,...` or a JSON list with
   separate discovery / AAS registry / submodel registry URLs). The first environment that knows an id wins, so a
   supplier's environment can be added without code changes. `VF_AAS_ENDPOINT_MAP` rewrites public descriptor URLs
@@ -56,6 +60,7 @@ semanticId, endpoint → repository client for that endpoint.
   are written. Concept descriptions have no registry and are read from the own repository.
 
 **GS1 Digital Link resolver** (`services/resolver`, compose `resolver`, port 8096, stdlib HTTP server):
+
 - `GET /01/{gtin}[/21/{serial}]`: the GTIN check digit is validated. The resolver looks up the canonical URI
   (`https://virtual-factory.example/01/…`) as globalAssetId in discovery/registry and in the DPP API. It answers
   307 to the default link (passport page) with a `Link` header that lists all links. `?linkType=<CURIE or URI>`
@@ -84,6 +89,7 @@ it is done, the label shows the QR of the product type. The inspector action *Sc
 opens the resolver URL of the workpiece's globalAssetId and replaces *Open passport (DPP API)*.
 
 ## Consequences
+
 - No client builds AAS or submodel ids for reading. The same code reads AAS from a second environment once it is
   listed in `VF_AAS_REGISTRIES` / `aas_registries`. Its endpoints must be reachable or mapped.
 - First access per AAS costs one discovery call plus one registry call per AAS and submodel (cached afterwards).

@@ -4,17 +4,22 @@
 > with implementation details as each milestone is completed.
 
 ## 1. Introduction and goals
+
 See [requirements.md](../requirements.md). Top quality goals:
+
 1. **Realism** of data flows and assets (NFR-07)
 2. **Modularity and extensibility**, measured adherence ≥ 95 % (NFR-03/04)
 3. **Performance** on slow hardware and XR-readiness (NFR-01/02)
 
 ## 2. Constraints
-- Godot 4.7 (GDScript, Compatibility renderer), Blender 5.2 via MCP, Eclipse BaSyx Go 1.1.0 (AAS API V3.2), Python 3.12 + basyx-python-sdk.
+
+- Godot 4.7 (GDScript, Compatibility renderer), Blender 5.2 via MCP, Eclipse BaSyx Go 1.1.0 (AAS API V3.2), Python
+  3.12 + basyx-python-sdk.
 - Local, single-machine deployment with docker compose. No authentication (local development only).
 - Device models aligned with FMI 3.0 Co-Simulation (ADR-0002).
 
 ## 3. Context and scope
+
 ```mermaid
 flowchart LR
   Trainee([Trainee / Student / Operator]) --> VF[Virtual Factory<br/>Godot]
@@ -34,6 +39,7 @@ flowchart LR
 ```
 
 ## 4. Solution strategy
+
 | Goal | Approach |
 |---|---|
 | Realistic data flow | OT/IT split: devices + virtual PLC in Godot → MQTT UNS → edge services → AAS (ADR-0005); the PLC exposes an OPC UA server (separate communication module) read by an edge connector, smart devices publish MQTT (ADR-0024) |
@@ -43,7 +49,9 @@ flowchart LR
 | Measurable architecture | `tools/arch_check.py`, gdlint, `tools/complexity_check.py` in CI |
 
 ## 5. Building block view
+
 ### Level 1: repository
+
 | Block | Path | Responsibility |
 |---|---|---|
 | Godot simulation | `godot/` | 3D world, device models, virtual PLC (CPU; backplane link to its OPC UA module), MQTT gateway, AAS inspector |
@@ -55,6 +63,7 @@ flowchart LR
 | Tooling | `tools/` | Architecture/complexity checks, test runners, screenshot helper |
 
 ### Level 2: Godot modules
+
 Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 
 | Module | Responsibility | May depend on |
@@ -71,10 +80,12 @@ Dependency rules: [dependency-rules.yaml](dependency-rules.yaml) (ADR-0006).
 | `factory` | **Composition root**: layout loading, wiring, main scene, training-UI controllers (inspector, HMI, tasks, menu, data flow, asset picking, local commands) | all |
 
 ## 6. Runtime view
+
 - [Life cycle of one part](runtime-part-lifecycle.md) (OT layer, M1)
 - [OT/IT data flow, workpiece AAS and agent operation](runtime-ot-it.md) (M4)
 
 ## 7. Deployment view
+
 | Container | Image | Host port |
 |---|---|---|
 | aas-env | `eclipsebasyx/aasenvironment-go:1.1.0` | 8091 |
@@ -116,6 +127,7 @@ lists both environments in `VF_AAS_REGISTRIES` and maps their public descriptor 
 the compose hosts (`aas-env`, `supplier-aas-env`) with `VF_AAS_ENDPOINT_MAP`.
 
 ## 8. Crosscutting concepts
+
 - **ID scheme**: `services/vf_common/src/vf_common/ids.py` (base `https://virtual-factory.example/ids`) - how ids
   are minted; products are identified by GS1 Digital Links (ADR-0021).
 - **Identification and resolution** ([ADR-0023](../adr/0023-discovery-registry-resolution-and-gs1-resolver.md)):
@@ -126,7 +138,8 @@ the compose hosts (`aas-env`, `supplier-aas-env`) with `VF_AAS_ENDPOINT_MAP`.
   suppliers publish company, product type and batch AAS in their own environment (own id namespaces, `idBase`);
   purchased batches are SelfManaged BoM nodes identified by the batch Digital Link (`/01/<GTIN>/10/<lot>`); the
   PCF reads batch footprints through federated discovery and records the data quality (primary/secondary).
-- **Units**: SI throughout (m, s, rad, W, kWh, kg CO₂e). 1 Godot unit = 1 m. Godot is Y-up; the robot base frame is Z-up (converted in the robot view).
+- **Units**: SI throughout (m, s, rad, W, kWh, kg CO₂e). 1 Godot unit = 1 m. Godot is Y-up; the robot base frame is Z-up
+  (converted in the robot view).
 - **FMI-3 interface**: [interfaces/fmi-interface.md](../interfaces/fmi-interface.md), generated [device catalogue](../interfaces/device-catalog.md)
 - **Device modules** (model / probe / view / root, services, teach points): [device-modules.md](device-modules.md)
 - **Virtual PLC**: a PLC program is an FMI slave whose variables are the process image; IEC 61131-3 FBs
@@ -175,15 +188,19 @@ the compose hosts (`aas-env`, `supplier-aas-env`) with `VF_AAS_ENDPOINT_MAP`.
   ([ADR-0024](../adr/0024-plc-opc-ua-server-and-edge-connector.md))
 
 ## 9. Architecture decisions
+
 See [adr/](../adr/README.md).
 
 ## 10. Quality requirements
+
 See NFRs in [requirements.md](../requirements.md#3-non-functional-requirements).
 
 ## 11. Risks and technical debt
+
 See [open-issues.md](../open-issues.md).
 
 ## 12. Glossary
+
 | Term | Meaning |
 |---|---|
 | AAS | Asset Administration Shell (IEC 63278), the standardised digital twin |

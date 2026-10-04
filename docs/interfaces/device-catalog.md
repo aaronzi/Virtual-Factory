@@ -178,7 +178,8 @@ Retro-reflective photoelectric sensor with response-time filter and dark/light-o
 
 ## ColorInspectionStation
 
-Quality assurance station with a true-colour sensor: CIELAB delta-E comparison against a taught colour, lens contamination and drift injection
+Quality assurance station with a true-colour sensor: CIELAB delta-E comparison against a taught colour, lens
+contamination and drift injection
 
 - Model description: `godot/devices/qa_station/model/modelDescription.xml`
 - modelIdentifier: `qa_station` · instantiationToken: `{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e03}`
@@ -240,7 +241,8 @@ Signal tower with green/amber/red LED segments and buzzer (24 V DC), driven by t
 
 ## UR5e
 
-Universal Robots UR5e with 2-finger gripper: analytic IK, URScript-like movej/movel pick & place program, power model, gripper finger wear with regrip and smart-gripper diagnostics
+Universal Robots UR5e with 2-finger gripper: analytic IK, URScript-like movej/movel pick & place program, power model,
+gripper finger wear with regrip and smart-gripper diagnostics
 
 - Model description: `godot/devices/ur5e/model/modelDescription.xml`
 - modelIdentifier: `ur5e` · instantiationToken: `{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e06}`
@@ -331,7 +333,8 @@ Universal Robots UR5e with 2-finger gripper: analytic IK, URScript-like movej/mo
 
 ## Line layout `LINE01`
 
-Inspection & sorting line: AC01 -> CV01 (LB01, LB02) -> QS01 -> RB01 -> KLT A/B; SL01 stack light on the control cabinet. World: +X = material flow, Y up, metres.
+Inspection & sorting line: AC01 -> CV01 (LB01, LB02) -> QS01 -> RB01 -> KLT A/B; SL01 stack light on the control
+cabinet. World: +X = material flow, Y up, metres.
 
 | Device | Type | Position (m) |
 |---|---|---|

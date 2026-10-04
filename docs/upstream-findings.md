@@ -4,7 +4,7 @@
 > session notes, each **re-verified** against the pinned versions. **Nothing has been filed upstream yet**; the
 > last section lists draft issue titles for review.
 
-**Pinned versions and evidence**
+## Pinned versions and evidence
 
 | Component | Version | How verified |
 |---|---|---|
@@ -97,15 +97,19 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ### 1.1 AAS Environment / Submodel Repository API
 
 <a id="bsg-01"></a>
+
 #### BSG-01 Value-only `$value` uses JSON strings for numbers and booleans, rejects typed JSON
+
 - **Component:** AAS Environment 1.1.0, `PATCH/GET .../submodel-elements/{path}/$value`, `GET /submodels/{id}/$value`
 - **Class / severity:** Bug / Medium - every client that follows the spec fails on writes and must special-case reads.
 - **Reproduction** (Property `D` `xs:double`, `B` `xs:boolean`, `I` `xs:int`):
+
   ```bash
   curl -X PATCH -H 'Content-Type: application/json' -d '0.25'   "$AAS/submodels/$SM/submodel-elements/D/\$value"  # 400
   curl -X PATCH -H 'Content-Type: application/json' -d '"0.25"' "$AAS/submodels/$SM/submodel-elements/D/\$value"  # 204
   curl "$AAS/submodels/$SM/\$value"   # {"B":"false","D":"0.25","I":"7",...}
   ```
+
   400 text: `failed to unmarshal SubmodelElementValue: json: cannot unmarshal number into Go value of type
   []jsontext.Value` (same for `false`, `7`).
 - **Expected:** ValueOnly encoding (Part 1 V3.1/V3.2 *Mappings › ValueOnly*, data type table; Part 2 V3.0 for
@@ -118,7 +122,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   (`services/vf_common/src/vf_common/basyx.py:95-101`); readers convert by `valueType`.
 
 <a id="bsg-02"></a>
+
 #### BSG-02 `semanticId` query only accepts base64url Reference JSON and matches the reference type exactly
+
 - **Component:** AAS Environment 1.1.0, `GET /submodels?semanticId=` (also `/shells` and registries)
 - **Class / severity:** Usability / Medium - clients written against the literal Part 2 text get 400; references
   of the "wrong" type are never found.
@@ -130,6 +136,7 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   | `urn:upstream-test:sem:1` (unencoded) | 400 `COMMON-APIPARAM-ALPHABET expected base64url` |
   | base64url(`{"type":"ExternalReference","keys":[{"type":"GlobalReference","value":"urn:..."}]}`) (compact, pretty, keys first) | 200, found |
   | base64url(`{"type":"ModelReference","keys":[{"type":"Submodel","value":"urn:..."}]}`) | 200, **not found** |
+
 - **Expected:** Part 2 V3.0.4 and V3.2.0 (`Part2-API-Schemas`, parameter `SemanticId`) describe the parameter as
   "the value of the semantic id reference (BASE64-URL-encoded)" - the most natural reading is the key value. The
   spec does not define reference encoding or matching (AAS-01). BaSyx's choice (full Reference JSON, exact match)
@@ -142,7 +149,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   lookups query both reference forms (`services/vf_common/src/vf_common/aid.py:161-166`, `mes/store.py:26`).
 
 <a id="bsg-03"></a>
+
 #### BSG-03 No metamodel constraint validation on write
+
 - **Component:** AAS Environment 1.1.0, `POST/PUT /submodels`
 - **Class / severity:** Usability / Medium - invalid models are stored and served; strict clients
   (basyx-python-sdk, aas-core) then fail on read, far away from the cause.
@@ -156,6 +165,7 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   | SML `typeValueListElement: Property` containing a MultiLanguageProperty | AASd-108 |
   | idShort `X` | AASd-002 (V3.1+ form) |
   | semanticId key value `" 0173-1#02-ABH961#002"` (leading space) | none, but never matches its CD |
+
 - **Expected:** Part 2 asks for validation only for bulk requests ("should", `http-rest-api.adoc` §Bulk) - see
   AAS-02. Rejecting (400) or at least warning on constraint violations would match what BaSyx already does for
   some V3.1 idShort rules during AASX import (warnings, R2).
@@ -163,7 +173,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   `uv run tools/check_aasx.py`) before upload (ADR-0011).
 
 <a id="bsg-04"></a>
+
 #### BSG-04 Delegation allowlist needs the resolved IP of every target, no CIDR
+
 - **Component:** Submodel Repository / AAS Environment 1.1.0, `SMREPO_DELEGATION_TRUSTED_HOSTS`
 - **Class / severity:** Usability / Low - deliberate DNS-rebinding protection, but in Docker/Kubernetes target
   IPs are dynamic, so deployments need static IPs.
@@ -178,7 +190,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** fixed compose subnet and IP for the ops gateway (`infra/docker-compose.yml:42, 121`, O20).
 
 <a id="bsg-05"></a>
+
 #### BSG-05 Change events only at submodel granularity
+
 - **Component:** AAS Environment 1.1.0, MQTT eventing (experimental)
 - **Class / severity:** Usability / Low - documented (`docu/eventing/mqtt_eventing.md`: nested elements and
   values "use the existing mutation triggers"); consumers must re-read the whole submodel per event.
@@ -192,7 +206,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ### 1.2 Registry and discovery integration
 
 <a id="bsg-06"></a>
+
 #### BSG-06 Shell descriptors embed submodel descriptors without idShort and semanticId
+
 - **Component:** AAS Environment 1.1.0 registry integration
 - **Class / severity:** Usability / Low - both attributes are optional in Part 2, but the same server fills them in
   `/submodel-descriptors`; clients resolving "the AAS's Nameplate" need one extra call per submodel.
@@ -206,7 +222,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   (`services/vf_common/src/vf_common/resolver.py:141-160`, `registry.py:113-123`).
 
 <a id="bsg-07"></a>
+
 #### BSG-07 `/query/submodel-descriptors` applies `limit` before the query
+
 - **Component:** AAS Environment 1.1.0, `POST /query/submodel-descriptors` (AAS query language)
 - **Class / severity:** Bug / Low - results are complete when all pages are read, but pages are mostly empty, so
   the query saves no round trips over listing all descriptors.
@@ -222,7 +240,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** none needed; we scan `/submodel-descriptors` (O45).
 
 <a id="bsg-08"></a>
+
 #### BSG-08 Deleting an AAS leaves an empty discovery entry
+
 - **Component:** AAS Environment 1.1.0 discovery integration
 - **Class / severity:** Bug / Low - stale entries accumulate (our MES deletes hundreds of workpiece AAS per hour).
 - **Reproduction:** `POST /shells` (globalAssetId set), `DELETE /shells/{id}` → `GET /lookup/shells/{id}` answers
@@ -235,7 +255,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ### 1.3 DPP API 1.1.0
 
 <a id="bsg-09"></a>
+
 #### BSG-09 `dppsByProductId` matches `globalAssetId`, not `uniqueProductIdentifier`
+
 - **Component:** DPP API 1.1.0, `GET /v1/dppsByProductId/{productId}` (and `POST /v1/dppsByProductIds`)
 - **Class / severity:** Bug / High - passports whose product identifier differs from the AAS globalAssetId
   (e.g. GS1 Digital Link vs. internal asset IRI) cannot be found by product id.
@@ -253,7 +275,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** globalAssetId = uniqueProductIdentifier = GS1 Digital Link for all products (ADR-0021, O38).
 
 <a id="bsg-10"></a>
+
 #### BSG-10 DPP id must equal the AAS id
+
 - **Component:** DPP API 1.1.0, `GET /v1/dpps/{dppId}`, `/v1/dppsByIdAndDate`
 - **Class / severity:** Usability / Medium - documented ("Require ID-based DPP lookup to match both the owning AAS
   identifier and its DppMetadata.digitalProductPassportId", CHANGELOG/#691), but it forbids a separate DPP id
@@ -267,7 +291,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** DPP id = AAS id (ADR-0021).
 
 <a id="bsg-11"></a>
+
 #### BSG-11 `representation=full` returns 422 for most element types
+
 - **Component:** DPP API 1.1.0, `?representation=full`
 - **Class / severity:** Bug / Medium - the full representation fails for any passport with a BoM
   (RelationshipElement) or references.
@@ -281,7 +307,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** clients use the compressed representation for item passports (O38, services.md *dpp-api*).
 
 <a id="bsg-12"></a>
+
 #### BSG-12 Only one submodel per semanticId, others are dropped silently
+
 - **Component:** DPP API 1.1.0, content selection
 - **Class / severity:** Usability / Medium - silent data loss; two MeasurementValue submodels of a part cannot
   both appear.
@@ -295,7 +323,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ### 1.4 Access control (ABAC) - verified in secure profile on 2026-10-03, not re-run
 
 <a id="bsg-13"></a>
+
 #### BSG-13 Denied value-only PATCH answers HTTP 500 instead of 403
+
 - **Component:** AAS Environment 1.1.0 with `ABAC_ENABLED`, `PATCH .../$value`
 - **Class / severity:** Bug / Medium - clients treat it as a server fault and retry; monitoring raises alarms.
 - **Reproduction:** service account `vf-mes` (no write right on OperationalData) → `PATCH
@@ -308,7 +338,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** none needed (writes are designed to be permitted); O58.
 
 <a id="bsg-14"></a>
+
 #### BSG-14 `$sm` formulas break the DPP API's AAS read
+
 - **Component:** DPP API + AAS Environment 1.1.0 with ABAC
 - **Class / severity:** Bug / Medium - semantic-id or idShort based passport section rules are impossible.
 - **Reproduction:** DPP API rule with a formula on `$sm#idShort` → `GET /v1/dpps/{id}` → 404 "cannot extract
@@ -318,7 +350,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   scheme): `tools/security_abac.py:50-60` (ADR-0027, O58).
 
 <a id="bsg-15"></a>
+
 #### BSG-15 Rules for `ANONYMOUS` also apply to authenticated callers
+
 - **Component:** AAS Environment / DPP API 1.1.0 ABAC
 - **Class / severity:** Spec gap / Low - intended in BaSyx (#574: "ANONYMOUS may be used alone or together with
   claims"), but the Part 4 definition says ANONYMOUS means "the request does not contain an access token", so a
@@ -328,7 +362,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** public sections are a subset of every role's sections (ADR-0027).
 
 <a id="bsg-16"></a>
+
 #### BSG-16 MQTT change events bypass ABAC
+
 - **Component:** AAS Environment 1.1.0 eventing
 - **Class / severity:** Usability / Low - documented ("HTTP access rules do not filter MQTT subscribers",
   `docu/eventing/mqtt_eventing.md`); events reveal ids, semanticIds and globalAssetIds of submodels a subscriber
@@ -341,15 +377,19 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ## 2. basyx-python-sdk 2.2.0
 
 <a id="bsp-01"></a>
-#### BSP-01 Entities serialised with `"specificAssetIds": []`
+
+### BSP-01 Entities serialised with `"specificAssetIds": []`
+
 - **Component:** `basyx.aas.adapter.json.AASToJsonEncoder` (`_entity_to_json`)
 - **Class / severity:** Bug / Medium - every AASX with a HierarchicalStructures Entity fails JSON schema
   validation (aas-test-engines).
 - **Reproduction:**
+
   ```python
   json.dumps(model.Entity("Node", model.EntityType.CO_MANAGED_ENTITY), cls=AASToJsonEncoder)
   # {"idShort": "Node", "modelType": "Entity", "entityType": "CoManagedEntity", "specificAssetIds": []}
   ```
+
 - **Expected:** omit empty lists; the V3.0.6/V3.2.0 schema has `Entity.specificAssetIds` `minItems: 1`.
   `AssetInformation` already omits them.
 - **Code:** `adapter/json/json_serialization.py:711-712` (`if obj.specific_asset_id is not None` - a
@@ -359,7 +399,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   (`services/vf_common/src/vf_common/aas/aasx.py:43, 73`, O15).
 
 <a id="bsp-02"></a>
-#### BSP-02 `KeyTypes` lacks `Identifiable` and `Referable`
+
+### BSP-02 `KeyTypes` lacks `Identifiable` and `Referable`
+
 - **Component:** `basyx.aas.model.KeyTypes`, JSON/XML deserialisation
 - **Class / severity:** Bug / Medium - schema-valid models cannot be read (strict mode: unhandled `KeyError`).
 - **Reproduction:** `read_aas_json_file(..., failsafe=False)` on MaintenanceInstructions 1.0 → `Error while trying
@@ -373,7 +415,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** the element's semanticId is overridden in the asset data (`aas/data/assets/GR01.yaml:124`, O11).
 
 <a id="bsp-03"></a>
-#### BSP-03 `AASXWriter.write_aas()` omits CDs referenced by ExternalReference semanticIds
+
+### BSP-03 `AASXWriter.write_aas()` omits CDs referenced by ExternalReference semanticIds
+
 - **Component:** `basyx.aas.adapter.aasx.AASXWriter.write_aas`
 - **Class / severity:** Usability / Medium - IDTA templates use ExternalReference semanticIds, so packages written
   with the convenience API contain no concept descriptions at all.
@@ -393,7 +437,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ## 3. AAS specifications
 
 <a id="aas-01"></a>
-#### AAS-01 Part 2: encoding and matching of the `semanticId` query parameter undefined
+
+### AAS-01 Part 2: encoding and matching of the `semanticId` query parameter undefined
+
 - **Spec:** Part 2 API V3.0.4 and V3.2.0, `Part2-API-Schemas` `components/parameters/SemanticId`: "The value of
   the semantic id reference (BASE64-URL-encoded)".
 - **Class / severity:** Spec gap / Medium - implementations differ (BaSyx Go: base64url Reference JSON, exact
@@ -404,7 +450,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   questions); aas-specs-api#2 (closed 2022).
 
 <a id="aas-02"></a>
-#### AAS-02 Part 2: servers need not validate metamodel constraints on write
+
+### AAS-02 Part 2: servers need not validate metamodel constraints on write
+
 - **Spec:** Part 2 V3.2.0 `http-rest-api.adoc`: validation is only recommended for bulk requests; the JSON schema
   does not encode AASd-117/AASd-120.
 - **Class / severity:** Spec gap / Medium - conformant servers store invalid models (BSG-03), the problem
@@ -413,7 +461,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Upstream:** [aas-specs-api#112](https://github.com/admin-shell-io/aas-specs-api/issues/112) (open, schema part).
 
 <a id="aas-03"></a>
-#### AAS-03 Part 4: `ANONYMOUS` undefined for requests that carry a token
+
+### AAS-03 Part 4: `ANONYMOUS` undefined for requests that carry a token
+
 - **Spec:** IDTA-01004 V3.1 `access-rule-model.adoc`: "ANONYMOUS - Anonymous access, i.e., the request does not
   contain an access token."
 - **Class / severity:** Spec gap / Low - it is open whether rules for ANONYMOUS also grant authenticated callers
@@ -421,7 +471,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Upstream:** not found.
 
 <a id="aas-04"></a>
-#### AAS-04 No way to identify a batch without an AAS of its own
+
+### AAS-04 No way to identify a batch without an AAS of its own
+
 - **Spec:** Part 1 V3.0 AASd-014 (CoManagedEntity has neither globalAssetId nor specificAssetIds); AssetKind has
   no batch.
 - **Class / severity:** Spec gap / Low - as-built BoMs that record component lots (DPP, traceability) need a
@@ -432,7 +484,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   "AssetKind: add Batch" (closed); template side: SMT-HS-02.
 
 <a id="aas-05"></a>
-#### AAS-05 No standard change-event interface
+
+### AAS-05 No standard change-event interface
+
 - **Spec:** Part 2 V3.2.0 has no event/notification interface.
 - **Class / severity:** Spec gap / Low - every server has its own events (BaSyx: CloudEvents on MQTT/Kafka/AMQP).
 - **Upstream:** aas-specs-api [#41](https://github.com/admin-shell-io/aas-specs-api/issues/41),
@@ -441,7 +495,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   [#600](https://github.com/admin-shell-io/aas-specs-api/issues/600) (open).
 
 <a id="aas-06"></a>
-#### AAS-06 No standard way to bind an Operation to its implementation
+
+### AAS-06 No standard way to bind an Operation to its implementation
+
 - **Spec:** Part 2 defines `invoke`/`invoke-async`, Part 1 the Operation element; how a repository finds the code
   behind an Operation is not specified.
 - **Class / severity:** Spec gap / Low - models carrying the BaSyx qualifier `invocationDelegation` work only on
@@ -456,7 +512,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ### 4.1 Cross-template
 
 <a id="smt-x-01"></a>
+
 #### SMT-X-01 Cardinality qualifier: 4 type spellings, 5 non-standard values
+
 - **Class / severity:** Template defect / Medium - every template consumer needs alias tables.
 - **Evidence** (expected: type `SMT/Cardinality`, semanticId `https://admin-shell.io/SubmodelTemplates/Cardinality/1/0`,
   values One, ZeroToOne, ZeroToMany, OneToMany):
@@ -469,12 +527,15 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   | ControlComponentType 2.0 | type `SMT/SMT/Cardinality`, semanticId `.../SubmodelTemplates/SMT/SMT/Cardinality/1/0` (22×) |
   | Models3D 1.0 | value `Three` (`NormOrientationVector`, 2×) |
   | CapabilityDescription 1.0 | values `TwoToMany` (`CapabilityComposedOf`), `Recursive` (SMT-CAP-01) |
+
 - **Upstream:** [#159](https://github.com/admin-shell-io/submodel-templates/issues/159) (qualifier kind, open),
   [#279](https://github.com/admin-shell-io/submodel-templates/issues/279) (MaintenanceInstructions spellings, open).
 - **Workaround:** `CARDINALITY_ALIASES` and suffix match in `services/vf_common/src/vf_common/aas/instantiate.py:250-263`.
 
 <a id="smt-x-02"></a>
+
 #### SMT-X-02 Submodel semanticId as (mostly dangling) ModelReference
+
 - **Class / severity:** Template defect / Medium - semanticId queries with an ExternalReference miss these
   submodels (BSG-02); tools must try both forms.
 - **Evidence:** 21 of 30 templates use `{"type": "ModelReference", "keys": [{"type": "Submodel", "value": ...}]}`
@@ -493,7 +554,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** queries in both forms (`aid.py:161-166`); semanticIds kept verbatim to stay template-conformant.
 
 <a id="smt-x-03"></a>
+
 #### SMT-X-03 Whitespace inside identifiers
+
 - **Class / severity:** Template defect / Medium - CD lookup and semantic matching fail silently.
 - **Evidence:**
 
@@ -506,12 +569,15 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   | ContactInformations 1.0, SoftwareNameplate 1.0 | TypeOfCommunication | `"https://admin-shell.io/zvei/nameplate/1/0/ ContactInformations/..."` |
   | CompanyData 1.0 | DocumentationURI (semanticId and CD id) | `".../CompanyData/DocumentationURI /1/0"` |
   | TechnicalData 2.0 | 2 supplementalSemanticIds | `"https://api.eclass-cdp.com/ 0173-1-02-ABK161-002/..."` |
+
 - **Upstream:** [#210](https://github.com/admin-shell-io/submodel-templates/issues/210) (TypeOfCommunication, open);
   #128 and #129 were closed in 2025, the SMT repository still serves the blanks.
 - **Workaround:** semanticId keys are trimmed on instantiation (`instantiate.py:116`, O11).
 
 <a id="smt-x-04"></a>
+
 #### SMT-X-04 SubmodelElementList children carry an idShort (AASd-120)
+
 - **Class / severity:** Template defect / Low - strict validators reject instances that copy the template.
 - **Evidence:** 54 list children: AID 1.1 (22, e.g. `security/definesSecurityScheme`), CompanyData (9),
   DBP-Circularity (9), CapabilityDescription (4), AIMC 2.0 (3, `MappingConfiguration`, `Source`, `Sink`),
@@ -520,7 +586,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** idShorts of list children are dropped (`instantiate.py:240`).
 
 <a id="smt-x-05"></a>
+
 #### SMT-X-05 Semantic ids without concept description in the SMT repository
+
 - **Class / severity:** Template defect / Medium - no definitions, units or data types for these elements.
 - **Evidence** (element semanticIds not among the 2 846 CDs of the repository):
 
@@ -542,7 +610,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   (`services/vf_common/src/vf_common/aas/environment.py:42, 94-108`).
 
 <a id="smt-x-06"></a>
+
 #### SMT-X-06 Concept description quality
+
 - **Class / severity:** Template defect / Low.
 - **Evidence** (1 042 CDs referenced by the 30 templates):
   - IEC 61360 data specification id in four spellings: `http://.../DataSpecificationIEC61360/3/0` (383),
@@ -558,7 +628,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** none needed (we only read preferred names, definitions, units).
 
 <a id="smt-x-07"></a>
+
 #### SMT-X-07 One-character idShorts invalid from metamodel V3.1
+
 - **Class / severity:** Template defect / Low - valid in V3.0, but AASd-002 requires two characters from V3.1
   (`^[a-zA-Z][a-zA-Z0-9_-]*[a-zA-Z0-9_]+$`); BaSyx Go (V3.2) imports them with warnings.
 - **Evidence:** AssetLocation 1.0 `X`, `Y`, `Z` (7×), Models3D 1.0 `X`, `Y`, `Z` (15×).
@@ -569,7 +641,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ### 4.2 Asset Interfaces Description 1.1 (IDTA 02017-1-1, `https://admin-shell.io/idta/AssetInterfacesDescription/1/1/Submodel`)
 
 <a id="smt-aid-01"></a>
+
 #### SMT-AID-01 `enum` lists without `valueTypeListElement`
+
 - **Class / severity:** Template defect / Medium - basyx-python-sdk refuses the template (strict); AASd-109.
 - **Evidence:** 24 SubmodelElementLists `.../properties/property_name/enum`, `.../items/enum` (all six
   protocols) with `typeValueListElement: Property` and no `valueTypeListElement`. SDK: `type_value_list_element=
@@ -578,7 +652,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** `_fix_list_value_type` (`instantiate.py:266-270`).
 
 <a id="smt-aid-02"></a>
+
 #### SMT-AID-02 No template structure for actions and events
+
 - **Class / severity:** Template gap / Medium - every implementer invents the structure of action input/output,
   `synchronous`, event `data` and their forms.
 - **Evidence:** in all six interface templates (BACnet, HTTP, IO-Link/Profinet REST, Modbus, MQTT, OPC UA)
@@ -588,7 +664,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Upstream:** not found (#186 asks about arrays of complex structures).
 
 <a id="smt-aid-03"></a>
+
 #### SMT-AID-03 One `forms` per affordance; no acknowledgement/response topic
+
 - **Class / severity:** Template gap / Medium - asynchronous commands over MQTT (command topic + acknowledgement
   topic) cannot be described.
 - **Evidence:** `forms` is one SubmodelElementCollection (cardinality One); W3C WoT TD 1.1 allows several forms per
@@ -599,7 +677,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Upstream:** not found (the missing response-topic term belongs to the W3C WoT MQTT binding).
 
 <a id="smt-aid-04"></a>
+
 #### SMT-AID-04 Boolean binding terms typed `xs:string`
+
 - **Class / severity:** Template defect / Low.
 - **Evidence:** `mqv_retain` (MQTT), `modv_zeroBasedAddressing`, `modv_mostSignificantByte` (Modbus) are
   `xs:string`; the WoT bindings define them as boolean.
@@ -608,7 +688,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ### 4.3 Asset Location 1.0 (`https://admin-shell.io/idta/smt/assetlocation/1/0`)
 
 <a id="smt-al-01"></a>
+
 #### SMT-AL-01 Leading spaces in IRDIs, 41 semantic ids without CD, no units for coordinates
+
 - **Class / severity:** Template defect / Medium - geographic coordinates have no unit or definition anywhere.
 - **Evidence:** see SMT-X-03 (5 leading spaces) and SMT-X-05 (21 IRIs + 20 IRDIs without CD); Latitude/Longitude
   (`0173-1#02-ABH960#002`, `0173-1#02-ABH961#002`, `xs:double`) have no CD, hence no unit (°).
@@ -616,13 +698,17 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Upstream:** #224 (submodel semanticId only).
 
 <a id="smt-al-02"></a>
+
 #### SMT-AL-02 idShort typo `AreaDesciption`
+
 - **Class / severity:** Template defect / Low - `VisitedAreas[]/AreaDesciption` (semanticId `.../mlp/areadescription/1/0`).
 
 ### 4.4 Capability Description 1.0 (`https://admin-shell.io/idta/SubmodelTemplate/CapabilityDescription/1/0`)
 
 <a id="smt-cap-01"></a>
+
 #### SMT-CAP-01 Duplicate `SMT/Cardinality` qualifier (AASd-021)
+
 - **Class / severity:** Template defect / Medium - basyx-python-sdk refuses the template (strict).
 - **Evidence:** `PropertySubmodelList` and its nested `PropertySubmodelList` carry `SMT/Cardinality = ZeroToMany`
   **and** `SMT/Cardinality = Recursive` (semanticId `https://admin-shell.io/SubmodelTemplates/Recursion/1/0`) - the
@@ -631,7 +717,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Workaround:** template qualifiers are removed on instantiation (`instantiate.py:114`).
 
 <a id="smt-cap-02"></a>
+
 #### SMT-CAP-02 Inconsistent PropertyRange semanticIds, string Range
+
 - **Class / severity:** Template defect / Low.
 - **Evidence:** `PropertyContainer/PropertyRange` uses `.../CapabilityPropertyEnumType/Range/1/0`, the same element
   inside `PropertySubmodelList` `.../CapabilityPropertyType/Range/1/0` (both CDs exist); both Ranges are
@@ -641,7 +729,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ### 4.5 Control Component 2.0 (Type `.../ControlComponent/Type/2/0`, Instance `.../ControlComponent/Instance/2/0`)
 
 <a id="smt-cc-01"></a>
+
 #### SMT-CC-01 No skill → endpoint relation
+
 - **Class / severity:** Template gap / Medium - a client cannot find out which endpoint executes a skill.
 - **Evidence:** `Skills.Skill` has `Disabled`, `Modes`, `Parameters`, `Errors`, `Uses` (skill → skill only);
   `Endpoints.Endpoint` relates to AID interfaces only.
@@ -650,14 +740,18 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Upstream:** [#214](https://github.com/admin-shell-io/submodel-templates/issues/214) (open, same question).
 
 <a id="smt-cc-02"></a>
+
 #### SMT-CC-02 Qualifier `SMT/SMT/Cardinality`; CDs missing
+
 - **Class / severity:** Template defect / Low - see SMT-X-01 (Type template) and SMT-X-05 (ErrorReference,
   SkillReference).
 
 ### 4.6 Carbon Footprint 1.0 (`https://admin-shell.io/idta/CarbonFootprint/CarbonFootprint/1/0`)
 
 <a id="smt-pcf-01"></a>
+
 #### SMT-PCF-01 No data-quality, primary-data or assurance elements
+
 - **Class / severity:** Template gap / Medium - PACT/Catena-X exchange requires primary data share, data quality
   indicators and assurance; the template can only carry the value, methods, phases and dates.
 - **Evidence:** `ProductCarbonFootprints[]`: PcfCalculationMethods, PcfCO2eq, ReferenceImpactUnitForCalculation,
@@ -670,7 +764,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ### 4.7 Hierarchical Structures enabling BoM 1.1 (`https://admin-shell.io/idta/HierarchicalStructures/1/1/Submodel`)
 
 <a id="smt-hs-01"></a>
+
 #### SMT-HS-01 Node description and CD copied from EntryNode
+
 - **Class / severity:** Template defect / Low - every node of a BoM carries "Base entry point for the Entity tree
   in this Submodel, this must be a Self-managed Entity reflecting the Asset" and displayName "Node".
 - **Evidence:** `EntryNode/Node` description = EntryNode description; CD `https://admin-shell.io/idta/
@@ -681,14 +777,18 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Upstream:** related [#142](https://github.com/admin-shell-io/submodel-templates/issues/142) (Node CD).
 
 <a id="smt-hs-02"></a>
+
 #### SMT-HS-02 No batch/lot concept for as-built BoMs
+
 - **Class / severity:** Template gap / Low - see AAS-04; the template has BulkCount but no lot/batch statement.
 - **Workaround:** statement `BatchId` + SameAs to the type BoM node (O39).
 
 ### 4.8 Maintenance Instructions 1.0 (`https://admin-shell.io/idta/SubmodelTemplate/MaintenanceInstructions/1/0`)
 
 <a id="smt-mi-01"></a>
+
 #### SMT-MI-01 semanticId is a ModelReference with key type `Identifiable`
+
 - **Class / severity:** Template defect / Medium - the reference points to no model element; basyx-python-sdk
   crashes on it (BSP-02).
 - **Evidence:** `MaintenanceInstructionsForSpecificInterval__00__/BasicMaintenanceInformation` semanticId
@@ -700,7 +800,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
   `UR5E_TYPE.yaml`).
 
 <a id="smt-mi-02"></a>
+
 #### SMT-MI-02 Misspelled and duplicated semanticIds and idShorts
+
 - **Class / severity:** Template defect / Low.
 - **Evidence:**
   - `MaintenanceSparePartList/MaintenanceSparePart` semanticId **and CD id** `htthttps://admin-shell.io/idta/
@@ -716,7 +818,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ### 4.9 Process Parameters 1.0 and Executed Processes 1.0
 
 <a id="smt-pp-01"></a>
+
 #### SMT-PP-01 ProcessParameters id and semanticId use `https://admin-shell-io/...`
+
 - **Class / severity:** Template defect / Medium - the template id and the submodel semanticId are
   `https://admin-shell-io/idta/SubmodelTemplate/ProcessParameters/1/0` (host `admin-shell-io`); consumers that
   match the obviously intended `admin-shell.io` IRI miss every instance.
@@ -724,7 +828,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Upstream:** not found.
 
 <a id="smt-ep-01"></a>
+
 #### SMT-EP-01 ExecutedProcesses start/end times typed `xs:string`
+
 - **Class / severity:** Template defect / Low - `ProcessStartTime`, `ProcessEndTime`, `ProcessStages/.../StartTime`,
   `EndTime` are `xs:string` (CDs without dataType); timestamps should be `xs:dateTime`. Template id and semanticId
   `https://admin-shell.io/idta/ExecutedProcesses/1/0` do not follow the `.../SubmodelTemplate/...` id scheme of
@@ -734,7 +840,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ### 4.10 Time Series Data 1.1 (IDTA 02008-1-1, `https://admin-shell.io/idta/TimeSeries/1/1`)
 
 <a id="smt-ts-01"></a>
+
 #### SMT-TS-01 No concept descriptions for the time semantics
+
 - **Class / severity:** Template defect / Medium - the semantic ids that select the time scale of a record are
   not resolvable.
 - **Evidence:** IDTA 02008-1-1 Table 4/Table 10 name `https://admin-shell.io/idta/TimeSeries/UtcTime/1/1`,
@@ -745,7 +853,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Upstream:** not found.
 
 <a id="smt-ts-02"></a>
+
 #### SMT-TS-02 Segment times typed `xs:string`, CD text copied
+
 - **Class / severity:** Template defect / Low.
 - **Evidence:** `StartTime`, `EndTime`, `LastUpdate` of External/Linked/InternalSegment are `xs:string`; the spec
   gives `[TIMESTAMP]` (printed "TIMESTSAMP"). The CD `Segment/StartTime/1/1` has no dataType and the description
@@ -755,7 +865,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ### 4.11 Other templates
 
 <a id="smt-pdt-01"></a>
+
 #### SMT-PDT-01 PowerDriveTrainSizing 1.0: idShort typos, leading-space IRDIs, ModelReference semanticIds
+
 - **Class / severity:** Template defect / Low (template not used, O13).
 - **Evidence:** idShorts `EnergyConsumtionPerCycle` (3×), `RotraryTable` (also in its semanticIds); 3 leading-space
   IRDIs and unit `"Hz "` (SMT-X-03); 10 element semanticIds as ModelReference/ConceptDescription (SMT-X-02); type
@@ -763,7 +875,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Upstream:** related [#248](https://github.com/admin-shell-io/submodel-templates/issues/248) (string Ranges, open).
 
 <a id="smt-cd-01"></a>
+
 #### SMT-CD-01 CompanyData 1.0: IEC 61360 `unit` used for data types
+
 - **Class / severity:** Template defect / Low - 67 CDs put the data type into `unit` (`"STRING"`, `"Boolean"`,
   `"Date"`, `"AnyUri"`, `"PositiveInteger"`, `"GYear"`, `"langString"`, `"File"`, ...), e.g.
   `https://admin-shell.io/idta/CompanyData/IBAN/1/0`; `Turnover`, `EquityRatio`, `InvestmentVolume` are STRING.
@@ -771,7 +885,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 - **Upstream:** not found (#266 and #267 report other CompanyData issues).
 
 <a id="smt-ci-01"></a>
+
 #### SMT-CI-01 ContactInformations 1.0 / SoftwareNameplate 1.0: broken TypeOfCommunication and IPCommunication ids
+
 - **Class / severity:** Template defect / Low.
 - **Evidence:** TypeOfCommunication semanticId with an inner space (SMT-X-03); `IPCommunication__00__` semanticId
   `.../ContactInformations/IPCommunication/` (trailing slash, no CD; the spec gives
@@ -784,7 +900,9 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 ## 5. Other tooling
 
 <a id="ot-01"></a>
-#### OT-01 aas-test-engines 1.0.3 checks only ContactInformations 1.0 and Nameplate 2.0
+
+### OT-01 aas-test-engines 1.0.3 checks only ContactInformations 1.0 and Nameplate 2.0
+
 - **Class / severity:** Usability / Low - `test_cases/v3_0/submodel_templates.py:240, 250` register only these two
   templates; for the other 29 templates in use, "passes the IDTA test engine" means metamodel conformance only.
 - **Upstream:** related admin-shell-io/aas-test-engines#96 (closed).
@@ -795,25 +913,36 @@ specifications 6 (Spec gap 6), submodel templates 29 (Template defect 24, Templa
 
 1. basyx-go-components: "DPP API: dppsByProductId matches globalAssetId instead of uniqueProductIdentifier" (BSG-09)
 2. basyx-go-components: "Value-only $value: accept and return JSON numbers/booleans per ValueOnly encoding" (BSG-01)
-3. basyx-go-components: "DPP API: representation=full fails with 422 for RelationshipElement/ReferenceElement/Range/Blob" (BSG-11)
+3. basyx-go-components: "DPP API: representation=full fails with 422 for
+   RelationshipElement/ReferenceElement/Range/Blob" (BSG-11)
 4. basyx-go-components: "ABAC: denied value-only PATCH returns 500 instead of 403" (BSG-13)
-5. submodel-templates: "Use ExternalReference for submodel semanticIds; replace dangling ModelReferences (21 templates)" (SMT-X-02, add to #224)
-6. submodel-templates: "Unify cardinality qualifiers (Cardinality, Multiplicity, SMT/SMT/Cardinality, ZerotoMany, Three, TwoToMany, Recursive)" (SMT-X-01, add to #159)
+5. submodel-templates: "Use ExternalReference for submodel semanticIds; replace dangling ModelReferences (21 templates)"
+   (SMT-X-02, add to #224)
+6. submodel-templates: "Unify cardinality qualifiers (Cardinality, Multiplicity, SMT/SMT/Cardinality, ZerotoMany, Three,
+   TwoToMany, Recursive)" (SMT-X-01, add to #159)
 7. basyx-python-sdk: "KeyTypes lacks Identifiable and Referable (V3.0 enum) - KeyError on valid JSON" (BSP-02)
-8. submodel-templates: "Remove whitespace from identifiers in AssetLocation, AID, TimeSeries, PowerDriveTrainSizing, CompanyData, TechnicalData, ContactInformations, SoftwareNameplate" (SMT-X-03)
+8. submodel-templates: "Remove whitespace from identifiers in AssetLocation, AID, TimeSeries, PowerDriveTrainSizing,
+   CompanyData, TechnicalData, ContactInformations, SoftwareNameplate" (SMT-X-03)
 9. submodel-templates: "Control Component 2.0: relate skills to endpoints" (SMT-CC-01, comment on #214)
-10. submodel-templates: "AID 1.1: template structure for actions/events and multiple forms per affordance (op), MQTT acknowledgement topic" (SMT-AID-02/03)
+10. submodel-templates: "AID 1.1: template structure for actions/events and multiple forms per affordance (op), MQTT
+    acknowledgement topic" (SMT-AID-02/03)
 11. basyx-go-components: "ABAC: $sm formulas break DPP API reads (cannot extract alias from column submodel.id_short)" (BSG-14)
 12. basyx-go-components: "DPP API: several submodels with the same semanticId - all but the newest dropped silently" (BSG-12)
-13. submodel-templates: "TimeSeries 1.1: publish CDs for UtcTime/TaiTime/RelativeTimeDuration; type segment times as xs:dateTime" (SMT-TS-01/02)
+13. submodel-templates: "TimeSeries 1.1: publish CDs for UtcTime/TaiTime/RelativeTimeDuration; type segment times as
+    xs:dateTime" (SMT-TS-01/02)
 14. submodel-templates: "CarbonFootprint: data quality, primary data share and assurance elements (PACT alignment)" (SMT-PCF-01)
 15. submodel-templates: "Publish missing concept descriptions (AssetLocation 41, PowerDriveTrainSizing 18, ...)" (SMT-X-05)
 16. submodel-templates: "CapabilityDescription 1.0: duplicate SMT/Cardinality qualifier (Recursive) violates AASd-021" (SMT-CAP-01)
-17. submodel-templates: "ProcessParameters 1.0: template id and semanticId use admin-shell-io instead of admin-shell.io" (SMT-PP-01)
+17. submodel-templates: "ProcessParameters 1.0: template id and semanticId use admin-shell-io instead of admin-shell.io"
+    (SMT-PP-01)
 18. aas-specs-api: comment on #342 with the BaSyx Go behaviour and the template reference-type mix (AAS-01)
-19. basyx-go-components: "No validation of metamodel constraints (AASd-021/108/109/120) on POST/PUT" (BSG-03) and aas-specs-api: "Normative constraint validation on write" (AAS-02)
-20. basyx-go-components: "Registry integration: embedded submodel descriptors without idShort/semanticId" (BSG-06); "Query: limit applied before the condition" (BSG-07); "Discovery entry kept after AAS deletion" (BSG-08)
-21. submodel-templates: smaller defects - HierarchicalStructures Node text (SMT-HS-01), MaintenanceInstructions typos (SMT-MI-02, add to #245/#279), AID boolean terms (SMT-AID-04), CompanyData units (SMT-CD-01), CD data specification ids (SMT-X-06), AssetLocation typo (SMT-AL-02), ExecutedProcesses times (SMT-EP-01)
+19. basyx-go-components: "No validation of metamodel constraints (AASd-021/108/109/120) on POST/PUT" (BSG-03) and
+    aas-specs-api: "Normative constraint validation on write" (AAS-02)
+20. basyx-go-components: "Registry integration: embedded submodel descriptors without idShort/semanticId" (BSG-06);
+    "Query: limit applied before the condition" (BSG-07); "Discovery entry kept after AAS deletion" (BSG-08)
+21. submodel-templates: smaller defects - HierarchicalStructures Node text (SMT-HS-01), MaintenanceInstructions typos
+    (SMT-MI-02, add to #245/#279), AID boolean terms (SMT-AID-04), CompanyData units (SMT-CD-01), CD data specification
+    ids (SMT-X-06), AssetLocation typo (SMT-AL-02), ExecutedProcesses times (SMT-EP-01)
 22. aas-specs-security: "Define whether ANONYMOUS rules apply to requests with a token" (AAS-03)
 
 ---
