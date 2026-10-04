@@ -12,6 +12,7 @@ import sys
 
 sys.path.insert(0, "/Users/zielstor/Documents/GitProjects/Virtual-Factory/blender/scripts")
 import vf_lib as L  # noqa: E402
+import vf_details as D  # noqa: E402
 
 importlib.reload(L)
 L.reset_scene()
@@ -53,16 +54,23 @@ def panels():
         parts.append(L.box("PanelY", (0.006, SY - 2 * P, lower_h), (sx * (SX / 2 - P / 2), 0, zc), panel))
     # front door (right half of the front, Blender -Y)
     y = -(SY / 2 - P / 2) - 0.01
-    parts += [L.box("DoorFrame", (0.7, 0.012, 0.92), (0.33, y, 1.42), alu, bevel=0.004),
+    parts += [L.box("DoorLeft", (0.025, 0.016, 0.92), (-0.0075, y, 1.42), alu),
+              L.box("DoorRight", (0.025, 0.016, 0.92), (0.6675, y, 1.42), alu),
+              L.box("DoorTop", (0.65, 0.016, 0.025), (0.33, y, 1.8675), alu),
+              L.box("DoorBottom", (0.65, 0.016, 0.025), (0.33, y, 0.9725), alu),
               L.box("Handle", (0.03, 0.04, 0.22), (0.05, y - 0.03, 1.3), L.material("plastic_black"), bevel=0.008),
               L.box("DoorSwitch", (0.05, 0.03, 0.08), (0.0, y - 0.015, 1.55), L.material("paint_yellow"), bevel=0.004),
               L.box("Hinge", (0.03, 0.03, 0.08), (0.67, y - 0.01, 1.7), alu),
               L.box("Hinge2", (0.03, 0.03, 0.08), (0.67, y - 0.01, 1.1), alu)]
+    parts += D.fasteners((-0.71, -0.06, 0.06, 0.71), (0.21, 0.85), y - 0.002)
+    parts += D.vents(-0.42, y - 0.002, 0.28, 0.36)
+    parts.append(L.box("PanelJoint", (0.006, 0.005, 0.72), (0, y, 0.53), anth))
     return parts
 
 
 def windows():
-    glass = L.material("glass", color=(0.25, 0.33, 0.38))
+    glass = L.material("glass", color=(0.62, 0.70, 0.74))
+    glass.node_tree.nodes["Principled BSDF"].inputs["Alpha"].default_value = 0.18
     upper_h = SZ - 0.95 - P
     zc = 0.95 + P / 2 + upper_h / 2
     parts = []
@@ -86,7 +94,9 @@ def interior():
 
 def cabinet():
     y = SY / 2 + 0.2
-    return [L.box("Cabinet", (0.8, 0.4, 1.6), (-0.3, y, 0.92), L.material("paint_grey"), bevel=0.01),
+    return D.cable([(-0.3, y, 1.85), (-0.3, y, 1.96), (-0.3, 0.42, 1.96),
+                    (0.55, 0.42, 1.96), (0.55, 0.42, 1.05)]) + [
+            L.box("Cabinet", (0.8, 0.4, 1.6), (-0.3, y, 0.92), L.material("paint_grey"), bevel=0.01),
             L.box("CabinetBase", (0.8, 0.4, 0.1), (-0.3, y, 0.05), anth),
             L.cylinder("CabinetLock", 0.012, 0.01, (0.05, y + 0.205, 1.1), L.material("plastic_black"), axis="Y",
                        segments=10),
@@ -139,5 +149,5 @@ L.join([bpy.data.objects["StackPole"], bpy.data.objects["StackCap"]], "StackLigh
 L.export_glb(L.REPO / "godot" / "devices" / "assembly_cell" / "view" / "assembly_cell.glb")
 L.save_blend("assembly_cell")
 tris = L.triangle_count()
-L.render_preview("assembly_cell", target=(0.15, 0, 1.0), distance=4.6, elevation=16, azimuth=-38, lens=40)
+L.render_preview("assembly_cell", target=(0.15, 0, 1.2), distance=5.8, elevation=16, azimuth=-38, lens=40)
 result = {"triangles": tris, "objects": sorted(o.name for o in bpy.context.scene.objects)}

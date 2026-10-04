@@ -10,4 +10,5 @@
 | [open-issues.md](open-issues.md) | Risks, gaps, technical debt |
 | [upstream-findings.md](upstream-findings.md) | Verified bugs and gaps in BaSyx Go, basyx-python-sdk, the AAS specifications and IDTA submodel templates |
 | [user-guide.md](user-guide.md) | Setup, controls, developer commands |
-| [screenshots/](screenshots/) | Milestone review screenshots |
+| [screenshots/](screenshots/README.md) | Current visual presets and historical milestone screenshots |
+| [Visual quality](architecture/visual-quality.md) | Presets, rendering budgets, benchmark and target-device acceptance |

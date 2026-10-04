@@ -168,7 +168,7 @@ With the backend and the factory running, PLC01 is an OPC UA server like a real 
   `Diagnostics.CpuConnected` is false.
 - *Training UI → Menu → Data flow* shows PLC01's packets on the plant route PLC → OPC UA server → edge → broker
   and the ops gateway's method calls (yellow) going to the OPC UA server
-  ([screenshot](screenshots/m9-dataflow-opcua.png)); the F1 menu shows `PLC OPC UA online/offline`.
+  ([screenshot](screenshots/factory-dataflow.png)); the F1 menu shows `PLC OPC UA online/offline`.
 
 ## Query the history (historian)
 
@@ -380,6 +380,8 @@ curl -si 'http://localhost:8096/01/04099999032808/21/PC3280-2026-000005?linkType
 To scan a QR code from a screenshot: decode it with any QR app and replace `https://virtual-factory.example` with
 `http://localhost:8096`.
 
+*Historical QR workflow example; current model previews are in the [visual review](screenshots/README.md).*
+
 ![QR code on the type plate](screenshots/m9-qr.png)
 ![Passport page of the resolver](screenshots/m9-passport.png)
 
@@ -423,6 +425,18 @@ Everything an operator needs is in the 3D scene (world-space panels, ready for V
   (IT layer above the line; packets follow real UNS events and BaSyx change events; violet packets = telemetry
   stored by the historian), *Open dashboard (Grafana)* (opens *LINE01 live* in the browser; URL
   `grafana_url` in `godot/config/backend.json`, `--vf-grafana-url=…`).
+
+**Render quality** changes the whole visual preset while the simulation continues:
+
+| Preset | Visual behaviour |
+|---|---|
+| Low | Coarser mesh LOD, simplified fence, flat floor materials, no dynamic shadows, 75% render scale |
+| Medium (default) | Detailed fencing, textured floor, shadows, 2× MSAA |
+| High | Finer LOD, floor normal/roughness maps, richer finishes, hall reflections, sharper shadows, 4× MSAA |
+
+Labels and interactions stay available at every setting. Low retains loaded textures for quick switching;
+it reduces rendering work, not necessarily memory. [Screenshots](screenshots/README.md) and
+[budgets / target hardware limitations](architecture/visual-quality.md).
 
 Developer options (after `--`): `--vf-lang=de`, `--vf-quality=0|1|2`, `--vf-tour`, `--vf-dataflow`,
 `--vf-inspect=<AAS tag | serial | asset id>`, `--vf-estop=1` (press the E-stop), `--vf-scenario=<id>`, `--vf-ui=off`,

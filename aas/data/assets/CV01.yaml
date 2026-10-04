@@ -15,6 +15,8 @@ thumbnail: repo:docs/screenshots/assets/conveyor.png
 specificAssetIds: {serialNumber: BC3000-2025-0117, manufacturerPartId: BC-3000-300-G-018}
 locationDescription: "LINE01 between assembly cell AC01 (infeed) and colour inspection QS01 / robot cell RB01 (outfeed), Hall 1 Final Assembly"
 model3d:
+  version: "1.1"
+  date: "2026-10-04"
   file: godot/devices/conveyor/view/conveyor_parts.glb
   preview: docs/screenshots/assets/conveyor.png
   title: BC-3000 belt conveyor (frame, belt, drums, side guides, gear motor)

@@ -3,6 +3,23 @@
 All numbers are produced by the checks in CI (`.github/workflows/ci.yml`, `.github/workflows/integration.yml`) or by
 the commands named below.
 
+## Visual refresh verification (2026-10-04)
+
+The milestone measurements below are historical. Current checks after the visual refresh:
+
+- GUT: 140/140 tests, all scripts compile, clean exit after fixing CameraTour test cleanup.
+- Python: 214 passing; 49 integration/secure tests deselected (full stack suite not rerun).
+- Architecture: 367/367 edges conformant; complexity and GDScript lint pass.
+- Line simulation: 600 simulated seconds, 48 inspected (44 OK / 4 NOK), 47 robot cycles,
+  zero robot faults and zero infeed faults; outbound connections and retention disabled.
+- AASX: 36/36 plant and supplier packages conformant; 55 live static visual/metadata updates
+  uploaded and read back; 24 packaged visual files also byte-verified against their generated sources.
+  No operational submodels or existing workpiece passports re-provisioned.
+- Desktop exports: macOS, Windows and Linux regenerated; the macOS release launched and rendered
+  the High preset without script/shader errors. Windows/Linux runtime checks require those platforms.
+- Rendering: [current fixture, presets and limitations](architecture/visual-quality.md); laptop
+  and Quest 3 performance still require target-device measurements.
+
 ## 1. Architecture and code quality
 
 | Check | Result | Command |

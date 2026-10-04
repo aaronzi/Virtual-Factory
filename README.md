@@ -12,7 +12,9 @@ AAS operations.
 
 **Status:** all milestones (M0–M6) complete - see the [final report](docs/final-report.md).
 
-![Training UI: AAS inspector in the factory](docs/screenshots/m5-inspector-rb01.png)
+![Factory with the High visual preset](docs/screenshots/factory-high.png)
+
+[Visual presets and performance](docs/architecture/visual-quality.md) · [Current screenshots](docs/screenshots/README.md)
 
 ## Quick start
 

@@ -17,6 +17,8 @@ thumbnail: repo:docs/screenshots/assets/qa_station.png
 specificAssetIds: {serialNumber: QS100-2025-0031, manufacturerPartId: QS-100-CX30-RL}
 locationDescription: "LINE01, conveyor CV01 outfeed (inspection and pick position of robot RB01), Hall 1 Final Assembly"
 model3d:
+  version: "1.1"
+  date: "2026-10-04"
   file: godot/devices/qa_station/view/qa_station.glb
   preview: docs/screenshots/assets/qa_station.png
   title: QS-100 colour inspection station (bracket, CX30 sensor, ring light, result lamp)

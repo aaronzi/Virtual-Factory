@@ -48,15 +48,23 @@ func _perf_report(seconds: float) -> void:
 	var draw_calls := 0.0
 	var primitives := 0.0
 	var start := Time.get_ticks_usec()
+	var previous := start
+	var frame_times: Array[float] = []
 	while Time.get_ticks_usec() - start < seconds * 1e6:
 		await get_tree().process_frame
+		var now := Time.get_ticks_usec()
+		frame_times.append((now - previous) / 1000.0)
+		previous = now
 		frames += 1
 		draw_calls = maxf(draw_calls, Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
 		primitives = maxf(primitives, Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME))
 	var elapsed := (Time.get_ticks_usec() - start) / 1e6
-	print("[DevTools] PERF renderer=%s fps=%.1f frame_ms=%.2f max_draw_calls=%d max_primitives=%d objects=%d" % [
+	frame_times.sort()
+	print(("[DevTools] PERF renderer=%s fps=%.1f frame_ms=%.2f max_draw_calls=%d " +
+		"max_primitives=%d objects=%d p95_ms=%.2f p99_ms=%.2f") % [
 		RenderingServer.get_current_rendering_method(), frames / elapsed, elapsed * 1000.0 / frames,
-		draw_calls, primitives, Performance.get_monitor(Performance.OBJECT_NODE_COUNT)])
+		draw_calls, primitives, Performance.get_monitor(Performance.OBJECT_NODE_COUNT),
+		frame_times[mini(int(frames * 0.95), frames - 1)], frame_times[mini(int(frames * 0.99), frames - 1)]])
 	get_tree().quit()
 
 

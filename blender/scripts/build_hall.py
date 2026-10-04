@@ -13,8 +13,10 @@ import sys
 sys.path.insert(0, "/Users/zielstor/Documents/GitProjects/Virtual-Factory/blender/scripts")
 import vf_lib as L  # noqa: E402
 import vf_surfaces as S  # noqa: E402
+import vf_details as D  # noqa: E402
 
 importlib.reload(L)
+importlib.reload(S)
 L.reset_scene()
 
 LX, LY, HE = 36.0, 24.0, 8.0          # length, depth, eaves height
@@ -32,9 +34,9 @@ def floor():
              S.project_uv(L.box("Epoxy", (18.0, 10.0, 0.004), (0, 1.0, 0.002), epoxy))]
     seam = L.material("paint_grey", color=(0.19, 0.21, 0.2))
     for x in range(-15, 18, 3):
-        parts.append(L.plane("ExpansionJoint", 0.012, LY, (x, 0, 0.0045), seam))
+        parts.append(L.plane("ExpansionJoint", 0.006, LY, (x, 0, 0.0045), seam))
     for y in range(-9, 12, 3):
-        parts.append(L.plane("ExpansionJoint", LX, 0.012, (0, y, 0.0045), seam))
+        parts.append(L.plane("ExpansionJoint", LX, 0.006, (0, y, 0.0045), seam))
     # production zone outline and pedestrian walkway (Blender y = -Godot z)
     for (x, y, w, d) in ((0, 6.0, 18.0, 0.1), (0, -4.0, 18.0, 0.1), (-9.0, 1.0, 0.1, 10.0), (9.0, 1.0, 0.1, 10.0),
                          (0, -5.5, 34.0, 0.1), (0, -7.0, 34.0, 0.1)):
@@ -96,6 +98,9 @@ def walls():
               L.box("ExitSign", (0.4, 0.04, 0.15), (-12.0, -LY / 2 + 0.1, 2.4), L.material("led_green"))]
     for k in range(5):
         parts.append(L.box("DoorSegment", (0.09, 4.0, 0.02), (LX / 2 - 0.12, -4.0, 0.9 * (k + 1)), steel))
+    for x in (-LX / 2 + 0.065, LX / 2 - 0.065):
+        for z in range(2, 9):
+            parts.append(L.box("EndWallSeam", (0.012, LY, 0.012), (x, 0, z), steel))
     return L.join(parts, "Walls")
 
 
@@ -130,7 +135,7 @@ def lights():
 
 
 def services():
-    parts = []
+    parts = D.hall_signs()
     for y in (-LY / 2 + 0.6, LY / 2 - 0.6):
         parts.append(L.box("CableTray", (LX - 1, 0.3, 0.06), (0, y, 5.5), L.material("steel_zinc")))
     for x in (-12.0, 6.0):
@@ -154,6 +159,6 @@ tris = L.triangle_count()
 import bpy  # noqa: E402
 
 bpy.data.objects["Roof"].hide_render = True
-L.render_preview("hall", target=(0, 0, 3.0), distance=42, elevation=35, azimuth=-30, lens=35)
+L.render_preview("hall", target=(0, 0, 3.0), distance=55, elevation=35, azimuth=-30, lens=35)
 bpy.data.objects["Roof"].hide_render = False
 result = {"triangles": tris}

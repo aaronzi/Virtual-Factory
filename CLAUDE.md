@@ -47,7 +47,8 @@ Plan and decisions: `docs/PLAN.md`. Architecture: `docs/architecture/README.md` 
 - Godot is Y-up, 1 unit = 1 m, SI units everywhere.
 - 3D assets are produced by scripts in `blender/scripts/` (run via Blender MCP: `exec(open(".../build_<asset>.py").read())`,
   all: `build_all.py`), exported as .glb; palette colours are sRGB. Animated/switched parts are separate named objects.
-- Renderer is Compatibility (ADR-0010). Keep draw calls ≤ 450 incl. shadows (`--vf-perf-report=5 --vf-perf-warmup=170`).
+- Renderer is Compatibility (ADR-0030). Review budgets incl. shadows/UI: Low 350, Medium 550, High 650 draw calls;
+  primitives 125k/250k/350k. Run `tools/benchmark_visuals.sh --vf-inspect=RB01`; target hardware still needs testing.
 - Long Godot runs from the shell: wrap in `perl -e 'alarm N; exec @ARGV' ...` (macOS can throttle background windows).
 - Keep docs (requirements status, interfaces, open issues) in sync with code changes.
 - UI (ADR-0018): `ui/` holds passive views only (world panels, inspector, HMI, terminal, menu); controllers live in

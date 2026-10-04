@@ -120,9 +120,9 @@ func _apply_dev_args() -> void:
 	var lang := DevTools.get_arg("vf-lang")
 	if lang != "":
 		set_language(lang)
-	var quality := DevTools.get_arg("vf-quality")
-	if quality != "":
-		QualitySettings.apply(ui.get_parent(), int(quality))
+	var quality := int(DevTools.get_arg("vf-quality", "1"))
+	QualitySettings.apply(ui.get_parent(), quality)
+	menu.show_quality(quality)
 	if DevTools.get_arg("vf-menu") != "":
 		menu.open()
 	if DevTools.get_arg("vf-dataflow") != "":

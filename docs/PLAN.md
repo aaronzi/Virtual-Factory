@@ -442,6 +442,10 @@ BaSyx Go MQTT eventing (experimental, submodel granularity only) is **on** since
 
 ### 3.13 Graphics, performance and XR-readiness
 
+> Original planning targets below. Renderer choice was superseded by ADR-0010; the current visual
+> presets and laptop targets are in [ADR-0030](adr/0030-scalable-factory-visuals.md) and
+> [visual quality](architecture/visual-quality.md). Quest 3 remains a separate, unverified acceptance gate.
+
 - **Renderer:** *Mobile* (Vulkan/Metal/D3D12, XR-capable, cheap). M1 includes a quick Compatibility (GL) test as a
   fallback for very old hardware, recorded in an ADR. Quality presets: Low / Medium / High.
 - **Budgets:**

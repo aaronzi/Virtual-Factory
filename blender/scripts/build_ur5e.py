@@ -152,7 +152,7 @@ POSE = [0.6, -1.25, 1.55, -1.87, -1.57, 0.3]
 for i, q in enumerate(POSE):
     joints[i + 1][0].rotation_euler.z = q
 bpy.context.view_layer.update()
-L.render_preview("ur5e", target=(0, 0, 0.0), distance=2.6, elevation=18, azimuth=-35, lens=40, floor_z=-0.75)
+L.render_preview("ur5e", target=(0, 0, 0.1), distance=3.3, elevation=18, azimuth=-35, lens=40, floor_z=-0.75)
 for i in range(6):
     joints[i + 1][0].rotation_euler.z = 0
 bpy.context.view_layer.update()

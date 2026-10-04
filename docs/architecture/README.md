@@ -194,6 +194,7 @@ See [adr/](../adr/README.md).
 ## 10. Quality requirements
 
 See NFRs in [requirements.md](../requirements.md#3-non-functional-requirements).
+Visual presets, budgets and measurements: [visual-quality.md](visual-quality.md).
 
 ## 11. Risks and technical debt
 

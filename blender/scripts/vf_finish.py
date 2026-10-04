@@ -30,6 +30,7 @@ def batch_material(metallic, roughness):
         return mat
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
+    mat.use_backface_culling = True
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     bsdf.inputs["Metallic"].default_value = 0.85 if metallic > 0.5 else 0
     bsdf.inputs["Roughness"].default_value = 0.36 if metallic > 0.5 else (0.85 if roughness > 0.75 else 0.56)

@@ -65,6 +65,6 @@ func test_hmi_enables_allowed_commands() -> void:
 
 
 func test_tour_loads_and_moves_rig() -> void:
-	var tour := CameraTour.new()
+	var tour := autofree(CameraTour.new()) as CameraTour
 	assert_true(tour.load_tour("res://config/tours/default.json"))
 	assert_gt(tour.stops.size(), 3)

@@ -77,7 +77,7 @@ for dx, mode in ((0.075, "none"), (0.15, "blue")):
         c.location.x = dx
         bpy.context.scene.collection.objects.link(c)
         variants.append(c)
-L.render_preview("cylinder", target=(0.075, 0, 0.12), distance=0.72, elevation=18, azimuth=28)
+L.render_preview("cylinder", target=(0.075, 0, 0.12), distance=0.85, elevation=18, azimuth=28)
 for v in variants:
     bpy.data.objects.remove(v, do_unlink=True)
 result = {"triangles": tris, "objects": [o.name for o in bpy.context.scene.objects]}

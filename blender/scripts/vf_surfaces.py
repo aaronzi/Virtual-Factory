@@ -37,7 +37,38 @@ def image_tile(name, color, roughness):
     tex.image = image
     mat.node_tree.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = roughness
+    surface_maps(mat, name, noise, roughness)
     return mat
+
+
+def data_image(name, pixels, path):
+    image = bpy.data.images.new(name, width=pixels.shape[1], height=pixels.shape[0], alpha=False)
+    image.colorspace_settings.name = "Non-Color"
+    image.pixels.foreach_set(pixels.astype(np.float32).ravel())
+    image.filepath_raw = str(path)
+    image.file_format = "PNG"
+    image.save()
+    image.pack()
+    return image
+
+
+def surface_maps(mat, name, noise, roughness):
+    nodes, links = mat.node_tree.nodes, mat.node_tree.links
+    bsdf = nodes.get("Principled BSDF")
+    pixels = np.ones((*noise.shape, 4))
+    pixels[:, :, :3] = np.clip(roughness + noise[:, :, None] * 0.035, 0, 1)
+    tex = nodes.new("ShaderNodeTexImage")
+    tex.image = data_image(name + "_rough", pixels, TEXTURES / (name + "_rough.png"))
+    links.new(tex.outputs["Color"], bsdf.inputs["Roughness"])
+    pixels[:, :, 0] = 0.5 + (noise - np.roll(noise, 1, axis=1)) * 0.025
+    pixels[:, :, 1] = 0.5 + (noise - np.roll(noise, 1, axis=0)) * 0.025
+    pixels[:, :, 2] = 1.0
+    tex = nodes.new("ShaderNodeTexImage")
+    tex.image = data_image(name + "_normal", pixels, TEXTURES / (name + "_normal.png"))
+    normal = nodes.new("ShaderNodeNormalMap")
+    normal.inputs["Strength"].default_value = 0.22
+    links.new(tex.outputs["Color"], normal.inputs["Color"])
+    links.new(normal.outputs["Normal"], bsdf.inputs["Normal"])
 
 
 def project_uv(obj, metres=2.0):

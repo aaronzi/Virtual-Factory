@@ -34,3 +34,4 @@ Format: short [MADR](https://adr.github.io/madr/)-style records. New ADR = next 
 | [0027](0027-optional-security-profile-keycloak-abac.md) | Optional secure profile: Keycloak, BaSyx Go ABAC, broker ACLs, OPC UA security | accepted |
 | [0028](0028-supplier-environment-batch-aas-federated-footprints.md) | Supplier data exchange: second AAS environment, batch AAS and federated batch footprints | accepted |
 | [0029](0029-predictive-maintenance-condition-monitoring.md) | Predictive maintenance: wear in the device models, RUL from the historian, maintenance orders in BPMN | accepted |
+| [0030](0030-scalable-factory-visuals.md) | Scalable factory visuals: coherent presets, Blender finishes, revised performance targets | accepted |

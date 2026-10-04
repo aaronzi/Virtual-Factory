@@ -15,9 +15,11 @@ import sys
 sys.path.insert(0, "/Users/zielstor/Documents/GitProjects/Virtual-Factory/blender/scripts")
 import bpy  # noqa: E402
 import vf_lib as L  # noqa: E402
+import vf_surfaces as S  # noqa: E402
 from mathutils import Matrix, Quaternion, Vector  # noqa: E402
 
 importlib.reload(L)
+importlib.reload(S)
 L.reset_scene()
 
 DATA = json.loads((L.BLEND_DIR / "data" / "demo_trajectory.json").read_text())
@@ -51,7 +53,8 @@ def by_name(objs, prefix: str):
 
 
 def build_scene():
-    floor = L.box("Floor", (12, 8, 0.02), (-1.0, 0.5, -0.01), L.material("paint_grey", color=(0.27, 0.35, 0.33)))
+    floor = S.project_uv(L.box("Floor", (12, 8, 0.02), (-1.0, 0.5, -0.01),
+                              S.image_tile("epoxy", (0.25, 0.29, 0.28), 0.57)))
     robot = append("ur5e")
     place(robot, (0.25, 0.75, -0.55))
     for name, pos in (("qa_station", (0.25, 0.85, 0)), ("assembly_cell", (-3.4, 0, 0))):
@@ -181,7 +184,8 @@ def setup_camera_and_render():
     world.node_tree.nodes["Background"].inputs["Strength"].default_value = 0.6
     scene.render.engine = "BLENDER_EEVEE"
     scene.eevee.taa_render_samples = 8
-    scene.view_settings.view_transform = "Standard"
+    scene.view_settings.view_transform = "AgX"
+    scene.view_settings.look = "AgX - Medium High Contrast"
     scene.render.resolution_x, scene.render.resolution_y = 960, 540
 
 

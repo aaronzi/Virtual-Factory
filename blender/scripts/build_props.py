@@ -11,6 +11,7 @@ import sys
 
 sys.path.insert(0, "/Users/zielstor/Documents/GitProjects/Virtual-Factory/blender/scripts")
 import vf_lib as L  # noqa: E402
+import vf_details as D  # noqa: E402
 
 importlib.reload(L)
 import bpy  # noqa: E402
@@ -50,8 +51,7 @@ def fence_panel(name, x0, y0, x1, y1, h=2.0):
     off = ((length / 2 - 0.055), 0) if along_x else (0, (length / 2 - 0.055))
     return [L.box(f"{name}Top", size, (cx, cy, h - 0.03), dark()), L.box(f"{name}Bot", size, (cx, cy, 0.17), dark()),
             L.box(f"{name}SideA", side, (cx - off[0], cy - off[1], 0.15 + (h - 0.2) / 2), dark()),
-            L.box(f"{name}SideB", side, (cx + off[0], cy + off[1], 0.15 + (h - 0.2) / 2), dark())
-            ] + wire_mesh(cx, cy, length, h, along_x)
+            L.box(f"{name}SideB", side, (cx + off[0], cy + off[1], 0.15 + (h - 0.2) / 2), dark())]
 
 
 def post(x, y, h=2.0):
@@ -74,9 +74,15 @@ def safety_fence():
     parts.append(L.box("SignPlate", (0.004, 0.22, 0.2), (xr + 0.014, -0.08, 1.5), dark()))
     parts.append(L.decal("Warning", "warning_robot.png", 0.2, 0.18, (xr + 0.0171, -0.08, 1.5), (90, 0, 90)))
     L.join(parts, "Fence")
+    wires = wire_mesh(-0.5, yb, 1.0, 2.0, True) + wire_mesh(0.5, yb, 1.0, 2.0, True)
+    wires += wire_mesh(xl, (yf + yb) / 2, yb - yf, 2.0, False)
+    wires += wire_mesh(xr, (yf + 0.15) / 2, 0.15 - yf, 2.0, False)
+    L.join(wires, "DetailFenceWire")
     door = fence_panel("Door", xr, 0.15, xr, yb)
     door.append(L.box("DoorHandle", (0.03, 0.12, 0.03), (xr + 0.03, 0.22, 1.05), L.material("plastic_black")))
     d = L.join(door, "Door", origin=(xr, yb - 0.02, 0))  # hinge at the back post
+    wire = L.join(wire_mesh(xr, (0.15 + yb) / 2, yb - 0.15, 2.0, False), "DetailDoorWire")
+    L.parent(wire, d)
     L.export_glb(OUT / "safety_fence.glb")
     L.save_blend("safety_fence")
     return L.triangle_count()
@@ -93,6 +99,10 @@ def control_cabinet():
     for x in (-0.05, 0.05):
         parts.append(L.cylinder("Lock", 0.012, 0.015, (x * 6, -0.205, 1.1), L.material("plastic_black"), axis="Y",
                                 segments=10))
+    for x in (-0.196, 0.196):
+        parts.append(L.box("DoorSkin", (0.378, 0.008, 1.70), (x, -0.205, 1.0), grey, bevel=0.003))
+    parts += D.vents(0.20, -0.216, 0.36, 0.12, 6)
+    parts += D.fasteners((-0.365, 0.365), (0.19, 1.81), -0.211)
     parts.append(L.decal("WarnElectric", "warning_electric.png", 0.12, 0.11, (-0.2, -0.2005, 1.6), (90, 0, 0)))
     parts.append(L.decal("TypePlate", "typeplate_line.png", 0.16, 0.08, (0.2, -0.2005, 1.6), (90, 0, 0)))
     L.join(parts, "Cabinet")

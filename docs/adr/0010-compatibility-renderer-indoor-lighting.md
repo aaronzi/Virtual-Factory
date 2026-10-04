@@ -3,6 +3,9 @@
 - Status: accepted (supersedes the renderer choice of ADR-0001; Jolt part of ADR-0001 still valid)
 - Date: 2026-10-03
 
+> Historical lighting values and the 450-call budget below are superseded by
+> [ADR-0030](0030-scalable-factory-visuals.md). The Compatibility renderer decision remains valid.
+
 ## Context
 
 User decision at the M1 checkpoint: slow PCs come first, mobile platforms are not a target, and standalone VR may

@@ -9,6 +9,8 @@ description:
 thumbnail: repo:docs/screenshots/assets/light_barrier.png
 specificAssetIds: {manufacturerPartId: LX12-R-P4M8}
 model3d:
+  version: "1.1"
+  date: "2026-10-04"
   file: godot/devices/light_barrier/view/light_barrier.glb
   preview: docs/screenshots/assets/light_barrier.png
   title: LX12-R sensor with reflector and brackets

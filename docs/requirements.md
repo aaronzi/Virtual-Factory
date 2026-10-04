@@ -66,7 +66,7 @@ that mirror a genuine manufacturing environment.
 
 | ID | Requirement | M | Verif. | Status |
 |---|---|---|---|---|
-| NFR-01 | **Performance:** 60 FPS at 1080p on an Intel Iris Xe-class iGPU. Budget ≤ 250 k primitives and ≤ 450 draw calls, both including the shadow pass, with full KLTs (ADR-0010). *(M6: draw calls 449/450 and primitives 66 k/250 k with full KLTs and the training UI; Low/Medium/High presets; not measured on an Iris Xe device (decision M6 review))* | M2/M6 | T (perf scene), D | ☑ |
+| NFR-01 | **Performance:** ≥30 FPS at 1080p output on a lower-tier laptop with a modest dedicated GPU using a suitable preset; 60 FPS preferred. Low/Medium/High review budgets: 350/550/650 draw calls and 125k/250k/350k primitives, including shadows/UI with full KLTs ([ADR-0030](adr/0030-scalable-factory-visuals.md)). [Measured rendering fixture and target-device acceptance](architecture/visual-quality.md); target laptop and Quest 3 not yet measured. | M2/M6 + visual refresh | T (perf scene), D | ◐ |
 | NFR-02 | **XR-readiness:** VR can be added later without restructuring (1 unit = 1 m, PlayerRig abstraction, world-space UI, XR-capable renderer). The desktop PC is fully supported. *(M6: XRRig (OpenXR) behind the PlayerRig interface, world-space UI, review in architecture/xr-readiness.md)* | M0–M6 | I | ☑ |
 | NFR-03 | **Modularity:** semantically related aspects are grouped into modules, with high cohesion and low coupling. *(arch_check: 314/314 dependency edges conformant)* | all | I, T | ☑ |
 | NFR-04 | **Architecture adherence ≥ 95 %**, measured by `tools/arch_check.py`. Exceptions are documented. *(100 % adherence, 0 exceptions)* | all | T | ☑ |

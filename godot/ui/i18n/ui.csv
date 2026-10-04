@@ -43,6 +43,9 @@ MENU_HINT,"Esc menu · right mouse + WASD move · click a device, part or panel"
 QUALITY_LOW,Low,Niedrig
 QUALITY_MEDIUM,Medium,Mittel
 QUALITY_HIGH,High,Hoch
+QUALITY_HINT_LOW,Simple surfaces and fewer details. Best performance.,Einfache Oberflächen und weniger Details. Höchste Leistung.
+QUALITY_HINT_MEDIUM,Textured surfaces and shadows. Balanced for laptops.,Texturierte Oberflächen und Schatten. Ausgewogen für Laptops.
+QUALITY_HINT_HIGH,Full detail with richer surfaces and reflections.,Volle Details mit feineren Oberflächen und Reflexionen.
 MENU_INFO,"UNS %s · PLC OPC UA %s · AAS events %d · open tasks %d","UNS %s · SPS OPC UA %s · AAS-Ereignisse %d · offene Aufgaben %d"
 SCENARIO_RUNNING,Running: %s,Läuft: %s
 SCENARIO_NONE,No scenario running.,Kein Szenario aktiv.

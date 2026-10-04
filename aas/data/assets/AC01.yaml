@@ -18,6 +18,8 @@ thumbnail: repo:docs/screenshots/assets/assembly_cell.png
 specificAssetIds: {serialNumber: AC200-2025-0042, manufacturerPartId: AC-200-PC32-3P400}
 locationDescription: "LINE01 start, Hall 1 Final Assembly; outlet tunnel feeds the infeed of conveyor CV01"
 model3d:
+  version: "1.1"
+  date: "2026-10-04"
   file: godot/devices/assembly_cell/view/assembly_cell.glb
   preview: docs/screenshots/assets/assembly_cell.png
   title: AC-200 assembly and test cell (enclosure, outlet tunnel, HMI, stack light)

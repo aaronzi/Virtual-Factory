@@ -1,7 +1,8 @@
 # XR readiness review (M6)
 
 Decision: VR is not implemented now, but the architecture must allow adding it without restructuring
-([ADR-0003](../adr/0003-xr-ready-architecture.md), D1). This review checks the criteria on 2026-10-03.
+([ADR-0003](../adr/0003-xr-ready-architecture.md), D1). Architecture reviewed on
+2026-10-03; visual/performance assessment updated 2026-10-04 (ADR-0030).
 
 | Criterion | Status | Evidence |
 |---|---|---|
@@ -11,9 +12,9 @@ Decision: VR is not implemented now, but the architecture must allow adding it w
 | Graceful fallback | ✔ | `--vf-xr` tries OpenXR; without a runtime the desktop rig stays (verified on macOS) |
 | World-space UI | ✔ | Inspector, HMI, MES terminal are `WorldPanel`s driven by the `PointerRouter` (ADR-0018); only the F1 menu and captions are desktop extras |
 | Interaction without mouse specifics | ✔ | Selection volumes / Interactables use the rig's ray; no screen-space picking in training features |
-| Renderer supports XR | ✔ | Compatibility renderer (OpenGL) supports OpenXR in Godot 4.7; draw-call budget leaves room for stereo only with the Low/Medium presets (see below) |
+| Renderer supports XR | ✔ | Compatibility renderer (OpenGL) supports OpenXR in Godot 4.7; actual standalone performance still requires headset profiling |
 | Comfort | ◐ | Snap turn and smooth locomotion implemented; vignette, teleport locomotion and seated mode not yet |
-| Performance in stereo | ◐ | Desktop frame ≈ 4 ms on the dev machine; stereo roughly doubles the draw calls (449 → ~900), so the Low preset (no shadows) is required for standalone headsets |
+| Performance in stereo | ◐ | Not measured. Start with Low; validate ≥72 FPS (≤13.9 ms at 72 Hz), actual eye resolution, memory and thermal behaviour on Quest 3. Desktop 30 FPS is not an XR target |
 | Text legibility | ◐ | Panels at 1000–1100 px/m and 17–30 px fonts are readable at 0.6–1.2 m on desktop; to be checked in a headset |
 
 ## Enabling VR (when a headset is available)
@@ -30,3 +31,14 @@ Decision: VR is not implemented now, but the architecture must allow adding it w
   under the ray (O32).
 - The F1 menu is screen-space: an XR menu panel on the left controller is needed for scenario/tour control.
 - Not tested on a headset (no OpenXR runtime on macOS) - R10.
+
+## Rendering acceptance
+
+See [visual quality](visual-quality.md) for current presets and reproducible desktop measurements.
+Stereo cost cannot be inferred by doubling mono draw calls: multiview can reduce CPU submission overhead,
+while fragment cost still depends on eye resolution, overdraw and effects. Profile on the actual headset.
+Low currently disables MSAA and uses desktop scaling; evaluate 2× MSAA and XR-specific resolution settings
+for comfortable wire/text rendering before claiming Quest support.
+
+Sources: Meta [performance targets](https://developers.meta.com/vr/documentation/unity/po-perf-opt-mobile/)
+and [multiview](https://developers.meta.com/vr/documentation/unreal/unreal-multi-view/).

@@ -1,5 +1,9 @@
 # Final report - Virtual Factory (M0–M7)
 
+> This report records the M0–M7 milestone state. The 2026-10-04 visual refresh updates models,
+> screenshots, presets and performance targets; see [visual quality](architecture/visual-quality.md).
+> Historical measurements and screenshots below are retained as milestone evidence.
+
 ## 1. What was built
 
 A 3D training and research environment of a pneumatic-cylinder inspection and sorting line (LINE01, fictional

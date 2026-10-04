@@ -16,7 +16,7 @@ description:
     Ausgangsbehälter KLTA01 (Gut) und KLTB01 (Ausschuss), gesteuert von PLC01. Gebaut und in Betrieb genommen von
     VF Automation Systems GmbH (15.09.2025) als Gesamtheit von Maschinen; Takt 12 s. Dynamische Werte
     (KPI-Variablen, Energie) werden vom MES aktualisiert.
-thumbnail: repo:docs/screenshots/m2-line.png
+thumbnail: repo:docs/screenshots/factory-line.png
 specificAssetIds: {serialNumber: ISL-2025-001}
 location: [-1.0, 0.0, -0.3]
 locationDescription: "Plant 01, Hall 1, area Final Assembly: centre of LINE01 (approx. 5.5 m x 2.5 m footprint)"
@@ -138,7 +138,7 @@ submodels:
               OrganizationShortName: VF Automation
               OrganizationOfficialName: VF Automation Systems GmbH
               DigitalFiles: [{value: repo:aas/files/docs/LP-LINE01.pdf}]
-              PreviewFile: repo:docs/screenshots/m2-line.png
+              PreviewFile: repo:docs/screenshots/factory-line.png
         - DocumentIds: [{DocumentDomainId: VF Automation Systems, DocumentIdentifier: DoC-LINE01, DocumentIsPrimary: true}]
           DocumentClassifications:
             - {ClassId: "02-04", ClassName: {en: "Certificates, declarations", de: "Zeugnisse, Zertifikate, Bescheinigungen"}, ClassificationSystem: VDI2770:2020}

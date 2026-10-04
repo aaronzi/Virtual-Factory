@@ -324,6 +324,8 @@ def triangle_count(objects=None) -> int:
 def export_glb(path: Path, animations: bool = False) -> None:
     import importlib
     import vf_finish
+    import vf_grounding
+    importlib.reload(vf_grounding).add(path.stem)
     importlib.reload(vf_finish).prepare()
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.export_scene.gltf(filepath=str(path), export_format="GLB", use_selection=False,

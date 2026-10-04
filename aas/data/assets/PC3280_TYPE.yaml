@@ -19,6 +19,8 @@ specificAssetIds: {manufacturerPartId: PC-32-80-DA-M, gtin: "04099999032808"}
 globalAssetId: https://virtual-factory.example/01/04099999032808
 location: false
 model3d:
+  version: "1.1"
+  date: "2026-10-04"
   file: godot/products/cylinder/cylinder.glb
   preview: docs/screenshots/assets/cylinder.png
   title: PC-32-80-DA-M cylinder with red protective cap

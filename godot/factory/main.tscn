@@ -17,7 +17,7 @@ ground_energy_multiplier = 0.5
 [sub_resource type="Sky" id="Sky_interior"]
 sky_material = SubResource("SkyMaterial_interior")
 radiance_size = 1
-process_mode = 3
+process_mode = 1
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -52,6 +52,17 @@ light_energy = 0.16
 
 [node name="Hall" type="Node3D" parent="."]
 script = ExtResource("2_hall")
+
+[node name="InteriorReflection" type="ReflectionProbe" parent="."]
+position = Vector3(-1, 3.5, 0)
+visible = false
+size = Vector3(36, 9, 24)
+origin_offset = Vector3(0, 1, 0)
+interior = true
+box_projection = true
+cull_mask = 2
+intensity = 0.75
+mesh_lod_threshold = 4.0
 
 [node name="Factory" type="Node3D" parent="."]
 script = ExtResource("3_factory")

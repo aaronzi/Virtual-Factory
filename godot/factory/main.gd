@@ -16,6 +16,7 @@ var training_ui: TrainingUi
 
 func _ready() -> void:
 	_overlay.source = _status_text
+	_overlay.visible = DevTools.get_arg("vf-overlay", "on") != "off"
 	var hall := $Hall as Hall
 	var interior := hall.get_interior_bounds()
 	($DesktopRig as DesktopRig).bounds = AABB(hall.to_global(interior.position) + Vector3(0, 0.3, 0),
@@ -30,6 +31,8 @@ func _ready() -> void:
 		training_ui.name = "TrainingUi"
 		add_child(training_ui)
 		training_ui.setup(_factory, rig)
+	else:
+		QualitySettings.apply(self, int(DevTools.get_arg("vf-quality", "1")))
 
 
 ## --vf-xr: use the OpenXR rig if a runtime is available (ADR-0003), otherwise keep the desktop rig.

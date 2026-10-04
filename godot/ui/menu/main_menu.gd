@@ -27,6 +27,8 @@ var _band: PanelContainer
 var _language: OptionButton
 var _tour: CheckButton
 var _info: Label
+var _quality: OptionButton
+var _quality_hint: Label
 
 
 func _ready() -> void:
@@ -57,13 +59,26 @@ func open() -> void:
 	_panel.visible = true
 
 
+func show_quality(preset: int) -> void:
+	preset = clampi(preset, 0, 2)
+	_quality.select(preset)
+	_quality_hint.text = ["QUALITY_HINT_LOW", "QUALITY_HINT_MEDIUM", "QUALITY_HINT_HIGH"][preset]
+
+
 func _fill(box: VBoxContainer) -> void:
 	box.add_child(UiTheme.label("MENU_TITLE", 26))
 	var lang_row := _choice("MENU_LANGUAGE", ["English", "Deutsch"], func(i: int) -> void:
 		language_selected.emit(["en", "de"][i]))
 	_language = lang_row.get_child(1)
 	box.add_child(lang_row)
-	box.add_child(_choice("MENU_QUALITY", QUALITY_NAMES, func(i: int) -> void: quality_selected.emit(i), 1))
+	var quality_row := _choice("MENU_QUALITY", QUALITY_NAMES, func(i: int) -> void:
+		show_quality(i)
+		quality_selected.emit(i), 1)
+	_quality = quality_row.get_child(1)
+	box.add_child(quality_row)
+	_quality_hint = UiTheme.label("QUALITY_HINT_MEDIUM", 15, UiTheme.MUTED)
+	_quality_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(_quality_hint)
 	box.add_child(_choice("MENU_SPEED", ["1×", "2×", "4×"],
 		func(i: int) -> void: speed_selected.emit(SPEEDS[i])))
 	box.add_child(_scenario_row())

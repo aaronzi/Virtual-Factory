@@ -15,6 +15,8 @@ description:
 thumbnail: repo:docs/screenshots/assets/ur5e.png
 specificAssetIds: {manufacturerPartId: UR5e}
 model3d:
+  version: "1.1"
+  date: "2026-10-04"
   file: godot/devices/ur5e/view/ur5e.glb
   preview: docs/screenshots/assets/ur5e.png
   title: UR5e robot arm with PG-85 gripper (visualisation model)
