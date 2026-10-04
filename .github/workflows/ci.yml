@@ -45,6 +45,9 @@ env:
 jobs:
   changes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read  # paths-filter lists the files of a pull request via the API
     outputs:
       godot: ${{ steps.filter.outputs.godot }}
     steps:
