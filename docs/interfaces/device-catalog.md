@@ -4,7 +4,8 @@
 
 ## SortingLinePLC
 
-Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robot handshake, KLT handling, PackML, alarms
+Virtual PLC program of LINE01: infeed interlock, part tracking, inspection, robot handshake, KLT handling, PackML,
+alarms
 
 - Model description: `godot/control/sorting_line/modelDescription.xml`
 - modelIdentifier: `sorting_line_plc` · instantiationToken: `{6f1d2a90-1b7e-4c55-9d8e-0a1b2c3d4e10}`

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import sys
+import textwrap
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -35,7 +36,7 @@ def model_section(path: Path) -> list[str]:
     root = ET.parse(path).getroot()
     rel = path.relative_to(GODOT).as_posix()
     lines = [f"## {root.get('modelName')}", "",
-             f"{root.get('description', '')}", "",
+             _prose(root.get('description', '')), "",
              f"- Model description: `godot/{rel}`",
              f"- modelIdentifier: `{root.find('CoSimulation').get('modelIdentifier')}` · "
              f"instantiationToken: `{root.get('instantiationToken')}`", "",
@@ -52,9 +53,14 @@ def model_section(path: Path) -> list[str]:
     return lines + [""]
 
 
+def _prose(text: str) -> str:
+    """Paragraph wrapped at the Markdown line limit (.markdownlint-cli2.yaml, MD013)."""
+    return textwrap.fill(text, width=120, break_long_words=False, break_on_hyphens=False)
+
+
 def layout_section() -> list[str]:
     layout = json.loads(LAYOUT.read_text())
-    lines = [f"## Line layout `{layout['line']}`", "", layout.get("description", ""), "",
+    lines = [f"## Line layout `{layout['line']}`", "", _prose(layout.get("description", "")), "",
              "| Device | Type | Position (m) |", "|---|---|---|"]
     for d in layout["devices"]:
         lines.append(f"| {d['id']} | `{d['type']}` | {tuple(d.get('position', [0, 0, 0]))} |")
