@@ -13,6 +13,7 @@ on:
       - "!blender/**"
       - "!.github/**"
       - "!.markdownlint-cli2.yaml"
+      - "!lychee.toml"
       - "!LICENSE*"
       - "!godot/**/tests/**"   # GUT unit tests run in ci.yml
       - "!tools/run_godot_tests.sh"

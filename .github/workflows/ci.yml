@@ -12,6 +12,7 @@ on:
       - "!blender/**"
       - "!.github/**"
       - "!.markdownlint-cli2.yaml"
+      - "!lychee.toml"
       - "!LICENSE*"
       - docs/interfaces/device-catalog.md         # generated, checked by gen_interface_docs --check
       - docs/architecture/dependency-rules.yaml   # input of arch_check
@@ -24,6 +25,7 @@ on:
       - "!blender/**"
       - "!.github/**"
       - "!.markdownlint-cli2.yaml"
+      - "!lychee.toml"
       - "!LICENSE*"
       - docs/interfaces/device-catalog.md         # generated, checked by gen_interface_docs --check
       - docs/architecture/dependency-rules.yaml   # input of arch_check
