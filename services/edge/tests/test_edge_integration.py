@@ -112,17 +112,18 @@ def test_uns_receives_plc01_from_the_edge(cpu_linked):
     client.connect("localhost", 1883)
     client.subscribe(topic)
     client.loop_start()
-    seen = []
-    try:  # retained value first; the edge publishes changes within its 100 ms interval: let it catch up
+    seen, matched = [], None
+    try:  # retained value first; the edge publishes changes within its 100 ms interval: let it catch up.
+        # Compare each message with the OPC UA value read right then - the line keeps changing state (order
+        # boundaries), so a later second read may already be newer than the last published message.
         deadline = time.monotonic() + 5
-        while time.monotonic() < deadline:
+        while matched is None and time.monotonic() < deadline:
             seen.append(received.get(timeout=max(deadline - time.monotonic(), 0.01)))
             if seen[-1]["v"] == _read("PLC01.Status.StateCurrent")[0].Value.Value:
-                break
+                matched = seen[-1]
     except queue.Empty:
         pass
     finally:
         client.loop_stop()
         client.disconnect()
-    current = _read("PLC01.Status.StateCurrent")[0].Value.Value
-    assert seen and seen[-1]["v"] == current and seen[-1]["ts"].endswith("Z"), (seen, current)
+    assert matched is not None and matched["ts"].endswith("Z"), seen
