@@ -3,12 +3,13 @@ Production calendar of LINE01, VF Pneumatics GmbH, Plant 01 (IDTA 02067 Producti
 
 Purpose:     Lists the break periods inside a VEVENT in which the asset is not planned to produce.
 Value type:  Comma separated list of PERIOD values (RFC 5545 section 3.3.9): <start>/<end> or <start>/<duration>.
-Used in:     The shift events (collective breaks 10:00-10:30 in the early shift and 18:00-18:30 in the late shift).
+Used in:     The shift events (collective breaks 10:00-10:30 in the early shift, 18:00-18:30 in the late shift and
+             02:00-02:30 in the night shift).
 Example:     X-BREAK:20250915T080000Z/PT30M
 
 Interpretation:
 - The period is given for the first occurrence of the event. For recurring events it applies to every occurrence
-  at the same offset from the event start (the break starts 4 hours after the start of the early shift).
+  at the same offset from the event start (the break starts 4 hours after the start of every shift).
 - A break is subtracted from the shift it lies in (planned down time, ISO 22400-2); the remainder is the planned
   busy time.
 - During a break the line is brought into the PackML state Held by the MES and resumed (Unhold) afterwards;

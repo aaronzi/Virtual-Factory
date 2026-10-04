@@ -3,8 +3,8 @@ Production calendar of LINE01, VF Pneumatics GmbH, Plant 01 (IDTA 02067 Producti
 
 Purpose:     Assigns a VEVENT (a production time slot, i.e. a shift) to a production day.
 Value type:  INTEGER; one of 1, 0, -1.
-Used in:     Every VEVENT of the calendar (shifts "Early shift" 06:00-14:00, "Late shift" 14:00-22:00, Mon-Fri,
-             and the monthly maintenance window).
+Used in:     Every VEVENT of the calendar (shifts "Early shift" 06:00-14:00, "Late shift" 14:00-22:00 and
+             "Night shift" 22:00-06:00, and the monthly "Planned maintenance LINE01" shift on the first Saturday).
 Example:     X-PRODUCTION-DAY:0
 
 Interpretation:
@@ -12,6 +12,8 @@ Interpretation:
     1  the event belongs to the following production day,
     0  the event belongs to the production day of its calendar day,
    -1  the event belongs to the previous production day.
-- All shifts of LINE01 end on the day they start, therefore the value is 0.
+- The night shift starts on the evening before its production day (Sunday to Thursday, 22:00) and ends on the
+  production day itself, therefore the value is 0. Example: the night shift from Sunday 22:00 to Monday 06:00,
+  the early shift and the late shift of Monday form the production day Monday.
 - Times are local time Europe/Berlin (VTIMEZONE in the calendar file).
 - EXDATE entries remove public holidays (Rhineland-Palatinate) from the recurring shifts.
