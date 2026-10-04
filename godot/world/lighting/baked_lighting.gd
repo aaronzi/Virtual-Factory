@@ -19,7 +19,8 @@ const HALL_BAKED: Array[String] = ["Floor", "FloorZone"]
 const MIN_EXTENT := 0.2  ## smaller parts (lamps, LEDs, light barriers) stay dynamic
 const MANIFEST := "manifest.json"
 const LIGHTMAP := "lighting.lmbake"
-const TOLERANCE := 0.002
+const TOLERANCE := 0.002  ## m / transform components
+const UV2_TOLERANCE := 1e-4  ## UV2 moments
 
 var _root: Node
 var _users := {}  ## baked user paths (String) -> true
@@ -81,24 +82,37 @@ static func classify(root: Node) -> Dictionary:
 	return out
 
 
-## Placement and geometry of a baked mesh; any change makes the bake stale.
+## Placement and geometry of a baked mesh; any change makes the bake stale. Compared with tolerances
+## (float results differ in the last bits between platforms and compilers): UV2 as moments (means of u, v,
+## u², v², uv) - a different lightmap unwrap changes them far beyond UV2_TOLERANCE.
 static func fingerprint(root: Node3D, mi: MeshInstance3D) -> Dictionary:
 	if mi.has_meta(&"baked_source"):
 		return mi.get_meta(&"baked_source")  # procedural mesh already swapped for its UV2 copy
 	var xform := root.global_transform.affine_inverse() * mi.global_transform
 	var vertices := 0
-	var uv2 := 0
+	var uv2 := [0.0, 0.0, 0.0, 0.0, 0.0]
+	var uv2_count := 0
 	for s in mi.mesh.get_surface_count():
 		var arrays := mi.mesh.surface_get_arrays(s)
 		vertices += (arrays[Mesh.ARRAY_VERTEX] as PackedVector3Array).size()
-		if arrays[Mesh.ARRAY_TEX_UV2] != null:
-			uv2 = hash([uv2, arrays[Mesh.ARRAY_TEX_UV2]])
+		if arrays[Mesh.ARRAY_TEX_UV2] == null:
+			continue
+		for uv: Vector2 in arrays[Mesh.ARRAY_TEX_UV2]:
+			uv2[0] += uv.x
+			uv2[1] += uv.y
+			uv2[2] += uv.x * uv.x
+			uv2[3] += uv.y * uv.y
+			uv2[4] += uv.x * uv.y
+		uv2_count += (arrays[Mesh.ARRAY_TEX_UV2] as PackedVector2Array).size()
 	var box := mi.mesh.get_aabb()
-	return {"vertices": vertices, "uv2": uv2, "xform": _floats(xform), "aabb": [
+	return {"vertices": vertices, "uv2": uv2.map(func(m: float) -> float: return m / maxi(uv2_count, 1)),
+		"xform": _floats(xform), "aabb": [
 		box.position.x, box.position.y, box.position.z, box.size.x, box.size.y, box.size.z]}
 
 
-## Differences between the scene and the manifest (empty = the bake matches).
+## Differences between the scene and the manifest (empty = the bake matches). Meshes built at runtime
+## (entry "mesh", e.g. merged conveyor parts) are replaced by their saved unwrapped copy, so only their
+## geometry and placement count, not the UV2 of the runtime merge.
 static func validate(root: Node3D, manifest: Dictionary) -> PackedStringArray:
 	var problems := PackedStringArray()
 	var current := classify(root)
@@ -109,11 +123,13 @@ static func validate(root: Node3D, manifest: Dictionary) -> PackedStringArray:
 			continue
 		var now := fingerprint(root, current[path])
 		var then: Dictionary = users[path]
-		for key in ["vertices", "uv2"]:
-			if int(now[key]) != int(then.get(key, -1)):
-				problems.append("%s: %s changed" % [path, key])
-		for key in ["xform", "aabb"]:
-			if not _close(now[key], then.get(key, [])):
+		if int(now.vertices) != int(then.get("vertices", -1)):
+			problems.append("%s: vertices changed" % path)
+		var checks := {"xform": TOLERANCE, "aabb": TOLERANCE}
+		if not then.has("mesh"):
+			checks["uv2"] = UV2_TOLERANCE
+		for key: String in checks:
+			if not _close(now[key], then.get(key, []), checks[key]):
 				problems.append("%s: %s changed" % [path, key])
 	for path: String in current:
 		if not users.has(path):
@@ -173,11 +189,11 @@ static func _floats(xform: Transform3D) -> Array:
 		xform.origin.x, xform.origin.y, xform.origin.z]
 
 
-static func _close(a: Array, b: Array) -> bool:
+static func _close(a: Array, b: Array, tolerance: float) -> bool:
 	if a.size() != b.size():
 		return false
 	for i in a.size():
-		if absf(float(a[i]) - float(b[i])) > TOLERANCE:
+		if absf(float(a[i]) - float(b[i])) > tolerance:
 			return false
 	return true
 

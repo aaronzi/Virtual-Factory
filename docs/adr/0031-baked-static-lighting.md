@@ -36,9 +36,11 @@ RenderingDevice renderer (Forward+/Mobile). It also exposes the bake only throug
   A small editor plugin triggers the editor's own bake and quits.
   Imported GLBs get lightmap UV2 from the importer, and the committed `.unwrap_cache` files keep that UV2
   identical. Procedural meshes, here the merged conveyor parts, are unwrapped once and saved with the bake.
-- **Stale-bake detection:** a manifest stores each baked mesh's placement, vertex count and UV2 hash. At
-  runtime a mismatch keeps the previous real-time shadows and logs a warning. A GUT test fails until the bake
-  is redone after layout or asset changes.
+- **Stale-bake detection:** a manifest stores each baked mesh's placement, bounds, vertex count and UV2
+  moments. They are compared with tolerances, because float results differ in the last bits between
+  platforms. Meshes built at runtime are compared by geometry only, since their saved unwrap replaces them.
+  At runtime a mismatch keeps the previous real-time shadows and logs a warning. A GUT test fails until the
+  bake is redone after layout or asset changes.
 - **Texel density:** the hall floor is split into the epoxy production zone (`FloorZone`, 1.25 cm) and the
   surrounding slab (10 cm); equipment uses 2.5 cm. Settings: `godot/world/lighting/baked/<layout>/settings.json`.
 

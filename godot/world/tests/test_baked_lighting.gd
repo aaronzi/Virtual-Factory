@@ -51,6 +51,22 @@ func test_validate_detects_layout_and_geometry_changes() -> void:
 		func(p: String) -> bool: return p.contains("NewProp")), "new static prop")
 
 
+func test_validate_tolerates_platform_float_noise() -> void:
+	var box := (_root.get_node("Factory/DEV01/Body") as MeshInstance3D).mesh as BoxMesh
+	box.add_uv2 = true
+	var manifest := _manifest()
+	var entry: Dictionary = manifest.users["Factory/DEV01/Body"]
+	assert_gt(float(entry.uv2[0]), 0.0, "UV2 moments recorded")
+	entry.uv2[0] = float(entry.uv2[0]) + 2e-5
+	entry.xform[9] = float(entry.xform[9]) + 1e-5
+	assert_eq(BakedLighting.validate(_root, manifest), PackedStringArray(), "last-bit differences")
+	entry.uv2[0] = float(entry.uv2[0]) + 0.01
+	assert_eq(BakedLighting.validate(_root, manifest).size(), 1, "different lightmap unwrap")
+	entry["mesh"] = "res://saved_unwrap.res"
+	assert_eq(BakedLighting.validate(_root, manifest), PackedStringArray(),
+		"runtime-built meshes use their saved unwrap: runtime UV2 irrelevant")
+
+
 func test_apply_without_bake_changes_nothing() -> void:
 	assert_false(BakedLighting.apply(_root, "res://world/tests/no_such_bake"))
 	var body := _root.get_node("Factory/DEV01/Body") as MeshInstance3D

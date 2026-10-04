@@ -41,8 +41,14 @@ func test_bake_is_not_stale() -> void:
 
 
 func test_static_and_dynamic_shadow_flags() -> void:
-	assert_true(BakedLighting.apply(_root, BAKE))
-	var gi := _root.get_node(String(BakedLighting.NODE_NAME)) as LightmapGI
+	var problems := BakedLighting.validate(_root, BakedLighting.load_manifest(BAKE))
+	if not BakedLighting.apply(_root, BAKE):
+		fail_test("bake not applied (missing or stale: %s) - run tools/bake_lighting.sh" % [problems])
+		return
+	var gi := _root.get_node_or_null(String(BakedLighting.NODE_NAME)) as LightmapGI
+	if gi == null:
+		fail_test("BakedLighting node missing after apply")
+		return
 	assert_eq(gi.shadowmask_mode, LightmapGIData.SHADOWMASK_MODE_OVERLAY)
 	var floor_zone := _root.get_node("Hall/hall/FloorZone") as GeometryInstance3D
 	assert_eq(floor_zone.gi_mode, GeometryInstance3D.GI_MODE_STATIC)
