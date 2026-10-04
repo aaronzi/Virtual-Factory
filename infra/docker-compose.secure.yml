@@ -42,7 +42,7 @@ services:
   keycloak:
     # Identity provider. Dev mode (H2 in the container): the realm is re-imported at every start, no TLS.
     # Production: `start` with a database, TLS, a real hostname, rotated secrets (security.md).
-    image: keycloak/keycloak:26.7.4
+    image: keycloak/keycloak:26.8.0
     command: ["start-dev", "--import-realm"]
     ports:
       - "8180:8080"
@@ -119,7 +119,7 @@ services:
 
   bpmn-users:
     # One-shot: engine users per service and for the Godot task terminal (no fine-grained authorizations, O58)
-    image: curlimages/curl:8.17.0
+    image: curlimages/curl:8.22.0
     entrypoint: ["/bin/sh", "/bpmn-users.sh"]
     volumes:
       - ./secure/bpmn-users.sh:/bpmn-users.sh:ro
