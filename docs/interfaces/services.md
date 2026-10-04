@@ -125,6 +125,9 @@ Token for manual calls: `curl -s -d grant_type=password -d client_id=vf-godot -d
 
 - Subscribes to `{root}/session` (tag `session` from the birth message) and `{root}/+/+` (telemetry); devices and
   the FMI type of every output come from the asset data (`device.modelDescription`), unknown topics are ignored.
+- Samples that arrive before the first session birth (the OPC UA edge publishes the PLC's initial values a moment
+  before the factory announces its session) are held (max. 20 000) and written with that session once it is known -
+  never with a placeholder session. Dashboards resolve "latest" to the session of the newest PLC01 row.
 - Writes each sample with its UNS `ts` (simulation time base, ms precision) into database `vf`: one table per
   device (lower-case instance name = UNS segment, e.g. `cv01`), one field per FMI output (Float64 → float,
   Int32 → integer, Boolean → boolean, String → string), tag `session`. Samples of one tick share one row.

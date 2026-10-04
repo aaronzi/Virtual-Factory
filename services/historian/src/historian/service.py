@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import logging
 import time
+from collections import deque
 from pathlib import Path
 
 from provisioner.build import REPO, load_assets
@@ -37,10 +38,16 @@ def variable_types(repo: Path = REPO) -> dict[str, dict[str, str]]:
     return out
 
 
+PENDING_MAX = 20_000  # samples held while no session is known (oldest dropped first)
+
+
 class Historian:
     def __init__(self, mqtt: MqttClient, uns: Uns, types: dict[str, dict[str, str]], writer: BatchWriter):
         self.mqtt, self.uns, self.types, self.writer = mqtt, uns, types, writer
         self.session: str | None = None
+        # samples before the first session birth (e.g. the edge publishes the PLC's initial values a moment
+        # before the factory announces its session): held and tagged once the session is known
+        self._pending: deque[tuple] = deque(maxlen=PENDING_MAX)
         self._prefix = uns.root + "/"
         self._value_key = uns.config["payload"]["value_key"]
         self._ts_key = uns.config["payload"]["timestamp_key"]
@@ -63,8 +70,9 @@ class Historian:
         if not isinstance(data, dict):
             return
         if topic == self.uns.session_topic:
-            self.session = str(data.get("id") or self.session or "")
+            self.session = str(data.get("id") or self.session or "") or None
             log.info("session %s", self.session)
+            self._flush_pending()
             return
         if topic.startswith(self._maintenance_prefix):
             self._maintenance(topic, data)
@@ -79,7 +87,7 @@ class Historian:
             ts_ms = ts_millis(ts)
         except ValueError:
             return
-        self.writer.add(device, self.session or "unknown", variable, value, ts_ms)
+        self._add(device, variable, value, ts_ms)
 
     def _maintenance(self, topic: str, data: dict) -> None:
         component, _, indicator = topic.removeprefix(self._maintenance_prefix).partition("/")
@@ -92,8 +100,22 @@ class Historian:
             ts_ms = ts_millis(ts)
         except ValueError:
             return
-        self.writer.add("maintenance", self.session or "unknown", indicator, value, ts_ms,
-                        {"component": component.upper()})
+        self._add("maintenance", indicator, value, ts_ms, {"component": component.upper()})
+
+    def _add(self, table: str, field: str, value, ts_ms: int, tags: dict | None = None) -> None:
+        if self.session is None:
+            self._pending.append((table, field, value, ts_ms, tags))
+        elif tags is None:
+            self.writer.add(table, self.session, field, value, ts_ms)
+        else:
+            self.writer.add(table, self.session, field, value, ts_ms, tags)
+
+    def _flush_pending(self) -> None:
+        if self.session is None or not self._pending:
+            return
+        log.info("tagging %d samples from before the session birth with %s", len(self._pending), self.session)
+        while self._pending:
+            self._add(*self._pending.popleft())
 
     def run(self) -> None:
         self.subscribe()

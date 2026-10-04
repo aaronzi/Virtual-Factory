@@ -46,7 +46,7 @@
     "hide": 0,
     "description": "UNS session (one per Godot start); 'latest' follows the newest session",
     "query": {
-     "query": "SELECT 'latest' AS session UNION ALL SELECT session FROM (SELECT DISTINCT session FROM plc01) ORDER BY session = 'latest' DESC, session DESC",
+     "query": "SELECT 'latest' AS session UNION ALL SELECT session FROM (SELECT DISTINCT session FROM plc01 WHERE session LIKE 'S-%') ORDER BY session = 'latest' DESC, session DESC",
      "refId": "session"
     },
     "current": {
@@ -73,7 +73,7 @@
     "hide": 2,
     "description": "Resolved session id ('latest' -> newest session)",
     "query": {
-     "query": "SELECT CASE WHEN '${session}' = 'latest' THEN max(session) ELSE '${session}' END AS sid FROM plc01",
+     "query": "SELECT CASE WHEN '${session}' = 'latest' THEN session ELSE '${session}' END AS sid FROM plc01 WHERE session LIKE 'S-%' ORDER BY time DESC LIMIT 1",
      "refId": "sid"
     },
     "current": {}
@@ -556,7 +556,7 @@
   {
    "type": "timeseries",
    "title": "Remaining useful life (grips)",
-   "description": "Median and 90 % lower bound of the remaining grips until the wear limit (TrendFit; DesignRate shows the design life)",
+   "description": "Median and 90 % lower bound of the remaining grips until the wear limit (TrendFit; DesignRate shows the design life). Logarithmic axis: millions of grips with fresh fingers, tens shortly before the limit.",
    "datasource": {
     "type": "influxdb",
     "uid": "vf-historian"
@@ -574,7 +574,7 @@
       "type": "influxdb",
       "uid": "vf-historian"
      },
-     "rawSql": "SELECT time, rul_cycles AS \"median\", rul_cycles_low AS \"lower bound\" FROM maintenance WHERE component = 'GR01' AND session = '${sid}' AND $__timeFilter(time) AND rul_cycles IS NOT NULL AND rul_cycles < 1000 ORDER BY time",
+     "rawSql": "SELECT time, rul_cycles AS \"median\", rul_cycles_low AS \"lower bound\" FROM maintenance WHERE component = 'GR01' AND session = '${sid}' AND $__timeFilter(time) AND rul_cycles IS NOT NULL ORDER BY time",
      "format": "table",
      "rawQuery": true,
      "editorMode": "code"
@@ -588,7 +588,11 @@
       "lineWidth": 2,
       "fillOpacity": 10,
       "spanNulls": true,
-      "showPoints": "auto"
+      "showPoints": "auto",
+      "scaleDistribution": {
+       "type": "log",
+       "log": 10
+      }
      }
     },
     "overrides": []

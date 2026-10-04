@@ -101,6 +101,18 @@ def test_historian_handles_session_and_telemetry():
     assert sent == [["plc01,session=S-1 parts_total=7i 1791021601500"]]
 
 
+def test_samples_before_the_session_birth_are_tagged_with_that_session():
+    """The edge may publish the PLC's initial values before the factory announces its session."""
+    sent = []
+    h = Historian(_Mqtt(), Uns.load(), variable_types(), BatchWriter(sent.append))
+    h.handle(f"{ROOT}/plc01/alarm_code", json.dumps({"v": 0, "ts": "2026-10-03T10:00:00.500Z"}).encode())
+    h.writer.flush(force=True)
+    assert sent == []
+    h.handle(f"{ROOT}/session", json.dumps({"id": "S-2", "ts": "2026-10-03T10:00:01Z"}).encode())
+    h.writer.flush(force=True)
+    assert sent == [["plc01,session=S-2 alarm_code=0i 1791021600500"]]
+
+
 def test_maintenance_results_go_into_the_maintenance_table():
     sent = []
     h = Historian(_Mqtt(), Uns.load(), variable_types(), BatchWriter(sent.append))
