@@ -3,6 +3,7 @@ name = "supplier"
 version = "0.1.0"
 description = "Supplier portal: despatch advices of the component suppliers and the batch AAS they publish in the supplier AAS environment (batch PCF, recycled content, material certificate EN 10204 3.1)"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = ["vf-common", "provisioner"]
 
 [build-system]

@@ -3,6 +3,7 @@ name = "sustainability"
 version = "0.1.0"
 description = "Sustainability service: production-based product carbon footprint per part (owns the workpiece CarbonFootprint submodel), supplier footprints, energy/CO2e plant data and sustainability KPIs"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = ["vf-common", "provisioner"]
 
 [build-system]

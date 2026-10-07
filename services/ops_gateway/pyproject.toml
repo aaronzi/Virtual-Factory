@@ -3,6 +3,7 @@ name = "ops-gateway"
 version = "0.1.0"
 description = "Operations gateway: executes delegated AAS Operations (LineControl) as UNS commands"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = ["vf-common"]
 
 [build-system]

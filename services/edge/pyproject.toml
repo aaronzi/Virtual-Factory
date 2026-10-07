@@ -3,6 +3,7 @@ name = "edge"
 version = "0.1.0"
 description = "Edge connector: subscribes to the OPC UA servers of the shop floor and publishes to the UNS (MQTT); configured from the AID of the assets (ADR-0024)"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = ["vf-common"]
 
 [build-system]

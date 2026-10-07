@@ -3,6 +3,7 @@ name = "vf-common"
 version = "0.1.0"
 description = "Shared library for Virtual Factory edge/IT services: configuration, ID scheme, AAS builders, BaSyx REST access"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = [
     "basyx-python-sdk>=2.2.0",
     "httpx>=0.28",

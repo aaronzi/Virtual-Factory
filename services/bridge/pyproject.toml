@@ -3,6 +3,7 @@ name = "bridge"
 version = "0.1.0"
 description = "AIMC bridge: maps UNS (MQTT) telemetry into AAS submodel elements as configured by the Asset Interfaces Mapping Configuration"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = [
     "lupa>=2.2",
     "vf-common",

@@ -3,6 +3,7 @@ name = "historian"
 version = "0.1.0"
 description = "Historian: records the UNS telemetry of all devices in InfluxDB 3 (one table per device, one field per FMI output)"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = ["vf-common", "provisioner"]
 
 [build-system]

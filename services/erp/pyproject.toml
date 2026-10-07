@@ -3,6 +3,7 @@ name = "erp"
 version = "0.1.0"
 description = "ERP order simulator: production orders (ISA-95/B2MML-like), release to the MES via BPMN, confirmations, goods receipts and batch master data"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = ["vf-common", "provisioner"]
 
 [build-system]

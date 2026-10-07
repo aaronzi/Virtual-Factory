@@ -3,6 +3,7 @@ name = "resolver"
 version = "0.1.0"
 description = "GS1 Digital Link resolver: product / item links (passport page, DPP, AAS, certificates) via discovery and registry"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = ["vf-common"]
 
 [build-system]

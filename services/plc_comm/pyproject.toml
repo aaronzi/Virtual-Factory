@@ -3,6 +3,7 @@ name = "plc-comm"
 version = "0.1.0"
 description = "Communication module of PLC01: OPC UA server (address space after OPC 30050 PackML) fed by the simulated PLC CPU over a backplane link (ADR-0024)"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = ["vf-common", "provisioner"]
 
 [build-system]

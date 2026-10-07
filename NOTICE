@@ -1,0 +1,39 @@
+Virtual Factory
+Copyright 2026 Aaron Zielstorff
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+-------------------------------------------------------------------------------
+Third-party content included in this repository
+-------------------------------------------------------------------------------
+
+GUT - Godot Unit Test (godot/addons/gut/)
+  Copyright (c) 2018 Tom "Butch" Wesley
+  Licensed under the MIT License, see godot/addons/gut/LICENSE.md.
+
+IDTA Submodel Templates (aas/templates/idta/)
+  Submodel templates and concept descriptions of the Industrial Digital Twin
+  Association (IDTA), retrieved from https://smt-repo.admin-shell-io.com
+  (source repository: https://github.com/admin-shell-io/submodel-templates).
+  Licensed under the Creative Commons Attribution 4.0 International License
+  (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/.
+  These files are not covered by the Apache License of this product.
+
+-------------------------------------------------------------------------------
+Binary distributions
+-------------------------------------------------------------------------------
+
+Desktop builds produced by tools/export_builds.sh contain the Godot Engine
+(MIT License, Copyright (c) 2014-present Godot Engine contributors and
+Juan Linietsky, Ariel Manzur) and its third-party components; their license
+notices must accompany any distributed build
+(see https://godotengine.org/license).
+
+-------------------------------------------------------------------------------
+Trademarks
+-------------------------------------------------------------------------------
+
+UR5e and Universal Robots are trademarks of Universal Robots A/S. They are used
+only to identify the modelled robot; this project is not affiliated with or
+endorsed by Universal Robots A/S. All other companies and products named in
+the sample data are fictional.

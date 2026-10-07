@@ -3,6 +3,7 @@ name = "maintenance"
 version = "0.1.0"
 description = "Maintenance service: condition monitoring and predictive maintenance (health index, remaining useful life from the historian), owns ConditionMonitoring and the observed Reliability data, opens and executes MaintenanceOrder processes (BPMN)"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = ["vf-common"]
 
 [build-system]

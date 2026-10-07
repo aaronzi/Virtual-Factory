@@ -3,6 +3,7 @@ name = "alarms"
 version = "0.1.0"
 description = "Alarms & events service: ISA-18.2 alarm management of LINE01 (lifecycle, shelving, suppression by state), event journal of the UNS and alarm KPIs (EEMUA 191) in TimescaleDB"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = ["vf-common", "psycopg[binary]>=3.2"]
 
 [build-system]
