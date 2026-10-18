@@ -218,7 +218,7 @@ services:
     # as admin / editor (local default passwords, open issue O34) to edit. Saved edits and users persist in the
     # volume grafana-data; reset: `docker compose -f infra/docker-compose.yml rm -sf grafana &&
     # docker volume rm vf_grafana-data`.
-    image: grafana/grafana:13.2.3
+    image: grafana/grafana:13.2.4
     entrypoint: ["/bin/sh", "/etc/grafana/vf-entrypoint.sh"]
     ports:
       - "3002:3000"
@@ -588,7 +588,7 @@ services:
     # nodered-data once (marker /data/.vf-seeded); later edits persist there. Reset to the repo examples:
     #   docker compose -f infra/docker-compose.yml rm -sf nodered && docker volume rm vf_nodered-data
     # No authentication (local use only).
-    image: nodered/node-red:5.0.7-24
+    image: nodered/node-red:5.0.8-24
     profiles: ["sandbox"]
     ports:
       - "1880:1880"
