@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           lfs: true  # AASX thumbnails/documents (provisioner, workpiece passports) and the Godot 3D assets
-      - uses: astral-sh/setup-uv@v10.2.0
+      - uses: astral-sh/setup-uv@v10.3.0
       - run: uv sync
       - name: Install Godot
         run: |
