@@ -74,7 +74,7 @@ services:
     restart: unless-stopped
 
   basyx-config:
-    image: eclipsebasyx/basyxconfigurationservice-go:1.1.0
+    image: eclipsebasyx/basyxconfigurationservice-go:1.1.1
     environment:
       <<: *postgres-env
     depends_on:
@@ -93,7 +93,7 @@ services:
       - ./basyx/preload:/out
 
   aas-env:
-    image: eclipsebasyx/aasenvironment-go:1.1.0
+    image: eclipsebasyx/aasenvironment-go:1.1.1
     command: ["/app/aasenvironmentservice"]
     ports:
       - "8091:8091"
@@ -132,7 +132,7 @@ services:
 
   aas-ui:
     # aas-gui publishes no version tags; pinned by digest (latest as of 2026-09-24).
-    image: eclipsebasyx/aas-gui@sha256:5e9ad866865267a0cf13f99d309a823e979c5bf945e63138b9a1268c9a884298
+    image: eclipsebasyx/aas-gui@sha256:84b46bf73b6b6b8f7b9af6abe63b8d3b1509bc918ad29ccf31f014234fd307d7
     ports:
       - "3001:3000"
     volumes:
@@ -147,7 +147,7 @@ services:
     # and the model-level passport of PC3280_TYPE. Read-only use; managed attachments (certificates, documents)
     # are linked to the AAS environment's attachment endpoints via GENERAL_EXTERNALURL. History endpoints are
     # not configured (aas-env runs without BaSyx history).
-    image: eclipsebasyx/dppapi-go:1.1.0
+    image: eclipsebasyx/dppapi-go:1.1.1
     command: ["/app/dppapiservice"]
     ports:
       - "8093:8093"
@@ -508,7 +508,7 @@ services:
     restart: unless-stopped
 
   supplier-config:
-    image: eclipsebasyx/basyxconfigurationservice-go:1.1.0
+    image: eclipsebasyx/basyxconfigurationservice-go:1.1.1
     environment:
       <<: *postgres-env
       POSTGRES_HOST: supplier-db
@@ -530,7 +530,7 @@ services:
         condition: service_completed_successfully   # same image, built by the provisioner service
 
   supplier-aas-env:
-    image: eclipsebasyx/aasenvironment-go:1.1.0
+    image: eclipsebasyx/aasenvironment-go:1.1.1
     command: ["/app/aasenvironmentservice"]
     ports:
       - "8191:8191"
