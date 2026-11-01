@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7  # no LFS: only text files are checked
       - name: markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@v24.2.0
+        uses: DavidAnson/markdownlint-cli2-action@v25.0.0
         with:
           globs: "**/*.md"
       - name: Relative links and anchors (offline)
